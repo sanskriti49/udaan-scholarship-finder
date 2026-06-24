@@ -1,3 +1,5 @@
+import Hero from "../components/Hero";
+
 function HomePage() {
   return (
     <div>
