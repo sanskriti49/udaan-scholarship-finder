@@ -1,7 +1,14 @@
 import React from "react";
 import heroImage from "../assets/images/hero-image.jpg";
+import { useNavigate } from "react-router-dom";
 
 function Hero() {
+  const navigate = useNavigate();
+
+  function exploreNowBtn() {
+    navigate("/explore");
+  }
+
   return (
     <div className="font-pangea relative overflow-hidden bg-linear-to-b from-white via-gray-50/50 to-white">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-12 md:py-10 lg:px-8">
@@ -33,7 +40,10 @@ function Hero() {
                   className="w-full px-5 py-3 rounded-full border border-gray-200 bg-white text-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                 />
               </div>
-              <button className="cursor-pointer px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-md rounded-full transition-all duration-200 shadow-md shadow-emerald-600/10 active:scale-98">
+              <button
+                onClick={exploreNowBtn}
+                className="cursor-pointer px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-md rounded-full transition-all duration-200 shadow-md shadow-emerald-600/10 active:scale-98"
+              >
                 Explore Now
               </button>
             </div>
