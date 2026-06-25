@@ -5,20 +5,20 @@ import HomePage from "./pages/HomePage";
 import Contact from "./pages/Contact";
 
 const router = createBrowserRouter([
-  {
-    element: <Mainlayout />,
-    children: [
-      { path: "/", element: <HomePage /> },
-      { path: "contact", element: <Contact /> },
-    ],
-  },
+	{
+		element: <Mainlayout />,
+		children: [
+			{ path: "/", element: <HomePage /> },
+			{ path: "contact", element: <Contact /> },
+		],
+	},
 ]);
 
 export default function App() {
-  return (
-    <>
-      <Toaster richColors position="top-right" />
-      <RouterProvider router={router} />
-    </>
-  );
+	return (
+		<>
+			<Toaster richColors position="top-right" />
+			<RouterProvider router={router} />
+		</>
+	);
 }
