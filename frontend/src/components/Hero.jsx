@@ -47,7 +47,7 @@ function Hero() {
                   Scholarships Active
                 </p>
               </div>
-              <div className="border-l border-gray-200 pl-4 pr-2">
+              <div className="pl-4 pr-2">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-600">
                   500+
                 </h2>
@@ -55,7 +55,7 @@ function Hero() {
                   Partner Colleges
                 </p>
               </div>
-              <div className="border-l border-gray-200 pl-4">
+              <div className="pl-4">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-600">
                   95%
                 </h2>

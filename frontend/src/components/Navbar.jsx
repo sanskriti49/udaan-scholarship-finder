@@ -19,7 +19,7 @@ const Navbar = () => {
     { name: "Home", path: "/" },
     { name: "Scholarships", path: "/scholarships" },
     { name: "Explore", path: "/explore" },
-    { name: "Resources", path: "/resources" },
+    { name: "Contact", path: "/contact" },
     { name: "About", path: "/about" },
   ];
 
@@ -28,7 +28,7 @@ const Navbar = () => {
       <nav
         className={`font-satoshi fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 md:px-8 ${
           isScrolled
-            ? "py-2.5 bg-white/95 backdrop-blur-md border-b border-black/[0.05] shadow-xs"
+            ? "py-2.5 bg-white/95 backdrop-blur-md border-b border-black/5 shadow-xs"
             : "py-4 bg-white/80 backdrop-blur-sm"
         }`}
       >
@@ -65,7 +65,7 @@ const Navbar = () => {
                 onClick={() => setActiveLink(link.path)}
                 className={`px-4 py-1.5 text-sm rounded-full transition-all duration-200 ease-out whitespace-nowrap ${
                   activeLink === link.path
-                    ? "bg-white text-gray-900 font-semibold shadow-xs border border-black/[0.02]"
+                    ? "bg-white text-gray-900 font-semibold shadow-xs border border-black/2"
                     : "text-gray-500 font-medium hover:text-gray-900 hover:bg-white/40"
                 }`}
               >
@@ -161,7 +161,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      <div className="h-[76px] md:h-[84px]" />
+      <div className="h-19 md:h-21" />
     </>
   );
 };
