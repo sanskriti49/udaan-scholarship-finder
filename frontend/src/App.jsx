@@ -4,6 +4,8 @@ import Mainlayout from "./layouts/Mainlayout";
 import HomePage from "./pages/HomePage";
 import Support from "./pages/Support";
 import Elgibility from "./pages/Elgibility";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -11,8 +13,8 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <HomePage /> },
       { path: "support", element: <Support /> },
-      { path: "support", element: <Support /> },
-      { path: "support", element: <Support /> },
+      { path: "signup", element: <Signup /> },
+      { path: "login", element: <Login /> },
       { path: "eligibility", element: <Elgibility /> },
     ],
   },
