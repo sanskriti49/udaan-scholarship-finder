@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import faqImage from "../assets/images/faq.png";
 
 const faqs = [
 	{
@@ -80,9 +81,8 @@ function FaqItem({ question, answer, isOpen, onClick }) {
 					</svg>
 				</span>
 			</button>
-
 			<div
-				className={`grid transition-all duration-280 ease-in-out ${
+				className={`grid transition-all duration-[280ms] ease-in-out ${
 					isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
 				}`}
 			>
@@ -98,73 +98,96 @@ function FaqItem({ question, answer, isOpen, onClick }) {
 
 function FAQ() {
 	const [openIndex, setOpenIndex] = useState(0);
-
 	const left = faqs.filter((_, i) => i % 2 === 0);
 	const right = faqs.filter((_, i) => i % 2 !== 0);
-
 	const toggle = (globalIndex) =>
 		setOpenIndex(openIndex === globalIndex ? null : globalIndex);
 
 	return (
-		<section className="font-pangea py-16 px-6 bg-white">
-			<div className="max-w-3xl mx-auto">
-				<div className="text-center mb-12">
-					<div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[11px] font-bold tracking-wider px-3 py-1 rounded-full mb-4">
-						<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-						FAQs
+		<section className="font-pangea py-20 px-6 bg-white">
+			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-12 items-start">
+				<div className="hidden lg:block sticky top-28">
+					<div className="relative rounded-[2rem] bg-[#f6f2e6] border border-[#DDECCB] p-8 overflow-hidden">
+						<div className="absolute -top-16 -right-16 w-44 h-44 bg-[#C0DD97]/40 rounded-full blur-2xl" />
+						<div className="absolute -bottom-16 -left-16 w-44 h-44 bg-[#C0DD97]/30 rounded-full blur-2xl" />
+
+						<img src={faqImage} />
+
+						<div className="relative z-10 mt-3">
+							<div className="inline-flex items-center gap-1.5 bg-white border border-[#C0DD97] text-[#27500A] text-[11px] font-bold tracking-wider px-3 py-1 rounded-full mb-4">
+								<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
+								Student Help
+							</div>
+							<h2 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+								Got questions before applying?
+							</h2>
+							<p className="mt-3 text-gray-500 text-[15px] leading-relaxed">
+								Understand eligibility, documents, deadlines, and how Udaan
+								helps you find verified scholarships faster.
+							</p>
+						</div>
 					</div>
-					<h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
-						Frequently asked <span className="text-[#3B7DC8]">questions</span>
-					</h2>
-					<p className="mt-3 text-md text-gray-500 max-w-md mx-auto leading-relaxed">
-						Everything you need to know about discovering and applying for
-						scholarships through Udaan.
+				</div>
+
+				<div>
+					<div className="text-center lg:text-left mb-10">
+						<div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[11px] font-bold tracking-wider px-3 py-1 rounded-full mb-4">
+							<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
+							FAQs
+						</div>
+						<h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+							Frequently asked{" "}
+							<span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-teal-500">
+								questions
+							</span>
+						</h2>
+						<p className="mt-3 text-md text-gray-500 max-w-md mx-auto lg:mx-0 leading-relaxed">
+							Everything you need to know about discovering and applying for
+							scholarships through Udaan.
+						</p>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+						<div className="flex flex-col gap-2.5">
+							{left.map((faq, i) => {
+								const globalIndex = i * 2;
+								return (
+									<FaqItem
+										key={globalIndex}
+										question={faq.question}
+										answer={faq.answer}
+										isOpen={openIndex === globalIndex}
+										onClick={() => toggle(globalIndex)}
+									/>
+								);
+							})}
+						</div>
+						<div className="flex flex-col gap-2.5">
+							{right.map((faq, i) => {
+								const globalIndex = i * 2 + 1;
+								return (
+									<FaqItem
+										key={globalIndex}
+										question={faq.question}
+										answer={faq.answer}
+										isOpen={openIndex === globalIndex}
+										onClick={() => toggle(globalIndex)}
+									/>
+								);
+							})}
+						</div>
+					</div>
+
+					<p className="text-center lg:text-left text-[13px] text-gray-400 mt-10">
+						Still have questions?{" "}
+						<Link
+							to="/support"
+							className="cursor-pointer text-[#3B7DC8] font-semibold border-b border-transparent hover:border-[#3B7DC8] transition-colors"
+						>
+							Visit our support page →
+						</Link>
 					</p>
 				</div>
-
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-					{/* Left column */}
-					<div className="flex flex-col gap-2.5">
-						{left.map((faq, i) => {
-							const globalIndex = i * 2;
-							return (
-								<FaqItem
-									key={globalIndex}
-									question={faq.question}
-									answer={faq.answer}
-									isOpen={openIndex === globalIndex}
-									onClick={() => toggle(globalIndex)}
-								/>
-							);
-						})}
-					</div>
-
-					{/* Right column */}
-					<div className="flex flex-col gap-2.5">
-						{right.map((faq, i) => {
-							const globalIndex = i * 2 + 1;
-							return (
-								<FaqItem
-									key={globalIndex}
-									question={faq.question}
-									answer={faq.answer}
-									isOpen={openIndex === globalIndex}
-									onClick={() => toggle(globalIndex)}
-								/>
-							);
-						})}
-					</div>
-				</div>
-
-				<p className="text-center text-[13px] text-gray-400 mt-10">
-					Still have questions?{" "}
-					<Link
-						to="/support"
-						className="cursor-pointer text-[#3B7DC8] font-semibold border-b border-transparent hover:border-[#3B7DC8] transition-colors"
-					>
-						Visit our support page →
-					</Link>
-				</p>
 			</div>
 		</section>
 	);

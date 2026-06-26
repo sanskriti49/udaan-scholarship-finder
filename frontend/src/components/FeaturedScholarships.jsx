@@ -62,7 +62,10 @@ function FeaturedScholarships() {
 					<div className="flex items-end justify-between flex-wrap gap-4">
 						<div>
 							<h2 className="text-3xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight">
-								Scholarships <span className="text-[#3B7DC8]">for you</span>
+								Scholarships{" "}
+								<span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-teal-500">
+									for you
+								</span>
 							</h2>
 							<p className="mt-2 text-sm text-gray-500 leading-relaxed">
 								Curated, verified opportunities — sorted by deadline, not noise.

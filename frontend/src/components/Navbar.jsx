@@ -38,11 +38,11 @@ const Navbar = () => {
 			>
 				<div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
 					<NavLink to="/" className="flex items-center gap-2.5 group shrink-0">
-						<div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-102">
+						<div className="w-12 h-12 rounded-xl bg-[#C0DD97]/20 border border-emerald-100 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-102">
 							<img
 								src={logoImg}
 								alt="Udaan"
-								className="w-9 h-9 object-contain"
+								className="w-10 h-10 object-contain"
 							/>
 						</div>
 
