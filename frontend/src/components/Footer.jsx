@@ -6,7 +6,6 @@ function Footer() {
 		<footer className="font-pangea bg-white border-t border-gray-100">
 			<div className="mx-auto max-w-7xl px-6 py-12 md:py-16 lg:px-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-gray-100">
-					{/* Brand */}
 					<div className="lg:col-span-1 flex flex-col gap-4">
 						<Link to="/" className="flex items-center gap-3 w-max">
 							<img
@@ -34,7 +33,6 @@ function Footer() {
 						</p>
 					</div>
 
-					{/* Platform */}
 					<div className="flex flex-col gap-4">
 						<h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
 							Platform
@@ -79,7 +77,6 @@ function Footer() {
 						</ul>
 					</div>
 
-					{/* Support */}
 					<div className="flex flex-col gap-4">
 						<h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
 							Support
@@ -124,7 +121,6 @@ function Footer() {
 						</ul>
 					</div>
 
-					{/* Company */}
 					<div className="flex flex-col gap-4">
 						<h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
 							Company
