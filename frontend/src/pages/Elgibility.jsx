@@ -185,7 +185,7 @@ export default function EligibilityPage() {
                 <div className="w-9 h-9 rounded-xl bg-[#EAF3DE] flex items-center justify-center text-lg mb-3">
                   {step.icon}
                 </div>
-                <h3 className="text-[15px] font-bold text-gray-900 mb-1">
+                <h3 className="text-[18px] font-bold text-gray-900 mb-1">
                   {i + 1}. {step.label}
                 </h3>
                 <p className="text-[13px] text-gray-500 leading-relaxed">
