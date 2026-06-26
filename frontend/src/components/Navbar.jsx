@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import logoImg from "../assets/images/logo.png";
 import { NavLink, useLocation } from "react-router-dom";
-import { LogIn, Search } from "lucide-react";
+import {
+  CornerDownRight,
+  Form,
+  LogIn,
+  Search,
+  SignalHighIcon,
+} from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 
 const Navbar = () => {
@@ -83,6 +89,17 @@ const Navbar = () => {
             </button>
 
             <NavLink
+              to="/signup"
+              className="hidden md:inline-flex group/btn relative items-center gap-2 px-5 py-2 text-sm font-semibold text-black bg-white hover:border-black rounded-full transition-all duration-200 shadow-sm border border-white/10 overflow-hidden active:scale-95"
+            >
+              <span>Sign Up</span>
+              <CornerDownRight
+                size={15}
+                className="transition-transform duration-200 group-hover/btn:translate-x-0.5"
+              />
+            </NavLink>
+
+            <NavLink
               to="/login"
               className="hidden md:inline-flex group/btn relative items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-gray-950 hover:bg-gray-900 rounded-full transition-all duration-200 shadow-sm border border-white/10 overflow-hidden active:scale-95"
             >
@@ -131,8 +148,16 @@ const Navbar = () => {
             ))}
 
             <NavLink
+              to="/signup"
+              className="md:hidden mt-4 flex items-center justify-center gap-2 py-3 text-sm font-semibold text-black bg-white hover:border-white rounded-xl active:scale-95 transition-transform shadow-sm"
+            >
+              <span>Sign Up</span>
+              <CornerDownRight size={15} />
+            </NavLink>
+
+            <NavLink
               to="/login"
-              className="md:hidden mt-4 flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-gray-950 hover:bg-gray-900 rounded-xl active:scale-95 transition-transform shadow-sm"
+              className="md:hidden mt-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-gray-950 hover:bg-gray-900 rounded-xl active:scale-95 transition-transform shadow-sm"
             >
               <span>Login</span>
               <LogIn size={15} />
