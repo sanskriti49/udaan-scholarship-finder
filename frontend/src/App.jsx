@@ -2,23 +2,23 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
 import Mainlayout from "./layouts/Mainlayout";
 import HomePage from "./pages/HomePage";
-import Contact from "./pages/Contact";
+import Support from "./pages/Support";
 
 const router = createBrowserRouter([
-  {
-    element: <Mainlayout />,
-    children: [
-      { path: "/", element: <HomePage /> },
-      { path: "contact", element: <Contact /> },
-    ],
-  },
+	{
+		element: <Mainlayout />,
+		children: [
+			{ path: "/", element: <HomePage /> },
+			{ path: "support", element: <Support /> },
+		],
+	},
 ]);
 
 export default function App() {
-  return (
-    <>
-      <Toaster richColors position="top-right" />
-      <RouterProvider router={router} />
-    </>
-  );
+	return (
+		<>
+			<Toaster richColors position="top-right" />
+			<RouterProvider router={router} />
+		</>
+	);
 }
