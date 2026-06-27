@@ -3,36 +3,39 @@ import { Toaster } from "sonner";
 import Mainlayout from "./layouts/Mainlayout";
 import HomePage from "./pages/HomePage";
 import Support from "./pages/Support";
-import Elgibility from "./pages/Elgibility";
+import Elgibility from "./pages/Eligibility";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Resources from "./pages/Resources";
+import EligibilityPage from "./pages/Eligibility";
+import Scholarships from "./pages/Scholarships";
 
 const router = createBrowserRouter([
-  {
-    element: <Mainlayout />,
-    children: [
-      { path: "/", element: <HomePage /> },
-      { path: "support", element: <Support /> },
-      { path: "eligibility", element: <Elgibility /> },
-      { path: "resources", element: <Resources /> },
-    ],
-  },
-  {
-    path: "signup",
-    element: <Signup />,
-  },
-  {
-    path: "login",
-    element: <Login />,
-  },
+	{
+		element: <Mainlayout />,
+		children: [
+			{ path: "/", element: <HomePage /> },
+			{ path: "support", element: <Support /> },
+			{ path: "eligibility", element: <EligibilityPage /> },
+			{ path: "scholarships", element: <Scholarships /> },
+			{ path: "resources", element: <Resources /> },
+		],
+	},
+	{
+		path: "signup",
+		element: <Signup />,
+	},
+	{
+		path: "login",
+		element: <Login />,
+	},
 ]);
 
 export default function App() {
-  return (
-    <>
-      <Toaster richColors position="top-right" />
-      <RouterProvider router={router} />
-    </>
-  );
+	return (
+		<>
+			<Toaster richColors position="top-right" />
+			<RouterProvider router={router} />
+		</>
+	);
 }
