@@ -3,8 +3,7 @@ import { Toaster } from "sonner";
 import Mainlayout from "./layouts/Mainlayout";
 import HomePage from "./pages/HomePage";
 import Support from "./pages/Support";
-import Elgibility from "./pages/Eligibility";
-import Signup from "./pages/Signup";
+import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
 import Resources from "./pages/Resources";
 import EligibilityPage from "./pages/Eligibility";
@@ -23,7 +22,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "signup",
-		element: <Signup />,
+		element: <SignUp />,
 	},
 	{
 		path: "login",

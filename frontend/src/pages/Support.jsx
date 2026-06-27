@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Send } from "lucide-react";
+import {
+	Send,
+	Search,
+	GraduationCap,
+	FileText,
+	CheckCircle2,
+	Flag,
+	Lightbulb,
+	MessageCircle,
+	Mail,
+	Phone,
+	MapPin,
+	Plus,
+	ArrowUpRight,
+} from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { faqs } from "../utils/faqs";
@@ -8,822 +22,433 @@ import Badge from "../components/Badge";
 
 gsap.registerPlugin(ScrollToPlugin);
 
-function HeroIllustration() {
-  return (
-    <svg
-      viewBox="0 0 320 260"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      className="w-full max-w-xs"
-      aria-hidden="true"
-    >
-      <circle cx="160" cy="130" r="90" fill="#EAF3DE" opacity="0.5" />
-      <circle cx="110" cy="110" r="50" fill="#C0DD97" opacity="0.2" />
-      <circle cx="210" cy="120" r="50" fill="#BFDDF8" opacity="0.25" />
-      <text
-        x="148"
-        y="200"
-        fontFamily="Georgia,serif"
-        fontSize="130"
-        fontWeight="900"
-        fill="#6BBF2E"
-        opacity="0.8"
-        textAnchor="middle"
-      >
-        ?
-      </text>
-      <text
-        x="198"
-        y="205"
-        fontFamily="Georgia,serif"
-        fontSize="115"
-        fontWeight="900"
-        fill="#3B7DC8"
-        opacity="0.65"
-        textAnchor="middle"
-      >
-        ?
-      </text>
-      <text
-        x="80"
-        y="138"
-        fontFamily="Georgia,serif"
-        fontSize="48"
-        fontWeight="900"
-        fill="#E8884A"
-        opacity="0.7"
-        textAnchor="middle"
-      >
-        ?
-      </text>
-      <text
-        x="308"
-        y="92"
-        fontFamily="Georgia,serif"
-        fontSize="38"
-        fontWeight="900"
-        fill="#5AAD1F"
-        opacity="0.55"
-        textAnchor="middle"
-      >
-        ?
-      </text>
-      <rect
-        x="138"
-        y="62"
-        width="108"
-        height="135"
-        rx="4"
-        fill="none"
-        stroke="#3B7DC8"
-        strokeWidth="1.5"
-        opacity="0.35"
-      />
-      {/* Left character */}
-      <circle cx="106" cy="148" r="13" fill="#F5C894" />
-      <path
-        d="M93 144 Q95 133 106 131 Q117 133 119 144 Q114 137 106 137 Q98 137 93 144Z"
-        fill="#2C1A0E"
-      />
-      <rect
-        x="91"
-        y="160"
-        width="30"
-        height="34"
-        rx="7"
-        fill="#fff"
-        stroke="#e8e8e4"
-        strokeWidth="1"
-      />
-      <path
-        d="M91 170 Q79 174 74 184"
-        stroke="#F5C894"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      <circle cx="73" cy="184" r="5" fill="#F5C894" />
-      <path
-        d="M121 170 Q130 173 133 181"
-        stroke="#F5C894"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M91 192 Q87 222 83 248 L94 248 Q98 222 106 206 Q114 222 118 248 L129 248 Q125 222 121 192Z"
-        fill="#5AAD1F"
-      />
-      <ellipse cx="87" cy="249" rx="7" ry="3.5" fill="#2C1A0E" />
-      <ellipse cx="121" cy="249" rx="7" ry="3.5" fill="#2C1A0E" />
-      {/* Right character */}
-      <circle cx="232" cy="148" r="13" fill="#F5C894" />
-      <path
-        d="M219 144 Q221 133 232 131 Q243 133 245 144 Q240 137 232 137 Q224 137 219 144Z"
-        fill="#2C1A0E"
-      />
-      <rect x="217" y="160" width="30" height="34" rx="7" fill="#3B7DC8" />
-      <path
-        d="M247 170 Q256 163 254 153"
-        stroke="#F5C894"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      <circle cx="253" cy="152" r="4.5" fill="#F5C894" />
-      <path
-        d="M217 170 Q208 175 206 183"
-        stroke="#F5C894"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M217 192 Q213 222 209 248 L220 248 Q224 222 232 206 Q240 222 244 248 L255 248 Q251 222 247 192Z"
-        fill="#6BBF2E"
-      />
-      <ellipse cx="213" cy="249" rx="7" ry="3.5" fill="#2C1A0E" />
-      <ellipse cx="247" cy="249" rx="7" ry="3.5" fill="#2C1A0E" />
-      <line
-        x1="50"
-        y1="252"
-        x2="270"
-        y2="252"
-        stroke="#C0DD97"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      <ellipse cx="160" cy="255" rx="110" ry="6" fill="#EAF3DE" opacity="0.4" />
-      <path
-        d="M48 155 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z"
-        fill="#5AAD1F"
-        opacity="0.5"
-      />
-      <path
-        d="M278 130 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2z"
-        fill="#3B7DC8"
-        opacity="0.45"
-      />
-      <circle
-        cx="56"
-        cy="195"
-        r="4"
-        fill="none"
-        stroke="#5AAD1F"
-        strokeWidth="1.5"
-        opacity="0.5"
-      />
-      <circle cx="270" cy="200" r="3" fill="#E8884A" opacity="0.4" />
-    </svg>
-  );
-}
-
-const quickHelp = [
-  {
-    icon: "📚",
-    bg: "bg-[#EAF3DE]",
-    title: "Scholarship help",
-    desc: "How to find scholarships that match your profile and eligibility.",
-  },
-  {
-    icon: "📄",
-    bg: "bg-[#EAF3DE]",
-    title: "Required documents",
-    desc: "Know which documents you'll typically need before applying.",
-  },
-  {
-    icon: "✅",
-    bg: "bg-[#E6F1FB]",
-    title: "Eligibility questions",
-    desc: "Understand who can apply and how eligibility is determined.",
-  },
-  {
-    icon: "🚩",
-    bg: "bg-[#FCEBEB]",
-    title: "Report incorrect listing",
-    desc: "Help us keep scholarship information accurate and up to date.",
-  },
-  {
-    icon: "💡",
-    bg: "bg-[#FAEEDA]",
-    title: "Suggest a scholarship",
-    desc: "Found a scholarship we missed? Let us know and we'll add it.",
-  },
-  {
-    icon: "💬",
-    bg: "bg-[#E6F1FB]",
-    title: "Contact support",
-    desc: "Still need help? Send us a message and we'll respond within 24 hours.",
-  },
-];
-
-function FaqItem({ question, answer, isOpen, onClick }) {
-  return (
-    <div
-      onClick={onClick}
-      className={`border rounded-xl overflow-hidden cursor-pointer transition-colors duration-150 ${
-        isOpen
-          ? "border-[#C0DD97]"
-          : "border-gray-200/80 hover:border-[#C0DD97]"
-      }`}
-    >
-      <button
-        className="cursor-pointer w-full flex items-start justify-between gap-3 px-4 py-4.5 text-left bg-transparent"
-        aria-expanded={isOpen}
-      >
-        <span className="text-[14.5px] font-medium text-gray-900 leading-snug">
-          {question}
-        </span>
-        <span
-          className={`mt-0.5 w-4.5 h-4.5 shrink-0 rounded-full border-[1.5px] flex items-center justify-center transition-all duration-150 ${isOpen ? "bg-[#5AAD1F] border-[#5AAD1F]" : "border-gray-300"}`}
-        >
-          <svg
-            className={`w-2 h-2 transition-transform duration-200 ${isOpen ? "rotate-45 stroke-white" : "stroke-gray-400"}`}
-            viewBox="0 0 12 12"
-            fill="none"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="6" y1="1" x2="6" y2="11" />
-            <line x1="1" y1="6" x2="11" y2="6" />
-          </svg>
-        </span>
-      </button>
-      <div
-        className={`grid transition-all duration-280 ease-in-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-      >
-        <div className="overflow-hidden">
-          <p className="font-inter px-4 pb-3.5 text-[13.5px] text-gray-600 leading-relaxed">
-            {answer}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Support() {
-  const [openFaq, setOpenFaq] = useState(null);
-  useEffect(() => {
-    gsap.set(window, { scrollTo: 0 });
-  }, []);
-  const toggleFaq = (i) => setOpenFaq(openFaq === i ? null : i);
+	const [activeFaq, setActiveFaq] = useState(0);
+	const [contactForm, setContactForm] = useState({
+		name: "",
+		email: "",
+		topic: "Scholarship issue",
+		message: "",
+	});
+	const [reportForm, setReportForm] = useState({ link: "", issue: "" });
+	const [suggestForm, setSuggestForm] = useState({
+		org: "",
+		name: "",
+		website: "",
+		notes: "",
+	});
 
-  const [contactForm, setContactForm] = useState({
-    name: "",
-    email: "",
-    topic: "Scholarship issue",
-    message: "",
-  });
-  const [reportForm, setReportForm] = useState({ link: "", issue: "" });
-  const [suggestForm, setSuggestForm] = useState({
-    org: "",
-    name: "",
-    website: "",
-    notes: "",
-  });
+	useEffect(() => {
+		gsap.set(window, { scrollTo: 0 });
+	}, []);
 
-  const faqLeft = faqs.filter((_, i) => i % 2 === 0);
-  const faqRight = faqs.filter((_, i) => i % 2 !== 0);
+	return (
+		<main className="font-pangea bg-[#FDFCFA] text-gray-900 overflow-x-hidden">
+			{/* Hero with Functional Search */}
+			<section className="pt-24 pb-16 px-6">
+				<div className="max-w-6xl mx-auto text-center">
+					<Badge>Help Center</Badge>
+					<h1 className="text-5xl md:text-8xl font-extrabold tracking-tight mt-4 mb-8">
+						How can we <span className="italic text-[#5AAD1F]">help?</span>
+					</h1>
+					<div className="max-w-xl mx-auto relative group">
+						<Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#5AAD1F] transition-colors" />
+						<input
+							type="text"
+							placeholder="Search for issues, documents, scholarships..."
+							className="w-full pl-16 pr-6 py-5 bg-white rounded-full border border-gray-200 shadow-sm focus:shadow-lg focus:border-[#5AAD1F] outline-none transition-all duration-300 text-base"
+						/>
+					</div>
+				</div>
+			</section>
 
-  return (
-    <main className="font-jakarta bg-white text-gray-900">
-      <section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div>
-            <Badge>Help center</Badge>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mt-2 mb-3">
-              Need <span className="text-[#5AAD1F]">help?</span>
-            </h1>
-            <p className="text-[16px] text-gray-600 leading-relaxed mb-6 max-w-sm">
-              Whether you're searching for scholarships, facing application
-              issues, or want to report incorrect information — we're here to
-              help.
-            </p>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 bg-[#3B7DC8] text-white text-[16px] font-semibold px-5 py-2.5 rounded-full hover:bg-[#2D6AB5] transition-colors"
-            >
-              Contact support
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 12h14M12 5l7 7-7 7"
-                />
-              </svg>
-            </a>
-          </div>
-          <div className="flex justify-center">
-            <HeroIllustration />
-          </div>
-        </div>
-      </section>
+			{/* Bento Grid for Quick Help */}
+			<section className="py-12 px-6">
+				<div className="max-w-6xl mx-auto grid grid-cols-3 gap-4 auto-rows-[160px]">
+					{/* Large Featured Card */}
+					<div className="col-span-3 md:col-span-2 md:row-span-2 bg-[#EAF3DE] rounded-3xl p-8 flex flex-col justify-between hover:shadow-lg hover:shadow-[#5AAD1F]/10 transition-shadow cursor-pointer">
+						<GraduationCap className="w-10 h-10 text-[#5AAD1F]" />
+						<div>
+							<h3 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+								Scholarship Help
+							</h3>
+							<p className="text-gray-600 mt-2 max-w-sm">
+								Find scholarships that match your profile, course, and state.
+							</p>
+						</div>
+					</div>
 
-      <section className="py-12 px-6">
-        <div className="max-w-5xl mx-auto">
-          <Badge>Quick help</Badge>
-          <h2 className="text-3xl font-extrabold tracking-tight mb-1">
-            What do you need help with?
-          </h2>
-          <p className="text-[13px] text-gray-500 mb-6">
-            Jump straight to the section that matches your question.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {quickHelp.map((c, i) => (
-              <div
-                key={i}
-                className="border border-gray-200/80 hover:border-[#C0DD97] rounded-2xl p-5 cursor-pointer transition-colors duration-150"
-              >
-                <div
-                  className={`w-9 h-9 rounded-xl ${c.bg} flex items-center justify-center text-lg mb-3`}
-                >
-                  {c.icon}
-                </div>
-                <h3 className="text-[18px] font-semibold text-gray-900 mb-1">
-                  {c.title}
-                </h3>
-                <p className="text-[13px] text-gray-500 leading-relaxed">
-                  {c.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+					{/* Standard Cards */}
+					<div className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col justify-between hover:border-[#3B7DC8] transition-colors cursor-pointer">
+						<FileText className="w-7 h-7 text-[#3B7DC8]" />
+						<div>
+							<h3 className="font-bold text-lg">Documents</h3>
+							<p className="text-gray-500 text-sm mt-1">What to prepare</p>
+						</div>
+					</div>
 
-      <hr className="border-gray-100 mx-6" />
+					<div className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col justify-between hover:border-[#5AAD1F] transition-colors cursor-pointer">
+						<CheckCircle2 className="w-7 h-7 text-[#5AAD1F]" />
+						<div>
+							<h3 className="font-bold text-lg">Eligibility</h3>
+							<p className="text-gray-500 text-sm mt-1">Who can apply</p>
+						</div>
+					</div>
 
-      <section
-        id="contact"
-        className="py-14 px-6 bg-[#F6FAF1] border-y border-[#DDECCB]"
-      >
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1.35fr_0.9fr] gap-8 items-start">
-          <div className="bg-white border border-gray-200/80 rounded-3xl p-6 sm:p-8 shadow-sm">
-            <div className="mb-6">
-              <Badge>Contact support</Badge>
-              <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
-                Send us a message
-              </h2>
-              <p className="mt-2 text-[14px] text-gray-600 max-w-md leading-relaxed">
-                Tell us what you need help with. Choose a topic so your query
-                reaches the right support queue.
-              </p>
-            </div>
+					<div className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col justify-between hover:border-[#E8884A] transition-colors cursor-pointer">
+						<Flag className="w-7 h-7 text-[#E8884A]" />
+						<div>
+							<h3 className="font-bold text-lg">Report Listing</h3>
+							<p className="text-gray-500 text-sm mt-1">Spot an error?</p>
+						</div>
+					</div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                console.log("Support form submitted:", contactForm);
-                alert("Message sent successfully!");
-                setContactForm({
-                  name: "",
-                  email: "",
-                  topic: "Scholarship issue",
-                  message: "",
-                });
-              }}
-              className="flex flex-col gap-5"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label
-                    htmlFor="supportName"
-                    className="text-[12px] font-bold text-gray-600"
-                  >
-                    Full Name
-                  </label>
-                  <input
-                    id="supportName"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder="Priya Sharma"
-                    value={contactForm.name}
-                    onChange={(e) =>
-                      setContactForm({ ...contactForm, name: e.target.value })
-                    }
-                    className="w-full bg-[#F6FAF1] border border-gray-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/10 transition"
-                  />
-                </div>
+					<div className="bg-white border border-gray-100 rounded-3xl p-6 flex flex-col justify-between hover:border-[#5AAD1F] transition-colors cursor-pointer">
+						<Lightbulb className="w-7 h-7 text-[#E8884A]" />
+						<div>
+							<h3 className="font-bold text-lg">Suggest</h3>
+							<p className="text-gray-500 text-sm mt-1">Add a scholarship</p>
+						</div>
+					</div>
 
-                <div className="flex flex-col gap-2">
-                  <label
-                    htmlFor="supportEmail"
-                    className="text-[12px] font-bold text-gray-600"
-                  >
-                    Email
-                  </label>
-                  <input
-                    id="supportEmail"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder="priya@example.com"
-                    value={contactForm.email}
-                    onChange={(e) =>
-                      setContactForm({ ...contactForm, email: e.target.value })
-                    }
-                    className="w-full bg-[#F6FAF1] border border-gray-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/10 transition"
-                  />
-                </div>
-              </div>
+					{/* Wide CTA Card */}
+					<div className="col-span-3 md:col-span-1 bg-[#112915] text-white rounded-3xl p-6 flex items-center justify-between hover:bg-[#08170E] transition-colors cursor-pointer group">
+						<div>
+							<h3 className="font-bold text-xl text-white">Direct Support</h3>
+							<p className="text-gray-400 text-sm mt-1">Get a reply in 24h</p>
+						</div>
+						<a
+							href="#contact"
+							className="bg-white text-[#112915] p-3 rounded-full group-hover:bg-[#5AAD1F] group-hover:text-white transition-colors"
+						>
+							<ArrowUpRight size={20} />
+						</a>
+					</div>
+				</div>
+			</section>
 
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="supportTopic"
-                  className="text-[12px] font-bold text-gray-600"
-                >
-                  Topic
-                </label>
-                <select
-                  id="supportTopic"
-                  name="topic"
-                  value={contactForm.topic}
-                  onChange={(e) =>
-                    setContactForm({ ...contactForm, topic: e.target.value })
-                  }
-                  className="w-full bg-[#F6FAF1] border border-gray-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/10 transition"
-                >
-                  <option>Scholarship issue</option>
-                  <option>Eligibility question</option>
-                  <option>Technical problem</option>
-                  <option>Suggest a scholarship</option>
-                  <option>Report incorrect information</option>
-                  <option>Feedback</option>
-                  <option>Other</option>
-                </select>
-              </div>
+			{/* Contact Section - Clean Editorial Layout */}
+			<section id="contact" className="py-24 px-6">
+				<div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-16">
+					<div>
+						<Badge>Contact Support</Badge>
+						<h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mt-4 mb-6">
+							Let's talk.
+						</h2>
+						<p className="text-gray-500 mb-10 max-w-md">
+							Tell us what's going on. Choose a topic so your query reaches the
+							right team. We typically reply within a few hours during business
+							days.
+						</p>
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								console.log("Support form submitted:", contactForm);
+								alert("Message sent successfully!");
+								setContactForm({
+									name: "",
+									email: "",
+									topic: "Scholarship issue",
+									message: "",
+								});
+							}}
+							className="flex flex-col gap-8"
+						>
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+								<div className="flex flex-col gap-2">
+									<label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+										Full Name
+									</label>
+									<input
+										type="text"
+										required
+										placeholder="Priya Sharma"
+										value={contactForm.name}
+										onChange={(e) =>
+											setContactForm({ ...contactForm, name: e.target.value })
+										}
+										className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors"
+									/>
+								</div>
+								<div className="flex flex-col gap-2">
+									<label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+										Email
+									</label>
+									<input
+										type="email"
+										required
+										placeholder="priya@example.com"
+										value={contactForm.email}
+										onChange={(e) =>
+											setContactForm({ ...contactForm, email: e.target.value })
+										}
+										className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors"
+									/>
+								</div>
+							</div>
 
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="supportMessage"
-                  className="text-[12px] font-bold text-gray-600"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="supportMessage"
-                  name="message"
-                  required
-                  placeholder="Describe your issue or question..."
-                  value={contactForm.message}
-                  onChange={(e) =>
-                    setContactForm({ ...contactForm, message: e.target.value })
-                  }
-                  className="w-full bg-[#F6FAF1] border border-gray-200 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/10 transition resize-none min-h-30"
-                />
-              </div>
+							<div className="flex flex-col gap-2">
+								<label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+									Topic
+								</label>
+								<select
+									value={contactForm.topic}
+									onChange={(e) =>
+										setContactForm({ ...contactForm, topic: e.target.value })
+									}
+									className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors cursor-pointer"
+								>
+									<option>Scholarship issue</option>
+									<option>Eligibility question</option>
+									<option>Technical problem</option>
+									<option>Suggest a scholarship</option>
+									<option>Report incorrect information</option>
+									<option>Feedback</option>
+									<option>Other</option>
+								</select>
+							</div>
 
-              <div className="mt-6 flex justify-end">
-                <button
-                  type="submit"
-                  className="cursor-pointer inline-flex items-center gap-2 px-8 py-3.5 rounded-3xl
-	bg-linear-to-r from-emerald-600 to-teal-500
-	hover:from-emerald-700 hover:to-teal-500
-	text-white font-semibold
-	transition-all duration-300
-	shadow-md shadow-emerald-500/20
-	hover:shadow-lg hover:shadow-emerald-500/30
-	active:scale-95"
-                >
-                  Send Message
-                  <Send size={18} />
-                </button>
-              </div>
-            </form>
-          </div>
+							<div className="flex flex-col gap-2">
+								<label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+									Message
+								</label>
+								<textarea
+									required
+									placeholder="Describe your issue or question..."
+									value={contactForm.message}
+									onChange={(e) =>
+										setContactForm({ ...contactForm, message: e.target.value })
+									}
+									className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors resize-none min-h-[80px]"
+								/>
+							</div>
 
-          <div className="flex flex-col gap-4">
-            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex-1 flex flex-col justify-center">
-              <h3 className="text-xl font-bold tracking-tight text-gray-900 mb-6">
-                Contact Information
-              </h3>
-              <div className="flex flex-col gap-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">Email</p>
-                    <a
-                      href="mailto:support@udaan.com"
-                      className="text-emerald-600 hover:text-emerald-700 text-md font-medium transition-colors"
-                    >
-                      support@udaan.com
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">
-                      Call Us
-                    </p>
-                    <p className="font-inter text-gray-600 text-md">
-                      +91 98765 43210
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      ></path>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">
-                      Visit Us
-                    </p>
-                    <p className="text-gray-600 text-md">Kolkata, India</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+							<div className="mt-4">
+								<button
+									type="submit"
+									className="cursor-pointer inline-flex items-center gap-3 bg-[#112915] text-white text-base font-semibold px-10 py-4 rounded-full hover:bg-[#5AAD1F] transition-all duration-300 active:scale-95"
+								>
+									Send Message
+									<Send size={18} />
+								</button>
+							</div>
+						</form>
+					</div>
 
-            {/* Support Hours Card */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex-1 flex flex-col justify-center">
-              <h3 className="text-xl font-bold tracking-tight text-gray-900 mb-6">
-                Support Hours
-              </h3>
-              <ul className="flex flex-col gap-4">
-                <li className="flex justify-between items-center pb-4 border-b border-gray-50">
-                  <span className="text-gray-600 font-medium">
-                    Monday - Friday
-                  </span>
-                  <span className="text-emerald-700 font-semibold bg-emerald-50 px-3 py-1 rounded-lg text-sm">
-                    9:00 AM - 6:00 PM
-                  </span>
-                </li>
-                <li className="flex justify-between items-center">
-                  <span className="text-gray-600 font-medium">Saturday</span>
-                  <span className="text-emerald-700 font-semibold bg-emerald-50 px-3 py-1 rounded-lg text-sm">
-                    10:00 AM - 2:00 PM
-                  </span>
-                </li>
-              </ul>
-            </div>
+					{/* Right column - Minimal contact info */}
+					<div className="lg:border-l lg:border-gray-100 lg:pl-12 flex flex-col gap-10 h-fit">
+						<div>
+							<div className="flex items-center gap-4 mb-3">
+								<Mail className="w-5 h-5 text-[#5AAD1F]" />
+								<span className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+									Email
+								</span>
+							</div>
+							<a
+								href="mailto:support@udaan.com"
+								className="text-xl font-medium hover:text-[#5AAD1F] transition-colors block"
+							>
+								support@udaan.com
+							</a>
+						</div>
 
-            <div className="bg-[#EAF3DE] border border-[#C0DD97] rounded-3xl p-6">
-              <p className="text-[13px] text-gray-700 leading-relaxed">
-                <strong className="text-[#27500A]">Tip:</strong> If you're
-                reporting a scholarship issue, include the scholarship name,
-                official link, and what looks incorrect.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+						<div>
+							<div className="flex items-center gap-4 mb-3">
+								<Phone className="w-5 h-5 text-[#5AAD1F]" />
+								<span className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+									Phone
+								</span>
+							</div>
+							<p className="text-xl font-medium">+91 98765 43210</p>
+							<p className="text-sm text-gray-400 mt-1">
+								Mon - Fri: 9am - 6pm IST
+							</p>
+						</div>
 
-      <section className="py-12 px-6">
-        <div className="max-w-5xl mx-auto">
-          <Badge>Help us improve</Badge>
-          <h2 className="text-3xl font-extrabold tracking-tight mb-1">
-            Report or suggest
-          </h2>
-          <p className="text-[13px] text-gray-500 mb-6">
-            Your feedback directly improves listings for every student on Udaan.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-gray-200/80 rounded-2xl p-6">
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-[#FCEBEB] flex items-center justify-center text-sm">
-                  🚩
-                </div>
-                <h3 className="text-[18px] font-bold">
-                  Report incorrect scholarship
-                </h3>
-              </div>
-              <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
-                Found a wrong deadline, broken link, or incorrect amount? Help
-                us fix it.
-              </p>
-              <div className="mb-3">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
-                  Scholarship link
-                </label>
-                <input
-                  type="url"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
-                  placeholder="https://..."
-                  value={reportForm.link}
-                  onChange={(e) =>
-                    setReportForm({ ...reportForm, link: e.target.value })
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
-                  What's wrong?
-                </label>
-                <textarea
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8] resize-y min-h-18"
-                  placeholder="Describe the issue..."
-                  value={reportForm.issue}
-                  onChange={(e) =>
-                    setReportForm({ ...reportForm, issue: e.target.value })
-                  }
-                />
-              </div>
-              <button className="inline-flex items-center gap-1.5 bg-[#FCEBEB] text-[#791F1F] text-[14px] font-bold px-4 py-2 rounded-full border-none cursor-pointer hover:bg-red-100 transition-colors">
-                Submit report
-              </button>
-            </div>
+						<div>
+							<div className="flex items-center gap-4 mb-3">
+								<MapPin className="w-5 h-5 text-[#5AAD1F]" />
+								<span className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+									Office
+								</span>
+							</div>
+							<p className="text-xl font-medium">Kolkata, India</p>
+						</div>
 
-            <div className="border border-gray-200/80 rounded-2xl p-6">
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 rounded-lg bg-[#FAEEDA] flex items-center justify-center text-sm">
-                  💡
-                </div>
-                <h3 className="text-[18px] font-bold">Suggest a scholarship</h3>
-              </div>
-              <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
-                Know a scholarship we haven't listed? Share it and we'll review
-                it.
-              </p>
-              <div className="grid grid-cols-2 gap-2 mb-3">
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
-                    Organisation
-                  </label>
-                  <input
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
-                    placeholder="Name"
-                    value={suggestForm.org}
-                    onChange={(e) =>
-                      setSuggestForm({ ...suggestForm, org: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
-                    Scholarship name
-                  </label>
-                  <input
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
-                    placeholder="Name"
-                    value={suggestForm.name}
-                    onChange={(e) =>
-                      setSuggestForm({ ...suggestForm, name: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="mb-3">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
-                  Website
-                </label>
-                <input
-                  type="url"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
-                  placeholder="https://..."
-                  value={suggestForm.website}
-                  onChange={(e) =>
-                    setSuggestForm({ ...suggestForm, website: e.target.value })
-                  }
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
-                  Notes
-                </label>
-                <textarea
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8] resize-y min-h-11"
-                  placeholder="Any additional details..."
-                  value={suggestForm.notes}
-                  onChange={(e) =>
-                    setSuggestForm({ ...suggestForm, notes: e.target.value })
-                  }
-                />
-              </div>
-              <button className="inline-flex items-center gap-1.5 bg-[#EAF3DE] text-[#27500A] text-[14px] font-bold px-4 py-2 rounded-full border-none cursor-pointer hover:bg-[#D4EBB0] transition-colors">
-                + Suggest scholarship
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+						<div className="bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl p-6 mt-4">
+							<p className="text-sm text-gray-700 leading-relaxed">
+								<strong className="text-[#27500A]">Pro tip:</strong> If you're
+								reporting a scholarship issue, include the scholarship name,
+								official link, and what looks incorrect.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
 
-      <hr className="border-gray-100 mx-6" />
+			{/* Deep Green Contribute Section */}
+			<section className="py-24 px-6 bg-[#112915] text-white rounded-t-[3rem] mt-12">
+				<div className="max-w-5xl mx-auto">
+					<div className="mb-16">
+						<Badge>Contribute</Badge>
+						<h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-4">
+							Make Udaan better.
+						</h2>
+						<p className="text-gray-400 mt-4 max-w-lg">
+							Your feedback directly improves listings for every student on the
+							platform.
+						</p>
+					</div>
 
-      <section className="py-8 px-6">
-        <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-          <div>
-            <h3 className="text-[17px] font-bold mb-1">
-              Can't find the right scholarship?
-            </h3>
-            <p className="text-[13px] text-gray-600 max-w-md leading-relaxed">
-              Tell us your course, state, and category — Udaan will surface
-              opportunities suited to your profile.
-            </p>
-          </div>
-          <Link
-            to="/scholarships"
-            className="shrink-0 bg-[#5AAD1F] text-white text-[15px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors"
-          >
-            Explore scholarships
-          </Link>
-        </div>
-      </section>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+						<div>
+							<Flag className="w-8 h-8 text-[#E8884A] mb-6" />
+							<h3 className="text-2xl font-bold mb-2">Report a listing</h3>
+							<p className="text-gray-400 mb-8">
+								Spotted a wrong deadline, broken link, or incorrect amount?
+							</p>
+							<div className="flex flex-col gap-6">
+								<input
+									type="url"
+									className="w-full bg-transparent border-b border-[#2A5436] py-3 focus:border-[#E8884A] outline-none text-white placeholder-gray-500 transition-colors"
+									placeholder="Scholarship link (https://...)"
+									value={reportForm.link}
+									onChange={(e) =>
+										setReportForm({ ...reportForm, link: e.target.value })
+									}
+								/>
+								<textarea
+									className="w-full bg-transparent border-b border-[#2A5436] py-3 focus:border-[#E8884A] outline-none text-white placeholder-gray-500 transition-colors resize-none"
+									placeholder="What's wrong?"
+									value={reportForm.issue}
+									onChange={(e) =>
+										setReportForm({ ...reportForm, issue: e.target.value })
+									}
+								></textarea>
+								<button className="cursor-pointer self-start bg-[#E8884A] text-[#112915] px-6 py-3 rounded-full font-bold hover:bg-[#f09a5b] transition-colors flex items-center gap-2">
+									Submit Report <ArrowUpRight size={18} />
+								</button>
+							</div>
+						</div>
 
-      <hr className="border-gray-100 mx-6" />
+						<div>
+							<Lightbulb className="w-8 h-8 text-[#5AAD1F] mb-6" />
+							<h3 className="text-2xl font-bold mb-2">Suggest a scholarship</h3>
+							<p className="text-gray-400 mb-8">
+								Know a scholarship we haven't listed? Share it and we'll review
+								it.
+							</p>
+							<div className="flex flex-col gap-6">
+								<div className="grid grid-cols-2 gap-6">
+									<input
+										className="w-full bg-transparent border-b border-[#2A5436] py-3 focus:border-[#5AAD1F] outline-none text-white placeholder-gray-500 transition-colors"
+										placeholder="Organisation"
+										value={suggestForm.org}
+										onChange={(e) =>
+											setSuggestForm({ ...suggestForm, org: e.target.value })
+										}
+									/>
+									<input
+										className="w-full bg-transparent border-b border-[#2A5436] py-3 focus:border-[#5AAD1F] outline-none text-white placeholder-gray-500 transition-colors"
+										placeholder="Scholarship name"
+										value={suggestForm.name}
+										onChange={(e) =>
+											setSuggestForm({ ...suggestForm, name: e.target.value })
+										}
+									/>
+								</div>
+								<input
+									type="url"
+									className="w-full bg-transparent border-b border-[#2A5436] py-3 focus:border-[#5AAD1F] outline-none text-white placeholder-gray-500 transition-colors"
+									placeholder="Website (https://...)"
+									value={suggestForm.website}
+									onChange={(e) =>
+										setSuggestForm({ ...suggestForm, website: e.target.value })
+									}
+								/>
+								<textarea
+									className="w-full bg-transparent border-b border-[#2A5436] py-3 focus:border-[#5AAD1F] outline-none text-white placeholder-gray-500 transition-colors resize-none"
+									placeholder="Additional notes"
+									value={suggestForm.notes}
+									onChange={(e) =>
+										setSuggestForm({ ...suggestForm, notes: e.target.value })
+									}
+								></textarea>
+								<button className="cursor-pointer self-start bg-[#5AAD1F] text-white px-6 py-3 rounded-full font-bold hover:bg-[#4A9A18] transition-colors flex items-center gap-2">
+									Suggest Scholarship <ArrowUpRight size={18} />
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
 
-      <section className="py-12 px-6">
-        <div className="max-w-5xl mx-auto">
-          <Badge>FAQs</Badge>
-          <h2 className="text-2xl font-extrabold tracking-tight mb-1">
-            Frequently asked questions
-          </h2>
-          <p className="text-[13px] text-gray-500 mb-6">
-            Everything you need to know about applying through Udaan.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <div className="flex flex-col gap-2">
-              {faqLeft.map((f, i) => (
-                <FaqItem
-                  key={i * 2}
-                  question={f.question}
-                  answer={f.answer}
-                  isOpen={openFaq === i * 2}
-                  onClick={() => toggleFaq(i * 2)}
-                />
-              ))}
-            </div>
-            <div className="flex flex-col gap-2">
-              {faqRight.map((f, i) => (
-                <FaqItem
-                  key={i * 2 + 1}
-                  question={f.question}
-                  answer={f.answer}
-                  isOpen={openFaq === i * 2 + 1}
-                  onClick={() => toggleFaq(i * 2 + 1)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+			{/* Interactive Two-Pane FAQ */}
+			<section className="py-24 px-6 bg-[#112915] text-white">
+				<div className="max-w-6xl mx-auto">
+					<div className="mb-16 text-center">
+						<Badge>FAQs</Badge>
+						<h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-4">
+							Common questions.
+						</h2>
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+						{/* Left List */}
+						<div className="border-t border-[#234828]">
+							{faqs.map((f, i) => (
+								<button
+									key={i}
+									onClick={() => setActiveFaq(i)}
+									className={`cursor-pointer w-full text-left py-6 border-b border-[#234828] flex justify-between items-center transition-all duration-300 group ${
+										activeFaq === i
+											? "text-[#5AAD1F]"
+											: "text-gray-300 hover:text-white"
+									}`}
+								>
+									<span className="text-lg font-medium pr-6">{f.question}</span>
+									<Plus
+										className={`w-5 h-5 shrink-0 transition-transform duration-300 ${
+											activeFaq === i ? "rotate-45" : ""
+										}`}
+									/>
+								</button>
+							))}
+						</div>
 
-      <div className="text-center py-12 px-6 border-t border-gray-100">
-        <h2 className="text-2xl font-extrabold tracking-tight mb-2">
-          Still can't find your answer?
-        </h2>
-        <p className="text-[13px] text-gray-500 mb-5">
-          We'll get back to you within one business day.
-        </p>
-        <a
-          href="#contact"
-          className="inline-flex items-center gap-2 bg-gray-900 text-white text-[15px] font-semibold px-6 py-2.5 rounded-full hover:bg-gray-800 transition-colors"
-        >
-          Contact us
-        </a>
-      </div>
-    </main>
-  );
+						{/* Right Sticky Answer */}
+						<div className="md:sticky md:top-12 h-fit bg-[#163322] p-10 rounded-3xl border border-[#234828]">
+							<span className="text-sm text-[#5AAD1F] font-bold uppercase tracking-widest">
+								Answer
+							</span>
+							<h3 className="text-2xl md:text-3xl font-bold text-white mt-4 mb-6">
+								{faqs[activeFaq].question}
+							</h3>
+							<p className="text-gray-400 leading-relaxed text-lg">
+								{faqs[activeFaq].answer}
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* Minimal Footer CTA */}
+			<div className="bg-[#FDFCFA] py-20 px-6 text-center">
+				<h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">
+					Still can't find your answer?
+				</h2>
+				<p className="text-gray-500 mb-8 max-w-md mx-auto">
+					Reach out to us directly. We'll get back to you within one business
+					day.
+				</p>
+				<a
+					href="#contact"
+					className="inline-flex items-center gap-2 bg-[#112915] text-white text-base font-semibold px-8 py-4 rounded-full hover:bg-[#5AAD1F] transition-colors"
+				>
+					Contact us
+				</a>
+			</div>
+		</main>
+	);
 }
 
 export default Support;
