@@ -65,10 +65,10 @@ const Navbar = () => {
                 key={link.name}
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-4 py-1.5 text-[14px] rounded-full transition-all duration-200 ease-out whitespace-nowrap ${
+                  `px-4 py-1.5 text-[14px] rounded-full border transition-all duration-200 ease-out whitespace-nowrap ${
                     isActive
-                      ? "bg-white text-gray-900 font-semibold shadow-xs border border-black/2"
-                      : "text-gray-500 font-medium hover:text-gray-900 hover:bg-white/40"
+                      ? "bg-white text-gray-900 font-semibold shadow-xs border-black/5"
+                      : "text-gray-500 font-medium border-transparent hover:text-gray-900 hover:bg-white/40"
                   }`
                 }
               >
