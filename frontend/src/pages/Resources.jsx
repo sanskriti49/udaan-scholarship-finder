@@ -157,7 +157,7 @@ export default function Resources() {
                 >
                   {guide.icon}
                 </div>
-                <h3 className="text-[15px] font-bold text-gray-900 mb-1.5 leading-snug">
+                <h3 className="text-[18px] font-bold text-gray-900 mb-1.5 leading-snug">
                   {guide.title}
                 </h3>
                 <p className="text-[13px] text-gray-500 leading-relaxed flex-1">
