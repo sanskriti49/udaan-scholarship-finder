@@ -1,11 +1,11 @@
-import React from "react";
 import heroImage from "../assets/images/hero-image.jpg";
+import { useNavigate } from "react-router-dom";
 
 function Hero() {
   return (
     <div className="font-pangea relative overflow-hidden bg-linear-to-b from-white via-gray-50/50 to-white">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-12 md:py-10 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 items-center lg:grid-cols-2 lg:gap-8">
+        <div className="grid grid-cols-1 gap-12 items-start lg:grid-cols-2 lg:gap-12">
           <div className="flex flex-col gap-8 justify-between">
             <div className="flex flex-col gap-6">
               <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-full w-max px-4 py-1.5 text-xs font-semibold tracking-wide uppercase shadow-sm">
@@ -37,7 +37,20 @@ function Hero() {
                 Explore Now
               </button>
             </div>
+          </div>
 
+          <div className="flex flex-col">
+            <div className="hidden lg:flex justify-center lg:justify-end w-full">
+              <div className="relative w-full max-w-2xl group">
+                <div className="absolute inset-0 bg-linear-to-tr from-emerald-600/10 to-blue-600/10 rounded-2xl rotate-2 scale-[1.02] -z-10 transition-transform group-hover:rotate-1 duration-300" />
+
+                <img
+                  src={heroImage}
+                  alt="Hero banner"
+                  className="w-full h-auto object-cover rounded-2xl shadow-xl border border-gray-100 transition-transform duration-500 group-hover:scale-[1.01]"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-8 border-t border-gray-100 mt-4">
               <div className="pr-2">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-600">
@@ -63,18 +76,6 @@ function Hero() {
                   Verified Rate
                 </p>
               </div>
-            </div>
-          </div>
-
-          <div className="flex justify-center lg:justify-end w-full pb-25">
-            <div className="relative w-full max-w-2xl group">
-              <div className="absolute inset-0 bg-linear-to-tr from-emerald-600/10 to-blue-600/10 rounded-2xl transform rotate-2 scale-[1.02] -z-10 transition-transform group-hover:rotate-1 duration-300" />
-
-              <img
-                src={heroImage}
-                alt="Hero banner"
-                className="w-full h-auto object-cover rounded-2xl shadow-xl border border-gray-100 transition-transform duration-500 group-hover:scale-[1.01]"
-              />
             </div>
           </div>
         </div>
