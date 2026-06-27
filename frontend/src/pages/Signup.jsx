@@ -13,7 +13,7 @@ function Badge({ children }) {
 	);
 }
 
-export default function Signup() {
+export default function SignUp() {
 	const [form, setForm] = useState({
 		fullName: "",
 		email: "",
@@ -54,13 +54,13 @@ export default function Signup() {
 				</div>
 
 				{/* Image container */}
-				{/* <div className="relative z-10 w-full max-w-md">
+				<div className="relative z-10 w-full max-w-md">
 					<img
 						src={signupIllustration}
 						alt="Students celebrating scholarship success"
 						className="w-full h-auto object-contain"
 					/>
-				</div> */}
+				</div>
 
 				{/* Text content */}
 				<div className="relative z-10 mt-8 text-center max-w-sm">
