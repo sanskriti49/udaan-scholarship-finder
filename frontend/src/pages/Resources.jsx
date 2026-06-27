@@ -160,7 +160,7 @@ export default function Resources() {
       `}</style>
 
       <div className="min-h-screen bg-white text-gray-900 font-pangea">
-        {/* ════════ HERO ════════ */}
+        {/* HERO */}
         <section className="relative overflow-hidden bg-[#F6FAF1] border-b border-[#DDECCB] py-12 sm:py-16 px-4 sm:px-6">
           <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#5AAD1F]/4 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-[#5AAD1F]/4 rounded-full blur-3xl pointer-events-none" />
@@ -255,7 +255,7 @@ export default function Resources() {
 
         <hr className="border-gray-100 mx-4 sm:mx-6" />
 
-        {/* ════════ DASHBOARD ════════ */}
+        {/* DASHBOARD */}
         <section className="py-10 sm:py-14 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6 sm:mb-8">
@@ -425,7 +425,7 @@ export default function Resources() {
 
         <hr className="border-gray-100 mx-4 sm:mx-6" />
 
-        {/* ════════ EDUCATIONAL RESOURCES ════════ */}
+        {/* EDUCATIONAL RESOURCES */}
         <section className="py-10 sm:py-14 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6 sm:mb-8">
@@ -480,7 +480,7 @@ export default function Resources() {
 
         <hr className="border-gray-100 mx-4 sm:mx-6" />
 
-        {/* ════════ OFFICIAL PORTALS ════════ */}
+        {/* OFFICIAL PORTALS */}
         <section className="py-10 sm:py-14 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6 sm:mb-8">
@@ -527,7 +527,7 @@ export default function Resources() {
 
         <hr className="border-gray-100 mx-4 sm:mx-6" />
 
-        {/* ════════ DOWNLOADS ════════ */}
+        {/* DOWNLOADS */}
         <section className="py-10 sm:py-14 px-4 sm:px-6 bg-[#F6FAF1] border-y border-[#DDECCB]">
           <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 sm:gap-8 items-start">
             <div>
@@ -596,7 +596,7 @@ export default function Resources() {
           </div>
         </section>
 
-        {/* ════════ BOTTOM CTA ════════ */}
+        {/* BOTTOM CTA */}
         <section className="py-8 sm:py-10 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-6 sm:px-8 py-6 sm:py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
             <div>
