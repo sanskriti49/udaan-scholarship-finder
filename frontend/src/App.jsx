@@ -6,6 +6,7 @@ import Support from "./pages/Support";
 import Elgibility from "./pages/Elgibility";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import Resources from "./pages/Resources";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
       { path: "support", element: <Support /> },
       { path: "eligibility", element: <Elgibility /> },
-      //   { path: "resources", element: <Resources /> },
+      { path: "resources", element: <Resources /> },
     ],
   },
   {
