@@ -151,9 +151,12 @@ export default function EligibilityPage() {
       </section>
 
       {/* How it works strip */}
-      <section className="py-10 px-6 border-b border-gray-100">
+      <section className="py-12 px-6 border-b border-gray-100 bg-[#FAFCF7]">
         <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Connecting line for desktop */}
+            <div className="hidden md:block absolute top-12 left-[16.66%] right-[16.66%] h-0.5 border-t-2 border-dashed border-[#C0DD97] opacity-60 z-0"></div>
+
             {[
               {
                 icon: "👤",
@@ -173,13 +176,20 @@ export default function EligibilityPage() {
             ].map((step, i) => (
               <div
                 key={i}
-                className="border border-gray-200/80 hover:border-[#C0DD97] rounded-2xl p-5 transition-colors duration-150"
+                className="relative bg-white border border-gray-200/80 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-[#5AAD1F] z-10 flex flex-col h-full"
               >
-                <div className="w-9 h-9 rounded-xl bg-[#EAF3DE] flex items-center justify-center text-lg mb-3">
+                {/* Step Number Badge */}
+                <div className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F6FAF1] text-[#5AAD1F] text-sm font-bold flex items-center justify-center border border-[#C0DD97]">
+                  {i + 1}
+                </div>
+
+                {/* Icon Container */}
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#EAF3DE] to-[#D4EBB0] flex items-center justify-center text-2xl mb-5 shadow-sm border border-white">
                   {step.icon}
                 </div>
-                <h3 className="text-[18px] font-bold text-gray-900 mb-1">
-                  {i + 1}. {step.label}
+
+                <h3 className="text-[18px] font-bold text-gray-900 mb-1.5 pr-8">
+                  {step.label}
                 </h3>
                 <p className="text-[13px] text-gray-500 leading-relaxed">
                   {step.desc}
@@ -587,7 +597,7 @@ export default function EligibilityPage() {
             <div className="max-w-5xl mx-auto">
               <div className="mb-8">
                 <Badge>Your matches</Badge>
-                <h2 className="text-3xl font-extrabold  text-gray-900">
+                <h2 className="text-3xl mt-3 font-extrabold  text-gray-900">
                   Eligible scholarships
                 </h2>
                 <p className="text-[13px] text-gray-500 mt-1">
