@@ -292,7 +292,7 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
           </div>
         </div>
         <button
-          className="cursor-pointer text-[13px] font-bold px-3.5 py-1.5 bg-gray-900 group-hover:bg-[#3B7DC8] text-white rounded-full transition-colors duration-150"
+          className="cursor-pointer text-[13px] font-bold px-3.5 py-1.5 bg-gray-900 group-hover:bg-[#5AAD1F] text-white rounded-full transition-colors duration-150"
           onClick={(e) => {
             e.stopPropagation();
             alert(`Apply for ${s.title}`);
