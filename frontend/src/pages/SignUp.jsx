@@ -1,8 +1,9 @@
 import { useState } from "react";
 import logoImg from "../assets/images/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import signupIllustration from "../assets/images/support1111.png";
+import { useAuth } from "../hooks/useAuth";
 
 function Badge({ children }) {
   return (
@@ -21,6 +22,8 @@ export default function SignUp() {
     confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const { signup } = useAuth();
+  const navigate = useNavigate();
 
   const inputClass =
     "w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
@@ -37,9 +40,15 @@ export default function SignUp() {
     return { label: "Strong", color: "bg-[#5AAD1F]", width: "w-full" };
   })();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup:", form);
+    try {
+      await signup(form);
+      toast.success("Signed up successfully");
+      navigate("/");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Signup failed");
+    }
   };
 
   return (

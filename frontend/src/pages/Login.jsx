@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logoImg from "../assets/images/logo.png";
 import loginIllustration from "../assets/images/login-illustration.png";
+import { useAuth } from "../hooks/useAuth";
 
 function Badge({ children }) {
   return (
@@ -15,13 +16,21 @@ function Badge({ children }) {
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const inputClass =
     "w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", form);
+    try {
+      await login(form);
+      toast.success("Logged in successfully");
+      navigate("/");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Login failed");
+    }
   };
 
   return (
