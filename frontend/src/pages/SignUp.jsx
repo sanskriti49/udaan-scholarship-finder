@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import signupIllustration from "../assets/images/support1111.png";
 import { useAuth } from "../hooks/useAuth";
 import { GoogleLogin } from "@react-oauth/google";
+import { toast } from "sonner";
 
 function Badge({ children }) {
   return (
