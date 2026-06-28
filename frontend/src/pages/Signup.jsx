@@ -3,15 +3,7 @@ import logoImg from "../assets/images/logo.png";
 import { Link } from "react-router-dom";
 
 import signupIllustration from "../assets/images/singup.png";
-
-function Badge({ children }) {
-	return (
-		<div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[10px] font-bold tracking-widest px-3 py-1 rounded-full">
-			<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-			{children}
-		</div>
-	);
-}
+import Badge from "../components/Badge";
 
 export default function SignUp() {
 	const [form, setForm] = useState({
