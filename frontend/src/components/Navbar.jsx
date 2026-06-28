@@ -126,7 +126,7 @@ const Navbar = () => {
                 >
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold text-white shrink-0"
-                    style={{ background: "#3B7DC8" }}
+                    style={{ background: "#5AAD1F" }}
                   >
                     {initials}
                   </div>
@@ -208,7 +208,7 @@ const Navbar = () => {
               <div className="flex items-center gap-3 px-4 py-3 mb-1 bg-gray-50 rounded-xl">
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-bold text-white shrink-0"
-                  style={{ background: "#3B7DC8" }}
+                  style={{ background: "#5AAD1F" }}
                 >
                   {initials}
                 </div>
@@ -216,7 +216,7 @@ const Navbar = () => {
                   <span className="text-[14px] font-semibold text-gray-900 truncate">
                     {user.name}
                   </span>
-                  <span className="text-[12px] text-gray-400 truncate">
+                  <span className="text-[12px] text-gray-400 truncate mt-1">
                     {user.email}
                   </span>
                 </div>
