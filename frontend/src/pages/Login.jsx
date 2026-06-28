@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import logoImg from "../assets/images/logo.png";
-import loginIllustration from "../assets/images/login-illustration.png";
+import loginIllustration from "../assets/images/login.png";
 import Badge from "../components/Badge";
 
 export default function Login() {
