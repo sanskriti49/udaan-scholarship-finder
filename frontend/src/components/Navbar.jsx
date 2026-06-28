@@ -142,7 +142,7 @@ const Navbar = () => {
                 </button>
 
                 <div
-                  className={`absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden transition-all duration-200 origin-top-right ${
+                  className={`absolute left-0.5 mt-2 w-44 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden transition-all duration-200 origin-top-right ${
                     isProfileOpen
                       ? "opacity-100 scale-100"
                       : "opacity-0 scale-95 pointer-events-none"

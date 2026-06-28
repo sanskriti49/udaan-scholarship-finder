@@ -1,5 +1,9 @@
 import { createContext, useState, useEffect } from "react";
-import { loginUser, signupUser } from "../services/authService";
+import {
+  loginUser,
+  signupUser,
+  fetchCurrentUser,
+} from "../services/authService";
 
 export const AuthContext = createContext(null);
 
@@ -29,6 +33,14 @@ export const AuthProvider = ({ children }) => {
     return user;
   };
 
+  const loginWithToken = async (token) => {
+    localStorage.setItem("token", token);
+    const { user } = await fetchCurrentUser();
+    localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
+    return user;
+  };
+
   const logout = async () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -36,7 +48,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, signup, logout, loginWithToken }}
+    >
       {children}
     </AuthContext.Provider>
   );

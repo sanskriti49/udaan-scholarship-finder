@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Resources from "./pages/Resources";
 import EligibilityPage from "./pages/Eligibility";
 import Scholarships from "./pages/Scholarships";
+import GoogleCallback from "./pages/GoogleCallback";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
   },
   { path: "signup", element: <SignUp /> },
   { path: "login", element: <Login /> },
+  { path: "auth/google/callback", element: <GoogleCallback /> },
 ]);
 
 export default function App() {
