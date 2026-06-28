@@ -6,93 +6,119 @@
 @import "tailwindcss";
 
 @font-face {
-	font-family: "Clash Display";
-	src: url("./assets/fonts/ClashDisplay_Complete/Fonts/WEB/fonts/ClashDisplay-Variable.woff2")
-		format("woff2");
-	font-weight: 100 900;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Clash Display";
+  src: url("./assets/fonts/ClashDisplay_Complete/Fonts/WEB/fonts/ClashDisplay-Variable.woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Clash Display";
-	src: url("/fonts/ClashDisplay/ClashDisplay-Bold.otf") format("opentype");
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay/ClashDisplay-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "McQueen";
-	src: url("./assets/fonts/McQueen/WEB/VAR/FwTRIAL-McQueenVAR.woff2")
-		format("woff2");
-	font-weight: 100 900;
-	font-style: normal;
-	font-display: swap;
+  font-family: "McQueen";
+  src: url("./assets/fonts/McQueen/WEB/VAR/FwTRIAL-McQueenVAR.woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Pangea";
-	src: url("./assets/fonts/Pangea/WEB/VAR/FwTRIAL-PangeaVAR.woff2")
-		format("woff2");
-	font-weight: 100 900;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Pangea";
+  src: url("./assets/fonts/Pangea/WEB/VAR/FwTRIAL-PangeaVAR.woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Satoshi-Variable";
-	src: url("./assets/fonts/Satoshi/Fonts/WEB/fonts/Satoshi-Variable.woff2")
-		format("woff2");
-	font-weight: 300 900;
-	font-style: normal;
-	font-display: swap;
+  font-family: "Satoshi-Variable";
+  src: url("./assets/fonts/Satoshi/Fonts/WEB/fonts/Satoshi-Variable.woff2")
+    format("woff2");
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-	font-family: "Satoshi-Variable";
-	src: url("./assets/fonts/Satoshi/Fonts/WEB/fonts/Satoshi-VariableItalic.woff2")
-		format("woff2");
-	font-weight: 300 900;
-	font-style: italic;
-	font-display: swap;
+  font-family: "Satoshi-Variable";
+  src: url("./assets/fonts/Satoshi/Fonts/WEB/fonts/Satoshi-VariableItalic.woff2")
+    format("woff2");
+  font-weight: 300 900;
+  font-style: italic;
+  font-display: swap;
 }
 
 @theme {
-	--color-white-100: #efefef;
-	--font-jakarta: "Plus Jakarta Sans", sans-serif;
-	--font-inter: "Inter", sans-serif;
-	--font-merriweather: "Merriweather", serif;
-	--font-clash: "Clash Display", sans-serif;
-	--font-satoshi: "Satoshi-Variable", sans-serif;
-	--font-urbanist: "Urbanist", sans-serif;
-	--font-mcqueen: "McQueen", sans-serif;
-	--font-pangea: "Pangea", sans-serif;
+  --color-white-100: #efefef;
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-merriweather: "Merriweather", serif;
+  --font-clash: "Clash Display", sans-serif;
+  --font-satoshi: "Satoshi-Variable", sans-serif;
+  --font-urbanist: "Urbanist", sans-serif;
+  --font-mcqueen: "McQueen", sans-serif;
+  --font-pangea: "Pangea", sans-serif;
 }
 
 @layer base {
-	html {
-		scroll-behavior: smooth;
-	}
-	::selection {
-		background-color: #b5f4dc;
-		color: rgb(21, 71, 51);
-	}
+  html {
+    scroll-behavior: smooth;
+  }
+  ::selection {
+    background-color: #b5f4dc;
+    color: rgb(21, 71, 51);
+  }
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #5aad1f #f1f1f1;
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #5aad1f;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a8f19;
 }
 
 @keyframes float {
-	0%,
-	100% {
-		transform: translateY(0);
-	}
-	50% {
-		transform: translateY(-6px);
-	}
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 .animate-float {
-	animation: float 3s ease-in-out infinite;
+  animation: float 3s ease-in-out infinite;
 }
 
 .satoshi {
-	font-family: "Satoshi", sans-serif;
+  font-family: "Satoshi", sans-serif;
 }
