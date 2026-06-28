@@ -47,7 +47,7 @@ const Navbar = () => {
 						</div>
 
 						<div className="flex flex-col leading-none">
-							<span className="text-[28px] font-black tracking-tight">
+							<span className="text-2xl font-black tracking-tight">
 								<span style={{ color: "#5AAD1F" }}>uda</span>
 								<span style={{ color: "#3B7DC8" }}>an</span>
 							</span>
