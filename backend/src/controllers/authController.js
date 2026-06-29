@@ -25,7 +25,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      authProvider: "local", // Explicitly set as local
+      authProvider: "local",
     });
 
     const token = generateToken(user._id);
