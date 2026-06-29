@@ -4,6 +4,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Search, LogOut, ChevronDown } from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 import { useAuth } from "../hooks/useAuth";
+import { toast } from "sonner";
 
 const Navbar = () => {
   const location = useLocation();
@@ -46,6 +47,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await logout();
+    toast.success("Logged out successfully");
     setIsProfileOpen(false);
     setIsOpen(false);
     navigate("/");

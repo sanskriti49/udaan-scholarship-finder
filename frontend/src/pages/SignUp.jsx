@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import logoImg from "../assets/images/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import signupIllustration from "../assets/images/support1111.png";
 import { useAuth } from "../hooks/useAuth";
-import { GoogleLogin } from "@react-oauth/google";
 import { toast } from "sonner";
+import { Turnstile } from "react-turnstile";
+import { useGoogleLogin } from "@react-oauth/google";
 
 function Badge({ children }) {
   return (
@@ -15,14 +16,57 @@ function Badge({ children }) {
   );
 }
 
+// Udaan-themed Google button
+function GoogleButton({ onClick, loading }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={loading}
+      className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-[#DDECCB] bg-white hover:bg-[#F6FAF1] hover:border-[#C0DD97] transition-all duration-150 text-[14px] font-semibold text-gray-700 shadow-sm hover:shadow-md active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+    >
+      {/* Google G SVG */}
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 48 48"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          fill="#EA4335"
+          d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+        />
+        <path
+          fill="#4285F4"
+          d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+        />
+        <path
+          fill="#FBBC05"
+          d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+        />
+        <path
+          fill="#34A853"
+          d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+        />
+        <path fill="none" d="M0 0h48v48H0z" />
+      </svg>
+      Continue with Google
+    </button>
+  );
+}
+
 export default function SignUp() {
   const [form, setForm] = useState({
-    fullName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const turnstileRef = useRef(null);
+
   const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
@@ -43,37 +87,58 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!turnstileToken) {
+      toast.error("Please complete the security check");
+      return;
+    }
     try {
-      await signup(form);
+      await signup({ ...form, turnstileToken });
       toast.success("Signed up successfully");
       navigate("/");
     } catch (err) {
       toast.error(err.response?.data?.message || "Signup failed");
+      // Reset turnstile so user can retry
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    try {
-      await loginWithGoogle(credentialResponse.credential);
-      toast.success("Account created with Google");
-      navigate("/");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Google sign-in failed");
+  const triggerGoogleOAuth = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        setGoogleLoading(true);
+        await loginWithGoogle(tokenResponse.access_token);
+        toast.success("Signed in with Google successfully!");
+        navigate("/");
+      } catch (err) {
+        toast.error("Google sign-in failed on the server.");
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Google login failed.");
+    },
+  });
+
+  const handleGoogleClick = async () => {
+    if (!turnstileToken) {
+      toast.error("Please complete the security check first");
+      return;
     }
+    triggerGoogleOAuth();
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row font-pangea">
-      {/* Illustration panel — LEFT */}
+      {/* ── Illustration panel — LEFT ── */}
       <div className="hidden lg:flex lg:w-[45%] xl:w-[50%] bg-[#F6FAF1] border-r border-[#DDECCB] flex-col items-center justify-center px-8 py-12 relative">
-        {/* Decorative bg elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-80 h-80 rounded-full bg-[#5AAD1F]/5" />
           <div className="absolute bottom-[-5%] right-[-5%] w-60 h-60 rounded-full bg-[#3B7DC8]/5" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full bg-[#C0DD97]/5" />
         </div>
 
-        {/* Image container */}
         <div className="relative z-10 w-full max-w-md">
           <img
             src={signupIllustration}
@@ -82,7 +147,6 @@ export default function SignUp() {
           />
         </div>
 
-        {/* Text content */}
         <div className="relative z-10 mt-8 text-center max-w-sm">
           <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 mb-3 leading-snug">
             Start your scholarship journey
@@ -93,7 +157,6 @@ export default function SignUp() {
           </p>
         </div>
 
-        {/* Social proof */}
         <div className="relative z-10 mt-8 bg-white/80 backdrop-blur-sm border border-[#C0DD97] rounded-2xl px-6 py-4 max-w-xs w-full shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex -space-x-2">
@@ -107,7 +170,7 @@ export default function SignUp() {
                 </div>
               ))}
             </div>
-            <div className="flex flex-col">
+            <div>
               <p className="text-[13px] font-semibold text-gray-900">
                 2,400+ students
               </p>
@@ -117,7 +180,7 @@ export default function SignUp() {
         </div>
       </div>
 
-      {/* Form panel — RIGHT */}
+      {/* ── Form panel — RIGHT ── */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-14 xl:px-20">
         <div className="max-w-md mx-auto w-full">
           {/* Logo */}
@@ -158,8 +221,8 @@ export default function SignUp() {
                 type="text"
                 placeholder="Priya Sharma"
                 required
-                value={form.fullName}
-                onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className={inputClass}
               />
             </div>
@@ -236,8 +299,6 @@ export default function SignUp() {
                   )}
                 </button>
               </div>
-
-              {/* Password strength */}
               {passwordStrength && (
                 <div className="flex items-center gap-3 mt-1.5">
                   <div className="flex-1 h-1.5 rounded-full bg-[#DDECCB] overflow-hidden">
@@ -302,18 +363,33 @@ export default function SignUp() {
                 )}
             </div>
 
+            {/* ── Turnstile widget ── */}
+            <div className="flex justify-center">
+              <Turnstile
+                ref={turnstileRef}
+                sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                onVerify={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken(null)}
+                onError={() => {
+                  setTurnstileToken(null);
+                  toast.error("Security check failed. Please try again.");
+                }}
+                theme="light"
+              />
+            </div>
+
             <p className="text-[12px] text-gray-400 leading-relaxed">
               By signing up you agree to our{" "}
               <Link
                 to="/terms"
-                className="text-[#5AAD1F] font-semibold hover:underline transition-colors"
+                className="text-[#5AAD1F] font-semibold hover:underline"
               >
                 Terms of Service
               </Link>{" "}
               and{" "}
               <Link
                 to="/privacy"
-                className="text-[#5AAD1F] font-semibold hover:underline transition-colors"
+                className="text-[#5AAD1F] font-semibold hover:underline"
               >
                 Privacy Policy
               </Link>
@@ -322,10 +398,8 @@ export default function SignUp() {
 
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl
-                bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813]
-                text-white font-semibold text-[14px]
-                transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]"
+              disabled={!turnstileToken}
+              className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white font-semibold text-[14px] transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5AAD1F] disabled:hover:shadow-md"
             >
               Create account
               <svg
@@ -353,11 +427,8 @@ export default function SignUp() {
             <div className="flex-1 h-px bg-[#DDECCB]" />
           </div>
 
-          {/* Google SSO */}
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => toast.error("Google sign-in failed")}
-          />
+          {/* Udaan-themed Google button */}
+          <GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
 
           <p className="text-center text-[13px] text-gray-500 mt-7">
             Already have an account?{" "}

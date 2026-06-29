@@ -30,7 +30,7 @@ export default function App() {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <AuthProvider>
-        <Toaster richColors position="top-right" />
+        <Toaster richColors position="bottom-right" />
         <RouterProvider router={router} />
       </AuthProvider>
     </GoogleOAuthProvider>
