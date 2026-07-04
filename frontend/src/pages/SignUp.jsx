@@ -8,12 +8,12 @@ import { Turnstile } from "react-turnstile";
 import { useGoogleLogin } from "@react-oauth/google";
 
 function Badge({ children }) {
-  return (
-    <div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[10px] font-bold tracking-widest px-3 py-1 rounded-full">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-      {children}
-    </div>
-  );
+	return (
+		<div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[10px] font-bold tracking-widest px-3 py-1 rounded-full">
+			<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
+			{children}
+		</div>
+	);
 }
 
 // Udaan-themed Google button
@@ -70,20 +70,20 @@ export default function SignUp() {
   const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  const inputClass =
-    "w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
+	const inputClass =
+		"w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
 
-  const passwordStrength = (() => {
-    const p = form.password;
-    if (!p) return null;
-    if (p.length < 6)
-      return { label: "Too short", color: "bg-red-400", width: "w-1/4" };
-    if (p.length < 8 || !/[0-9]/.test(p))
-      return { label: "Weak", color: "bg-amber-400", width: "w-2/4" };
-    if (!/[^a-zA-Z0-9]/.test(p))
-      return { label: "Good", color: "bg-[#5AAD1F]", width: "w-3/4" };
-    return { label: "Strong", color: "bg-[#5AAD1F]", width: "w-full" };
-  })();
+	const passwordStrength = (() => {
+		const p = form.password;
+		if (!p) return null;
+		if (p.length < 6)
+			return { label: "Too short", color: "bg-red-400", width: "w-1/4" };
+		if (p.length < 8 || !/[0-9]/.test(p))
+			return { label: "Weak", color: "bg-amber-400", width: "w-2/4" };
+		if (!/[^a-zA-Z0-9]/.test(p))
+			return { label: "Good", color: "bg-[#5AAD1F]", width: "w-3/4" };
+		return { label: "Strong", color: "bg-[#5AAD1F]", width: "w-full" };
+	})();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -203,14 +203,14 @@ export default function SignUp() {
             </div>
           </Link>
 
-          <Badge>Get started — it's free</Badge>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mt-4 mb-2">
-            Create your account
-          </h1>
-          <p className="text-[14px] text-gray-500 mb-8 leading-relaxed">
-            Build your profile once. We'll match it against hundreds of
-            scholarships automatically.
-          </p>
+					<Badge>Get started — it's free</Badge>
+					<h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mt-4 mb-2">
+						Create your account
+					</h1>
+					<p className="text-[14px] text-gray-500 mb-8 leading-relaxed">
+						Build your profile once. We'll match it against hundreds of
+						scholarships automatically.
+					</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
@@ -227,19 +227,19 @@ export default function SignUp() {
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
-                Email address
-              </label>
-              <input
-                type="email"
-                placeholder="priya@example.com"
-                required
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className={inputClass}
-              />
-            </div>
+						<div className="space-y-1.5">
+							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+								Email address
+							</label>
+							<input
+								type="email"
+								placeholder="priya@example.com"
+								required
+								value={form.email}
+								onChange={(e) => setForm({ ...form, email: e.target.value })}
+								className={inputClass}
+							/>
+						</div>
 
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
@@ -313,55 +313,55 @@ export default function SignUp() {
               )}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
-                Confirm password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Repeat your password"
-                  required
-                  value={form.confirmPassword}
-                  onChange={(e) =>
-                    setForm({ ...form, confirmPassword: e.target.value })
-                  }
-                  className={`${inputClass} ${
-                    form.confirmPassword &&
-                    form.confirmPassword !== form.password
-                      ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                      : form.confirmPassword &&
-                          form.confirmPassword === form.password
-                        ? "border-[#5AAD1F]"
-                        : ""
-                  }`}
-                />
-                {form.confirmPassword &&
-                  form.confirmPassword === form.password && (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                      <svg
-                        className="w-4 h-4 text-[#5AAD1F]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2.5"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                  )}
-              </div>
-              {form.confirmPassword &&
-                form.confirmPassword !== form.password && (
-                  <p className="text-[11px] text-red-500 font-medium mt-1">
-                    Passwords don't match
-                  </p>
-                )}
-            </div>
+						<div className="space-y-1.5">
+							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+								Confirm password
+							</label>
+							<div className="relative">
+								<input
+									type={showPassword ? "text" : "password"}
+									placeholder="Repeat your password"
+									required
+									value={form.confirmPassword}
+									onChange={(e) =>
+										setForm({ ...form, confirmPassword: e.target.value })
+									}
+									className={`${inputClass} ${
+										form.confirmPassword &&
+										form.confirmPassword !== form.password
+											? "border-red-300 focus:border-red-400 focus:ring-red-100"
+											: form.confirmPassword &&
+												  form.confirmPassword === form.password
+												? "border-[#5AAD1F]"
+												: ""
+									}`}
+								/>
+								{form.confirmPassword &&
+									form.confirmPassword === form.password && (
+										<div className="absolute right-4 top-1/2 -translate-y-1/2">
+											<svg
+												className="w-4 h-4 text-[#5AAD1F]"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth="2.5"
+													d="M5 13l4 4L19 7"
+												/>
+											</svg>
+										</div>
+									)}
+							</div>
+							{form.confirmPassword &&
+								form.confirmPassword !== form.password && (
+									<p className="text-[11px] text-red-500 font-medium mt-1">
+										Passwords don't match
+									</p>
+								)}
+						</div>
 
             {/* ── Turnstile widget ── */}
             <div className="flex justify-center">
@@ -418,29 +418,29 @@ export default function SignUp() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-7">
-            <div className="flex-1 h-px bg-[#DDECCB]" />
-            <span className="text-[12px] text-gray-400 font-medium tracking-wide">
-              or continue with
-            </span>
-            <div className="flex-1 h-px bg-[#DDECCB]" />
-          </div>
+					{/* Divider */}
+					<div className="flex items-center gap-4 my-7">
+						<div className="flex-1 h-px bg-[#DDECCB]" />
+						<span className="text-[12px] text-gray-400 font-medium tracking-wide">
+							or continue with
+						</span>
+						<div className="flex-1 h-px bg-[#DDECCB]" />
+					</div>
 
           {/* Udaan-themed Google button */}
           <GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
 
-          <p className="text-center text-[13px] text-gray-500 mt-7">
-            Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-[#5AAD1F] font-bold hover:text-[#4A9A18] transition-colors"
-            >
-              Log in
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+					<p className="text-center text-[13px] text-gray-500 mt-7">
+						Already have an account?{" "}
+						<Link
+							to="/login"
+							className="text-[#5AAD1F] font-bold hover:text-[#4A9A18] transition-colors"
+						>
+							Log in
+						</Link>
+					</p>
+				</div>
+			</div>
+		</div>
+	);
 }

@@ -10,6 +10,8 @@ import Resources from "./pages/Resources";
 import EligibilityPage from "./pages/Eligibility";
 import Scholarships from "./pages/Scholarships";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import ApplicationGuide from "./pages/ApplicationGuide";
+import HowToApply from "./pages/HowToApply";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +22,8 @@ const router = createBrowserRouter([
       { path: "eligibility", element: <EligibilityPage /> },
       { path: "scholarships", element: <Scholarships /> },
       { path: "resources", element: <Resources /> },
+      { path: "application-guide", element: <ApplicationGuide /> },
+      { path: "how-to-apply", element: <HowToApply /> },
     ],
   },
   { path: "signup", element: <SignUp /> },
