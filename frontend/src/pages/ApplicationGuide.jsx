@@ -444,7 +444,7 @@ const ApplicationGuide = () => {
 								stand out.
 							</p>
 
-							<div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-6 animate-fadeIn">
+							<div className="font-inter flex flex-wrap justify-center gap-4 sm:gap-6 mt-6 animate-fadeIn">
 								<div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
 									<Clock className="w-4 h-4 text-[#5AAD1F]" />
 									<span>17 min total read</span>
@@ -459,11 +459,10 @@ const ApplicationGuide = () => {
 								</div>
 							</div>
 
-							{/* Action buttons */}
-							<div className="flex flex-wrap justify-center gap-3 mt-6 animate-fadeIn">
+							<div className="font-jakarta flex flex-wrap justify-center gap-3 mt-6 animate-fadeIn">
 								<button
 									onClick={() => setBookmarked(!bookmarked)}
-									className={`px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 border ${
+									className={`cursor-pointer px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 border ${
 										bookmarked
 											? "bg-[#EAF3DE] border-[#5AAD1F] text-[#5AAD1F] shadow-sm"
 											: "bg-white border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1]"
@@ -478,7 +477,7 @@ const ApplicationGuide = () => {
 								</button>
 								<button
 									onClick={() => setLiked(!liked)}
-									className={`px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 border ${
+									className={`cursor-pointer px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 border ${
 										liked
 											? "bg-[#EAF3DE] border-[#5AAD1F] text-[#5AAD1F] shadow-sm"
 											: "bg-white border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1]"
@@ -491,13 +490,13 @@ const ApplicationGuide = () => {
 										{liked ? "Liked" : "Helpful"}
 									</span>
 								</button>
-								<button className="px-4 py-2.5 rounded-xl bg-white border border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1] transition-all flex items-center gap-2">
+								<button className="cursor-pointer px-4 py-2.5 rounded-xl bg-white border border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1] transition-all flex items-center gap-2">
 									<Share2 className="w-4 h-4" />
 									<span className="font-medium text-sm">Share</span>
 								</button>
 								<button
 									onClick={() => setIsFullscreen(!isFullscreen)}
-									className="px-4 py-2.5 rounded-xl bg-white border border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1] transition-all flex items-center gap-2"
+									className="cursor-pointer px-4 py-2.5 rounded-xl bg-white border border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1] transition-all flex items-center gap-2"
 								>
 									{isFullscreen ? (
 										<Minimize className="w-4 h-4" />
@@ -513,7 +512,6 @@ const ApplicationGuide = () => {
 					</div>
 				</section>
 
-				{/* ── MAIN CONTENT ── */}
 				<div
 					className={`flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 ${
 						isFullscreen ? "max-w-4xl" : ""
@@ -522,11 +520,10 @@ const ApplicationGuide = () => {
 					<div
 						className={`grid gap-8 ${isFullscreen ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-4"}`}
 					>
-						{/* Sidebar Navigation - Hidden in Focus Mode */}
 						{!isFullscreen && (
 							<div className="lg:col-span-1">
 								<div className="sticky top-8 bg-white rounded-2xl shadow-sm border border-gray-200/80 p-4 space-y-1">
-									<div className="flex items-center justify-between mb-3">
+									<div className="font-raleway flex items-center justify-between mb-3">
 										<p className="text-xs font-semibold text-[#5AAD1F] uppercase tracking-wider px-3">
 											Guide Sections
 										</p>
@@ -535,7 +532,6 @@ const ApplicationGuide = () => {
 										</span>
 									</div>
 
-									{/* Mini Progress Bar */}
 									<div className="h-1.5 bg-gray-100 rounded-full mx-3 mb-3 overflow-hidden">
 										<div
 											className="h-full bg-[#5AAD1F] rounded-full transition-all duration-500"
@@ -551,7 +547,7 @@ const ApplicationGuide = () => {
 											<button
 												key={section.id}
 												onClick={() => setActiveSection(section.id)}
-												className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium group ${
+												className={`font-dmsans w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium group ${
 													isActive
 														? "bg-[#EAF3DE] text-[#5AAD1F] shadow-sm"
 														: "text-gray-600 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
@@ -581,7 +577,7 @@ const ApplicationGuide = () => {
 										);
 									})}
 
-									<div className="border-t border-gray-200/50 my-3 pt-3">
+									<div className="font-dmsans border-t border-gray-200/50 my-3 pt-3">
 										<div className="px-3 py-2 bg-[#F6FAF1] rounded-xl border border-[#DDECCB]">
 											<div className="flex items-center gap-2 text-xs text-[#5AAD1F]">
 												<Zap className="w-3 h-3" />
@@ -595,7 +591,7 @@ const ApplicationGuide = () => {
 									</div>
 
 									{/* Quick Actions */}
-									<div className="border-t border-gray-200/50 my-3 pt-3 space-y-2">
+									<div className="font-dmsans border-t border-gray-200/50 my-3 pt-3 space-y-2">
 										<button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-500 hover:text-[#5AAD1F] hover:bg-[#F6FAF1] rounded-lg transition-colors">
 											<RotateCcw className="w-3.5 h-3.5" />
 											Reset Progress
@@ -609,7 +605,6 @@ const ApplicationGuide = () => {
 							</div>
 						)}
 
-						{/* Content Area */}
 						<div
 							ref={contentRef}
 							className={`${isFullscreen ? "w-full" : "lg:col-span-3"} space-y-8 pb-16 overflow-y-auto scrollbar-thin`}
@@ -617,7 +612,6 @@ const ApplicationGuide = () => {
 								maxHeight: isFullscreen ? "calc(100vh - 200px)" : "none",
 							}}
 						>
-							{/* ── Overview ── */}
 							{activeSection === "overview" && (
 								<div className="animate-fadeIn space-y-8">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
@@ -626,13 +620,13 @@ const ApplicationGuide = () => {
 												<div className="p-2 bg-[#EAF3DE] rounded-xl">
 													<BookOpen className="w-5 h-5 text-[#5AAD1F]" />
 												</div>
-												<h2 className="text-2xl font-bold text-gray-800">
+												<h2 className="font-dmsans text-2xl font-bold text-gray-800">
 													Why Your Application Matters
 												</h2>
 											</div>
 											<button
 												onClick={() => toggleSectionComplete("overview")}
-												className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+												className={`font-pangea flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
 													completedSections.includes("overview")
 														? "bg-[#EAF3DE] text-[#5AAD1F]"
 														: "bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
@@ -650,7 +644,7 @@ const ApplicationGuide = () => {
 													: "Mark Complete"}
 											</button>
 										</div>
-										<p className="text-gray-600 leading-relaxed">
+										<p className="font-dmsans text-gray-600 leading-relaxed">
 											Your scholarship application is more than just paperwork —
 											it's your opportunity to tell your story, showcase your
 											potential, and convince the selection committee that
@@ -659,7 +653,7 @@ const ApplicationGuide = () => {
 											overlooked.
 										</p>
 
-										<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+										<div className="font-dmsans grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
 											{[
 												{
 													icon: Eye,
@@ -702,7 +696,7 @@ const ApplicationGuide = () => {
 										</div>
 
 										{/* Visual Representation */}
-										<div className="mt-6 bg-linear-to-r from-[#F6FAF1] to-[#EAF3DE] rounded-xl p-5 border border-[#DDECCB]">
+										<div className="font-dmsans mt-6 bg-linear-to-r from-[#F6FAF1] to-[#EAF3DE] rounded-xl p-5 border border-[#DDECCB]">
 											<div className="flex items-center gap-2 mb-3">
 												<BarChart3 className="w-4 h-4 text-[#5AAD1F]" />
 												<span className="text-sm font-medium text-gray-700">
@@ -737,7 +731,7 @@ const ApplicationGuide = () => {
 									</div>
 
 									{/* Tips Grid with Expand/Collapse */}
-									<div>
+									<div className="font-dmsans ">
 										<h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
 											<Sparkles className="w-5 h-5 text-[#5AAD1F]" />
 											Key Tips for Success
@@ -819,7 +813,7 @@ const ApplicationGuide = () => {
 									</div>
 
 									{/* Quote */}
-									<div className="bg-[#F6FAF1] rounded-2xl p-6 md:p-8 border border-[#DDECCB]">
+									<div className="font-dmsans bg-[#F6FAF1] rounded-2xl p-6 md:p-8 border border-[#DDECCB]">
 										<Quote className="w-8 h-8 text-[#5AAD1F]/60 mb-3" />
 										<blockquote className="text-lg md:text-xl text-gray-700 italic leading-relaxed">
 											"The scholarship essay is your chance to transform from a
@@ -836,7 +830,7 @@ const ApplicationGuide = () => {
 
 							{/* ── Essay Structure ── */}
 							{activeSection === "structure" && (
-								<div className="animate-fadeIn space-y-6">
+								<div className="font-dmsans animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -984,7 +978,7 @@ const ApplicationGuide = () => {
 
 							{/* ── Achievements ── */}
 							{activeSection === "achievements" && (
-								<div className="animate-fadeIn space-y-6">
+								<div className="font-dmsans animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -1081,7 +1075,7 @@ const ApplicationGuide = () => {
 											))}
 										</div>
 
-										<div className="mt-6 p-4 bg-[#EAF3DE]/50 rounded-xl border border-[#C0DD97]">
+										<div className="font-dmsans mt-6 p-4 bg-[#EAF3DE]/50 rounded-xl border border-[#C0DD97]">
 											<h4 className="font-semibold text-gray-800 flex items-center gap-2">
 												<Lightbulb className="w-4 h-4 text-[#5AAD1F]" />
 												The STAR Method
@@ -1132,7 +1126,7 @@ const ApplicationGuide = () => {
 
 							{/* ── Common Mistakes ── */}
 							{activeSection === "common" && (
-								<div className="animate-fadeIn space-y-6">
+								<div className="font-dmsans animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -1242,7 +1236,7 @@ const ApplicationGuide = () => {
 
 							{/* ── Final Polish ── */}
 							{activeSection === "final" && (
-								<div className="animate-fadeIn space-y-6">
+								<div className="font-dmsans animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -1384,13 +1378,13 @@ const ApplicationGuide = () => {
 							)}
 
 							{/* Navigation */}
-							<div className="flex items-center gap-4 pt-4">
+							<div className="font-dmsans flex items-center gap-4 pt-4">
 								<div className="flex-1 h-px bg-gray-200/50" />
 								<span className="text-xs text-[#5AAD1F] font-medium">✦</span>
 								<div className="flex-1 h-px bg-gray-200/50" />
 							</div>
 
-							<div className="flex justify-between items-center">
+							<div className="font-dmsans flex justify-between items-center">
 								<button
 									onClick={() => {
 										const currentIndex = sections.findIndex(
