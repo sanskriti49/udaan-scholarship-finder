@@ -513,6 +513,7 @@ const ApplicationGuide = () => {
 					</div>
 				</section>
 
+				{/* ── MAIN CONTENT ── */}
 				<div
 					className={`flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 ${
 						isFullscreen ? "max-w-4xl" : ""
@@ -526,7 +527,7 @@ const ApplicationGuide = () => {
 							<div className="lg:col-span-1">
 								<div className="sticky top-8 bg-white rounded-2xl shadow-sm border border-gray-200/80 p-4 space-y-1">
 									<div className="flex items-center justify-between mb-3">
-										<p className="font-urbanist text-xs font-semibold text-[#5AAD1F] uppercase tracking-wider px-3">
+										<p className="text-xs font-semibold text-[#5AAD1F] uppercase tracking-wider px-3">
 											Guide Sections
 										</p>
 										<span className="text-xs font-medium text-gray-400">
@@ -701,7 +702,7 @@ const ApplicationGuide = () => {
 										</div>
 
 										{/* Visual Representation */}
-										<div className="mt-6 bg-gradient-to-r from-[#F6FAF1] to-[#EAF3DE] rounded-xl p-5 border border-[#DDECCB]">
+										<div className="mt-6 bg-linear-to-r from-[#F6FAF1] to-[#EAF3DE] rounded-xl p-5 border border-[#DDECCB]">
 											<div className="flex items-center gap-2 mb-3">
 												<BarChart3 className="w-4 h-4 text-[#5AAD1F]" />
 												<span className="text-sm font-medium text-gray-700">
@@ -1026,7 +1027,7 @@ const ApplicationGuide = () => {
 													className="border border-gray-200 rounded-xl overflow-hidden"
 												>
 													<div className="flex items-start gap-4 p-4">
-														<div className="w-10 h-10 rounded-full bg-[#EAF3DE] flex items-center justify-center flex-shrink-0">
+														<div className="w-10 h-10 rounded-full bg-[#EAF3DE] flex items-center justify-center shrink-0">
 															<span className="text-[#5AAD1F] font-bold text-lg">
 																{i + 1}
 															</span>
@@ -1174,7 +1175,7 @@ const ApplicationGuide = () => {
 													className="border border-gray-200 rounded-xl overflow-hidden"
 												>
 													<div className="flex items-start gap-3 p-4 bg-red-50/30">
-														<div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+														<div className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
 															<span className="text-red-500 text-xs font-bold">
 																✕
 															</span>
@@ -1210,7 +1211,7 @@ const ApplicationGuide = () => {
 										</div>
 									</div>
 
-									<div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200/30">
+									<div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200/30">
 										<h3 className="font-semibold text-green-800 flex items-center gap-2">
 											<CheckCircle className="w-5 h-5 text-green-600" />
 											Quick Fix Checklist
@@ -1312,7 +1313,7 @@ const ApplicationGuide = () => {
 														className="border border-gray-200 rounded-xl overflow-hidden"
 													>
 														<div className="flex items-start gap-3 p-4">
-															<CheckCircle className="w-4 h-4 text-[#5AAD1F] flex-shrink-0 mt-0.5" />
+															<CheckCircle className="w-4 h-4 text-[#5AAD1F] shrink-0 mt-0.5" />
 															<div>
 																<h4 className="font-medium text-gray-800 text-sm">
 																	{item.title}
@@ -1340,7 +1341,7 @@ const ApplicationGuide = () => {
 									</div>
 
 									{/* CTA */}
-									<div className="bg-gradient-to-br from-[#5AAD1F] to-[#4A9A18] rounded-2xl p-8 text-white text-center relative overflow-hidden">
+									<div className="bg-linear-to-br from-[#5AAD1F] to-[#4A9A18] rounded-2xl p-8 text-white text-center relative overflow-hidden">
 										<div className="absolute inset-0 opacity-10">
 											<div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full -translate-x-1/2 -translate-y-1/2" />
 											<div className="absolute bottom-0 right-0 w-48 h-48 bg-white rounded-full translate-x-1/3 translate-y-1/3" />
