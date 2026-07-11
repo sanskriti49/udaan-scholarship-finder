@@ -8,6 +8,8 @@ const scholarshipSchema = new mongoose.Schema(
 			required: true,
 			sparse: true,
 		},
+		applicationLink: String,
+
 		sourceSite: {
 			type: String,
 			required: true,
@@ -94,7 +96,6 @@ const scholarshipSchema = new mongoose.Schema(
 			enum: ["Government", "Institution", "NGO / Trust", "Corporate"],
 			default: "Government",
 		},
-
 		eligibility: {
 			gender: {
 				type: String,
@@ -102,17 +103,23 @@ const scholarshipSchema = new mongoose.Schema(
 				default: "Any",
 			},
 			casteCategories: [String],
-			minIncome: Number,
-			maxIncome: Number,
-			minCGPA: Number,
-			disabilityRequired: { type: Boolean, default: false },
 			eligibleStreams: [String],
 			eligibleLevels: [String],
+			minCGPA: Number,
+			maxCGPA: Number,
+			disabilityRequired: { type: Boolean, default: false },
+			familyIncome: {
+				min: Number,
+				max: Number,
+			},
+			age: {
+				min: Number,
+				max: Number,
+			},
 		},
 
 		popular: { type: Boolean, default: false },
 		verified: { type: Boolean, default: false },
-		applicationLink: String,
 
 		rawData: { type: mongoose.Schema.Types.Mixed },
 	},
