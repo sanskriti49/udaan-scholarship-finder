@@ -433,18 +433,17 @@ const ApplicationGuide = () => {
 
 						<div className="text-center">
 							<Badge>Writing Guide</Badge>
-							<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mt-4 mb-3 animate-fadeIn">
+							<h1 className="text-4xl md:text-5xl lg:text-6xl font-pangea font-bold leading-tight mt-4 mb-3 animate-fadeIn">
 								Write a Strong
 								<br />
 								<span className="text-[#5AAD1F]">Scholarship Application</span>
 							</h1>
-							<p className="text-sm sm:text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto px-2 animate-fadeIn">
+							<p className="font-dmsans text-sm sm:text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto px-2 animate-fadeIn">
 								Master the art of application writing with proven strategies,
 								expert tips, and real examples that will make your application
 								stand out.
 							</p>
 
-							{/* Stats Bar */}
 							<div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-6 animate-fadeIn">
 								<div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
 									<Clock className="w-4 h-4 text-[#5AAD1F]" />
