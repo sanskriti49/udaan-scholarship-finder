@@ -11,30 +11,32 @@ import EligibilityPage from "./pages/Eligibility";
 import Scholarships from "./pages/Scholarships";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import ApplicationGuide from "./pages/ApplicationGuide";
+import HowToApply from "./pages/HowToApply";
 
 const router = createBrowserRouter([
-	{
-		element: <Mainlayout />,
-		children: [
-			{ path: "/", element: <HomePage /> },
-			{ path: "support", element: <Support /> },
-			{ path: "eligibility", element: <EligibilityPage /> },
-			{ path: "scholarships", element: <Scholarships /> },
-			{ path: "resources", element: <Resources /> },
-			{ path: "application-guide", element: <ApplicationGuide /> },
-		],
-	},
-	{ path: "signup", element: <SignUp /> },
-	{ path: "login", element: <Login /> },
+  {
+    element: <Mainlayout />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "support", element: <Support /> },
+      { path: "eligibility", element: <EligibilityPage /> },
+      { path: "scholarships", element: <Scholarships /> },
+      { path: "resources", element: <Resources /> },
+      { path: "application-guide", element: <ApplicationGuide /> },
+      { path: "how-to-apply", element: <HowToApply /> },
+    ],
+  },
+  { path: "signup", element: <SignUp /> },
+  { path: "login", element: <Login /> },
 ]);
 
 export default function App() {
-	return (
-		<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-			<AuthProvider>
-				<Toaster richColors position="top-right" />
-				<RouterProvider router={router} />
-			</AuthProvider>
-		</GoogleOAuthProvider>
-	);
+  return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <Toaster richColors position="bottom-right" />
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </GoogleOAuthProvider>
+  );
 }
