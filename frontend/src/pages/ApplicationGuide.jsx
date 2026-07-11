@@ -421,7 +421,7 @@ const ApplicationGuide = () => {
 
 					<div className="relative max-w-5xl mx-auto">
 						{/* Breadcrumb / back link */}
-						<div className="mb-4 sm:mb-6 animate-slideIn">
+						{/* <div className="mb-4 sm:mb-6 animate-slideIn">
 							<Link
 								to="/resources"
 								className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#5AAD1F] transition-colors"
@@ -429,7 +429,7 @@ const ApplicationGuide = () => {
 								<ChevronRight className="w-4 h-4 rotate-180" />
 								<span className="font-medium">Back to Resources</span>
 							</Link>
-						</div>
+						</div> */}
 
 						<div className="text-center">
 							<Badge>Writing Guide</Badge>
@@ -513,7 +513,6 @@ const ApplicationGuide = () => {
 					</div>
 				</section>
 
-				{/* ── MAIN CONTENT ── */}
 				<div
 					className={`flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 ${
 						isFullscreen ? "max-w-4xl" : ""
@@ -527,7 +526,7 @@ const ApplicationGuide = () => {
 							<div className="lg:col-span-1">
 								<div className="sticky top-8 bg-white rounded-2xl shadow-sm border border-gray-200/80 p-4 space-y-1">
 									<div className="flex items-center justify-between mb-3">
-										<p className="text-xs font-semibold text-[#5AAD1F] uppercase tracking-wider px-3">
+										<p className="font-urbanist text-xs font-semibold text-[#5AAD1F] uppercase tracking-wider px-3">
 											Guide Sections
 										</p>
 										<span className="text-xs font-medium text-gray-400">
