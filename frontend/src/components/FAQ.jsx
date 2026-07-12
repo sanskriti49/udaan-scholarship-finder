@@ -79,10 +79,6 @@ function FAQ() {
             <img src={faqImage} />
 
             <div className="relative z-10 mt-3">
-              <div className="inline-flex items-center gap-1.5 bg-white border border-[#C0DD97] text-[#27500A] text-[11px] font-bold tracking-wider px-3 py-1 rounded-full mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-                Student Help
-              </div>
               <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
                 Got questions before applying?
               </h2>
@@ -96,10 +92,6 @@ function FAQ() {
 
         <div>
           <div className="text-center lg:text-left mb-10">
-            <div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[11px] font-bold tracking-wider px-3 py-1 rounded-full mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-              FAQs
-            </div>
             <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
               Frequently asked{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-teal-500">
