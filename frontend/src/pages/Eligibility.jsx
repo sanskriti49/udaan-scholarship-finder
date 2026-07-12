@@ -137,7 +137,6 @@ export default function EligibilityPage() {
       {/* Hero */}
       <section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <Badge>Scholarship matching engine</Badge>
           <h1 className="text-4xl md:text-6xl font-extrabold  leading-tight mt-2 mb-3">
             Find scholarships you{" "}
             <span className="text-[#5AAD1F]">actually qualify for</span>
@@ -188,7 +187,7 @@ export default function EligibilityPage() {
                   {step.icon}
                 </div>
 
-                <h3 className="text-[18px] font-bold text-gray-900 mb-1.5 pr-8">
+                <h3 className="text-[18px] font-semibold text-gray-900 mb-1.5 pr-8">
                   {step.label}
                 </h3>
                 <p className="text-[13px] text-gray-500 leading-relaxed">
