@@ -433,12 +433,12 @@ const ApplicationGuide = () => {
 
 						<div className="text-center">
 							<Badge>Writing Guide</Badge>
-							<h1 className="text-4xl md:text-5xl lg:text-6xl font-pangea font-bold leading-tight mt-4 mb-3 animate-fadeIn">
+							<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3 tracking-tight animate-fadeIn">
 								Write a Strong
 								<br />
 								<span className="text-[#5AAD1F]">Scholarship Application</span>
 							</h1>
-							<p className="font-dmsans text-sm sm:text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto px-2 animate-fadeIn">
+							<p className="text-sm sm:text-[15px] text-gray-600 leading-relaxed max-w-xl mx-auto px-2 font-normal animate-fadeIn">
 								Master the art of application writing with proven strategies,
 								expert tips, and real examples that will make your application
 								stand out.
@@ -626,7 +626,7 @@ const ApplicationGuide = () => {
 											</div>
 											<button
 												onClick={() => toggleSectionComplete("overview")}
-												className={`font-pangea flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+												className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
 													completedSections.includes("overview")
 														? "bg-[#EAF3DE] text-[#5AAD1F]"
 														: "bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"

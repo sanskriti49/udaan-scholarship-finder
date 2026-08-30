@@ -155,21 +155,21 @@ const TIPS = [
 
 export default function HowToApply() {
 	return (
-		<div className="min-h-screen bg-[#F7FAF3] font-pangea text-gray-900">
+		<div className="min-h-screen bg-[#F7FAF3] text-gray-900">
 			{/* ── Hero ── */}
 			<section className="bg-white border-b border-[#E2EDCC] px-5 pt-10 pb-9 sm:pt-16 sm:pb-14 text-center">
 				<div className="max-w-2xl mx-auto">
 					{/* badge */}
-					<div className="inline-flex items-center gap-2 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[10px] font-bold tracking-widest px-3.5 py-1.5 rounded-full mb-5">
+					<div className="inline-flex items-center gap-2 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-xs font-bold tracking-wider px-4 py-1.5 rounded-full mb-5 shadow-2xs">
 						<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
 						Step-by-step guide
 					</div>
 
-					<h1 className="text-[30px] sm:text-[46px] font-extrabold leading-[1.1] mb-3 sm:mb-4">
+					<h1 className="text-[32px] sm:text-[48px] font-extrabold tracking-tight leading-[1.1] mb-3 sm:mb-4">
 						How to apply for a{" "}
 						<span className="text-[#5AAD1F]">scholarship</span>
 					</h1>
-					<p className="text-[14px] sm:text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto">
+					<p className="text-[15px] text-gray-600 leading-relaxed max-w-xl mx-auto font-normal">
 						From finding the right match to hitting submit — follow these five
 						steps to put together an application that gets noticed.
 					</p>

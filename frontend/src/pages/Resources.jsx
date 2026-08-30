@@ -172,7 +172,7 @@ export default function Resources() {
         .fade-up{animation:fadeUp .4s ease-out both}
       `}</style>
 
-			<div className="min-h-screen bg-white text-gray-900 font-pangea">
+			<div className="min-h-screen bg-white text-gray-900">
 				{/* HERO */}
 				<section className="relative overflow-hidden bg-[#F6FAF1] border-b border-[#DDECCB] py-12 sm:py-16 px-4 sm:px-6">
 					<div className="absolute -top-24 -right-24 w-80 h-80 bg-[#5AAD1F]/4 rounded-full blur-3xl pointer-events-none" />
@@ -180,11 +180,11 @@ export default function Resources() {
 
 					<div className="relative max-w-5xl mx-auto text-center">
 						<Badge>Student knowledge base</Badge>
-						<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3">
+						<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3 tracking-tight">
 							Everything you need to{" "}
 							<span className="text-[#5AAD1F]">succeed and get funded</span>
 						</h1>
-						<p className="text-sm sm:text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto px-2">
+						<p className="text-sm sm:text-[15px] text-gray-600 leading-relaxed max-w-xl mx-auto px-2 font-normal">
 							Guides, document checklists, templates, and essential resources to
 							maximize your chances of securing a scholarship.
 						</p>

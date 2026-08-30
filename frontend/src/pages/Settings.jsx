@@ -141,7 +141,7 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50/60 font-pangea py-10 px-4 sm:px-6">
+    <div className="min-h-screen bg-gray-50/60 py-10 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -151,7 +151,7 @@ export default function Settings() {
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
             Settings & Preferences
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1 font-medium">
+          <p className="text-sm sm:text-base text-gray-600 mt-1 font-normal">
             Manage your personal profile, eligibility parameters, and alert notifications.
           </p>
         </div>

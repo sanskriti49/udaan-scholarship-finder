@@ -133,16 +133,16 @@ export default function EligibilityPage() {
     "w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 appearance-none cursor-pointer shadow-2xs font-medium";
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 font-pangea">
+    <div className="min-h-screen bg-white text-gray-900">
       {/* Hero */}
       <section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <Badge>Eligibility Engine</Badge>
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mt-3 mb-3">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mt-3 mb-3 tracking-tight">
             Find scholarships you{" "}
             <span className="text-[#5AAD1F]">actually qualify for</span>
           </h1>
-          <p className="text-[15.5px] text-gray-600 leading-relaxed max-w-xl mx-auto font-medium">
+          <p className="text-[15px] text-gray-600 leading-relaxed max-w-xl mx-auto font-normal">
             Enter your academic and demographic details below, and our engine
             will instantly cross-reference hundreds of active grants to find
             your best matches.

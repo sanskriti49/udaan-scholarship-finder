@@ -453,7 +453,7 @@ function Scholarships() {
   ].filter(Boolean);
 
   return (
-    <main className="font-pangea bg-gray-50 min-h-screen">
+    <main className="bg-gray-50 min-h-screen">
       <section className="bg-linear-to-br from-[#F6FAF1] to-white border-b border-[#DDECCB] py-7 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div>

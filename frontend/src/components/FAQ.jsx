@@ -69,20 +69,20 @@ function FAQ() {
 		setOpenIndex(openIndex === globalIndex ? null : globalIndex);
 
 	return (
-		<section className="font-pangea py-20 px-6 bg-white">
+		<section className="py-20 px-6 bg-white">
 			<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-12 items-start">
 				<div className="hidden lg:block sticky top-28">
 					<div className="relative rounded-4xl bg-[#f6f2e6] border border-[#DDECCB] p-8 overflow-hidden">
 						<div className="absolute -top-16 -right-16 w-44 h-44 bg-[#C0DD97]/40 rounded-full blur-2xl" />
 						<div className="absolute -bottom-16 -left-16 w-44 h-44 bg-[#C0DD97]/30 rounded-full blur-2xl" />
 
-						<img src={faqImage} />
+						<img src={faqImage} alt="FAQ Illustration" />
 
 						<div className="relative z-10 mt-3">
-							<h2 className="text-4xl font-extrabold text-gray-900 leading-tight">
+							<h2 className="text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
 								Got questions before applying?
 							</h2>
-							<p className="mt-3 text-gray-500 text-[15px] leading-relaxed">
+							<p className="mt-3 text-gray-600 text-[14.5px] leading-relaxed font-normal">
 								Understand eligibility, documents, deadlines, and how Udaan
 								helps you find verified scholarships faster.
 							</p>

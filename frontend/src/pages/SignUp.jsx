@@ -130,7 +130,7 @@ export default function SignUp() {
 	};
 
 	return (
-		<div className="min-h-screen bg-white flex flex-col lg:flex-row font-pangea">
+		<div className="min-h-screen bg-white flex flex-col lg:flex-row">
 			{/* ── Illustration panel — LEFT ── */}
 			<div className="hidden lg:flex lg:w-[45%] xl:w-[50%] bg-[#F6FAF1] border-r border-[#DDECCB] flex-col items-center justify-center px-8 py-12 relative">
 				<div className="absolute inset-0 overflow-hidden pointer-events-none">

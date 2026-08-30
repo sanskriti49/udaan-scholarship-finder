@@ -119,12 +119,12 @@ function Support() {
 	const faqRight = faqs.filter((_, i) => i % 2 !== 0);
 
 	return (
-		<main className="font-pangea bg-white text-gray-900">
+		<main className="bg-white text-gray-900">
 			<section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
 				<div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 					<div>
 						<Badge>Help center</Badge>
-						<h1 className="hero-line text-5xl md:text-7xl font-bold leading-[0.95] mb-5">
+						<h1 className="hero-line text-5xl md:text-7xl font-bold leading-[0.95] mb-5 tracking-tight">
 							We're here
 							<br />
 							<span className="text-[#5AAD1F]">when you</span>{" "}
@@ -147,13 +147,13 @@ function Support() {
 								</svg>
 							</span>
 						</h1>
-						<p className="hero-line text-[15.5px] text-[#5A5A50] max-w-md mb-8">
+						<p className="hero-line text-[15px] text-gray-600 max-w-md mb-8 font-normal leading-relaxed">
 							Searching for scholarships, facing an application issue, or
 							spotted incorrect info? Jump to the section that fits.
 						</p>
 						<a
 							href="#contact"
-							className="inline-flex items-center gap-2 bg-[#3B7DC8] text-white text-[16px] font-semibold px-5 py-2.5 rounded-full hover:bg-[#2D6AB5] transition-colors"
+							className="inline-flex items-center gap-2 bg-[#3B7DC8] text-white text-[15px] font-semibold px-5 py-2.5 rounded-full hover:bg-[#2D6AB5] transition-colors"
 						>
 							Contact support
 							<svg
@@ -172,7 +172,7 @@ function Support() {
 						</a>
 					</div>
 					<div className="flex justify-center">
-						<img src={hero} />
+						<img src={hero} alt="Support Hero" />
 					</div>
 				</div>
 			</section>
@@ -180,27 +180,27 @@ function Support() {
 			<section className="py-12 px-6">
 				<div className="max-w-5xl mx-auto">
 					<Badge>Quick help</Badge>
-					<h2 className="text-3xl font-bold mb-1">
+					<h2 className="text-3xl font-bold mb-1 tracking-tight">
 						What do you need help with?
 					</h2>
-					<p className="text-[13.5px] text-gray-500 mb-6">
+					<p className="text-[13.5px] text-gray-600 mb-6 font-normal">
 						Jump straight to the section that matches your question.
 					</p>
-					<div className="font-pangea grid grid-cols-2 md:grid-cols-3 gap-3">
+					<div className="grid grid-cols-2 md:grid-cols-3 gap-3">
 						{quickHelp.map((c, i) => (
 							<div
 								key={i}
-								className="border border-gray-200/80 hover:border-[#C0DD97] rounded-2xl p-5 cursor-pointer transition-colors duration-150"
+								className="border border-gray-200/80 hover:border-[#C0DD97] rounded-2xl p-5 cursor-pointer transition-colors duration-150 shadow-2xs"
 							>
 								<div
 									className={`w-9 h-9 rounded-xl ${c.bg} flex items-center justify-center text-lg mb-3`}
 								>
 									{c.icon}
 								</div>
-								<h3 className="text-[18px] font-semibold text-gray-900 mb-1">
+								<h3 className="text-[17px] font-bold text-gray-900 mb-1">
 									{c.title}
 								</h3>
-								<p className="text-[13.5px] text-gray-500 leading-relaxed">
+								<p className="text-[13px] text-gray-600 leading-relaxed font-normal">
 									{c.desc}
 								</p>
 							</div>
@@ -213,7 +213,7 @@ function Support() {
 
 			<section
 				id="contact"
-				className="font-pangea py-14 px-6 bg-[#F6FAF1] border-y border-[#DDECCB]"
+				className="py-14 px-6 bg-[#F6FAF1] border-y border-[#DDECCB]"
 			>
 				<div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1.35fr_0.9fr] gap-8 items-start">
 					{/* Left: Contact Form */}
