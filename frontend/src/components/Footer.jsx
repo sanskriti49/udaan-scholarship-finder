@@ -15,7 +15,7 @@ function Footer() {
 							/>
 
 							<div className="flex flex-col leading-none">
-								<span className="text-2xl font-bold tracking-tight">
+								<span className="text-2xl font-bold">
 									<span style={{ color: "#6BBF2E" }}>uda</span>
 									<span style={{ color: "#3B7DC8" }}>an</span>
 								</span>
