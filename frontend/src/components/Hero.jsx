@@ -8,8 +8,9 @@ function Hero() {
 				<div className="grid grid-cols-1 gap-12 items-start lg:grid-cols-2 lg:gap-12">
 					<div className="flex flex-col gap-8 justify-between">
 						<div className="flex flex-col gap-6">
-							<div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-full w-max px-4 py-1.5 text-xs font-semibold tracking-wide uppercase shadow-sm">
-								<span>🎓</span> One search can change a student's future
+							<div className="flex items-center gap-3 text-[11px] font-bold text-emerald-800 uppercase tracking-[0.2em] opacity-80 mb-2">
+								<div className="h-px w-6 bg-emerald-800"></div>
+								One search can change a student's future
 							</div>
 
 							<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] ">

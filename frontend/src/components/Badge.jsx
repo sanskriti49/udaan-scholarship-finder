@@ -1,8 +1,9 @@
 export default function Badge({ children }) {
   return (
-    <div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[12px] font-bold tracking-wide px-3 py-1 rounded-full shadow-2xs">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
+    <div className="flex items-center justify-center md:justify-start gap-3 text-[11px] font-bold text-emerald-800 uppercase tracking-[0.2em] mb-4 opacity-80">
+      <div className="hidden md:block h-px w-6 bg-emerald-800"></div>
       {children}
+      <div className="hidden md:block h-px w-6 bg-emerald-800"></div>
     </div>
   );
 }

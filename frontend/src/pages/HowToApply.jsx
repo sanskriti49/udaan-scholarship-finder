@@ -160,9 +160,10 @@ export default function HowToApply() {
 			<section className="bg-white border-b border-[#E2EDCC] px-5 pt-10 pb-9 sm:pt-16 sm:pb-14 text-center">
 				<div className="max-w-2xl mx-auto">
 					{/* badge */}
-					<div className="inline-flex items-center gap-2 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-xs font-bold tracking-wider px-4 py-1.5 rounded-full mb-5 shadow-2xs">
-						<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
+					<div className="flex items-center justify-center gap-3 text-[11px] font-bold text-emerald-800 uppercase tracking-[0.2em] opacity-80 mb-6">
+						<div className="hidden md:block h-px w-6 bg-emerald-800"></div>
 						Step-by-step guide
+						<div className="hidden md:block h-px w-6 bg-emerald-800"></div>
 					</div>
 
 					<h1 className="text-[32px] sm:text-[48px] font-extrabold leading-[1.1] mb-3 sm:mb-4">
