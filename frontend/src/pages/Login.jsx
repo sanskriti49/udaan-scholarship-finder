@@ -65,7 +65,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   const inputClass =
-    "w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
+    "w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,7 +116,7 @@ export default function Login() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-14 xl:px-20 order-2 lg:order-1">
         <div className="max-w-md mx-auto w-full">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group mb-10">
+          <Link to="/" className="flex items-center gap-3 group mb-8">
             <div className="w-12 h-12 rounded-xl bg-[#C0DD97]/20 border border-[#DDECCB] flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105">
               <img
                 src={logoImg}
@@ -129,7 +129,7 @@ export default function Login() {
                 <span style={{ color: "#5AAD1F" }}>uda</span>
                 <span style={{ color: "#3B7DC8" }}>an</span>
               </span>
-              <span className="text-[8px] font-bold tracking-widest text-gray-400 uppercase mt-0.5">
+              <span className="text-[10px] font-bold tracking-wider text-emerald-800 uppercase mt-1">
                 find your scholarship
               </span>
             </div>
@@ -139,14 +139,14 @@ export default function Login() {
           <h1 className="text-3xl font-extrabold text-gray-900 mt-4 mb-2">
             Sign in to your account
           </h1>
-          <p className="text-[14px] text-gray-500 mb-8 leading-relaxed">
+          <p className="text-[14px] text-gray-600 mb-8 leading-relaxed font-medium">
             Pick up right where you left off — your bookmarks, matches, and
             applications are waiting.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Email address
               </label>
               <input
@@ -161,12 +161,12 @@ export default function Login() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Password
                 </label>
                 <Link
                   to="/forgot-password"
-                  className="text-[12px] text-[#5AAD1F] font-semibold hover:text-[#4A9A18] transition-colors"
+                  className="text-[13px] text-[#27500A] font-bold hover:underline transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -185,7 +185,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((p) => !p)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -245,7 +245,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={!turnstileToken}
-              className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white font-semibold text-[14px] transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5AAD1F] disabled:hover:shadow-md"
+              className="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white font-bold text-[15px] transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5AAD1F] disabled:hover:shadow-md"
             >
               Sign in
               <svg
@@ -267,7 +267,7 @@ export default function Login() {
           {/* Divider */}
           <div className="flex items-center gap-4 my-7">
             <div className="flex-1 h-px bg-[#DDECCB]" />
-            <span className="text-[12px] text-gray-400 font-medium tracking-wide">
+            <span className="text-xs text-gray-500 font-semibold tracking-wider uppercase">
               or continue with
             </span>
             <div className="flex-1 h-px bg-[#DDECCB]" />
@@ -276,11 +276,11 @@ export default function Login() {
           {/* Udaan-themed Google button */}
           <GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
 
-          <p className="text-center text-[13px] text-gray-500 mt-7">
+          <p className="text-center text-[13.5px] text-gray-600 mt-7 font-medium">
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="text-[#5AAD1F] font-bold hover:text-[#4A9A18] transition-colors"
+              className="text-[#27500A] font-bold hover:underline transition-colors"
             >
               Create one free
             </Link>
@@ -308,7 +308,7 @@ export default function Login() {
           <h2 className="text-2xl font-extrabold text-gray-900 mb-3 leading-snug">
             Your scholarships are waiting
           </h2>
-          <p className="text-[15px] text-gray-500 leading-relaxed">
+          <p className="text-[15px] text-gray-600 leading-relaxed font-medium">
             Over 500 verified grants updated every week. Sign in to see what
             matches your profile today.
           </p>
@@ -318,7 +318,7 @@ export default function Login() {
           {["500+ scholarships", "100% free", "Verified listings"].map((t) => (
             <span
               key={t}
-              className="inline-flex items-center gap-1.5 bg-white border border-[#C0DD97] text-[#27500A] text-[13px] font-bold px-3.5 py-2 rounded-full shadow-sm hover:shadow-md transition-shadow duration-200"
+              className="inline-flex items-center gap-1.5 bg-white border border-[#C0DD97] text-[#27500A] text-[13px] font-bold px-3.5 py-2 rounded-full shadow-2xs hover:shadow-xs transition-shadow duration-200"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
               {t}

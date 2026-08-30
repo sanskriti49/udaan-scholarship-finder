@@ -71,7 +71,7 @@ export default function SignUp() {
 	const navigate = useNavigate();
 
 	const inputClass =
-		"w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
+		"w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
 
 	const passwordStrength = (() => {
 		const p = form.password;
@@ -207,7 +207,7 @@ export default function SignUp() {
 					<h1 className="text-3xl font-extrabold  text-gray-900 mt-4 mb-2">
 						Create your account
 					</h1>
-					<p className="text-[14px] text-gray-500 mb-8 leading-relaxed">
+					<p className="text-[14px] text-gray-600 mb-8 leading-relaxed font-medium">
 						Build your profile once. We'll match it against hundreds of
 						scholarships automatically.
 					</p>
@@ -228,7 +228,7 @@ export default function SignUp() {
 						</div>
 
 						<div className="space-y-1.5">
-							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+							<label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
 								Email address
 							</label>
 							<input
@@ -314,7 +314,7 @@ export default function SignUp() {
 						</div>
 
 						<div className="space-y-1.5">
-							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+							<label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
 								Confirm password
 							</label>
 							<div className="relative">
@@ -329,7 +329,7 @@ export default function SignUp() {
 									className={`${inputClass} ${
 										form.confirmPassword &&
 										form.confirmPassword !== form.password
-											? "border-red-300 focus:border-red-400 focus:ring-red-100"
+											? "border-red-400 focus:border-red-500 focus:ring-red-100"
 											: form.confirmPassword &&
 												  form.confirmPassword === form.password
 												? "border-[#5AAD1F]"
@@ -357,7 +357,7 @@ export default function SignUp() {
 							</div>
 							{form.confirmPassword &&
 								form.confirmPassword !== form.password && (
-									<p className="text-[11px] text-red-500 font-medium mt-1">
+									<p className="text-xs text-red-600 font-bold mt-1">
 										Passwords don't match
 									</p>
 								)}
@@ -421,7 +421,7 @@ export default function SignUp() {
 					{/* Divider */}
 					<div className="flex items-center gap-4 my-7">
 						<div className="flex-1 h-px bg-[#DDECCB]" />
-						<span className="text-[12px] text-gray-400 font-medium tracking-wide">
+						<span className="text-xs text-gray-500 font-semibold tracking-wider uppercase">
 							or continue with
 						</span>
 						<div className="flex-1 h-px bg-[#DDECCB]" />
@@ -430,11 +430,11 @@ export default function SignUp() {
 					{/* Udaan-themed Google button */}
 					<GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
 
-					<p className="text-center text-[13px] text-gray-500 mt-7">
+					<p className="text-center text-[13.5px] text-gray-600 mt-7 font-medium">
 						Already have an account?{" "}
 						<Link
 							to="/login"
-							className="text-[#5AAD1F] font-bold hover:text-[#4A9A18] transition-colors"
+							className="text-[#27500A] font-bold hover:underline transition-colors"
 						>
 							Log in
 						</Link>
