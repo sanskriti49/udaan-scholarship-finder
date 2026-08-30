@@ -125,7 +125,7 @@ export default function Login() {
               />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="text-2xl font-black tracking-tight">
+              <span className="text-2xl font-black">
                 <span style={{ color: "#5AAD1F" }}>uda</span>
                 <span style={{ color: "#3B7DC8" }}>an</span>
               </span>
@@ -136,7 +136,7 @@ export default function Login() {
           </Link>
 
           <Badge>Welcome back</Badge>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mt-4 mb-2">
+          <h1 className="text-3xl font-extrabold text-gray-900 mt-4 mb-2">
             Sign in to your account
           </h1>
           <p className="text-[14px] text-gray-600 mb-8 leading-relaxed font-medium">
@@ -305,7 +305,7 @@ export default function Login() {
         </div>
 
         <div className="relative z-10 mt-8 text-center max-w-sm">
-          <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 mb-2 leading-snug">
+          <h2 className="text-2xl font-extrabold text-gray-900 mb-3 leading-snug">
             Your scholarships are waiting
           </h2>
           <p className="text-[15px] text-gray-600 leading-relaxed font-medium">
