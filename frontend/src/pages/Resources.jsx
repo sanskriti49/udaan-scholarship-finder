@@ -1,112 +1,92 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import Badge from "../components/Badge";
+import React, { useState, useEffect } from"react";
+import { Link } from"react-router-dom";
+import Badge from"../components/Badge";
 
 const GUIDES = [
 	{
-		title: "How to Apply for Scholarships",
-		description:
-			"A complete step-by-step walkthrough from finding the right match to hitting submit.",
-		icon: "📋",
-		bg: "bg-[#EAF3DE]",
-		path: "/how-to-apply",
+		title:"How to Apply for Scholarships",
+		description:"A complete step-by-step walkthrough from finding the right match to hitting submit.",
+		icon:"📋",
+		bg:"bg-[#EAF3DE]",
+		path:"/how-to-apply",
 	},
 	{
-		title: "Writing a Strong Application",
-		description:
-			"Learn how to structure your essays and highlight your achievements effectively.",
-		icon: "✍️",
-		bg: "bg-[#E6F1FB]",
-		path: "/application-guide",
+		title:"Writing a Strong Application",
+		description:"Learn how to structure your essays and highlight your achievements effectively.",
+		icon:"✍️",
+		bg:"bg-[#E6F1FB]",
+		path:"/application-guide",
 	},
 	{
-		title: "Common Mistakes to Avoid",
-		description:
-			"Don't let simple errors disqualify you. Review the most frequent application pitfalls.",
-		icon: "⚠️",
-		bg: "bg-[#FCEBEB]",
+		title:"Common Mistakes to Avoid",
+		description:"Don't let simple errors disqualify you. Review the most frequent application pitfalls.",
+		icon:"⚠️",
+		bg:"bg-[#FCEBEB]",
 	},
 	{
-		title: "Interview Preparation",
-		description:
-			"Master the scholarship interview with these proven communication strategies.",
-		icon: "🎤",
-		bg: "bg-[#FAEEDA]",
+		title:"Interview Preparation",
+		description:"Master the scholarship interview with these proven communication strategies.",
+		icon:"🎤",
+		bg:"bg-[#FAEEDA]",
 	},
 ];
 
-const DOCUMENTS = [
-	"Aadhaar Card",
-	"Income Certificate",
-	"Caste Certificate",
-	"Previous Mark Sheets",
-	"Bonafide Certificate",
-	"Bank Account Details",
-	"Passport Size Photographs",
-	"Fee Receipt of Current Course",
+const DOCUMENTS = ["Aadhaar Card","Income Certificate","Caste Certificate","Previous Mark Sheets","Bonafide Certificate","Bank Account Details","Passport Size Photographs","Fee Receipt of Current Course",
 ];
 
 const PORTALS = [
 	{
-		name: "National Scholarship Portal",
-		color: "bg-[#5AAD1F]",
-		url: "https://scholarships.gov.in/All-Scholarships",
+		name:"National Scholarship Portal",
+		color:"bg-[#5AAD1F]",
+		url:"https://scholarships.gov.in/All-Scholarships",
 	},
 	{
-		name: "AICTE Scholarships",
-		color: "bg-[#3B7DC8]",
-		url: "https://fellowship.aicte.gov.in/",
+		name:"AICTE Scholarships",
+		color:"bg-[#3B7DC8]",
+		url:"https://fellowship.aicte.gov.in/",
 	},
 	{
-		name: "UGC Scholarships",
-		color: "bg-[#059669]",
-		url: "https://www.ugc.gov.in/Home/student_Corner",
+		name:"UGC Scholarships",
+		color:"bg-[#059669]",
+		url:"https://www.ugc.gov.in/Home/student_Corner",
 	},
 ];
 
 const EDU_RESOURCES = [
 	{
-		icon: "📚",
-		title: "Entrance Exam Hub",
-		desc: "JEE, NEET, CUET, GATE resources & mock tests.",
-		bg: "bg-[#EAF3DE]",
+		icon:"📚",
+		title:"Entrance Exam Hub",
+		desc:"JEE, NEET, CUET, GATE resources & mock tests.",
+		bg:"bg-[#EAF3DE]",
 	},
 	{
-		icon: "🗺️",
-		title: "Career Guidance",
-		desc: "Articles and roadmaps for various career trajectories.",
-		bg: "bg-[#E6F1FB]",
+		icon:"🗺️",
+		title:"Career Guidance",
+		desc:"Articles and roadmaps for various career trajectories.",
+		bg:"bg-[#E6F1FB]",
 	},
 	{
-		icon: "⏱️",
-		title: "Time Management",
-		desc: "Study tips and productivity hacks for top performers.",
-		bg: "bg-[#FAEEDA]",
+		icon:"⏱️",
+		title:"Time Management",
+		desc:"Study tips and productivity hacks for top performers.",
+		bg:"bg-[#FAEEDA]",
 	},
 ];
 
 const DOWNLOADS = [
-	{ title: "Application Checklist", type: "PDF" },
-	{ title: "Standard Resume Template", type: "DOCX" },
-	{ title: "Statement of Purpose Draft", type: "DOCX" },
-	{ title: "2026 Scholarship Calendar", type: "PDF" },
+	{ title:"Application Checklist", type:"PDF" },
+	{ title:"Standard Resume Template", type:"DOCX" },
+	{ title:"Statement of Purpose Draft", type:"DOCX" },
+	{ title:"2026 Scholarship Calendar", type:"PDF" },
 ];
 
-const DOC_ICONS = {
-	"Aadhaar Card": "🪪",
-	"Income Certificate": "💰",
-	"Caste Certificate": "📄",
-	"Previous Mark Sheets": "📊",
-	"Bonafide Certificate": "🏛️",
-	"Bank Account Details": "🏦",
-	"Passport Size Photographs": "📷",
-	"Fee Receipt of Current Course": "🧾",
+const DOC_ICONS = {"Aadhaar Card":"🪪","Income Certificate":"💰","Caste Certificate":"📄","Previous Mark Sheets":"📊","Bonafide Certificate":"🏛️","Bank Account Details":"🏦","Passport Size Photographs":"📷","Fee Receipt of Current Course":"🧾",
 };
 
 export default function Resources() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [checkedDocs, setCheckedDocs] = useState(() =>
-		JSON.parse(localStorage.getItem("checkedDocs") || "[]"),
+		JSON.parse(localStorage.getItem("checkedDocs") ||"[]"),
 	);
 	const [showConfetti, setShowConfetti] = useState(false);
 
@@ -120,7 +100,7 @@ export default function Resources() {
 
 	const resetDocs = () => {
 		setCheckedDocs([]);
-		localStorage.setItem("checkedDocs", "[]");
+		localStorage.setItem("checkedDocs","[]");
 	};
 
 	const progress = Math.round((checkedDocs.length / DOCUMENTS.length) * 100);
@@ -147,13 +127,7 @@ export default function Resources() {
 		? Array.from({ length: 36 }, (_, i) => ({
 				id: i,
 				left: Math.random() * 100,
-				color: [
-					"#5AAD1F",
-					"#F59E0B",
-					"#3B82F6",
-					"#EF4444",
-					"#8B5CF6",
-					"#EC4899",
+				color: ["#5AAD1F","#F59E0B","#3B82F6","#EF4444","#8B5CF6","#EC4899",
 				][i % 6],
 				delay: Math.random() * 0.5,
 				dur: 1.1 + Math.random() * 1.4,
@@ -165,12 +139,12 @@ export default function Resources() {
 	return (
 		<>
 			<style>{`
-        @keyframes cfall{0%{transform:translateY(-8px) scale(1);opacity:1}100%{transform:translateY(300px) scale(.4);opacity:0}}
-        @keyframes ringPulse{0%,100%{filter:drop-shadow(0 0 6px rgba(245,158,11,.25))}50%{filter:drop-shadow(0 0 20px rgba(245,158,11,.55))}}
-        @keyframes fadeUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
-        .ring-pulse{animation:ringPulse 1.6s ease-in-out infinite}
-        .fade-up{animation:fadeUp .4s ease-out both}
-      `}</style>
+ @keyframes cfall{0%{transform:translateY(-8px) scale(1);opacity:1}100%{transform:translateY(300px) scale(.4);opacity:0}}
+ @keyframes ringPulse{0%,100%{filter:drop-shadow(0 0 6px rgba(245,158,11,.25))}50%{filter:drop-shadow(0 0 20px rgba(245,158,11,.55))}}
+ @keyframes fadeUp{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+ .ring-pulse{animation:ringPulse 1.6s ease-in-out infinite}
+ .fade-up{animation:fadeUp .4s ease-out both}
+ `}</style>
 
 			<div className="min-h-screen bg-white text-gray-900">
 				{/* HERO */}
@@ -180,8 +154,8 @@ export default function Resources() {
 
 					<div className="relative max-w-5xl mx-auto text-center">
 						<Badge>Student knowledge base</Badge>
-						<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3 ">
-							Everything you need to{" "}
+						<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3">
+							Everything you need to{""}
 							<span className="text-[#5AAD1F]">succeed and get funded</span>
 						</h1>
 						<p className="text-sm sm:text-[15px] text-gray-600 leading-relaxed max-w-xl mx-auto px-2 font-normal">
@@ -299,14 +273,14 @@ export default function Resources() {
 											width: p.size,
 											height: p.size,
 											backgroundColor: p.color,
-											borderRadius: p.round ? "50%" : "2px",
+											borderRadius: p.round ?"50%" :"2px",
 											animation: `cfall ${p.dur}s ease-out ${p.delay}s forwards`,
 										}}
 									/>
 								))}
 
 								{/* Ring */}
-								<div className={`relative ${allDone ? "ring-pulse" : ""}`}>
+								<div className={`relative ${allDone ?"ring-pulse" :""}`}>
 									<svg
 										width={RING}
 										height={RING}
@@ -325,7 +299,7 @@ export default function Resources() {
 											cy={RING / 2}
 											r={radius}
 											fill="none"
-											stroke={allDone ? "#F59E0B" : "#5AAD1F"}
+											stroke={allDone ?"#F59E0B" :"#5AAD1F"}
 											strokeWidth={SW}
 											strokeDasharray={circ}
 											strokeDashoffset={dashOff}
@@ -348,13 +322,13 @@ export default function Resources() {
 								<div className="mt-4 sm:mt-5">
 									<p className="text-[13px] sm:text-[14px] font-semibold text-gray-700">
 										{allDone
-											? "🎉 All documents ready!"
-											: `${remaining} document${remaining !== 1 ? "s" : ""} left`}
+											?"🎉 All documents ready!"
+											: `${remaining} document${remaining !== 1 ?"s" :""} left`}
 									</p>
 									<p className="text-[11px] sm:text-[12px] text-gray-500 mt-0.5 leading-relaxed max-w-45">
 										{allDone
-											? "You're fully prepared to apply."
-											: "Keep these ready before starting any application."}
+											?"You're fully prepared to apply."
+											:"Keep these ready before starting any application."}
 									</p>
 								</div>
 							</div>
@@ -366,7 +340,7 @@ export default function Resources() {
 										<span className="text-xs sm:text-[13.5px] text-gray-500">
 											<span className="font-bold text-gray-900">
 												{checkedDocs.length}
-											</span>{" "}
+											</span>{""}
 											of {DOCUMENTS.length} collected
 										</span>
 									</div>
@@ -389,15 +363,15 @@ export default function Resources() {
 												onClick={() => toggleDoc(doc)}
 												className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-3.5 rounded-xl border transition-all duration-200 text-left cursor-pointer group/chip ${
 													isChecked
-														? "bg-[#EAF3DE] border-[#C0DD97] shadow-[0_1px_4px_rgba(90,173,31,.08)]"
-														: "bg-[#FAFAFA] border-gray-200/80 hover:bg-[#F6FAF1] hover:border-[#DDECCB]"
+														?"bg-[#EAF3DE] border-[#C0DD97] shadow-[0_1px_4px_rgba(90,173,31,.08)]"
+														:"bg-[#FAFAFA] border-gray-200/80 hover:bg-[#F6FAF1] hover:border-[#DDECCB]"
 												}`}
 											>
 												<div
 													className={`w-4 sm:w-4.5 h-4 sm:h-4.5 rounded-md flex items-center justify-center shrink-0 transition-all duration-200 ${
 														isChecked
-															? "bg-[#5AAD1F] scale-100"
-															: "bg-white border-2 border-gray-300 group-hover/chip:border-[#5AAD1F]/40 scale-95"
+															?"bg-[#5AAD1F] scale-100"
+															:"bg-white border-2 border-gray-300 group-hover/chip:border-[#5AAD1F]/40 scale-95"
 													}`}
 												>
 													{isChecked && (
@@ -424,8 +398,8 @@ export default function Resources() {
 
 												{/* Label */}
 												<span
-													className={`text-xs sm:text-[13.5px] font-inter font-medium transition-all duration-200 truncate ${
-														isChecked ? "text-[#27500A]" : "text-gray-600"
+													className={`text-xs sm:text-[13.5px] font-medium transition-all duration-200 truncate ${
+														isChecked ?"text-[#27500A]" :"text-gray-600"
 													}`}
 												>
 													{doc}
@@ -519,7 +493,7 @@ export default function Resources() {
 									<div
 										className={`absolute left-0 top-0 w-1 h-full ${portal.color} rounded-l-2xl group-hover:w-1.5 transition-all duration-300`}
 									/>
-									<span className="font-jakarta font-bold text-[13px] sm:text-[14px] text-gray-800 pl-2 sm:pl-3 group-hover:text-[#5AAD1F] transition-colors duration-200">
+									<span className="font-bold text-[13px] sm:text-[14px] text-gray-800 pl-2 sm:pl-3 group-hover:text-[#5AAD1F] transition-colors duration-200">
 										{portal.name}
 									</span>
 									<svg
@@ -582,9 +556,9 @@ export default function Resources() {
 									<div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
 										<span
 											className={`px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold tracking-wider shrink-0 ${
-												item.type === "PDF"
-													? "bg-[#FCEBEB] text-[#791F1F]"
-													: "bg-[#E6F1FB] text-[#1a4a8a]"
+												item.type ==="PDF"
+													?"bg-[#FCEBEB] text-[#791F1F]"
+													:"bg-[#E6F1FB] text-[#1a4a8a]"
 											}`}
 										>
 											{item.type}

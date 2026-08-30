@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from"react";
+import { Link } from"react-router-dom";
 import {
 	BookOpen,
 	PenTool,
@@ -33,15 +33,15 @@ import {
 	VolumeX,
 	Expand,
 	Minimize,
-} from "lucide-react";
-import Badge from "../components/Badge";
+} from"lucide-react";
+import Badge from"../components/Badge";
 
 const ApplicationGuide = () => {
 	const [activeSection, setActiveSection] = useState("overview");
 	const [bookmarked, setBookmarked] = useState(false);
 	const [liked, setLiked] = useState(false);
 	const [completedSections, setCompletedSections] = useState(() =>
-		JSON.parse(localStorage.getItem("completedGuideSections") || "[]"),
+		JSON.parse(localStorage.getItem("completedGuideSections") ||"[]"),
 	);
 	const [expandedTips, setExpandedTips] = useState({});
 	const [readingProgress, setReadingProgress] = useState(0);
@@ -53,66 +53,62 @@ const ApplicationGuide = () => {
 	const contentRef = useRef(null);
 
 	const sections = [
-		{ id: "overview", label: "Overview", icon: BookOpen, time: "3 min read" },
+		{ id:"overview", label:"Overview", icon: BookOpen, time:"3 min read" },
 		{
-			id: "structure",
-			label: "Essay Structure",
+			id:"structure",
+			label:"Essay Structure",
 			icon: FileText,
-			time: "5 min read",
+			time:"5 min read",
 		},
 		{
-			id: "achievements",
-			label: "Highlight Achievements",
+			id:"achievements",
+			label:"Highlight Achievements",
 			icon: Award,
-			time: "4 min read",
+			time:"4 min read",
 		},
 		{
-			id: "common",
-			label: "Common Mistakes",
+			id:"common",
+			label:"Common Mistakes",
 			icon: AlertCircle,
-			time: "3 min read",
+			time:"3 min read",
 		},
-		{ id: "final", label: "Final Polish", icon: Sparkles, time: "2 min read" },
+		{ id:"final", label:"Final Polish", icon: Sparkles, time:"2 min read" },
 	];
 
 	const tips = [
 		{
-			id: "audience",
+			id:"audience",
 			icon: Target,
-			title: "Know Your Audience",
-			shortDesc: "Research the scholarship provider's values",
-			fullDesc:
-				"Research the scholarship provider's values and tailor your application to align with their mission. Look at past winners' essays if available, and understand what qualities they prioritize.",
+			title:"Know Your Audience",
+			shortDesc:"Research the scholarship provider's values",
+			fullDesc:"Research the scholarship provider's values and tailor your application to align with their mission. Look at past winners' essays if available, and understand what qualities they prioritize.",
 			example:
 				'"The [Scholarship Name] values innovation in education — so I focused on my ed-tech project rather than just listing grades."',
 		},
 		{
-			id: "hook",
+			id:"hook",
 			icon: PenTool,
-			title: "Start with a Hook",
-			shortDesc: "Open with a compelling story or statement",
-			fullDesc:
-				"Open your essay with a compelling story or statement that grabs the reader's attention immediately. Avoid generic openings like 'I am applying for this scholarship because...'",
+			title:"Start with a Hook",
+			shortDesc:"Open with a compelling story or statement",
+			fullDesc:"Open your essay with a compelling story or statement that grabs the reader's attention immediately. Avoid generic openings like 'I am applying for this scholarship because...'",
 			example:
 				'"At 2 AM, staring at a terminal window, I realized code wasn\'t just syntax — it was a way to solve real problems."',
 		},
 		{
-			id: "show-dont-tell",
+			id:"show-dont-tell",
 			icon: Lightbulb,
-			title: "Show, Don't Tell",
-			shortDesc: "Describe specific situations, not just qualities",
+			title:"Show, Don't Tell",
+			shortDesc:"Describe specific situations, not just qualities",
 			fullDesc:
-				'Instead of saying "I\'m a leader," describe a specific situation where you demonstrated leadership. Use concrete details, numbers, and outcomes.',
-			example:
-				"\"Instead of: 'I'm passionate about community service'\nTry: 'Every Saturday for two years, I tutored 15 students from low-income families, helping 12 of them improve their grades by at least one letter.\"",
+				'Instead of saying"I\'m a leader," describe a specific situation where you demonstrated leadership. Use concrete details, numbers, and outcomes.',
+			example:"\"Instead of: 'I'm passionate about community service'\nTry: 'Every Saturday for two years, I tutored 15 students from low-income families, helping 12 of them improve their grades by at least one letter.\"",
 		},
 		{
-			id: "authentic",
+			id:"authentic",
 			icon: Users,
-			title: "Be Authentic",
-			shortDesc: "Share your genuine experiences and voice",
-			fullDesc:
-				"Share your genuine experiences and voice. Authenticity resonates more than a perfect-but-inauthentic essay. Don't use overly complex words or phrases that aren't natural to you.",
+			title:"Be Authentic",
+			shortDesc:"Share your genuine experiences and voice",
+			fullDesc:"Share your genuine experiences and voice. Authenticity resonates more than a perfect-but-inauthentic essay. Don't use overly complex words or phrases that aren't natural to you.",
 			example:
 				'"Write as if you\'re talking to a respected mentor — professional but personal."',
 		},
@@ -120,114 +116,108 @@ const ApplicationGuide = () => {
 
 	const essayStructure = [
 		{
-			title: "1. The Hook (10% of essay)",
-			desc: "Start with a compelling anecdote, question, or statement that immediately engages the reader.",
+			title:"1. The Hook (10% of essay)",
+			desc:"Start with a compelling anecdote, question, or statement that immediately engages the reader.",
 			doExample:
 				'"The first time I opened a terminal window, I felt like I\'d discovered a new language — one that could build worlds."',
 			dontExample:
 				'"I am writing to apply for the XYZ Scholarship because I believe I am a deserving candidate."',
-			timeSuggestion: "1-2 sentences",
+			timeSuggestion:"1-2 sentences",
 		},
 		{
-			title: "2. The Context (20% of essay)",
-			desc: "Provide background on your journey, challenges, and the experiences that shaped you.",
+			title:"2. The Context (20% of essay)",
+			desc:"Provide background on your journey, challenges, and the experiences that shaped you.",
 			doExample:
 				'"Growing up in a small town with limited STEM resources, I taught myself programming through free online courses, often studying by the light of my phone at night."',
 			dontExample:
 				'"I have always been interested in computers since I was young."',
-			timeSuggestion: "1-2 paragraphs",
+			timeSuggestion:"1-2 paragraphs",
 		},
 		{
-			title: "3. The Achievements (30% of essay)",
-			desc: "Highlight specific accomplishments with measurable impact and personal growth.",
+			title:"3. The Achievements (30% of essay)",
+			desc:"Highlight specific accomplishments with measurable impact and personal growth.",
 			doExample:
 				'"I led a team of 12 to develop an app that connected 300+ students with free tutoring, resulting in a 40% improvement in test scores among regular users."',
 			dontExample:
 				'"I have won many awards and participated in various activities."',
-			timeSuggestion: "2-3 paragraphs",
+			timeSuggestion:"2-3 paragraphs",
 		},
 		{
-			title: "4. The Connection (25% of essay)",
-			desc: "Connect your story to the scholarship's mission and why you're a perfect fit.",
+			title:"4. The Connection (25% of essay)",
+			desc:"Connect your story to the scholarship's mission and why you're a perfect fit.",
 			doExample:
 				'"This scholarship\'s focus on technology for social good aligns perfectly with my goal of making education accessible to underserved communities."',
 			dontExample: '"This scholarship would help me pay for college."',
-			timeSuggestion: "1-2 paragraphs",
+			timeSuggestion:"1-2 paragraphs",
 		},
 		{
-			title: "5. The Vision (15% of essay)",
-			desc: "End with a forward-looking statement that reinforces your potential and gratitude.",
+			title:"5. The Vision (15% of essay)",
+			desc:"End with a forward-looking statement that reinforces your potential and gratitude.",
 			doExample:
 				'"With this support, I\'ll continue building technology that makes education accessible to all — and I hope to eventually create a platform that reaches 100,000 students."',
 			dontExample: '"Thank you for considering my application."',
-			timeSuggestion: "1 paragraph",
+			timeSuggestion:"1 paragraph",
 		},
 	];
 
 	const achievements = [
 		{
-			label: "Academic Excellence",
-			description: "GPA, honors, awards, research projects",
-			example:
-				"Instead of 'Good grades,' try: 'Maintained 9.2 GPA while conducting research on renewable energy, published in college journal'",
-			color: "bg-blue-100 text-blue-700",
+			label:"Academic Excellence",
+			description:"GPA, honors, awards, research projects",
+			example:"Instead of 'Good grades,' try: 'Maintained 9.2 GPA while conducting research on renewable energy, published in college journal'",
+			color:"bg-blue-100 text-blue-700",
 		},
 		{
-			label: "Leadership",
-			description: "Clubs, organizations, team lead roles",
-			example:
-				"Instead of 'Was president of club,' try: 'Led Computer Science Club of 45 members, organized 8 workshops, increased participation by 200%'",
-			color: "bg-purple-100 text-purple-700",
+			label:"Leadership",
+			description:"Clubs, organizations, team lead roles",
+			example:"Instead of 'Was president of club,' try: 'Led Computer Science Club of 45 members, organized 8 workshops, increased participation by 200%'",
+			color:"bg-purple-100 text-purple-700",
 		},
 		{
-			label: "Community Service",
-			description: "Volunteering, social impact initiatives",
-			example:
-				"Instead of 'Did volunteer work,' try: 'Volunteered 200+ hours teaching digital literacy to 50+ elderly citizens, helping them connect with families online'",
-			color: "bg-green-100 text-green-700",
+			label:"Community Service",
+			description:"Volunteering, social impact initiatives",
+			example:"Instead of 'Did volunteer work,' try: 'Volunteered 200+ hours teaching digital literacy to 50+ elderly citizens, helping them connect with families online'",
+			color:"bg-green-100 text-green-700",
 		},
 		{
-			label: "Work Experience",
-			description: "Internships, part-time jobs, projects",
-			example:
-				"Instead of 'Had an internship,' try: 'Completed 3-month internship at XYZ Tech, optimized database queries reducing load time by 35%'",
-			color: "bg-orange-100 text-orange-700",
+			label:"Work Experience",
+			description:"Internships, part-time jobs, projects",
+			example:"Instead of 'Had an internship,' try: 'Completed 3-month internship at XYZ Tech, optimized database queries reducing load time by 35%'",
+			color:"bg-orange-100 text-orange-700",
 		},
 		{
-			label: "Skills & Certifications",
-			description: "Languages, technical skills, certifications",
-			example:
-				"Instead of 'Know programming,' try: 'Proficient in Python, Java, and JavaScript with AWS Cloud Practitioner certification'",
-			color: "bg-pink-100 text-pink-700",
+			label:"Skills & Certifications",
+			description:"Languages, technical skills, certifications",
+			example:"Instead of 'Know programming,' try: 'Proficient in Python, Java, and JavaScript with AWS Cloud Practitioner certification'",
+			color:"bg-pink-100 text-pink-700",
 		},
 	];
 
 	const mistakes = [
 		{
-			mistake: "Submitting a generic essay that could apply to any scholarship",
-			fix: "Customize at least 3-4 sentences to specifically reference the scholarship's values and how you align with them",
-			severity: "high",
+			mistake:"Submitting a generic essay that could apply to any scholarship",
+			fix:"Customize at least 3-4 sentences to specifically reference the scholarship's values and how you align with them",
+			severity:"high",
 		},
 		{
-			mistake: "Ignoring word limits and formatting requirements",
-			fix: "Always check word count before submitting. Use a tool like WordCounter.net. Follow font, margin, and spacing requirements exactly",
-			severity: "high",
+			mistake:"Ignoring word limits and formatting requirements",
+			fix:"Always check word count before submitting. Use a tool like WordCounter.net. Follow font, margin, and spacing requirements exactly",
+			severity:"high",
 		},
 		{
-			mistake:
-				"Forgetting to proofread — typos and grammar errors hurt credibility",
-			fix: "Read your essay backward, use Grammarly, and ask at least 2 other people to review it",
-			severity: "high",
+			mistake:"Forgetting to proofread — typos and grammar errors hurt credibility",
+			fix:"Read your essay backward, use Grammarly, and ask at least 2 other people to review it",
+			severity:"high",
 		},
 		{
-			mistake: "Not answering the prompt directly",
-			fix: "Before writing, highlight key words in the prompt. After writing, check that each paragraph addresses some aspect of the prompt",
-			severity: "medium",
+			mistake:"Not answering the prompt directly",
+			fix:"Before writing, highlight key words in the prompt. After writing, check that each paragraph addresses some aspect of the prompt",
+			severity:"medium",
 		},
 		{
-			mistake: "Listing achievements without providing context or impact",
-			fix: "For each achievement, add: What you did + How you did it + What was the measurable impact",
-			severity: "medium",
+			mistake:"Listing achievements without providing context or impact",
+			fix:"For each achievement, add: What you did + How you did it + What was the measurable impact",
+			severity:"medium",
 		},
 	];
 
@@ -289,13 +279,7 @@ const ApplicationGuide = () => {
 		? Array.from({ length: 36 }, (_, i) => ({
 				id: i,
 				left: Math.random() * 100,
-				color: [
-					"#5AAD1F",
-					"#F59E0B",
-					"#3B82F6",
-					"#EF4444",
-					"#8B5CF6",
-					"#EC4899",
+				color: ["#5AAD1F","#F59E0B","#3B82F6","#EF4444","#8B5CF6","#EC4899",
 				][i % 6],
 				delay: Math.random() * 0.5,
 				dur: 1.1 + Math.random() * 1.4,
@@ -413,7 +397,7 @@ const ApplicationGuide = () => {
 								width: p.size,
 								height: p.size,
 								backgroundColor: p.color,
-								borderRadius: p.round ? "50%" : "2px",
+								borderRadius: p.round ?"50%" :"2px",
 								animation: `cfall ${p.dur}s ease-out ${p.delay}s forwards`,
 							}}
 						/>
@@ -444,7 +428,7 @@ const ApplicationGuide = () => {
 								stand out.
 							</p>
 
-							<div className="font-inter flex flex-wrap justify-center gap-4 sm:gap-6 mt-6 animate-fadeIn">
+							<div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-6 animate-fadeIn">
 								<div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
 									<Clock className="w-4 h-4 text-[#5AAD1F]" />
 									<span>17 min total read</span>
@@ -459,35 +443,35 @@ const ApplicationGuide = () => {
 								</div>
 							</div>
 
-							<div className="font-jakarta flex flex-wrap justify-center gap-3 mt-6 animate-fadeIn">
+							<div className="flex flex-wrap justify-center gap-3 mt-6 animate-fadeIn">
 								<button
 									onClick={() => setBookmarked(!bookmarked)}
 									className={`cursor-pointer px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 border ${
 										bookmarked
-											? "bg-[#EAF3DE] border-[#5AAD1F] text-[#5AAD1F] shadow-sm"
-											: "bg-white border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1]"
+											?"bg-[#EAF3DE] border-[#5AAD1F] text-[#5AAD1F] shadow-sm"
+											:"bg-white border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1]"
 									}`}
 								>
 									<Bookmark
-										className={`w-4 h-4 ${bookmarked ? "fill-[#5AAD1F]" : ""}`}
+										className={`w-4 h-4 ${bookmarked ?"fill-[#5AAD1F]" :""}`}
 									/>
 									<span className="font-medium text-sm">
-										{bookmarked ? "Saved" : "Save"}
+										{bookmarked ?"Saved" :"Save"}
 									</span>
 								</button>
 								<button
 									onClick={() => setLiked(!liked)}
 									className={`cursor-pointer px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 border ${
 										liked
-											? "bg-[#EAF3DE] border-[#5AAD1F] text-[#5AAD1F] shadow-sm"
-											: "bg-white border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1]"
+											?"bg-[#EAF3DE] border-[#5AAD1F] text-[#5AAD1F] shadow-sm"
+											:"bg-white border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1]"
 									}`}
 								>
 									<ThumbsUp
-										className={`w-4 h-4 ${liked ? "fill-[#5AAD1F]" : ""}`}
+										className={`w-4 h-4 ${liked ?"fill-[#5AAD1F]" :""}`}
 									/>
 									<span className="font-medium text-sm">
-										{liked ? "Liked" : "Helpful"}
+										{liked ?"Liked" :"Helpful"}
 									</span>
 								</button>
 								<button className="cursor-pointer px-4 py-2.5 rounded-xl bg-white border border-gray-200/80 text-gray-600 hover:border-[#C0DD97] hover:bg-[#F6FAF1] transition-all flex items-center gap-2">
@@ -504,7 +488,7 @@ const ApplicationGuide = () => {
 										<Expand className="w-4 h-4" />
 									)}
 									<span className="font-medium text-sm">
-										{isFullscreen ? "Exit Focus" : "Focus Mode"}
+										{isFullscreen ?"Exit Focus" :"Focus Mode"}
 									</span>
 								</button>
 							</div>
@@ -514,16 +498,16 @@ const ApplicationGuide = () => {
 
 				<div
 					className={`flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 ${
-						isFullscreen ? "max-w-4xl" : ""
+						isFullscreen ?"max-w-4xl" :""
 					}`}
 				>
 					<div
-						className={`grid gap-8 ${isFullscreen ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-4"}`}
+						className={`grid gap-8 ${isFullscreen ?"grid-cols-1" :"grid-cols-1 lg:grid-cols-4"}`}
 					>
 						{!isFullscreen && (
 							<div className="lg:col-span-1">
 								<div className="sticky top-8 bg-white rounded-2xl shadow-sm border border-gray-200/80 p-4 space-y-1">
-									<div className="font-raleway flex items-center justify-between mb-3">
+									<div className="flex items-center justify-between mb-3">
 										<p className="text-xs font-semibold text-[#5AAD1F] uppercase tracking-wider px-3">
 											Guide Sections
 										</p>
@@ -547,16 +531,16 @@ const ApplicationGuide = () => {
 											<button
 												key={section.id}
 												onClick={() => setActiveSection(section.id)}
-												className={`font-dmsans w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium group ${
+												className={` w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium group ${
 													isActive
-														? "bg-[#EAF3DE] text-[#5AAD1F] shadow-sm"
-														: "text-gray-600 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
+														?"bg-[#EAF3DE] text-[#5AAD1F] shadow-sm"
+														:"text-gray-600 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
 												}`}
 												style={{ animationDelay: `${i * 50}ms` }}
 											>
 												<div className="relative">
 													<Icon
-														className={`w-4 h-4 ${isActive ? "text-[#5AAD1F]" : "text-gray-400"}`}
+														className={`w-4 h-4 ${isActive ?"text-[#5AAD1F]" :"text-gray-400"}`}
 													/>
 													{isComplete && (
 														<div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#5AAD1F] rounded-full flex items-center justify-center">
@@ -577,7 +561,7 @@ const ApplicationGuide = () => {
 										);
 									})}
 
-									<div className="font-dmsans border-t border-gray-200/50 my-3 pt-3">
+									<div className="border-t border-gray-200/50 my-3 pt-3">
 										<div className="px-3 py-2 bg-[#F6FAF1] rounded-xl border border-[#DDECCB]">
 											<div className="flex items-center gap-2 text-xs text-[#5AAD1F]">
 												<Zap className="w-3 h-3" />
@@ -591,7 +575,7 @@ const ApplicationGuide = () => {
 									</div>
 
 									{/* Quick Actions */}
-									<div className="font-dmsans border-t border-gray-200/50 my-3 pt-3 space-y-2">
+									<div className="border-t border-gray-200/50 my-3 pt-3 space-y-2">
 										<button className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-500 hover:text-[#5AAD1F] hover:bg-[#F6FAF1] rounded-lg transition-colors">
 											<RotateCcw className="w-3.5 h-3.5" />
 											Reset Progress
@@ -607,12 +591,12 @@ const ApplicationGuide = () => {
 
 						<div
 							ref={contentRef}
-							className={`${isFullscreen ? "w-full" : "lg:col-span-3"} space-y-8 pb-16 overflow-y-auto scrollbar-thin`}
+							className={`${isFullscreen ?"w-full" :"lg:col-span-3"} space-y-8 pb-16 overflow-y-auto scrollbar-thin`}
 							style={{
-								maxHeight: isFullscreen ? "calc(100vh - 200px)" : "none",
+								maxHeight: isFullscreen ?"calc(100vh - 200px)" :"none",
 							}}
 						>
-							{activeSection === "overview" && (
+							{activeSection ==="overview" && (
 								<div className="animate-fadeIn space-y-8">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
@@ -620,7 +604,7 @@ const ApplicationGuide = () => {
 												<div className="p-2 bg-[#EAF3DE] rounded-xl">
 													<BookOpen className="w-5 h-5 text-[#5AAD1F]" />
 												</div>
-												<h2 className="font-dmsans text-2xl font-bold text-gray-800">
+												<h2 className="text-2xl font-bold text-gray-800">
 													Why Your Application Matters
 												</h2>
 											</div>
@@ -628,23 +612,23 @@ const ApplicationGuide = () => {
 												onClick={() => toggleSectionComplete("overview")}
 												className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
 													completedSections.includes("overview")
-														? "bg-[#EAF3DE] text-[#5AAD1F]"
-														: "bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
+														?"bg-[#EAF3DE] text-[#5AAD1F]"
+														:"bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
 												}`}
 											>
 												<CheckCircle
 													className={`w-3.5 h-3.5 ${
 														completedSections.includes("overview")
-															? "fill-[#5AAD1F]"
-															: ""
+															?"fill-[#5AAD1F]"
+															:""
 													}`}
 												/>
 												{completedSections.includes("overview")
-													? "Completed"
-													: "Mark Complete"}
+													?"Completed"
+													:"Mark Complete"}
 											</button>
 										</div>
-										<p className="font-dmsans text-gray-600 leading-relaxed">
+										<p className="text-gray-600 leading-relaxed">
 											Your scholarship application is more than just paperwork —
 											it's your opportunity to tell your story, showcase your
 											potential, and convince the selection committee that
@@ -653,28 +637,28 @@ const ApplicationGuide = () => {
 											overlooked.
 										</p>
 
-										<div className="font-dmsans grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+										<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
 											{[
 												{
 													icon: Eye,
-													label: "First Impression",
-													value: "30 secs",
-													desc: "Average review time per application",
-													color: "bg-blue-50 border-blue-100",
+													label:"First Impression",
+													value:"30 secs",
+													desc:"Average review time per application",
+													color:"bg-blue-50 border-blue-100",
 												},
 												{
 													icon: Users,
-													label: "Competition",
-													value: "500+",
-													desc: "Applicants per prestigious scholarship",
-													color: "bg-purple-50 border-purple-100",
+													label:"Competition",
+													value:"500+",
+													desc:"Applicants per prestigious scholarship",
+													color:"bg-purple-50 border-purple-100",
 												},
 												{
 													icon: Award,
-													label: "Success Rate",
-													value: "5-15%",
-													desc: "Typical acceptance rate",
-													color: "bg-amber-50 border-amber-100",
+													label:"Success Rate",
+													value:"5-15%",
+													desc:"Typical acceptance rate",
+													color:"bg-amber-50 border-amber-100",
 												},
 											].map((stat, i) => (
 												<div
@@ -696,7 +680,7 @@ const ApplicationGuide = () => {
 										</div>
 
 										{/* Visual Representation */}
-										<div className="font-dmsans mt-6 bg-linear-to-r from-[#F6FAF1] to-[#EAF3DE] rounded-xl p-5 border border-[#DDECCB]">
+										<div className="mt-6 bg-linear-to-r from-[#F6FAF1] to-[#EAF3DE] rounded-xl p-5 border border-[#DDECCB]">
 											<div className="flex items-center gap-2 mb-3">
 												<BarChart3 className="w-4 h-4 text-[#5AAD1F]" />
 												<span className="text-sm font-medium text-gray-700">
@@ -705,11 +689,11 @@ const ApplicationGuide = () => {
 											</div>
 											<div className="grid grid-cols-5 gap-2">
 												{[
-													{ label: "Story", percent: "30%" },
-													{ label: "Impact", percent: "25%" },
-													{ label: "Clarity", percent: "20%" },
-													{ label: "Fit", percent: "15%" },
-													{ label: "Polish", percent: "10%" },
+													{ label:"Story", percent:"30%" },
+													{ label:"Impact", percent:"25%" },
+													{ label:"Clarity", percent:"20%" },
+													{ label:"Fit", percent:"15%" },
+													{ label:"Polish", percent:"10%" },
 												].map((item, i) => (
 													<div key={i} className="text-center">
 														<div className="h-16 bg-white rounded-lg border border-[#DDECCB] relative overflow-hidden">
@@ -731,7 +715,7 @@ const ApplicationGuide = () => {
 									</div>
 
 									{/* Tips Grid with Expand/Collapse */}
-									<div className="font-dmsans ">
+									<div className="">
 										<h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
 											<Sparkles className="w-5 h-5 text-[#5AAD1F]" />
 											Key Tips for Success
@@ -764,7 +748,7 @@ const ApplicationGuide = () => {
 																>
 																	<ChevronDown
 																		className={`w-4 h-4 text-gray-400 transition-transform ${
-																			isExpanded ? "rotate-180" : ""
+																			isExpanded ?"rotate-180" :""
 																		}`}
 																	/>
 																</button>
@@ -813,10 +797,9 @@ const ApplicationGuide = () => {
 									</div>
 
 									{/* Quote */}
-									<div className="font-dmsans bg-[#F6FAF1] rounded-2xl p-6 md:p-8 border border-[#DDECCB]">
+									<div className="bg-[#F6FAF1] rounded-2xl p-6 md:p-8 border border-[#DDECCB]">
 										<Quote className="w-8 h-8 text-[#5AAD1F]/60 mb-3" />
-										<blockquote className="text-lg md:text-xl text-gray-700 italic leading-relaxed">
-											"The scholarship essay is your chance to transform from a
+										<blockquote className="text-lg md:text-xl text-gray-700 italic leading-relaxed">"The scholarship essay is your chance to transform from a
 											name on a page into a person with dreams, achievements,
 											and a compelling future. Make every word count."
 										</blockquote>
@@ -829,8 +812,8 @@ const ApplicationGuide = () => {
 							)}
 
 							{/* ── Essay Structure ── */}
-							{activeSection === "structure" && (
-								<div className="font-dmsans animate-fadeIn space-y-6">
+							{activeSection ==="structure" && (
+								<div className="animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -845,20 +828,20 @@ const ApplicationGuide = () => {
 												onClick={() => toggleSectionComplete("structure")}
 												className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
 													completedSections.includes("structure")
-														? "bg-[#EAF3DE] text-[#5AAD1F]"
-														: "bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
+														?"bg-[#EAF3DE] text-[#5AAD1F]"
+														:"bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
 												}`}
 											>
 												<CheckCircle
 													className={`w-3.5 h-3.5 ${
 														completedSections.includes("structure")
-															? "fill-[#5AAD1F]"
-															: ""
+															?"fill-[#5AAD1F]"
+															:""
 													}`}
 												/>
 												{completedSections.includes("structure")
-													? "Completed"
-													: "Mark Complete"}
+													?"Completed"
+													:"Mark Complete"}
 											</button>
 										</div>
 										<p className="text-gray-600 leading-relaxed mb-6">
@@ -876,11 +859,11 @@ const ApplicationGuide = () => {
 											</div>
 											<div className="flex h-8 rounded-lg overflow-hidden">
 												{[
-													{ width: "10%", color: "bg-[#5AAD1F]" },
-													{ width: "20%", color: "bg-[#7BC950]" },
-													{ width: "30%", color: "bg-[#A0E080]" },
-													{ width: "25%", color: "bg-[#C5EDB0]" },
-													{ width: "15%", color: "bg-[#E0F5D8]" },
+													{ width:"10%", color:"bg-[#5AAD1F]" },
+													{ width:"20%", color:"bg-[#7BC950]" },
+													{ width:"30%", color:"bg-[#A0E080]" },
+													{ width:"25%", color:"bg-[#C5EDB0]" },
+													{ width:"15%", color:"bg-[#E0F5D8]" },
 												].map((segment, i) => (
 													<div
 														key={i}
@@ -977,8 +960,8 @@ const ApplicationGuide = () => {
 							)}
 
 							{/* ── Achievements ── */}
-							{activeSection === "achievements" && (
-								<div className="font-dmsans animate-fadeIn space-y-6">
+							{activeSection ==="achievements" && (
+								<div className="animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -993,20 +976,20 @@ const ApplicationGuide = () => {
 												onClick={() => toggleSectionComplete("achievements")}
 												className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
 													completedSections.includes("achievements")
-														? "bg-[#EAF3DE] text-[#5AAD1F]"
-														: "bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
+														?"bg-[#EAF3DE] text-[#5AAD1F]"
+														:"bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
 												}`}
 											>
 												<CheckCircle
 													className={`w-3.5 h-3.5 ${
 														completedSections.includes("achievements")
-															? "fill-[#5AAD1F]"
-															: ""
+															?"fill-[#5AAD1F]"
+															:""
 													}`}
 												/>
 												{completedSections.includes("achievements")
-													? "Completed"
-													: "Mark Complete"}
+													?"Completed"
+													:"Mark Complete"}
 											</button>
 										</div>
 										<p className="text-gray-600 leading-relaxed mb-6">
@@ -1075,7 +1058,7 @@ const ApplicationGuide = () => {
 											))}
 										</div>
 
-										<div className="font-dmsans mt-6 p-4 bg-[#EAF3DE]/50 rounded-xl border border-[#C0DD97]">
+										<div className="mt-6 p-4 bg-[#EAF3DE]/50 rounded-xl border border-[#C0DD97]">
 											<h4 className="font-semibold text-gray-800 flex items-center gap-2">
 												<Lightbulb className="w-4 h-4 text-[#5AAD1F]" />
 												The STAR Method
@@ -1087,21 +1070,21 @@ const ApplicationGuide = () => {
 											<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
 												{[
 													{
-														letter: "S",
-														label: "Situation",
-														desc: "Set the scene",
+														letter:"S",
+														label:"Situation",
+														desc:"Set the scene",
 													},
 													{
-														letter: "T",
-														label: "Task",
-														desc: "Your responsibility",
+														letter:"T",
+														label:"Task",
+														desc:"Your responsibility",
 													},
 													{
-														letter: "A",
-														label: "Action",
-														desc: "What you did",
+														letter:"A",
+														label:"Action",
+														desc:"What you did",
 													},
-													{ letter: "R", label: "Result", desc: "The outcome" },
+													{ letter:"R", label:"Result", desc:"The outcome" },
 												].map((item, i) => (
 													<div
 														key={i}
@@ -1125,8 +1108,8 @@ const ApplicationGuide = () => {
 							)}
 
 							{/* ── Common Mistakes ── */}
-							{activeSection === "common" && (
-								<div className="font-dmsans animate-fadeIn space-y-6">
+							{activeSection ==="common" && (
+								<div className="animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -1141,20 +1124,20 @@ const ApplicationGuide = () => {
 												onClick={() => toggleSectionComplete("common")}
 												className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
 													completedSections.includes("common")
-														? "bg-[#EAF3DE] text-[#5AAD1F]"
-														: "bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
+														?"bg-[#EAF3DE] text-[#5AAD1F]"
+														:"bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
 												}`}
 											>
 												<CheckCircle
 													className={`w-3.5 h-3.5 ${
 														completedSections.includes("common")
-															? "fill-[#5AAD1F]"
-															: ""
+															?"fill-[#5AAD1F]"
+															:""
 													}`}
 												/>
 												{completedSections.includes("common")
-													? "Completed"
-													: "Mark Complete"}
+													?"Completed"
+													:"Mark Complete"}
 											</button>
 										</div>
 										<p className="text-gray-600 leading-relaxed mb-6">
@@ -1181,9 +1164,9 @@ const ApplicationGuide = () => {
 																</span>
 																<span
 																	className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
-																		item.severity === "high"
-																			? "bg-red-100 text-red-600"
-																			: "bg-amber-100 text-amber-600"
+																		item.severity ==="high"
+																			?"bg-red-100 text-red-600"
+																			:"bg-amber-100 text-amber-600"
 																	}`}
 																>
 																	{item.severity}
@@ -1211,15 +1194,7 @@ const ApplicationGuide = () => {
 											Quick Fix Checklist
 										</h3>
 										<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
-											{[
-												"Research the scholarship and its values",
-												"Brainstorm and outline your essay",
-												"Write a compelling opening hook",
-												"Highlight specific achievements with context",
-												"Connect your goals to the scholarship's mission",
-												"Proofread and edit (read aloud!)",
-												"Get feedback from a mentor or peer",
-												"Format according to requirements",
+											{["Research the scholarship and its values","Brainstorm and outline your essay","Write a compelling opening hook","Highlight specific achievements with context","Connect your goals to the scholarship's mission","Proofread and edit (read aloud!)","Get feedback from a mentor or peer","Format according to requirements",
 											].map((item, i) => (
 												<div
 													key={i}
@@ -1235,8 +1210,8 @@ const ApplicationGuide = () => {
 							)}
 
 							{/* ── Final Polish ── */}
-							{activeSection === "final" && (
-								<div className="font-dmsans animate-fadeIn space-y-6">
+							{activeSection ==="final" && (
+								<div className="animate-fadeIn space-y-6">
 									<div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-6 md:p-8">
 										<div className="flex items-center justify-between mb-4">
 											<div className="flex items-center gap-3">
@@ -1251,20 +1226,20 @@ const ApplicationGuide = () => {
 												onClick={() => toggleSectionComplete("final")}
 												className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
 													completedSections.includes("final")
-														? "bg-[#EAF3DE] text-[#5AAD1F]"
-														: "bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
+														?"bg-[#EAF3DE] text-[#5AAD1F]"
+														:"bg-gray-100 text-gray-500 hover:bg-[#F6FAF1] hover:text-[#5AAD1F]"
 												}`}
 											>
 												<CheckCircle
 													className={`w-3.5 h-3.5 ${
 														completedSections.includes("final")
-															? "fill-[#5AAD1F]"
-															: ""
+															?"fill-[#5AAD1F]"
+															:""
 													}`}
 												/>
 												{completedSections.includes("final")
-													? "Completed"
-													: "Mark Complete"}
+													?"Completed"
+													:"Mark Complete"}
 											</button>
 										</div>
 
@@ -1272,34 +1247,34 @@ const ApplicationGuide = () => {
 											<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 												{[
 													{
-														title: "Read Aloud",
-														desc: "Hear how your essay flows and catch awkward phrasing.",
-														tip: "Record yourself reading to catch issues you might miss visually.",
+														title:"Read Aloud",
+														desc:"Hear how your essay flows and catch awkward phrasing.",
+														tip:"Record yourself reading to catch issues you might miss visually.",
 													},
 													{
-														title: "Get Feedback",
-														desc: "Ask mentors, teachers, or peers to review your work.",
-														tip: "Give them specific questions: 'Is my hook compelling?' 'Is my connection clear?'",
+														title:"Get Feedback",
+														desc:"Ask mentors, teachers, or peers to review your work.",
+														tip:"Give them specific questions: 'Is my hook compelling?' 'Is my connection clear?'",
 													},
 													{
-														title: "Check Formatting",
-														desc: "Ensure fonts, margins, and spacing match requirements.",
-														tip: "Use the exact file format requested (PDF, DOCX, etc.).",
+														title:"Check Formatting",
+														desc:"Ensure fonts, margins, and spacing match requirements.",
+														tip:"Use the exact file format requested (PDF, DOCX, etc.).",
 													},
 													{
-														title: "Proofread Twice",
-														desc: "Check for typos, grammar, and punctuation errors.",
-														tip: "Read backward sentence by sentence to focus on each word.",
+														title:"Proofread Twice",
+														desc:"Check for typos, grammar, and punctuation errors.",
+														tip:"Read backward sentence by sentence to focus on each word.",
 													},
 													{
-														title: "Verify Word Count",
-														desc: "Stay within the specified limits.",
-														tip: "Most essays are 500-1000 words. Going over shows you can't follow directions.",
+														title:"Verify Word Count",
+														desc:"Stay within the specified limits.",
+														tip:"Most essays are 500-1000 words. Going over shows you can't follow directions.",
 													},
 													{
-														title: "Save as PDF",
-														desc: "Use the recommended format for submission.",
-														tip: "Name your file professionally: 'Firstname_Lastname_ScholarshipName.pdf'",
+														title:"Save as PDF",
+														desc:"Use the recommended format for submission.",
+														tip:"Name your file professionally: 'Firstname_Lastname_ScholarshipName.pdf'",
 													},
 												].map((item, i) => (
 													<div
@@ -1378,13 +1353,13 @@ const ApplicationGuide = () => {
 							)}
 
 							{/* Navigation */}
-							<div className="font-dmsans flex items-center gap-4 pt-4">
+							<div className="flex items-center gap-4 pt-4">
 								<div className="flex-1 h-px bg-gray-200/50" />
 								<span className="text-xs text-[#5AAD1F] font-medium">✦</span>
 								<div className="flex-1 h-px bg-gray-200/50" />
 							</div>
 
-							<div className="font-dmsans flex justify-between items-center">
+							<div className="flex justify-between items-center">
 								<button
 									onClick={() => {
 										const currentIndex = sections.findIndex(
@@ -1400,7 +1375,7 @@ const ApplicationGuide = () => {
 									Previous
 								</button>
 								<span className="text-xs text-gray-400">
-									{sections.findIndex((s) => s.id === activeSection) + 1} /{" "}
+									{sections.findIndex((s) => s.id === activeSection) + 1} /{""}
 									{sections.length}
 								</span>
 								<button
