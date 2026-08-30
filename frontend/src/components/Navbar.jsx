@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import logoImg from "../assets/images/logo.png";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Search, LogOut, ChevronDown } from "lucide-react";
+import { Search, LogOut, ChevronDown, Settings as SettingsIcon } from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
@@ -144,7 +144,7 @@ const Navbar = () => {
                 </button>
 
                 <div
-                  className={`absolute left-0.5 mt-2 w-44 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden transition-all duration-200 origin-top-right ${
+                  className={`absolute left-0.5 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden transition-all duration-200 origin-top-right ${
                     isProfileOpen
                       ? "opacity-100 scale-100"
                       : "opacity-0 scale-95 pointer-events-none"
@@ -158,6 +158,14 @@ const Navbar = () => {
                       {user.email}
                     </p>
                   </div>
+                  <NavLink
+                    to="/settings"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-[14px] font-medium text-gray-700 hover:bg-gray-50 hover:text-[#27500A] transition-all border-b border-gray-100"
+                  >
+                    <SettingsIcon size={15} />
+                    Settings
+                  </NavLink>
                   <button
                     onClick={handleLogout}
                     className="cursor-pointer w-full flex items-center gap-2 px-4 py-2.5 text-[14px] font-medium text-red-500 hover:bg-red-50 transition-all"
@@ -247,6 +255,22 @@ const Navbar = () => {
               <Search size={18} />
               <span>Search</span>
             </button>
+
+            {user && (
+              <NavLink
+                to="/settings"
+                className={({ isActive }) =>
+                  `px-4 py-2.5 text-md rounded-lg transition-all flex items-center gap-2.5 ${
+                    isActive
+                      ? "text-[#5AAD1F] font-bold bg-emerald-50/50 border-l-4 border-[#5AAD1F] rounded-l-none pl-3"
+                      : "text-gray-700 font-medium hover:bg-gray-50 hover:text-gray-900"
+                  }`
+                }
+              >
+                <SettingsIcon size={18} />
+                <span>Account Settings</span>
+              </NavLink>
+            )}
 
             {user ? (
               <button

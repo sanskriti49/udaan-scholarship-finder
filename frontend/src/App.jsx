@@ -12,6 +12,7 @@ import Scholarships from "./pages/Scholarships";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import ApplicationGuide from "./pages/ApplicationGuide";
 import HowToApply from "./pages/HowToApply";
+import Settings from "./pages/Settings";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       { path: "resources", element: <Resources /> },
       { path: "application-guide", element: <ApplicationGuide /> },
       { path: "how-to-apply", element: <HowToApply /> },
+      { path: "settings", element: <Settings /> },
     ],
   },
   { path: "signup", element: <SignUp /> },
