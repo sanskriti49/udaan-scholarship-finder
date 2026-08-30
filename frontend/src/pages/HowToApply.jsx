@@ -160,32 +160,32 @@ export default function HowToApply() {
       <section className="bg-white border-b border-[#E2EDCC] px-5 pt-10 pb-9 sm:pt-16 sm:pb-14 text-center">
         <div className="max-w-2xl mx-auto">
           {/* badge */}
-          <div className="inline-flex items-center gap-2 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[10px] font-bold tracking-widest px-3.5 py-1.5 rounded-full mb-5">
+          <div className="inline-flex items-center gap-2 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-xs font-bold tracking-wider px-4 py-1.5 rounded-full mb-5 shadow-2xs">
             <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
             Step-by-step guide
           </div>
 
-          <h1 className="text-[30px] sm:text-[46px] font-extrabold tracking-tight leading-[1.1] mb-3 sm:mb-4">
+          <h1 className="text-[32px] sm:text-[48px] font-extrabold tracking-tight leading-[1.1] mb-3 sm:mb-4">
             How to apply for a{" "}
             <span className="text-[#5AAD1F]">scholarship</span>
           </h1>
-          <p className="text-[14px] sm:text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto">
+          <p className="text-[15px] sm:text-[16px] text-gray-600 leading-relaxed max-w-xl mx-auto font-medium">
             From finding the right match to hitting submit — follow these five
             steps to put together an application that gets noticed.
           </p>
 
           {/* quick stat strip */}
-          <div className="flex justify-center gap-5 sm:gap-8 mt-8 pt-7 border-t border-[#E2EDCC]">
+          <div className="flex justify-center gap-6 sm:gap-10 mt-8 pt-7 border-t border-[#E2EDCC]">
             {[
               { num: "5", label: "clear steps" },
               { num: "10 min", label: "to read" },
               { num: "1,240+", label: "scholarships waiting" },
             ].map((s) => (
               <div key={s.label}>
-                <div className="text-[18px] sm:text-[22px] font-extrabold text-gray-900">
+                <div className="text-[20px] sm:text-[24px] font-extrabold text-gray-900">
                   {s.num}
                 </div>
-                <div className="text-[11px] sm:text-[12px] text-gray-400 mt-0.5">
+                <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mt-1">
                   {s.label}
                 </div>
               </div>
@@ -211,35 +211,35 @@ export default function HowToApply() {
               <div key={idx} className="relative flex gap-3 sm:gap-6">
                 {/* Step dot */}
                 <div className="relative z-10 flex flex-col items-center shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-white border-2 border-[#5AAD1F] flex items-center justify-center shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-white border-2 border-[#5AAD1F] flex items-center justify-center shadow-xs">
                     <span className="text-[#5AAD1F]">{step.icon}</span>
                   </div>
                 </div>
 
                 {/* Card */}
-                <div className="flex-1 min-w-0 bg-white border border-[#E2EDCC] rounded-2xl p-4 sm:p-6 mb-2 hover:border-[#C0DD97] hover:shadow-[0_4px_16px_rgba(90,173,31,0.08)] transition-all duration-200">
-                  {/* number pill + title — stacks on xs, inline on sm+ */}
+                <div className="flex-1 min-w-0 bg-white border border-[#E2EDCC] rounded-2xl p-5 sm:p-6 mb-2 hover:border-[#C0DD97] hover:shadow-md transition-all duration-200 shadow-2xs">
+                  {/* number pill + title */}
                   <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mb-2.5">
-                    <span className="text-[10px] font-extrabold tracking-widest text-[#5AAD1F] bg-[#EAF3DE] px-2.5 py-1 rounded-full shrink-0">
+                    <span className="text-[11px] font-extrabold tracking-wider text-[#27500A] bg-[#EAF3DE] px-3 py-1 rounded-full shrink-0">
                       STEP {step.number}
                     </span>
-                    <h3 className="text-[15px] sm:text-[16px] font-bold text-gray-900 leading-snug">
+                    <h3 className="text-[17px] sm:text-[18px] font-bold text-gray-900 leading-snug">
                       {step.title}
                     </h3>
                   </div>
 
-                  <p className="text-[13px] sm:text-[13.5px] text-gray-500 leading-relaxed mb-3 sm:mb-4">
+                  <p className="text-[14px] text-gray-700 leading-relaxed mb-4">
                     {step.description}
                   </p>
 
                   {/* checklist */}
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {step.details.map((d, i) => (
                       <li
                         key={i}
-                        className="flex items-start gap-2 sm:gap-2.5 text-[12.5px] sm:text-[13px] text-gray-600 font-medium"
+                        className="flex items-start gap-2.5 text-[13.5px] text-gray-800 font-medium"
                       >
-                        <span className="mt-0.5 w-4 h-4 rounded-full bg-[#EAF3DE] flex items-center justify-center shrink-0">
+                        <span className="mt-0.5 w-4.5 h-4.5 rounded-full bg-[#EAF3DE] flex items-center justify-center shrink-0">
                           <svg
                             className="w-2.5 h-2.5 text-[#5AAD1F]"
                             fill="none"
@@ -269,10 +269,10 @@ export default function HowToApply() {
       <section className="bg-white border-y border-[#E2EDCC] px-4 sm:px-5 py-10 sm:py-14">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-7 sm:mb-10">
-            <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase mb-2">
+            <p className="text-xs font-bold tracking-wider text-gray-600 uppercase mb-2">
               Things most students don't do
             </p>
-            <h2 className="text-[22px] sm:text-[24px] font-extrabold tracking-tight text-gray-900">
+            <h2 className="text-[22px] sm:text-[26px] font-extrabold tracking-tight text-gray-900">
               Pro tips that actually help
             </h2>
           </div>
@@ -280,15 +280,15 @@ export default function HowToApply() {
             {TIPS.map((t) => (
               <div
                 key={t.title}
-                className="bg-[#F7FAF3] border border-[#E2EDCC] rounded-2xl p-4 sm:p-5 hover:border-[#C0DD97] transition-colors duration-150"
+                className="bg-[#F7FAF3] border border-[#E2EDCC] rounded-2xl p-5 hover:border-[#C0DD97] hover:shadow-2xs transition-all duration-150"
               >
-                <div className="text-xl sm:text-2xl mb-2 sm:mb-3">
+                <div className="text-2xl mb-3">
                   {t.emoji}
                 </div>
-                <p className="text-[13.5px] sm:text-[14px] font-bold text-gray-900 mb-1">
+                <p className="text-[15px] font-bold text-gray-900 mb-1">
                   {t.title}
                 </p>
-                <p className="text-[12.5px] text-gray-500 leading-relaxed">
+                <p className="text-[13.5px] text-gray-700 leading-relaxed font-normal">
                   {t.body}
                 </p>
               </div>
@@ -299,7 +299,7 @@ export default function HowToApply() {
 
       {/* ── CTA ── */}
       <section className="px-4 sm:px-5 py-10 sm:py-16">
-        <div className="max-w-2xl mx-auto bg-white border border-[#E2EDCC] rounded-2xl sm:rounded-3xl px-5 py-9 sm:px-8 sm:py-12 text-center shadow-sm">
+        <div className="max-w-2xl mx-auto bg-white border border-[#E2EDCC] rounded-2xl sm:rounded-3xl px-6 py-9 sm:px-8 sm:py-12 text-center shadow-2xs">
           {/* green circle accent */}
           <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#EAF3DE] border border-[#C0DD97] flex items-center justify-center mx-auto mb-4 sm:mb-5">
             <svg
@@ -316,17 +316,17 @@ export default function HowToApply() {
               />
             </svg>
           </div>
-          <h2 className="text-[22px] sm:text-[26px] font-extrabold tracking-tight text-gray-900 mb-2.5 sm:mb-3">
+          <h2 className="text-[24px] sm:text-[28px] font-extrabold tracking-tight text-gray-900 mb-2.5 sm:mb-3">
             Ready to find your scholarship?
           </h2>
-          <p className="text-[13.5px] sm:text-[14px] text-gray-500 leading-relaxed mb-6 sm:mb-8 max-w-md mx-auto">
+          <p className="text-[14px] sm:text-[15px] text-gray-600 leading-relaxed mb-6 sm:mb-8 max-w-md mx-auto font-medium">
             Answer a few quick questions about your background and we'll surface
             every scholarship you're eligible for — ranked by deadline.
           </p>
           <div className="flex flex-col items-stretch sm:flex-row sm:items-center sm:justify-center gap-3">
             <Link
               to="/eligibility"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#5AAD1F] hover:bg-[#4A9A18] text-white text-[14px] font-bold transition-all duration-150 shadow-sm hover:shadow-md active:scale-[0.98]"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#5AAD1F] hover:bg-[#4A9A18] text-white text-[15px] font-bold transition-all duration-150 shadow-sm hover:shadow-md active:scale-[0.98]"
             >
               Check my eligibility
               <svg
@@ -345,7 +345,7 @@ export default function HowToApply() {
             </Link>
             <Link
               to="/scholarships"
-              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-[#DDECCB] bg-white hover:border-[#C0DD97] hover:bg-[#F6FAF1] text-[14px] font-semibold text-gray-700 transition-all duration-150"
+              className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border border-gray-300 bg-white hover:border-[#5AAD1F] hover:text-[#27500A] hover:bg-[#F6FAF1] text-[15px] font-bold text-gray-800 transition-all duration-150 shadow-2xs"
             >
               Browse all scholarships
             </Link>

@@ -180,27 +180,27 @@ function Support() {
       <section className="py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <Badge>Quick help</Badge>
-          <h2 className="text-3xl font-bold mb-1">
+          <h2 className="text-3xl font-bold mb-1 mt-2">
             What do you need help with?
           </h2>
-          <p className="text-[13.5px] text-gray-500 mb-6">
+          <p className="text-[14px] text-gray-600 mb-6 font-medium">
             Jump straight to the section that matches your question.
           </p>
           <div className="font-pangea grid grid-cols-2 md:grid-cols-3 gap-3">
             {quickHelp.map((c, i) => (
               <div
                 key={i}
-                className="border border-gray-200/80 hover:border-[#C0DD97] rounded-2xl p-5 cursor-pointer transition-colors duration-150"
+                className="border border-gray-200/90 hover:border-[#C0DD97] rounded-2xl p-5 cursor-pointer transition-all duration-150 shadow-2xs hover:shadow-sm bg-white"
               >
                 <div
                   className={`w-9 h-9 rounded-xl ${c.bg} flex items-center justify-center text-lg mb-3`}
                 >
                   {c.icon}
                 </div>
-                <h3 className="text-[18px] font-semibold text-gray-900 mb-1">
+                <h3 className="text-[18px] font-bold text-gray-900 mb-1">
                   {c.title}
                 </h3>
-                <p className="text-[13.5px] text-gray-500 leading-relaxed">
+                <p className="text-[13.5px] text-gray-600 leading-relaxed font-normal">
                   {c.desc}
                 </p>
               </div>
@@ -219,10 +219,10 @@ function Support() {
           {/* Left: Contact Form */}
           <div>
             <Badge>Contact Support</Badge>
-            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mt-4 mb-6">
+            <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight mt-4 mb-4">
               Let's talk.
             </h2>
-            <p className="text-gray-500 mb-10 max-w-md">
+            <p className="text-base text-gray-700 mb-8 max-w-md font-normal leading-relaxed">
               Tell us what's going on. Choose a topic so your query reaches the
               right team. We typically reply within a few hours during business
               days.
@@ -239,11 +239,11 @@ function Support() {
                   message: "",
                 });
               }}
-              className="flex flex-col gap-8"
+              className="flex flex-col gap-6"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+                  <label className="text-xs font-bold text-gray-700 tracking-wider uppercase">
                     Full Name
                   </label>
                   <input
@@ -257,11 +257,11 @@ function Support() {
                         name: e.target.value,
                       })
                     }
-                    className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors"
+                    className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 outline-none transition-all shadow-2xs"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+                  <label className="text-xs font-bold text-gray-700 tracking-wider uppercase">
                     Email
                   </label>
                   <input
@@ -275,13 +275,13 @@ function Support() {
                         email: e.target.value,
                       })
                     }
-                    className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors"
+                    className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 outline-none transition-all shadow-2xs"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+                <label className="text-xs font-bold text-gray-700 tracking-wider uppercase">
                   Topic
                 </label>
                 <select
@@ -292,7 +292,7 @@ function Support() {
                       topic: e.target.value,
                     })
                   }
-                  className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors cursor-pointer"
+                  className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-base text-gray-900 focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 outline-none transition-all cursor-pointer shadow-2xs font-medium"
                 >
                   <option>Scholarship issue</option>
                   <option>Eligibility question</option>
@@ -305,12 +305,12 @@ function Support() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+                <label className="text-xs font-bold text-gray-700 tracking-wider uppercase">
                   Message
                 </label>
                 <textarea
                   required
-                  placeholder="Describe your issue or question..."
+                  placeholder="Describe your issue or question in detail..."
                   value={contactForm.message}
                   onChange={(e) =>
                     setContactForm({
@@ -318,14 +318,14 @@ function Support() {
                       message: e.target.value,
                     })
                   }
-                  className="bg-transparent border-b border-gray-200 py-3 text-lg focus:border-[#5AAD1F] outline-none transition-colors resize-none min-h-20"
+                  className="bg-white border border-gray-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 outline-none transition-all resize-none min-h-28 shadow-2xs"
                 />
               </div>
 
-              <div className="mt-4">
+              <div className="mt-2">
                 <button
                   type="submit"
-                  className="cursor-pointer inline-flex items-center gap-3 bg-[#112915] text-white text-base font-semibold px-10 py-4 rounded-full hover:bg-[#5AAD1F] transition-all duration-300 active:scale-95"
+                  className="cursor-pointer inline-flex items-center gap-3 bg-[#112915] text-white text-base font-bold px-9 py-3.5 rounded-full hover:bg-[#5AAD1F] transition-all duration-300 active:scale-95 shadow-md"
                 >
                   Send Message
                   <Send size={18} />
@@ -335,47 +335,47 @@ function Support() {
           </div>
 
           {/* Right: Contact Info */}
-          <div className="flex flex-col gap-10 h-fit">
+          <div className="flex flex-col gap-8 h-fit bg-white p-7 rounded-3xl border border-gray-200/90 shadow-2xs">
             <div>
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-center gap-3 mb-2">
                 <Mail className="w-5 h-5 text-[#5AAD1F]" />
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+                <span className="text-xs font-bold text-gray-700 tracking-wider uppercase">
                   Email
                 </span>
               </div>
               <a
                 href="mailto:support@udaan.com"
-                className="text-xl font-medium hover:text-[#5AAD1F] transition-colors block"
+                className="text-lg font-bold text-gray-900 hover:text-[#5AAD1F] transition-colors block"
               >
                 support@udaan.com
               </a>
             </div>
 
             <div>
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-center gap-3 mb-2">
                 <Phone className="w-5 h-5 text-[#5AAD1F]" />
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+                <span className="text-xs font-bold text-gray-700 tracking-wider uppercase">
                   Phone
                 </span>
               </div>
-              <p className="text-xl font-medium">+91 98765 43210</p>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-lg font-bold text-gray-900">+91 98765 43210</p>
+              <p className="text-sm font-medium text-gray-600 mt-0.5">
                 Mon - Fri: 9am - 6pm IST
               </p>
             </div>
 
             <div>
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-center gap-3 mb-2">
                 <MapPin className="w-5 h-5 text-[#5AAD1F]" />
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">
+                <span className="text-xs font-bold text-gray-700 tracking-wider uppercase">
                   Office
                 </span>
               </div>
-              <p className="text-xl font-medium">Kolkata, India</p>
+              <p className="text-lg font-bold text-gray-900">Kolkata, India</p>
             </div>
 
-            <div className="bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl p-6 mt-4">
-              <p className="text-sm text-gray-700 leading-relaxed">
+            <div className="bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl p-5 mt-2">
+              <p className="text-sm text-gray-800 leading-relaxed">
                 <strong className="text-[#27500A]">Pro tip:</strong> If you're
                 reporting a scholarship issue, include the scholarship name,
                 official link, and what looks incorrect.
@@ -388,33 +388,33 @@ function Support() {
       <section className="py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <Badge>Help us improve</Badge>
-          <h2 className="text-3xl font-bold tracking-tight mb-1">
+          <h2 className="text-3xl font-bold tracking-tight mb-1 mt-2">
             Report or suggest
           </h2>
-          <p className="text-[13.5px] text-gray-500 mb-6">
+          <p className="text-[14px] text-gray-600 mb-6 font-medium">
             Your feedback directly improves listings for every student on Udaan.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border border-gray-200/80 rounded-2xl p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="border border-gray-200/90 rounded-2xl p-6 bg-white shadow-2xs">
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-[#FCEBEB] flex items-center justify-center text-sm">
                   🚩
                 </div>
-                <h3 className="text-[18px] font-bold">
+                <h3 className="text-[18px] font-bold text-gray-900">
                   Report incorrect scholarship
                 </h3>
               </div>
-              <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
+              <p className="text-[13.5px] text-gray-600 leading-relaxed mb-4">
                 Found a wrong deadline, broken link, or incorrect amount? Help
                 us fix it.
               </p>
               <div className="mb-3">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
+                <label className="block text-xs font-bold text-gray-700 tracking-wider uppercase mb-1.5">
                   Scholarship link
                 </label>
                 <input
                   type="url"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/20 transition shadow-2xs"
                   placeholder="https://..."
                   value={reportForm.link}
                   onChange={(e) =>
@@ -423,41 +423,41 @@ function Support() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
+                <label className="block text-xs font-bold text-gray-700 tracking-wider uppercase mb-1.5">
                   What's wrong?
                 </label>
                 <textarea
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8] resize-y min-h-18"
-                  placeholder="Describe the issue..."
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/20 transition resize-y min-h-20 shadow-2xs"
+                  placeholder="Describe the issue in detail..."
                   value={reportForm.issue}
                   onChange={(e) =>
                     setReportForm({ ...reportForm, issue: e.target.value })
                   }
                 />
               </div>
-              <button className="inline-flex items-center gap-1.5 bg-[#FCEBEB] text-[#791F1F] text-[14px] font-bold px-4 py-2 rounded-full border-none cursor-pointer hover:bg-red-100 transition-colors">
+              <button className="cursor-pointer inline-flex items-center gap-1.5 bg-[#FCEBEB] text-[#791F1F] text-[14px] font-bold px-5 py-2.5 rounded-full border-none hover:bg-red-100 transition-colors shadow-2xs">
                 Submit report
               </button>
             </div>
 
-            <div className="border border-gray-200/80 rounded-2xl p-6">
+            <div className="border border-gray-200/90 rounded-2xl p-6 bg-white shadow-2xs">
               <div className="flex items-center gap-2.5 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-[#FAEEDA] flex items-center justify-center text-sm">
                   💡
                 </div>
-                <h3 className="text-[18px] font-bold">Suggest a scholarship</h3>
+                <h3 className="text-[18px] font-bold text-gray-900">Suggest a scholarship</h3>
               </div>
-              <p className="text-[12.5px] text-gray-500 leading-relaxed mb-4">
+              <p className="text-[13.5px] text-gray-600 leading-relaxed mb-4">
                 Know a scholarship we haven't listed? Share it and we'll review
                 it.
               </p>
-              <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
+                  <label className="block text-xs font-bold text-gray-700 tracking-wider uppercase mb-1.5">
                     Organisation
                   </label>
                   <input
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/20 transition shadow-2xs"
                     placeholder="Name"
                     value={suggestForm.org}
                     onChange={(e) =>
@@ -466,11 +466,11 @@ function Support() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
+                  <label className="block text-xs font-bold text-gray-700 tracking-wider uppercase mb-1.5">
                     Scholarship name
                   </label>
                   <input
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
+                    className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/20 transition shadow-2xs"
                     placeholder="Name"
                     value={suggestForm.name}
                     onChange={(e) =>
@@ -480,12 +480,12 @@ function Support() {
                 </div>
               </div>
               <div className="mb-3">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
+                <label className="block text-xs font-bold text-gray-700 tracking-wider uppercase mb-1.5">
                   Website
                 </label>
                 <input
                   type="url"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8]"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/20 transition shadow-2xs"
                   placeholder="https://..."
                   value={suggestForm.website}
                   onChange={(e) =>
@@ -494,11 +494,11 @@ function Support() {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-[10px] font-bold text-gray-400 tracking-widest uppercase mb-1.5">
+                <label className="block text-xs font-bold text-gray-700 tracking-wider uppercase mb-1.5">
                   Notes
                 </label>
                 <textarea
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#3B7DC8] resize-y min-h-11"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-[#3B7DC8] focus:ring-2 focus:ring-[#3B7DC8]/20 transition resize-y min-h-14 shadow-2xs"
                   placeholder="Any additional details..."
                   value={suggestForm.notes}
                   onChange={(e) =>
@@ -506,7 +506,7 @@ function Support() {
                   }
                 />
               </div>
-              <button className="inline-flex items-center gap-1.5 bg-[#EAF3DE] text-[#27500A] text-[14px] font-bold px-4 py-2 rounded-full border-none cursor-pointer hover:bg-[#D4EBB0] transition-colors">
+              <button className="cursor-pointer inline-flex items-center gap-1.5 bg-[#EAF3DE] text-[#27500A] text-[14px] font-bold px-5 py-2.5 rounded-full border-none hover:bg-[#D4EBB0] transition-colors shadow-2xs">
                 + Suggest scholarship
               </button>
             </div>
@@ -517,19 +517,19 @@ function Support() {
       <hr className="border-gray-100 mx-6" />
 
       <section className="py-8 px-6">
-        <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-2xs">
           <div>
-            <h3 className="text-[17px] font-bold mb-1">
+            <h3 className="text-[18px] font-bold text-gray-900 mb-1">
               Can't find the right scholarship?
             </h3>
-            <p className="text-[13px] text-gray-600 max-w-md leading-relaxed">
+            <p className="text-[14px] text-gray-700 max-w-md leading-relaxed">
               Tell us your course, state, and category — Udaan will surface
               opportunities suited to your profile.
             </p>
           </div>
           <Link
             to="/scholarships"
-            className="shrink-0 bg-[#5AAD1F] text-white text-[15px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors"
+            className="cursor-pointer shrink-0 bg-[#5AAD1F] text-white text-[15px] font-bold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors shadow-2xs"
           >
             Explore scholarships
           </Link>
@@ -541,14 +541,14 @@ function Support() {
       <section className="py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <Badge>FAQs</Badge>
-          <h2 className="text-2xl font-bold tracking-tight mb-1">
+          <h2 className="text-2xl font-bold tracking-tight mb-1 mt-2">
             Frequently asked questions
           </h2>
-          <p className="text-[13px] text-gray-500 mb-6">
+          <p className="text-[14px] text-gray-600 mb-6 font-medium">
             Everything you need to know about applying through Udaan.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-3">
               {faqLeft.map((f, i) => (
                 <FaqItem
                   key={i * 2}
@@ -559,7 +559,7 @@ function Support() {
                 />
               ))}
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {faqRight.map((f, i) => (
                 <FaqItem
                   key={i * 2 + 1}

@@ -86,7 +86,7 @@ const Navbar = () => {
                 <span style={{ color: "#5AAD1F" }}>uda</span>
                 <span style={{ color: "#3B7DC8" }}>an</span>
               </span>
-              <span className="text-[8px] font-bold tracking-widest text-gray-400 uppercase mt-0.5">
+              <span className="text-[10px] font-bold tracking-wider text-emerald-800 uppercase mt-0.5">
                 find your scholarship
               </span>
             </div>
@@ -94,7 +94,7 @@ const Navbar = () => {
 
           {/* desktop */}
 
-          <div className="hidden md:flex items-center bg-gray-100/80 border border-gray-200/50 rounded-full p-1 gap-1">
+          <div className="hidden md:flex items-center bg-gray-100/90 border border-gray-200/80 rounded-full p-1 gap-1">
             {navLinks.map((link) => (
               <NavLink
                 key={link.name}
@@ -103,7 +103,7 @@ const Navbar = () => {
                   `px-4 py-1.5 text-[14px] rounded-full border transition-all duration-200 ease-out whitespace-nowrap ${
                     isActive
                       ? "bg-white text-gray-900 font-semibold shadow-xs border-black/5"
-                      : "text-gray-500 font-medium border-transparent hover:text-gray-900 hover:bg-white/40"
+                      : "text-gray-700 font-medium border-transparent hover:text-gray-900 hover:bg-white/80"
                   }`
                 }
               >
@@ -114,7 +114,7 @@ const Navbar = () => {
 
           <div className="flex items-center gap-2.5 shrink-0">
             <button
-              className="cursor-pointer hidden sm:flex w-9 h-9 items-center justify-center rounded-full border border-gray-200 bg-white/80 text-gray-500 hover:text-gray-900 hover:bg-white transition-all"
+              className="cursor-pointer hidden sm:flex w-9 h-9 items-center justify-center rounded-full border border-gray-200 bg-white/80 text-gray-700 hover:text-gray-900 hover:bg-white transition-all shadow-2xs"
               aria-label="Search"
             >
               <Search size={16} />
@@ -124,7 +124,7 @@ const Navbar = () => {
               <div className="relative hidden md:block" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen((prev) => !prev)}
-                  className="cursor-pointer flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-gray-200 bg-white/80 hover:bg-white transition-all"
+                  className="cursor-pointer flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-gray-200 bg-white/80 hover:bg-white transition-all shadow-2xs"
                 >
                   <div
                     className="w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-bold text-white shrink-0"
@@ -132,12 +132,12 @@ const Navbar = () => {
                   >
                     {initials}
                   </div>
-                  <span className="text-[14px] font-semibold text-gray-700 max-w-25 truncate">
+                  <span className="text-[14px] font-semibold text-gray-800 max-w-25 truncate">
                     {user.name?.split(" ")[0] || "Account"}
                   </span>
                   <ChevronDown
                     size={14}
-                    className={`text-gray-400 transition-transform ${
+                    className={`text-gray-500 transition-transform ${
                       isProfileOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -154,7 +154,7 @@ const Navbar = () => {
                     <p className="text-[13px] font-semibold text-gray-900 truncate">
                       {user.name}
                     </p>
-                    <p className="text-[12px] text-gray-400 truncate">
+                    <p className="text-[12px] text-gray-600 truncate">
                       {user.email}
                     </p>
                   </div>
@@ -218,7 +218,7 @@ const Navbar = () => {
                   <span className="text-[14px] font-semibold text-gray-900 truncate">
                     {user.name}
                   </span>
-                  <span className="text-[12px] text-gray-400 truncate mt-1">
+                  <span className="text-[12px] text-gray-600 truncate mt-1">
                     {user.email}
                   </span>
                 </div>
@@ -233,7 +233,7 @@ const Navbar = () => {
                   `px-4 py-2.5 text-md rounded-lg transition-all ${
                     isActive
                       ? "text-[#5AAD1F] font-bold bg-emerald-50/50 border-l-4 border-[#5AAD1F] rounded-l-none pl-3"
-                      : "text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900"
+                      : "text-gray-700 font-medium hover:bg-gray-50 hover:text-gray-900"
                   }`
                 }
               >
@@ -241,7 +241,7 @@ const Navbar = () => {
               </NavLink>
             ))}
             <button
-              className="cursor-pointer flex items-center gap-3 px-4 py-2.5 text-base font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all text-left w-full"
+              className="cursor-pointer flex items-center gap-3 px-4 py-2.5 text-base font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all text-left w-full"
               aria-label="Search"
             >
               <Search size={18} />

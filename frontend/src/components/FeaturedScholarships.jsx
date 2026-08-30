@@ -63,7 +63,7 @@ function FeaturedScholarships() {
                   for you
                 </span>
               </h2>
-              <p className="mt-2 text-sm text-gray-500 leading-relaxed">
+              <p className="mt-2 text-base text-gray-600 leading-relaxed font-medium">
                 Curated, verified opportunities — sorted by deadline, not noise.
               </p>
             </div>
@@ -79,53 +79,53 @@ function FeaturedScholarships() {
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {scholarships.map((s) => (
             <div
               key={s.id}
-              className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden flex flex-col hover:border-[#C0DD97] hover:-translate-y-0.5 transition-all duration-150 cursor-pointer group"
+              className="bg-white border border-gray-200/90 rounded-2xl overflow-hidden flex flex-col hover:border-[#C0DD97] hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group shadow-2xs"
             >
               <div className="p-5 flex flex-col gap-3 flex-1">
                 <div className="flex items-center justify-between">
                   <span
-                    className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${s.badgeClass}`}
+                    className={`text-[11.5px] font-bold px-3 py-1 rounded-full ${s.badgeClass}`}
                   >
                     {s.category}
                   </span>
-                  <span className="font-inter flex items-center gap-1 text-[12px] font-semibold text-gray-400">
-                    <Clock size={12} />
+                  <span className="font-inter flex items-center gap-1 text-[12.5px] font-semibold text-gray-600">
+                    <Clock size={13} className="text-[#5AAD1F]" />
                     {getDaysLeft(s.deadline)} days left
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-[21px] font-pangea font-medium text-gray-900">
+                  <h3 className="text-[20px] font-pangea font-bold text-gray-900 leading-snug">
                     {s.title}
                   </h3>
-                  <div className="flex items-center gap-1.5 mt-1 text-[14px] text-gray-400">
-                    <Calendar size={14} /> Deadline{" "}
+                  <div className="flex items-center gap-1.5 mt-1 text-[13.5px] text-gray-600 font-medium">
+                    <Calendar size={14} className="text-gray-500" /> Deadline{" "}
                     {formatDeadline(s.deadline)}{" "}
                   </div>
                 </div>
 
-                <p className="font-inter text-[14px] text-gray-500 leading-relaxed flex-1">
+                <p className="font-inter text-[14px] text-gray-700 leading-relaxed flex-1">
                   {s.description}
                 </p>
               </div>
 
-              <div className="group/card border-t border-gray-100 px-5 py-3.5 flex items-center justify-between">
+              <div className="group/card border-t border-gray-100 px-5 py-4 flex items-center justify-between bg-gray-50/40">
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                  <span className="text-[11px] font-bold tracking-wider text-gray-600 uppercase">
                     Award
                   </span>
-                  <span className="font-inter text-xl font-extrabold text-[#5AAD1F] tracking-tight leading-none">
+                  <span className="font-inter text-xl font-extrabold text-[#3B8210] tracking-tight leading-none">
                     {s.amount}
-                    <span className="text-[11px] font-medium text-gray-400 tracking-normal">
+                    <span className="text-[12px] font-semibold text-gray-600 tracking-normal ml-0.5">
                       /yr
                     </span>
                   </span>
                 </div>
-                <button className="font-pangea group/btn cursor-pointer flex items-center gap-1.5 px-4 py-2 bg-gray-900 hover:bg-[#5AAD1F] text-white rounded-full transition-colors duration-200">
+                <button className="font-pangea group/btn cursor-pointer flex items-center gap-1.5 px-4.5 py-2 bg-gray-900 hover:bg-[#5AAD1F] text-white font-semibold text-sm rounded-full transition-colors duration-200 shadow-xs">
                   Apply now
                 </button>
               </div>

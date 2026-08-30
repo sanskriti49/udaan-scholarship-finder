@@ -19,7 +19,7 @@ function Hero() {
                 </span>
               </h1>
 
-              <p className="text-gray-600 text-lg sm:text-xl max-w-xl font-normal leading-relaxed">
+              <p className="text-gray-700 text-lg sm:text-xl max-w-xl font-normal leading-relaxed">
                 Empowering students to turn aspirations into achievements with
                 verified pathways and simple applications.
               </p>
@@ -29,8 +29,8 @@ function Hero() {
               <div className="relative grow">
                 <input
                   type="text"
-                  placeholder="Search scholarships..."
-                  className="w-full px-5 py-3 rounded-full border border-gray-200 bg-white text-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  placeholder="Search scholarships (e.g., Engineering, NSP, Girls)..."
+                  className="w-full px-5 py-3 rounded-full border border-gray-300 bg-white text-md text-gray-900 placeholder:text-gray-500 shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                 />
               </div>
               <button className="cursor-pointer px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-md rounded-full transition-all duration-200 shadow-md shadow-emerald-600/10 active:scale-98">
@@ -51,28 +51,28 @@ function Hero() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-8 border-t border-gray-100 mt-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-8 border-t border-gray-200 mt-4">
               <div className="pr-2">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-600">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-700">
                   1,000+
                 </h2>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+                <p className="text-xs sm:text-sm text-gray-700 font-semibold mt-1">
                   Scholarships Active
                 </p>
               </div>
               <div className="pl-4 pr-2">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-600">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-700">
                   500+
                 </h2>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+                <p className="text-xs sm:text-sm text-gray-700 font-semibold mt-1">
                   Partner Colleges
                 </p>
               </div>
               <div className="pl-4">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-600">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-emerald-700">
                   95%
                 </h2>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+                <p className="text-xs sm:text-sm text-gray-700 font-semibold mt-1">
                   Verified Rate
                 </p>
               </div>

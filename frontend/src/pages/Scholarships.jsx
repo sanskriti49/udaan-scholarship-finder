@@ -174,7 +174,7 @@ const SORTS = [
 function FilterChips({ label, options, active, onChange }) {
   return (
     <div className="mb-5">
-      <p className="text-[11px] font-bold tracking-widest text-gray-400 uppercase mb-2">
+      <p className="text-xs font-bold tracking-wider text-gray-700 uppercase mb-2">
         {label}
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -182,10 +182,10 @@ function FilterChips({ label, options, active, onChange }) {
           <button
             key={o}
             onClick={() => onChange(o)}
-            className={`cursor-pointer text-[12px] font-medium px-2.5 py-1 rounded-full border transition-all duration-150 ${
+            className={`cursor-pointer text-[12px] font-medium px-3 py-1 rounded-full border transition-all duration-150 ${
               active === o
-                ? "bg-[#EAF3DE] border-[#C0DD97] text-[#27500A] font-semibold shadow-sm"
-                : "bg-white border-gray-200 text-gray-500 hover:border-[#C0DD97] hover:text-[#3B6D11]"
+                ? "bg-[#EAF3DE] border-[#C0DD97] text-[#27500A] font-bold shadow-2xs"
+                : "bg-white border-gray-300 text-gray-700 hover:border-[#5AAD1F] hover:text-[#27500A] hover:bg-[#F6FAF1]"
             }`}
           >
             {o}
@@ -200,7 +200,7 @@ function DeadlineProgress({ days }) {
   const maxDays = 60;
   const percent = Math.min((days / maxDays) * 100, 100);
   const color =
-    days <= 10 ? "bg-red-500" : days <= 30 ? "bg-amber-500" : "bg-green-400";
+    days <= 10 ? "bg-red-500" : days <= 30 ? "bg-amber-500" : "bg-[#5AAD1F]";
   return (
     <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
       <div
@@ -214,20 +214,19 @@ function DeadlineProgress({ days }) {
 function DeadlineTag({ days }) {
   if (days <= 10)
     return (
-      <span className="flex items-center gap-1 text-[11px] font-semibold text-red-600">
-        <Clock size={11} className="animate-pulse" /> {days} days left — closing
-        soon
+      <span className="flex items-center gap-1 text-[11.5px] font-bold text-red-600">
+        <Clock size={12} className="animate-pulse" /> {days} days left — closing soon
       </span>
     );
   if (days <= 30)
     return (
-      <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-700">
-        <Clock size={11} /> {days} days left
+      <span className="flex items-center gap-1 text-[11.5px] font-bold text-amber-800">
+        <Clock size={12} /> {days} days left
       </span>
     );
   return (
-    <span className="flex items-center gap-1 text-[11px] font-semibold text-gray-400">
-      <Clock size={11} /> {days} days left
+    <span className="flex items-center gap-1 text-[11.5px] font-semibold text-gray-600">
+      <Clock size={12} className="text-gray-500" /> {days} days left
     </span>
   );
 }
@@ -235,12 +234,12 @@ function DeadlineTag({ days }) {
 function ScholarshipCard({ s, saved, onSave, onClick }) {
   return (
     <div
-      className="group bg-white border border-gray-200/80 rounded-2xl p-4 flex flex-col gap-3 transition-all duration-200 hover:shadow-xl hover:border-[#C0DD97] hover:-translate-y-1 cursor-pointer"
+      className="group bg-white border border-gray-200/90 rounded-2xl p-4.5 flex flex-col gap-3 transition-all duration-200 hover:shadow-xl hover:border-[#C0DD97] hover:-translate-y-1 cursor-pointer shadow-2xs"
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-2">
         <span
-          className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${s.catBg} ${s.catText} flex items-center gap-1`}
+          className={`text-[11.5px] font-bold px-2.5 py-1 rounded-full ${s.catBg} ${s.catText} flex items-center gap-1`}
         >
           {s.popular && <Star size={10} className="fill-current" />}
           {s.cat}
@@ -250,40 +249,40 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
             e.stopPropagation();
             onSave(s.id);
           }}
-          className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 transition-all duration-200 ${
+          className={`w-7.5 h-7.5 rounded-lg border flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer ${
             saved
-              ? "bg-[#EAF3DE] border-[#C0DD97] scale-110"
+              ? "bg-[#EAF3DE] border-[#C0DD97] scale-105"
               : "border-gray-200 hover:border-[#C0DD97] hover:bg-[#EAF3DE]"
           }`}
           aria-label="Bookmark"
         >
           {saved ? (
-            <BookmarkCheck size={13} className="text-[#5AAD1F]" />
+            <BookmarkCheck size={14} className="text-[#5AAD1F]" />
           ) : (
             <Bookmark
-              size={13}
-              className="text-gray-400 group-hover:text-[#5AAD1F]"
+              size={14}
+              className="text-gray-500 group-hover:text-[#5AAD1F]"
             />
           )}
         </button>
       </div>
 
       <div>
-        <h3 className="text-[16.5px] font-semibold text-gray-900 leading-snug">
+        <h3 className="text-[17px] font-bold text-gray-900 leading-snug group-hover:text-[#27500A] transition-colors">
           {s.title}
         </h3>
-        <p className="font-inter text-[12.5px] text-gray-400 mt-0.5">{s.org}</p>
+        <p className="font-inter text-[13px] text-gray-600 font-medium mt-0.5">{s.org}</p>
       </div>
 
-      <p className="text-[13.5px] text-gray-500 leading-relaxed line-clamp-2 flex-1">
+      <p className="text-[13.5px] text-gray-700 leading-relaxed line-clamp-2 flex-1">
         {s.desc}
       </p>
 
       <div className="font-inter flex items-center justify-between pt-2.5 border-t border-gray-100">
         <div>
-          <div className="text-[18px] font-extrabold text-[#5AAD1F] tracking-tight leading-none">
+          <div className="text-[18px] font-extrabold text-[#3B8210] tracking-tight leading-none">
             {s.amount}
-            <span className="text-[12px] font-medium text-gray-400">
+            <span className="text-[12px] font-semibold text-gray-600 ml-0.5">
               {s.amtSub}
             </span>
           </div>
@@ -292,7 +291,7 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
           </div>
         </div>
         <button
-          className="cursor-pointer text-[13px] font-bold px-3.5 py-1.5 bg-gray-900 group-hover:bg-[#5AAD1F] text-white rounded-full transition-colors duration-150"
+          className="cursor-pointer text-[13px] font-bold px-3.5 py-1.5 bg-gray-900 group-hover:bg-[#5AAD1F] text-white rounded-full transition-colors duration-150 shadow-xs"
           onClick={(e) => {
             e.stopPropagation();
             alert(`Apply for ${s.title}`);
@@ -312,57 +311,57 @@ function ScholarshipModal({ scholarship, onClose }) {
   if (!scholarship) return null;
   return (
     <div
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white max-w-lg w-full rounded-3xl p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200"
+        className="bg-white max-w-lg w-full rounded-3xl p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200 border border-gray-100"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-900 cursor-pointer p-1 rounded-full hover:bg-gray-100 transition-colors"
         >
           <X size={20} />
         </button>
         <div className="mb-4">
           <span
-            className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${scholarship.catBg} ${scholarship.catText}`}
+            className={`text-[11px] font-bold px-2.5 py-1 rounded-full ${scholarship.catBg} ${scholarship.catText}`}
           >
             {scholarship.cat}
           </span>
-          <h2 className="text-2xl font-extrabold mt-2">{scholarship.title}</h2>
-          <p className="text-sm text-gray-500">{scholarship.org}</p>
+          <h2 className="text-2xl font-extrabold text-gray-900 mt-2">{scholarship.title}</h2>
+          <p className="text-sm font-semibold text-gray-600">{scholarship.org}</p>
         </div>
         <p className="text-gray-700 text-sm leading-relaxed mb-4">
           {scholarship.desc}
         </p>
-        <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid grid-cols-2 gap-3 text-sm bg-gray-50/70 p-4 rounded-2xl border border-gray-100">
           <div>
-            <span className="text-gray-400">Amount</span>
-            <p className="font-bold text-[#5AAD1F]">
+            <span className="text-xs font-bold text-gray-600 uppercase tracking-wider block mb-0.5">Amount</span>
+            <p className="font-extrabold text-[#3B8210] text-base">
               {scholarship.amount} {scholarship.amtSub}
             </p>
           </div>
           <div>
-            <span className="text-gray-400">Deadline</span>
-            <p className="font-medium">{scholarship.daysLeft} days left</p>
+            <span className="text-xs font-bold text-gray-600 uppercase tracking-wider block mb-0.5">Deadline</span>
+            <p className="font-semibold text-gray-900">{scholarship.daysLeft} days left</p>
           </div>
           <div>
-            <span className="text-gray-400">Level</span>
-            <p className="font-medium">{scholarship.level}</p>
+            <span className="text-xs font-bold text-gray-600 uppercase tracking-wider block mb-0.5">Level</span>
+            <p className="font-semibold text-gray-900">{scholarship.level}</p>
           </div>
           <div>
-            <span className="text-gray-400">State</span>
-            <p className="font-medium">{scholarship.state}</p>
+            <span className="text-xs font-bold text-gray-600 uppercase tracking-wider block mb-0.5">State</span>
+            <p className="font-semibold text-gray-900">{scholarship.state}</p>
           </div>
           <div className="col-span-2">
-            <span className="text-gray-400">Source</span>
-            <p className="font-medium">{scholarship.source}</p>
+            <span className="text-xs font-bold text-gray-600 uppercase tracking-wider block mb-0.5">Source</span>
+            <p className="font-semibold text-gray-900">{scholarship.source}</p>
           </div>
         </div>
         <button
-          className="mt-6 w-full bg-[#3B7DC8] text-white font-bold py-2.5 rounded-xl hover:bg-[#2E66A4] transition-colors"
+          className="mt-6 w-full bg-[#3B7DC8] hover:bg-[#2E66A4] text-white font-bold py-3 rounded-xl transition-colors shadow-sm cursor-pointer"
           onClick={() => alert(`Apply for ${scholarship.title}`)}
         >
           Apply Now
@@ -455,35 +454,35 @@ function Scholarships() {
 
   return (
     <main className="font-pangea bg-gray-50 min-h-screen">
-      <section className="bg-linear-to-br from-[#F6FAF1] to-white border-b border-[#DDECCB] py-6 px-4">
+      <section className="bg-linear-to-br from-[#F6FAF1] to-white border-b border-[#DDECCB] py-7 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
               <span className="text-[#3B7DC8]">Scholarships</span> for your
               future
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm font-medium text-gray-600 mt-1">
               {filtered.length} opportunities found
             </p>
           </div>
           <div className="flex gap-6 text-base">
             <div>
-              <span className="text-xl block font-semibold text-gray-900">
+              <span className="text-xl block font-bold text-gray-900">
                 1,240+
               </span>
-              <span className="text-gray-400">total listings</span>
+              <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">total listings</span>
             </div>
             <div>
-              <span className="text-xl block font-semibold text-gray-900">
+              <span className="text-xl block font-bold text-gray-900">
                 38
               </span>
-              <span className="text-gray-400">closing this month</span>
+              <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">closing this month</span>
             </div>
             <div>
-              <span className="text-xl block font-semibold text-gray-900">
+              <span className="text-xl block font-bold text-emerald-700">
                 95%
               </span>
-              <span className="text-gray-400">verified</span>
+              <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">verified</span>
             </div>
           </div>
         </div>
@@ -492,11 +491,11 @@ function Scholarships() {
           <div className="flex-1 relative w-full">
             <Search
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500"
             />
             <input
-              className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#3B7DC8]/30 transition"
-              placeholder="Search scholarships by name, organisation..."
+              className="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3B7DC8]/30 focus:border-[#3B7DC8] transition shadow-2xs"
+              placeholder="Search scholarships by name, organisation, course..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -506,18 +505,18 @@ function Scholarships() {
               onClick={() => setShowSavedOnly(!showSavedOnly)}
               className={`cursor-pointer flex items-center gap-1.5 text-sm font-semibold px-4 py-2.5 rounded-xl border transition-all ${
                 showSavedOnly
-                  ? "bg-[#EAF3DE] border-[#C0DD97] text-[#27500A]"
-                  : "bg-white border-gray-200 text-gray-500 hover:border-[#C0DD97]"
+                  ? "bg-[#EAF3DE] border-[#C0DD97] text-[#27500A] shadow-2xs"
+                  : "bg-white border-gray-300 text-gray-700 hover:border-[#C0DD97] hover:text-[#27500A]"
               }`}
             >
-              <BookmarkCheck size={14} />
+              <BookmarkCheck size={15} className={showSavedOnly ? "text-[#5AAD1F]" : "text-gray-500"} />
               Saved
             </button>
             <button
               onClick={() => setIsFilterOpen(true)}
-              className="lg:hidden flex items-center gap-1.5 text-sm font-semibold px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-500"
+              className="lg:hidden flex items-center gap-1.5 text-sm font-semibold px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-gray-700"
             >
-              <Filter size={14} />
+              <Filter size={15} />
               Filters
             </button>
           </div>
@@ -525,12 +524,12 @@ function Scholarships() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8">
-        <aside className="hidden lg:block sticky top-24 self-start">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-bold">Filters</span>
+        <aside className="hidden lg:block sticky top-24 self-start bg-white p-5 rounded-2xl border border-gray-200/90 shadow-2xs">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+            <span className="text-base font-bold text-gray-900">Filters</span>
             <button
               onClick={clearAll}
-              className="cursor-pointer text-sm text-[#3B7DC8] font-semibold hover:underline"
+              className="cursor-pointer text-xs text-[#3B7DC8] font-bold hover:underline"
             >
               Clear all
             </button>
@@ -559,8 +558,8 @@ function Scholarships() {
             active={source}
             onChange={setSource}
           />
-          <div className="mb-5">
-            <p className="text-[11px] font-bold tracking-widest text-gray-400 uppercase mb-2">
+          <div className="mb-2">
+            <p className="text-xs font-bold tracking-wider text-gray-700 uppercase mb-2">
               Min. award amount
             </p>
             <input
@@ -572,7 +571,7 @@ function Scholarships() {
               onChange={(e) => setMinAmt(Number(e.target.value))}
               className="cursor-pointer w-full accent-[#5AAD1F]"
             />
-            <p className="text-xs font-semibold text-[#3B6D11] mt-1">
+            <p className="text-xs font-bold text-[#27500A] mt-1">
               ₹{minAmt.toLocaleString("en-IN")}+
             </p>
           </div>
@@ -580,7 +579,7 @@ function Scholarships() {
 
         <div>
           <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-700 font-medium">
               Showing{" "}
               <strong className="text-gray-900">
                 {Math.min(visible, filtered.length)}
@@ -588,12 +587,12 @@ function Scholarships() {
               of <strong className="text-gray-900">{filtered.length}</strong>{" "}
               scholarships
             </p>
-            <div className="flex items-center gap-2 text-sm text-slate-400">
-              Sort by
+            <div className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+              Sort by:
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
-                className="cursor-pointer border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-600 outline-none focus:border-[#3B7DC8]"
+                className="cursor-pointer border border-gray-300 rounded-lg px-2.5 py-1.5 text-xs text-gray-800 font-semibold outline-none focus:border-[#3B7DC8] bg-white shadow-2xs"
               >
                 {SORTS.map((s) => (
                   <option key={s}>{s}</option>
@@ -607,7 +606,7 @@ function Scholarships() {
               {activeChips.map((c) => (
                 <span
                   key={c}
-                  className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-xs font-semibold px-2.5 py-1 rounded-full cursor-pointer"
+                  className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-xs font-bold px-3 py-1 rounded-full cursor-pointer hover:bg-[#D4EBB0] transition-colors"
                   onClick={clearAll}
                 >
                   {c} ×
@@ -629,16 +628,16 @@ function Scholarships() {
           </div>
 
           {filtered.length === 0 && (
-            <div className="text-center py-16">
-              <p className="text-base font-semibold text-gray-900 mb-1">
+            <div className="text-center py-16 bg-white rounded-2xl border border-gray-200/80 p-8 shadow-2xs">
+              <p className="text-lg font-bold text-gray-900 mb-1">
                 No scholarships found
               </p>
-              <p className="text-sm text-gray-400 mb-4">
+              <p className="text-sm text-gray-600 mb-4 font-medium">
                 Try adjusting your filters or search term.
               </p>
               <button
                 onClick={clearAll}
-                className="text-[#3B7DC8] text-sm font-semibold border-b border-transparent hover:border-[#3B7DC8] transition-colors"
+                className="text-[#3B7DC8] text-sm font-bold border-b border-transparent hover:border-[#3B7DC8] transition-colors cursor-pointer"
               >
                 Clear all filters
               </button>
@@ -649,7 +648,7 @@ function Scholarships() {
             <div className="text-center pt-6">
               <button
                 onClick={() => setVisible((v) => v + 8)}
-                className="text-sm font-semibold px-6 py-2.5 border border-gray-200 rounded-full text-gray-500 hover:border-[#C0DD97] hover:text-[#3B6D11] transition-all"
+                className="text-sm font-bold px-7 py-3 border border-gray-300 bg-white rounded-full text-gray-800 hover:border-[#5AAD1F] hover:text-[#27500A] hover:bg-[#F6FAF1] transition-all shadow-xs cursor-pointer"
               >
                 Load more scholarships
               </button>

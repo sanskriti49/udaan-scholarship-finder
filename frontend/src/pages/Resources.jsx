@@ -184,13 +184,13 @@ export default function Resources() {
               Everything you need to{" "}
               <span className="text-[#5AAD1F]">succeed and get funded</span>
             </h1>
-            <p className="text-sm sm:text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto px-2">
+            <p className="text-sm sm:text-[15.5px] text-gray-600 leading-relaxed max-w-xl mx-auto px-2 font-medium">
               Guides, document checklists, templates, and essential resources to
               maximize your chances of securing a scholarship.
             </p>
             <div className="max-w-md mx-auto mt-6 relative">
               <svg
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -204,10 +204,10 @@ export default function Resources() {
               </svg>
               <input
                 type="text"
-                placeholder="Search resources..."
+                placeholder="Search resources, guides, documents..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-[#DDECCB] rounded-full px-11 py-3 text-sm sm:text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400"
+                className="w-full bg-white border border-gray-300 rounded-full px-11 py-3 text-sm sm:text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs"
               />
             </div>
           </div>
@@ -218,10 +218,10 @@ export default function Resources() {
           <div className="max-w-5xl mx-auto">
             <div className="mb-6 sm:mb-8">
               <Badge>Guides</Badge>
-              <h2 className="text-xl sm:text-2xl font-semibold mt-1.5">
+              <h2 className="text-xl sm:text-2xl font-bold mt-2">
                 Your learning path
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-600 mt-1 font-medium">
                 Follow these steps to build a winning application.
               </p>
             </div>
@@ -230,7 +230,7 @@ export default function Resources() {
               {GUIDES.map((g, i) => (
                 <div
                   key={i}
-                  className="relative border border-gray-200/80 hover:border-[#C0DD97] hover:shadow-lg rounded-2xl p-5 sm:p-6 cursor-pointer transition-all duration-300 flex flex-col group bg-white fade-up"
+                  className="relative border border-gray-200/90 hover:border-[#C0DD97] hover:shadow-lg rounded-2xl p-5 sm:p-6 cursor-pointer transition-all duration-300 flex flex-col group bg-white fade-up shadow-2xs"
                   style={{ animationDelay: `${i * 80}ms` }}
                 >
                   <div
@@ -238,15 +238,15 @@ export default function Resources() {
                   >
                     {g.icon}
                   </div>
-                  <h3 className="text-[15px] sm:text-[17px] font-semibold text-gray-900 mb-1.5 leading-snug">
+                  <h3 className="text-[16px] sm:text-[17px] font-bold text-gray-900 mb-1.5 leading-snug">
                     {g.title}
                   </h3>
-                  <p className="text-xs sm:text-[13.5px] tracking-wide text-gray-500 leading-relaxed flex-1">
+                  <p className="text-xs sm:text-[13.5px] text-gray-600 leading-relaxed flex-1 font-normal">
                     {g.description}
                   </p>
                   <Link
-                    to={g.path}
-                    className="mt-4 sm:mt-5 flex items-center gap-1 text-[#5AAD1F] text-[13px] sm:text-[14px] font-bold group-hover:gap-2.5 transition-all duration-200"
+                    to={g.path || "/application-guide"}
+                    className="mt-4 sm:mt-5 flex items-center gap-1 text-[#27500A] text-[13px] sm:text-[14px] font-bold group-hover:gap-2.5 transition-all duration-200"
                   >
                     Read guide
                     <svg
@@ -276,10 +276,10 @@ export default function Resources() {
           <div className="max-w-5xl mx-auto">
             <div className="mb-6 sm:mb-8">
               <Badge>Documents</Badge>
-              <h2 className="text-xl sm:text-2xl font-semibold mt-1.5">
+              <h2 className="text-xl sm:text-2xl font-bold mt-2">
                 Document readiness
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-600 mt-1 font-medium">
                 Track which documents you have ready in digital format (PDF /
                 JPEG).
               </p>
@@ -287,7 +287,7 @@ export default function Resources() {
 
             <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-4 sm:gap-6">
               {/* ── Progress Ring ── */}
-              <div className="relative overflow-hidden bg-linear-to-br from-[#F6FAF1] to-[#EAF3DE] border border-[#DDECCB] rounded-2xl p-6 flex flex-col items-center justify-center text-center min-h-60 sm:min-h-72.5">
+              <div className="relative overflow-hidden bg-linear-to-br from-[#F6FAF1] to-[#EAF3DE] border border-[#DDECCB] rounded-2xl p-6 flex flex-col items-center justify-center text-center min-h-60 sm:min-h-72.5 shadow-2xs">
                 {/* Confetti layer */}
                 {particles.map((p) => (
                   <div
@@ -333,12 +333,12 @@ export default function Resources() {
                       className="transition-all duration-700 ease-out"
                     />
                   </svg>
-                  {/* Score overlay — positioned relative to the non-rotated wrapper */}
+                  {/* Score overlay */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-[28px] sm:text-[32px] font-extrabold text-gray-900 leading-none">
                       {progress}%
                     </span>
-                    <span className="text-[8px] sm:text-[9px] font-bold tracking-[.2em] text-gray-400 uppercase mt-1">
+                    <span className="text-[10px] sm:text-[11px] font-bold tracking-widest text-emerald-800 uppercase mt-1">
                       Ready
                     </span>
                   </div>
@@ -346,12 +346,12 @@ export default function Resources() {
 
                 {/* Status text */}
                 <div className="mt-4 sm:mt-5">
-                  <p className="text-[13px] sm:text-[14px] font-semibold text-gray-700">
+                  <p className="text-[14px] font-bold text-gray-900">
                     {allDone
                       ? "🎉 All documents ready!"
                       : `${remaining} document${remaining !== 1 ? "s" : ""} left`}
                   </p>
-                  <p className="text-[11px] sm:text-[12px] text-gray-500 mt-0.5 leading-relaxed max-w-45">
+                  <p className="text-[12px] sm:text-[12.5px] text-gray-600 mt-1 leading-relaxed max-w-45 font-medium">
                     {allDone
                       ? "You're fully prepared to apply."
                       : "Keep these ready before starting any application."}
@@ -360,10 +360,10 @@ export default function Resources() {
               </div>
 
               {/* ── Document Chips ── */}
-              <div className="bg-white border border-gray-200/80 rounded-2xl p-5 sm:p-7 shadow-sm">
+              <div className="bg-white border border-gray-200/90 rounded-2xl p-5 sm:p-7 shadow-2xs">
                 <div className="flex items-center justify-between mb-4 sm:mb-5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs sm:text-[13.5px] text-gray-500">
+                    <span className="text-xs sm:text-[14px] text-gray-700 font-medium">
                       <span className="font-bold text-gray-900">
                         {checkedDocs.length}
                       </span>{" "}
@@ -373,7 +373,7 @@ export default function Resources() {
                   {checkedDocs.length > 0 && (
                     <button
                       onClick={resetDocs}
-                      className="text-xs sm:text-[13px] text-gray-400 hover:text-red-500 transition-colors cursor-pointer font-medium"
+                      className="text-xs sm:text-[13px] text-gray-600 hover:text-red-600 transition-colors cursor-pointer font-bold"
                     >
                       Reset all
                     </button>
@@ -389,15 +389,15 @@ export default function Resources() {
                         onClick={() => toggleDoc(doc)}
                         className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-3.5 rounded-xl border transition-all duration-200 text-left cursor-pointer group/chip ${
                           isChecked
-                            ? "bg-[#EAF3DE] border-[#C0DD97] shadow-[0_1px_4px_rgba(90,173,31,.08)]"
-                            : "bg-[#FAFAFA] border-gray-200/80 hover:bg-[#F6FAF1] hover:border-[#DDECCB]"
+                            ? "bg-[#EAF3DE] border-[#C0DD97] shadow-xs"
+                            : "bg-[#FAFAFA] border-gray-200/90 hover:bg-[#F6FAF1] hover:border-[#C0DD97]"
                         }`}
                       >
                         <div
                           className={`w-4 sm:w-4.5 h-4 sm:h-4.5 rounded-md flex items-center justify-center shrink-0 transition-all duration-200 ${
                             isChecked
                               ? "bg-[#5AAD1F] scale-100"
-                              : "bg-white border-2 border-gray-300 group-hover/chip:border-[#5AAD1F]/40 scale-95"
+                              : "bg-white border-2 border-gray-400 group-hover/chip:border-[#5AAD1F]/60 scale-95"
                           }`}
                         >
                           {isChecked && (
@@ -424,8 +424,8 @@ export default function Resources() {
 
                         {/* Label */}
                         <span
-                          className={`text-xs sm:text-[13.5px] font-inter font-medium transition-all duration-200 truncate ${
-                            isChecked ? "text-[#27500A]" : "text-gray-600"
+                          className={`text-xs sm:text-[13.5px] font-inter font-semibold transition-all duration-200 truncate ${
+                            isChecked ? "text-[#27500A]" : "text-gray-700"
                           }`}
                         >
                           {doc}
@@ -446,10 +446,10 @@ export default function Resources() {
           <div className="max-w-5xl mx-auto">
             <div className="mb-6 sm:mb-8">
               <Badge>Resources</Badge>
-              <h2 className="text-xl sm:text-2xl font-semibold mt-1.5">
+              <h2 className="text-xl sm:text-2xl font-bold mt-2">
                 Study smarter, not harder
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-600 mt-1 font-medium">
                 Beyond scholarships — tools to accelerate your academic journey.
               </p>
             </div>
@@ -458,7 +458,7 @@ export default function Resources() {
               {EDU_RESOURCES.map((res, i) => (
                 <div
                   key={i}
-                  className="group border border-gray-200/80 hover:border-[#C0DD97] hover:shadow-lg rounded-2xl p-5 sm:p-6 cursor-pointer transition-all duration-300 bg-white fade-up"
+                  className="group border border-gray-200/90 hover:border-[#C0DD97] hover:shadow-lg rounded-2xl p-5 sm:p-6 cursor-pointer transition-all duration-300 bg-white fade-up shadow-2xs"
                   style={{ animationDelay: `${i * 100}ms` }}
                 >
                   <div
@@ -466,13 +466,13 @@ export default function Resources() {
                   >
                     {res.icon}
                   </div>
-                  <h4 className="text-[15px] sm:text-[16.5px] font-semibold text-gray-900 group-hover:text-[#5AAD1F] transition-colors mb-1.5">
+                  <h4 className="text-[16px] sm:text-[17px] font-bold text-gray-900 group-hover:text-[#27500A] transition-colors mb-1.5">
                     {res.title}
                   </h4>
-                  <p className="text-xs sm:text-[13.5px] text-gray-500 leading-relaxed">
+                  <p className="text-xs sm:text-[13.5px] text-gray-600 leading-relaxed">
                     {res.desc}
                   </p>
-                  <div className="mt-3 sm:mt-4 flex items-center gap-1 text-[#5AAD1F] text-xs sm:text-[13px] font-bold opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200">
+                  <div className="mt-3 sm:mt-4 flex items-center gap-1 text-[#27500A] text-xs sm:text-[13px] font-bold opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200">
                     Explore
                     <svg
                       className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
@@ -501,10 +501,10 @@ export default function Resources() {
           <div className="max-w-5xl mx-auto">
             <div className="mb-6 sm:mb-8">
               <Badge>Government portals</Badge>
-              <h2 className="text-xl sm:text-2xl font-semibold mt-1.5">
+              <h2 className="text-xl sm:text-2xl font-bold mt-2">
                 Official scholarship portals
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-600 mt-1 font-medium">
                 Always apply through verified government sources.
               </p>
             </div>
@@ -514,16 +514,18 @@ export default function Resources() {
                 <a
                   key={i}
                   href={`${portal.url}`}
-                  className="group relative overflow-hidden bg-white border border-gray-200/80 hover:border-[#C0DD97] hover:shadow-lg rounded-2xl p-4 sm:p-5 flex items-center justify-between transition-all duration-300"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative overflow-hidden bg-white border border-gray-200/90 hover:border-[#C0DD97] hover:shadow-lg rounded-2xl p-4 sm:p-5 flex items-center justify-between transition-all duration-300 shadow-2xs"
                 >
                   <div
                     className={`absolute left-0 top-0 w-1 h-full ${portal.color} rounded-l-2xl group-hover:w-1.5 transition-all duration-300`}
                   />
-                  <span className="font-jakarta font-bold text-[13px] sm:text-[14px] text-gray-800 pl-2 sm:pl-3 group-hover:text-[#5AAD1F] transition-colors duration-200">
+                  <span className="font-jakarta font-bold text-[13px] sm:text-[14px] text-gray-900 pl-2 sm:pl-3 group-hover:text-[#27500A] transition-colors duration-200">
                     {portal.name}
                   </span>
                   <svg
-                    className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-400 group-hover:text-[#5AAD1F] group-hover:translate-x-1 transition-all shrink-0 ml-2"
+                    className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-500 group-hover:text-[#5AAD1F] group-hover:translate-x-1 transition-all shrink-0 ml-2"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -548,14 +550,14 @@ export default function Resources() {
           <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 sm:gap-8 items-start">
             <div>
               <Badge>Downloads</Badge>
-              <h2 className="text-xl sm:text-2xl font-bold mt-1.5 mb-2">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mt-2 mb-2">
                 Templates & downloads
               </h2>
-              <p className="text-sm text-gray-500 leading-relaxed mb-6 max-w-sm">
+              <p className="text-sm text-gray-600 leading-relaxed mb-6 max-w-sm font-medium">
                 Save hours of formatting. Pre-built templates for resumes,
                 statements of purpose, and scholarship tracking.
               </p>
-              <button className="cursor-pointer inline-flex items-center gap-2 bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white text-[14px] sm:text-[15px] font-semibold px-5 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]">
+              <button className="cursor-pointer inline-flex items-center gap-2 bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white text-[14px] sm:text-[15px] font-bold px-5 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98]">
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -577,11 +579,11 @@ export default function Resources() {
               {DOWNLOADS.map((item, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-3 sm:p-4 bg-white border border-gray-200/80 hover:border-[#C0DD97] hover:shadow-sm rounded-xl cursor-pointer transition-all duration-150 group"
+                  className="flex items-center justify-between p-3.5 sm:p-4 bg-white border border-gray-200/90 hover:border-[#C0DD97] hover:shadow-xs rounded-xl cursor-pointer transition-all duration-150 group shadow-2xs"
                 >
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                     <span
-                      className={`px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold tracking-wider shrink-0 ${
+                      className={`px-2 py-0.5 rounded text-[9.5px] sm:text-[10.5px] font-bold tracking-wider shrink-0 ${
                         item.type === "PDF"
                           ? "bg-[#FCEBEB] text-[#791F1F]"
                           : "bg-[#E6F1FB] text-[#1a4a8a]"
@@ -589,12 +591,12 @@ export default function Resources() {
                     >
                       {item.type}
                     </span>
-                    <span className="text-[13px] sm:text-[14px] font-medium text-gray-800 group-hover:text-[#5AAD1F] transition-colors truncate">
+                    <span className="text-[13.5px] sm:text-[14px] font-semibold text-gray-900 group-hover:text-[#27500A] transition-colors truncate">
                       {item.title}
                     </span>
                   </div>
                   <svg
-                    className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-400 group-hover:text-[#5AAD1F] group-hover:translate-y-0.5 transition-all shrink-0 ml-2"
+                    className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-500 group-hover:text-[#5AAD1F] group-hover:translate-y-0.5 transition-all shrink-0 ml-2"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -614,12 +616,12 @@ export default function Resources() {
 
         {/* BOTTOM CTA */}
         <section className="py-8 sm:py-10 px-4 sm:px-6">
-          <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-6 sm:px-8 py-6 sm:py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+          <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-6 sm:px-8 py-6 sm:py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 shadow-2xs">
             <div>
               <h3 className="text-base sm:text-lg font-extrabold text-gray-900 mb-1">
                 Ready to find your match?
               </h3>
-              <p className="text-sm text-gray-600 max-w-md leading-relaxed">
+              <p className="text-sm text-gray-700 max-w-md leading-relaxed">
                 Put your new knowledge to work. Check eligibility or browse the
                 complete directory.
               </p>
@@ -627,13 +629,13 @@ export default function Resources() {
             <div className="flex flex-col md:flex-row gap-3 shrink-0 w-full sm:w-auto">
               <Link
                 to="/eligibility"
-                className="inline-flex items-center justify-center bg-[#5AAD1F] text-white text-[14px] sm:text-[15px] font-semibold px-5 sm:px-6 py-2.5 rounded-full hover:bg-[#4A9A18] active:bg-[#3D8813] transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98] flex-1 sm:flex-none"
+                className="inline-flex items-center justify-center bg-[#5AAD1F] text-white text-[14px] sm:text-[15px] font-bold px-5 sm:px-6 py-2.5 rounded-full hover:bg-[#4A9A18] active:bg-[#3D8813] transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98] flex-1 sm:flex-none"
               >
                 Check eligibility
               </Link>
               <Link
                 to="/scholarships"
-                className="inline-flex items-center justify-center bg-white border border-[#C0DD97] text-[#27500A] text-[14px] sm:text-[15px] font-semibold px-5 sm:px-6 py-2.5 rounded-full hover:bg-[#F6FAF1] hover:border-[#5AAD1F] transition-all duration-200 flex-1 sm:flex-none"
+                className="inline-flex items-center justify-center bg-white border border-[#C0DD97] text-[#27500A] text-[14px] sm:text-[15px] font-bold px-5 sm:px-6 py-2.5 rounded-full hover:bg-[#F6FAF1] hover:border-[#5AAD1F] transition-all duration-200 flex-1 sm:flex-none shadow-2xs"
               >
                 Browse scholarships
               </Link>

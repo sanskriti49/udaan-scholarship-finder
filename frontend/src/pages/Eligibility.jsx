@@ -128,20 +128,21 @@ export default function EligibilityPage() {
   };
 
   const inputClass =
-    "w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
+    "w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
   const selectClass =
-    "w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 appearance-none cursor-pointer";
+    "w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 appearance-none cursor-pointer shadow-2xs font-medium";
 
   return (
     <div className="min-h-screen bg-white text-gray-900 font-pangea">
       {/* Hero */}
       <section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold  leading-tight mt-2 mb-3">
+          <Badge>Eligibility Engine</Badge>
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mt-3 mb-3">
             Find scholarships you{" "}
             <span className="text-[#5AAD1F]">actually qualify for</span>
           </h1>
-          <p className="text-[15px] text-gray-500 leading-relaxed max-w-xl mx-auto">
+          <p className="text-[15.5px] text-gray-600 leading-relaxed max-w-xl mx-auto font-medium">
             Enter your academic and demographic details below, and our engine
             will instantly cross-reference hundreds of active grants to find
             your best matches.
@@ -175,7 +176,7 @@ export default function EligibilityPage() {
             ].map((step, i) => (
               <div
                 key={i}
-                className="relative bg-white border border-gray-200/80 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-[#5AAD1F] z-10 flex flex-col h-full"
+                className="relative bg-white border border-gray-200/90 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-[#5AAD1F] z-10 flex flex-col h-full shadow-2xs"
               >
                 {/* Step Number Badge */}
                 <div className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F6FAF1] text-[#5AAD1F] text-sm font-bold flex items-center justify-center border border-[#C0DD97]">
@@ -187,10 +188,10 @@ export default function EligibilityPage() {
                   {step.icon}
                 </div>
 
-                <h3 className="text-[18px] font-semibold text-gray-900 mb-1.5 pr-8">
+                <h3 className="text-[18px] font-bold text-gray-900 mb-1.5 pr-8">
                   {step.label}
                 </h3>
-                <p className="text-[13px] text-gray-500 leading-relaxed">
+                <p className="text-[13.5px] text-gray-600 leading-relaxed font-normal">
                   {step.desc}
                 </p>
               </div>
@@ -205,20 +206,20 @@ export default function EligibilityPage() {
           {/* Sidebar */}
           <div className="hidden lg:flex flex-col gap-4 lg:sticky lg:top-24">
             {/* Profile completion */}
-            <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white border border-gray-200/90 rounded-2xl p-6 shadow-2xs">
               <Badge>Your profile</Badge>
-              <h3 className="text-[17px] font-bold text-gray-900 mb-1">
+              <h3 className="text-[18px] font-bold text-gray-900 mt-2 mb-1">
                 Profile completion
               </h3>
-              <p className="text-[13px] text-gray-500 mb-5">
+              <p className="text-[13.5px] text-gray-600 mb-5 font-normal">
                 Complete all fields to unlock the most accurate matches.
               </p>
 
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-bold text-[#5AAD1F] uppercase tracking-widest">
+                <span className="text-xs font-bold text-[#27500A] uppercase tracking-wider">
                   Progress
                 </span>
-                <span className="text-[12px] font-bold text-gray-700">
+                <span className="text-[13px] font-bold text-gray-900">
                   {progress}%
                 </span>
               </div>
@@ -237,20 +238,20 @@ export default function EligibilityPage() {
                 ].map(({ label, done }) => (
                   <div
                     key={label}
-                    className="flex items-center gap-3 text-[13px]"
+                    className="flex items-center gap-3 text-[13.5px]"
                   >
                     <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all duration-300 text-[10px] font-bold ${
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all duration-300 text-[11px] font-bold ${
                         done
                           ? "bg-[#5AAD1F] border-[#5AAD1F] text-white"
-                          : "bg-white border-gray-200 text-transparent"
+                          : "bg-white border-gray-300 text-transparent"
                       }`}
                     >
                       ✓
                     </div>
                     <span
                       className={
-                        done ? "text-[#5AAD1F] font-medium" : "text-gray-400"
+                        done ? "text-[#27500A] font-bold" : "text-gray-600 font-medium"
                       }
                     >
                       {label}
@@ -261,7 +262,7 @@ export default function EligibilityPage() {
             </div>
 
             {/* Privacy card */}
-            <div className="bg-white border border-gray-200/80 rounded-2xl p-5 shadow-sm flex items-start gap-4 hover:border-[#C0DD97] transition-colors duration-150">
+            <div className="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-2xs flex items-start gap-4 hover:border-[#C0DD97] transition-colors duration-150">
               <div className="w-9 h-9 rounded-xl bg-[#EAF3DE] flex items-center justify-center shrink-0 text-lg">
                 🔒
               </div>
@@ -269,16 +270,16 @@ export default function EligibilityPage() {
                 <h4 className="text-[14px] font-bold text-gray-900 mb-1">
                   Privacy first
                 </h4>
-                <p className="text-[13px] text-gray-500 leading-relaxed">
-                  Your financial and demographic data is never shared without
-                  explicit consent.
+                <p className="text-[13px] text-gray-600 leading-relaxed">
+                  Your financial and demographic data is processed securely and
+                  never shared without explicit consent.
                 </p>
               </div>
             </div>
 
             {/* Pro tip */}
-            <div className="bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl p-5">
-              <p className="text-[13px] text-gray-700 leading-relaxed">
+            <div className="bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl p-5 shadow-2xs">
+              <p className="text-[13.5px] text-gray-800 leading-relaxed">
                 <strong className="text-[#27500A]">Tip:</strong> Users who reach
                 100% completion are 4× more likely to discover high-value
                 regional grants.
@@ -287,8 +288,8 @@ export default function EligibilityPage() {
           </div>
 
           {/* Form card */}
-          <div className="bg-white border border-gray-200/80 rounded-3xl shadow-sm overflow-hidden">
-            <div className="h-1 bg-[#5AAD1F]" />
+          <div className="bg-white border border-gray-200/90 rounded-3xl shadow-sm overflow-hidden">
+            <div className="h-1.5 bg-[#5AAD1F]" />
 
             <form
               onSubmit={handleCheckEligibility}
@@ -307,9 +308,9 @@ export default function EligibilityPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Full name{" "}
-                      <span className="text-gray-400 normal-case font-normal tracking-normal">
+                      <span className="text-gray-500 normal-case font-normal tracking-normal">
                         (optional)
                       </span>
                     </label>
@@ -324,7 +325,7 @@ export default function EligibilityPage() {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Gender
                     </label>
                     <div className="flex gap-2 h-11.5">
@@ -333,10 +334,10 @@ export default function EligibilityPage() {
                           key={g}
                           type="button"
                           onClick={() => handleInputChange("gender", g)}
-                          className={`cursor-pointer flex-1 rounded-xl text-[13px] font-semibold border transition-all duration-150 ${
+                          className={`cursor-pointer flex-1 rounded-xl text-[13px] font-bold border transition-all duration-150 ${
                             formData.gender === g
-                              ? "bg-[#5AAD1F] text-white border-[#5AAD1F]"
-                              : "bg-[#F6FAF1] border-[#DDECCB] text-gray-600 hover:border-[#5AAD1F]"
+                              ? "bg-[#5AAD1F] text-white border-[#5AAD1F] shadow-xs"
+                              : "bg-[#F6FAF1] border-[#C0DD97] text-gray-700 hover:border-[#5AAD1F] hover:bg-white"
                           }`}
                         >
                           {g}
@@ -352,14 +353,14 @@ export default function EligibilityPage() {
                   <div className="w-8 h-8 rounded-lg bg-[#EAF3DE] flex items-center justify-center text-sm">
                     🎓
                   </div>
-                  <h2 className="text-[18px] font-extrabold  text-gray-900">
+                  <h2 className="text-[18px] font-extrabold text-gray-900">
                     Academic standing
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Education level
                     </label>
                     <select
@@ -381,7 +382,7 @@ export default function EligibilityPage() {
                     </select>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Course / stream
                     </label>
                     <select
@@ -403,7 +404,7 @@ export default function EligibilityPage() {
                     </select>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Current CGPA / %
                     </label>
                     <input
@@ -421,7 +422,7 @@ export default function EligibilityPage() {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Domicile state
                     </label>
                     <select
@@ -451,18 +452,18 @@ export default function EligibilityPage() {
                   <div className="w-8 h-8 rounded-lg bg-[#EAF3DE] flex items-center justify-center text-sm">
                     💰
                   </div>
-                  <h2 className="text-[18px] font-extrabold  text-gray-900">
+                  <h2 className="text-[18px] font-extrabold text-gray-900">
                     Financial &amp; category
                   </h2>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Annual family income
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm font-bold">
                         ₹
                       </span>
                       <input
@@ -478,7 +479,7 @@ export default function EligibilityPage() {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Category
                     </label>
                     <select
@@ -500,7 +501,7 @@ export default function EligibilityPage() {
                     </select>
                   </div>
                   <div className="flex flex-col gap-2 sm:col-span-2">
-                    <label className="text-[12px] font-bold text-gray-600 uppercase tracking-widest">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                       Person with disability (PwD)?
                     </label>
                     <div className="flex gap-2 h-11.5 max-w-50">
@@ -509,10 +510,10 @@ export default function EligibilityPage() {
                           key={opt}
                           type="button"
                           onClick={() => handleInputChange("disability", opt)}
-                          className={`cursor-pointer flex-1 rounded-xl text-[13px] font-semibold border transition-all duration-150 ${
+                          className={`cursor-pointer flex-1 rounded-xl text-[13px] font-bold border transition-all duration-150 ${
                             formData.disability === opt
-                              ? "bg-[#5AAD1F] text-white border-[#5AAD1F]"
-                              : "bg-[#F6FAF1] border-[#DDECCB] text-gray-600 hover:border-[#5AAD1F]"
+                              ? "bg-[#5AAD1F] text-white border-[#5AAD1F] shadow-xs"
+                              : "bg-[#F6FAF1] border-[#C0DD97] text-gray-700 hover:border-[#5AAD1F] hover:bg-white"
                           }`}
                         >
                           {opt}
@@ -526,7 +527,7 @@ export default function EligibilityPage() {
               {/* Submit */}
               <div className="pt-2 border-t border-gray-100">
                 {progress < 100 && (
-                  <p className="text-[12.5px] text-gray-400 mb-4 text-center">
+                  <p className="text-[13px] text-gray-600 mb-4 text-center font-medium">
                     Fill all required fields to generate your matches.
                   </p>
                 )}
@@ -535,7 +536,7 @@ export default function EligibilityPage() {
                   disabled={isSubmitting || progress < 100}
                   className="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl
                     bg-[#5AAD1F] hover:bg-[#4A9A18]
-                    text-white font-semibold text-[14px]
+                    text-white font-bold text-[15px]
                     transition-all duration-200
                     shadow-sm hover:shadow-md
                     active:scale-[0.98]
@@ -596,10 +597,10 @@ export default function EligibilityPage() {
             <div className="max-w-5xl mx-auto">
               <div className="mb-8">
                 <Badge>Your matches</Badge>
-                <h2 className="mt-4 text-3xl font-extrabold  text-gray-900">
+                <h2 className="mt-3 text-3xl font-extrabold text-gray-900">
                   Eligible scholarships
                 </h2>
-                <p className="text-[13px] text-gray-500 mt-1">
+                <p className="text-[14px] text-gray-600 mt-1 font-medium">
                   We found {filteredResults.length} opportunities tailored to
                   your profile.
                 </p>
@@ -610,34 +611,34 @@ export default function EligibilityPage() {
                   {filteredResults.map((s) => (
                     <div
                       key={s.id}
-                      className="bg-white border border-gray-200/80 hover:border-[#C0DD97] rounded-2xl p-6 transition-colors duration-150 shadow-sm"
+                      className="bg-white border border-gray-200/90 hover:border-[#C0DD97] rounded-2xl p-6 transition-all duration-150 shadow-2xs hover:shadow-md"
                     >
                       <div className="flex flex-wrap gap-1.5 mb-4">
                         {s.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#EAF3DE] text-[#27500A]"
+                            className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#EAF3DE] text-[#27500A]"
                           >
                             {tag}
                           </span>
                         ))}
                       </div>
-                      <h3 className="text-[17px] font-extrabold text-gray-900 mb-1">
+                      <h3 className="text-[18px] font-bold text-gray-900 mb-1">
                         {s.title}
                       </h3>
-                      <p className="text-[13px] text-gray-500 leading-relaxed mb-4">
+                      <p className="text-[14px] text-gray-700 leading-relaxed mb-4">
                         {s.description}
                       </p>
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                         <div>
-                          <p className="text-[18px] font-extrabold text-[#5AAD1F]">
+                          <p className="text-[18px] font-extrabold text-[#3B8210]">
                             {s.amount}
                           </p>
-                          <p className="text-[12px] text-gray-400">
+                          <p className="text-[12.5px] text-gray-600 font-medium">
                             Deadline: {s.deadline}
                           </p>
                         </div>
-                        <button className="cursor-pointer text-[13px] font-semibold text-[#5AAD1F] bg-[#EAF3DE] hover:bg-[#D4EBB0] px-4 py-2 rounded-full transition-colors duration-150">
+                        <button className="cursor-pointer text-[13px] font-bold text-[#27500A] bg-[#EAF3DE] hover:bg-[#D4EBB0] px-4.5 py-2 rounded-full transition-colors duration-150 shadow-2xs">
                           View details
                         </button>
                       </div>
@@ -645,20 +646,23 @@ export default function EligibilityPage() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white border border-gray-200/80 rounded-2xl p-16 text-center shadow-sm">
+                <div className="bg-white border border-gray-200/90 rounded-2xl p-16 text-center shadow-2xs">
                   <div className="w-14 h-14 bg-[#EAF3DE] rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
                     🔍
                   </div>
                   <h3 className="text-xl font-extrabold text-gray-900 mb-2">
                     No matches found
                   </h3>
-                  <p className="text-[13px] text-gray-500 max-w-sm mx-auto mb-6 leading-relaxed">
+                  <p className="text-[14px] text-gray-600 max-w-sm mx-auto mb-6 leading-relaxed">
                     Your combination didn't match today, but new opportunities
                     are added weekly.
                   </p>
-                  <button className="cursor-pointer bg-[#5AAD1F] text-white text-[13px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors">
+                  <Link
+                    to="/scholarships"
+                    className="inline-block cursor-pointer bg-[#5AAD1F] text-white text-[13px] font-bold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors shadow-2xs"
+                  >
                     Browse all scholarships
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -668,19 +672,19 @@ export default function EligibilityPage() {
 
       {/* Bottom CTA */}
       <section className="py-8 px-6 border-t border-gray-100">
-        <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-2xs">
           <div>
             <h3 className="text-[18px] font-bold text-gray-900 mb-1">
               Prefer to browse on your own?
             </h3>
-            <p className="text-[14px] text-gray-600 max-w-md leading-relaxed">
+            <p className="text-[14px] text-gray-700 max-w-md leading-relaxed">
               Explore our full directory and apply your own filters to find what
               you need.
             </p>
           </div>
           <Link
-            to="scholarships"
-            className="cursor-pointer shrink-0 bg-[#5AAD1F] text-white text-[15px] font-semibold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors"
+            to="/scholarships"
+            className="cursor-pointer shrink-0 bg-[#5AAD1F] text-white text-[15px] font-bold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors shadow-2xs"
           >
             Explore all scholarships
           </Link>

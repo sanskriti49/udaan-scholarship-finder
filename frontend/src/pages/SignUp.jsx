@@ -71,7 +71,7 @@ export default function SignUp() {
   const navigate = useNavigate();
 
 	const inputClass =
-		"w-full bg-[#F6FAF1] border border-[#DDECCB] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/10 transition text-gray-900 placeholder-gray-400";
+		"w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
 
 	const passwordStrength = (() => {
 		const p = form.password;
@@ -148,22 +148,22 @@ export default function SignUp() {
         </div>
 
         <div className="relative z-10 mt-8 text-center max-w-sm">
-          <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 mb-3 leading-snug">
+          <h2 className="text-2xl font-extrabold tracking-tight text-gray-900 mb-2 leading-snug">
             Start your scholarship journey
           </h2>
-          <p className="text-[15px] text-gray-500 leading-relaxed">
+          <p className="text-[15px] text-gray-600 leading-relaxed font-medium">
             Join thousands of students who found funding they didn't know they
             qualified for.
           </p>
         </div>
 
-        <div className="relative z-10 mt-8 bg-white/80 backdrop-blur-sm border border-[#C0DD97] rounded-2xl px-6 py-4 max-w-xs w-full shadow-sm">
+        <div className="relative z-10 mt-8 bg-white/90 backdrop-blur-sm border border-[#C0DD97] rounded-2xl px-6 py-4 max-w-xs w-full shadow-2xs">
           <div className="flex items-center gap-4">
             <div className="flex -space-x-2">
               {["#5AAD1F", "#3B7DC8", "#E8884A"].map((c, i) => (
                 <div
                   key={i}
-                  className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-sm"
+                  className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-xs"
                   style={{ backgroundColor: c }}
                 >
                   {["P", "R", "A"][i]}
@@ -171,10 +171,10 @@ export default function SignUp() {
               ))}
             </div>
             <div>
-              <p className="text-[13px] font-semibold text-gray-900">
+              <p className="text-[13.5px] font-bold text-gray-900">
                 2,400+ students
               </p>
-              <p className="text-[11px] text-gray-500">joined this month</p>
+              <p className="text-xs font-semibold text-gray-600">joined this month</p>
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function SignUp() {
       <div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-14 xl:px-20">
         <div className="max-w-md mx-auto w-full">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group mb-10">
+          <Link to="/" className="flex items-center gap-3 group mb-8">
             <div className="w-12 h-12 rounded-xl bg-[#C0DD97]/20 border border-[#DDECCB] flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105">
               <img
                 src={logoImg}
@@ -197,7 +197,7 @@ export default function SignUp() {
                 <span style={{ color: "#5AAD1F" }}>uda</span>
                 <span style={{ color: "#3B7DC8" }}>an</span>
               </span>
-              <span className="text-[8px] font-bold tracking-widest text-gray-400 uppercase mt-0.5">
+              <span className="text-[10px] font-bold tracking-wider text-emerald-800 uppercase mt-1">
                 find your scholarship
               </span>
             </div>
@@ -207,14 +207,14 @@ export default function SignUp() {
 					<h1 className="text-3xl font-extrabold tracking-tight text-gray-900 mt-4 mb-2">
 						Create your account
 					</h1>
-					<p className="text-[14px] text-gray-500 mb-8 leading-relaxed">
+					<p className="text-[14px] text-gray-600 mb-8 leading-relaxed font-medium">
 						Build your profile once. We'll match it against hundreds of
 						scholarships automatically.
 					</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Full name
               </label>
               <input
@@ -228,7 +228,7 @@ export default function SignUp() {
             </div>
 
 						<div className="space-y-1.5">
-							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+							<label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
 								Email address
 							</label>
 							<input
@@ -242,7 +242,7 @@ export default function SignUp() {
 						</div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Password
               </label>
               <div className="relative">
@@ -259,7 +259,7 @@ export default function SignUp() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((p) => !p)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -301,12 +301,12 @@ export default function SignUp() {
               </div>
               {passwordStrength && (
                 <div className="flex items-center gap-3 mt-1.5">
-                  <div className="flex-1 h-1.5 rounded-full bg-[#DDECCB] overflow-hidden">
+                  <div className="flex-1 h-2 rounded-full bg-[#DDECCB] overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-300 ${passwordStrength.color} ${passwordStrength.width}`}
                     />
                   </div>
-                  <span className="text-[10px] font-bold text-gray-500 min-w-14">
+                  <span className="text-xs font-bold text-gray-700 min-w-14">
                     {passwordStrength.label}
                   </span>
                 </div>
@@ -314,7 +314,7 @@ export default function SignUp() {
             </div>
 
 						<div className="space-y-1.5">
-							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+							<label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
 								Confirm password
 							</label>
 							<div className="relative">
@@ -329,7 +329,7 @@ export default function SignUp() {
 									className={`${inputClass} ${
 										form.confirmPassword &&
 										form.confirmPassword !== form.password
-											? "border-red-300 focus:border-red-400 focus:ring-red-100"
+											? "border-red-400 focus:border-red-500 focus:ring-red-100"
 											: form.confirmPassword &&
 												  form.confirmPassword === form.password
 												? "border-[#5AAD1F]"
@@ -357,7 +357,7 @@ export default function SignUp() {
 							</div>
 							{form.confirmPassword &&
 								form.confirmPassword !== form.password && (
-									<p className="text-[11px] text-red-500 font-medium mt-1">
+									<p className="text-xs text-red-600 font-bold mt-1">
 										Passwords don't match
 									</p>
 								)}
@@ -378,18 +378,18 @@ export default function SignUp() {
               />
             </div>
 
-            <p className="text-[12px] text-gray-400 leading-relaxed">
+            <p className="text-[13px] text-gray-600 leading-relaxed font-medium">
               By signing up you agree to our{" "}
               <Link
                 to="/terms"
-                className="text-[#5AAD1F] font-semibold hover:underline"
+                className="text-[#27500A] font-bold hover:underline"
               >
                 Terms of Service
               </Link>{" "}
               and{" "}
               <Link
                 to="/privacy"
-                className="text-[#5AAD1F] font-semibold hover:underline"
+                className="text-[#27500A] font-bold hover:underline"
               >
                 Privacy Policy
               </Link>
@@ -399,7 +399,7 @@ export default function SignUp() {
             <button
               type="submit"
               disabled={!turnstileToken}
-              className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white font-semibold text-[14px] transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5AAD1F] disabled:hover:shadow-md"
+              className="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white font-bold text-[15px] transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5AAD1F] disabled:hover:shadow-md"
             >
               Create account
               <svg
@@ -421,7 +421,7 @@ export default function SignUp() {
 					{/* Divider */}
 					<div className="flex items-center gap-4 my-7">
 						<div className="flex-1 h-px bg-[#DDECCB]" />
-						<span className="text-[12px] text-gray-400 font-medium tracking-wide">
+						<span className="text-xs text-gray-500 font-semibold tracking-wider uppercase">
 							or continue with
 						</span>
 						<div className="flex-1 h-px bg-[#DDECCB]" />
@@ -430,11 +430,11 @@ export default function SignUp() {
           {/* Udaan-themed Google button */}
           <GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
 
-					<p className="text-center text-[13px] text-gray-500 mt-7">
+					<p className="text-center text-[13.5px] text-gray-600 mt-7 font-medium">
 						Already have an account?{" "}
 						<Link
 							to="/login"
-							className="text-[#5AAD1F] font-bold hover:text-[#4A9A18] transition-colors"
+							className="text-[#27500A] font-bold hover:underline transition-colors"
 						>
 							Log in
 						</Link>

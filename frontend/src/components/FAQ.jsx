@@ -48,7 +48,7 @@ function FaqItem({ question, answer, isOpen, onClick }) {
         }`}
       >
         <div className="overflow-hidden">
-          <p className="px-5 pb-4 text-[14px] text-gray-500 leading-relaxed">
+          <p className="px-5 pb-4 text-[14.5px] text-gray-700 leading-relaxed font-normal">
             {answer}
           </p>
         </div>
@@ -76,13 +76,13 @@ function FAQ() {
             <div className="absolute -top-16 -right-16 w-44 h-44 bg-[#C0DD97]/40 rounded-full blur-2xl" />
             <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-[#C0DD97]/30 rounded-full blur-2xl" />
 
-            <img src={faqImage} />
+            <img src={faqImage} alt="FAQ support illustration" />
 
             <div className="relative z-10 mt-3">
               <h2 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
                 Got questions before applying?
               </h2>
-              <p className="mt-3 text-gray-500 text-[15px] leading-relaxed">
+              <p className="mt-3 text-gray-700 text-[15px] leading-relaxed font-medium">
                 Understand eligibility, documents, deadlines, and how Udaan
                 helps you find verified scholarships faster.
               </p>
@@ -98,7 +98,7 @@ function FAQ() {
                 questions
               </span>
             </h2>
-            <p className="mt-3 text-md text-gray-500 max-w-md mx-auto lg:mx-0 leading-relaxed">
+            <p className="mt-3 text-base text-gray-600 max-w-md mx-auto lg:mx-0 leading-relaxed font-medium">
               Everything you need to know about discovering and applying for
               scholarships through Udaan.
             </p>
@@ -135,11 +135,11 @@ function FAQ() {
             </div>
           </div>
 
-          <p className="text-center lg:text-left text-[13px] text-gray-400 mt-10">
+          <p className="text-center lg:text-left text-sm text-gray-600 mt-10 font-medium">
             Still have questions?{" "}
             <Link
               to="/support"
-              className="cursor-pointer text-[#3B7DC8] font-semibold border-b border-transparent hover:border-[#3B7DC8] transition-colors"
+              className="cursor-pointer text-[#3B7DC8] font-bold border-b border-transparent hover:border-[#3B7DC8] transition-colors"
             >
               Visit our support page →
             </Link>
