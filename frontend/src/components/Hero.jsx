@@ -48,6 +48,8 @@ function Hero() {
 								<img
 									src={heroImage}
 									alt="Hero banner"
+									fetchpriority="high"
+									loading="eager"
 									className="w-full h-auto object-cover rounded-2xl shadow-xl border border-gray-100 transition-transform duration-500 group-hover:scale-[1.01]"
 								/>
 							</div>

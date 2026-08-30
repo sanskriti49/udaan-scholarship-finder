@@ -1,7 +1,7 @@
 import { useEffect, useState } from"react";
 import { Link } from"react-router-dom";
 import { Mail, MapPin, Phone, Send } from"lucide-react";
-import hero from"../assets/images/support2.png";
+import hero from"../assets/images/support2.webp";
 
 import { gsap } from"gsap";
 import { ScrollToPlugin } from"gsap/ScrollToPlugin";

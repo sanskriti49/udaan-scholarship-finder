@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logoImg from "../assets/images/logo.png";
-import loginIllustration from "../assets/images/login-illustration.png";
+import loginIllustration from "../assets/images/login-illustration.webp";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { Turnstile } from "react-turnstile";

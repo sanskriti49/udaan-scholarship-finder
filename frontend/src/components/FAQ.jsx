@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import faqImage from "../assets/images/faq.png";
+import faqImage from "../assets/images/faq.webp";
 import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { faqs } from "../utils/faqs";
@@ -76,7 +76,7 @@ function FAQ() {
 						<div className="absolute -top-16 -right-16 w-44 h-44 bg-[#C0DD97]/40 rounded-full blur-2xl" />
 						<div className="absolute -bottom-16 -left-16 w-44 h-44 bg-[#C0DD97]/30 rounded-full blur-2xl" />
 
-						<img src={faqImage} alt="FAQ Illustration" />
+						<img src={faqImage} alt="FAQ Illustration" loading="lazy" />
 
 						<div className="relative z-10 mt-3">
 							<h2 className="text-4xl font-extrabold text-gray-900 leading-tight ">
