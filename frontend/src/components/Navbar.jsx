@@ -113,13 +113,6 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-2.5 shrink-0">
-            <button
-              className="cursor-pointer hidden sm:flex w-9 h-9 items-center justify-center rounded-full border border-gray-200 bg-white/80 text-gray-700 hover:text-gray-900 hover:bg-white transition-all shadow-2xs"
-              aria-label="Search"
-            >
-              <Search size={16} />
-            </button>
-
             {user ? (
               <div className="relative hidden md:block" ref={profileRef}>
                 <button
