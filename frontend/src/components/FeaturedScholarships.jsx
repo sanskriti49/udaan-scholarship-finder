@@ -57,7 +57,7 @@ function FeaturedScholarships() {
 				<div className="mb-10">
 					<div className="flex items-end justify-between flex-wrap gap-4">
 						<div>
-							<h2 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+							<h2 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight ">
 								Scholarships{" "}
 								<span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-teal-500">
 									for you

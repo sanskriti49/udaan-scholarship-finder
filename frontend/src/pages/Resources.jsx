@@ -180,7 +180,7 @@ export default function Resources() {
 
 					<div className="relative max-w-5xl mx-auto text-center">
 						<Badge>Student knowledge base</Badge>
-						<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3 tracking-tight">
+						<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3 ">
 							Everything you need to{" "}
 							<span className="text-[#5AAD1F]">succeed and get funded</span>
 						</h1>

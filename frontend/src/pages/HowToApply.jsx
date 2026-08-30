@@ -165,7 +165,7 @@ export default function HowToApply() {
 						Step-by-step guide
 					</div>
 
-					<h1 className="text-[32px] sm:text-[48px] font-extrabold tracking-tight leading-[1.1] mb-3 sm:mb-4">
+					<h1 className="text-[32px] sm:text-[48px] font-extrabold leading-[1.1] mb-3 sm:mb-4">
 						How to apply for a{" "}
 						<span className="text-[#5AAD1F]">scholarship</span>
 					</h1>

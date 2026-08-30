@@ -12,7 +12,7 @@ function Hero() {
 								<span>🎓</span> One search can change a student's future
 							</div>
 
-							<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] tracking-tight">
+							<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] ">
 								Discover scholarships that help your dreams{" "}
 								<span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-teal-500">
 									take flight.

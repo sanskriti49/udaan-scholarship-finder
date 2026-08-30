@@ -124,7 +124,7 @@ function Support() {
 				<div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 					<div>
 						<Badge>Help center</Badge>
-						<h1 className="hero-line text-5xl md:text-7xl font-bold leading-[0.95] mb-5 tracking-tight">
+						<h1 className="hero-line text-5xl md:text-7xl font-bold leading-[0.95] mb-5 ">
 							We're here
 							<br />
 							<span className="text-[#5AAD1F]">when you</span>{" "}
@@ -180,7 +180,7 @@ function Support() {
 			<section className="py-12 px-6">
 				<div className="max-w-5xl mx-auto">
 					<Badge>Quick help</Badge>
-					<h2 className="text-3xl font-bold mb-1 tracking-tight">
+					<h2 className="text-3xl font-bold mb-1 ">
 						What do you need help with?
 					</h2>
 					<p className="text-[13.5px] text-gray-600 mb-6 font-normal">

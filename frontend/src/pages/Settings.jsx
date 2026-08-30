@@ -148,7 +148,7 @@ export default function Settings() {
           <div className="flex items-center gap-2 mb-2">
             <Badge>Account Settings</Badge>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 ">
             Settings & Preferences
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-1 font-normal">

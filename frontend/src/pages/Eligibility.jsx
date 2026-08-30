@@ -138,7 +138,7 @@ export default function EligibilityPage() {
       <section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <Badge>Eligibility Engine</Badge>
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mt-3 mb-3 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mt-3 mb-3 ">
             Find scholarships you{" "}
             <span className="text-[#5AAD1F]">actually qualify for</span>
           </h1>

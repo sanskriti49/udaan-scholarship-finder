@@ -280,7 +280,7 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
 
       <div className="font-inter flex items-center justify-between pt-2.5 border-t border-gray-100">
         <div>
-          <div className="text-[18px] font-extrabold text-[#3B8210] tracking-tight leading-none">
+          <div className="text-[18px] font-extrabold text-[#3B8210] leading-none">
             {s.amount}
             <span className="text-[12px] font-semibold text-gray-600 ml-0.5">
               {s.amtSub}
@@ -457,7 +457,7 @@ function Scholarships() {
       <section className="bg-linear-to-br from-[#F6FAF1] to-white border-b border-[#DDECCB] py-7 px-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-extrabold ">
               <span className="text-[#3B7DC8]">Scholarships</span> for your
               future
             </h2>

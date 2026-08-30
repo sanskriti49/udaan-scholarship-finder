@@ -433,7 +433,7 @@ const ApplicationGuide = () => {
 
 						<div className="text-center">
 							<Badge>Writing Guide</Badge>
-							<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3 tracking-tight animate-fadeIn">
+							<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mt-4 mb-3 animate-fadeIn">
 								Write a Strong
 								<br />
 								<span className="text-[#5AAD1F]">Scholarship Application</span>

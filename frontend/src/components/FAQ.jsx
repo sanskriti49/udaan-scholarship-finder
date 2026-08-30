@@ -79,7 +79,7 @@ function FAQ() {
 						<img src={faqImage} alt="FAQ Illustration" />
 
 						<div className="relative z-10 mt-3">
-							<h2 className="text-4xl font-extrabold text-gray-900 leading-tight tracking-tight">
+							<h2 className="text-4xl font-extrabold text-gray-900 leading-tight ">
 								Got questions before applying?
 							</h2>
 							<p className="mt-3 text-gray-600 text-[14.5px] leading-relaxed font-normal">
