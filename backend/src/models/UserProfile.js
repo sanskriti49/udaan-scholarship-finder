@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 const profileSchema = new mongoose.Schema(
 	{
 		user: {
@@ -27,3 +29,5 @@ const profileSchema = new mongoose.Schema(
 	},
 	{ timestamps: true },
 );
+export default mongoose.models.UserProfile ||
+	mongoose.model("UserProfile", profileSchema);
