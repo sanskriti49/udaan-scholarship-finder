@@ -1,695 +1,614 @@
-import { useState, useRef } from "react";
+﻿import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import {
+	ShieldCheck,
+	CheckCircle2,
+	XCircle,
+	AlertTriangle,
+	FileText,
+	Clock,
+	ExternalLink,
+	Sparkles,
+	HelpCircle,
+	ArrowRight,
+	BookOpen,
+} from "lucide-react";
 import Badge from "../components/Badge";
+import { evaluateProfile } from "../services/scholarshipService";
+import EvidenceModal from "../components/EvidenceModal";
 
-const MOCK_SCHOLARSHIPS = [
-  {
-    id: 1,
-    title: "National Merit Scholarship",
-    amount: "₹50,000 / year",
-    deadline: "15 Oct 2026",
-    description:
-      "Financial assistance for high-performing students across various academic domains to support ongoing degree programs.",
-    tags: ["Undergraduate", "Postgraduate", "Merit-Based"],
-  },
-  {
-    id: 2,
-    title: "Women in STEM Excellence",
-    amount: "₹1,00,000 / year",
-    deadline: "30 Nov 2026",
-    description:
-      "Exclusively for female students pursuing undergraduate or postgraduate programs in engineering, medicine, or core sciences.",
-    tags: ["STEM", "Women Only"],
-  },
-  {
-    id: 3,
-    title: "State Higher Education Grant",
-    amount: "₹25,000 / year",
-    deadline: "01 Dec 2026",
-    description:
-      "State-sponsored tuition assistance program aimed at supporting learners pursuing engineering, medical, or general streams.",
-    tags: ["Regional", "General Need"],
-  },
-  {
-    id: 4,
-    title: "NextGen Tech Fellowship",
-    amount: "₹75,000 / year",
-    deadline: "10 Jan 2027",
-    description:
-      "Empowering next-generation innovators in engineering, data sciences, and complex computing streams.",
-    tags: ["Engineering", "Postgraduate", "EWS"],
-  },
+const COMMON_DOCUMENTS = [
+	{ code: "INCOME_CERT", name: "Family Income Certificate" },
+	{ code: "MARKSHEET", name: "10th / 12th / Degree Marksheet" },
+	{ code: "DOMICILE_CERT", name: "State Domicile Certificate" },
+	{ code: "AADHAAR", name: "Aadhaar Card" },
+	{ code: "BANK_PASSBOOK", name: "Bank Passbook / Details" },
+	{ code: "CASTE_CERT", name: "Caste Certificate (OBC/SC/ST)" },
+	{ code: "ADMISSION_PROOF", name: "College Allotment / Admission Proof" },
+	{ code: "BONAFIDE_CERT", name: "College Bonafide Certificate" },
 ];
 
 export default function EligibilityPage() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    educationLevel: "",
-    courseStream: "",
-    income: "",
-    gender: "",
-    category: "",
-    state: "",
-    cgpa: "",
-    disability: "",
-  });
+	const [formData, setFormData] = useState({
+		fullName: "",
+		educationLevel: "UG",
+		courseStream: "Engineering",
+		familyIncome: 250000,
+		gender: "Female",
+		casteCategory: "General",
+		state: "All India",
+		cgpa: 8.0,
+		hasDisability: false,
+	});
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [resultsVisible, setResultsVisible] = useState(false);
-  const [filteredResults, setFilteredResults] = useState([]);
-  const resultsRef = useRef(null);
+	const [documentsHeld, setDocumentsHeld] = useState([
+		"MARKSHEET",
+		"AADHAAR",
+		"BANK_PASSBOOK",
+	]);
 
-  const educationLevels = [
-    "Class 10",
-    "Class 12",
-    "Undergraduate",
-    "Postgraduate",
-  ];
-  const streams = [
-    "Engineering",
-    "Medical",
-    "Arts",
-    "Commerce",
-    "Science",
-    "Other",
-  ];
-  const categories = ["General", "OBC", "SC", "ST", "EWS"];
-  const states = [
-    "Delhi",
-    "West Bengal",
-    "Maharashtra",
-    "Karnataka",
-    "Tamil Nadu",
-    "Other",
-  ];
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [resultsVisible, setResultsVisible] = useState(false);
+	const [activeTab, setActiveTab] = useState("eligible"); // 'eligible' | 'ineligible'
+	const [evaluationData, setEvaluationData] = useState({
+		matched: [],
+		ineligible: [],
+		summary: { totalEvaluated: 0, eligibleCount: 0, ineligibleCount: 0 },
+	});
 
-  const requiredFields = [
-    "educationLevel",
-    "courseStream",
-    "income",
-    "gender",
-    "category",
-    "state",
-    "cgpa",
-    "disability",
-  ];
-  const completedFieldsCount = Object.keys(formData).filter((key) => {
-    if (key === "fullName") return false;
-    return formData[key] !== "" && formData[key] !== undefined;
-  }).length;
-  const progress = Math.round(
-    (completedFieldsCount / requiredFields.length) * 100,
-  );
+	const [evidenceScholarship, setEvidenceScholarship] = useState(null);
+	const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+	const resultsRef = useRef(null);
 
-  const handleCheckEligibility = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setResultsVisible(false);
+	const toggleDocument = (code) => {
+		setDocumentsHeld((prev) =>
+			prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code],
+		);
+	};
 
-    setTimeout(() => {
-      let evaluated = [...MOCK_SCHOLARSHIPS];
-      if (formData.gender === "Male") {
-        evaluated = evaluated.filter((s) => !s.tags.includes("Women Only"));
-      }
-      setFilteredResults(evaluated);
-      setIsSubmitting(false);
-      setResultsVisible(true);
-      setTimeout(() => {
-        resultsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }, 1500);
-  };
+	const handleInputChange = (field, value) => {
+		setFormData((prev) => ({ ...prev, [field]: value }));
+	};
 
-  const inputClass =
-    "w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
-  const selectClass =
-    "w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 appearance-none cursor-pointer shadow-2xs font-medium";
+	const handleCheckEligibility = async (e) => {
+		e.preventDefault();
+		setIsSubmitting(true);
+		setResultsVisible(false);
 
-  return (
-    <div className="min-h-screen bg-white text-gray-900">
-      {/* Hero */}
-      <section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <Badge>Eligibility Engine</Badge>
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mt-3 mb-3 ">
-            Find scholarships you{" "}
-            <span className="text-[#5AAD1F]">actually qualify for</span>
-          </h1>
-          <p className="text-[15px] text-gray-600 leading-relaxed max-w-xl mx-auto font-normal">
-            Enter your academic and demographic details below, and our engine
-            will instantly cross-reference hundreds of active grants to find
-            your best matches.
-          </p>
-        </div>
-      </section>
+		try {
+			const payload = {
+				...formData,
+				familyIncome: Number(formData.familyIncome),
+				cgpa: Number(formData.cgpa),
+				documentsHeld,
+			};
 
-      {/* How it works strip */}
-      <section className="py-12 px-6 border-b border-gray-100 bg-[#FAFCF7]">
-        <div className="max-w-5xl mx-auto">
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Connecting line for desktop */}
-            <div className="hidden md:block absolute top-12 left-[16.66%] right-[16.66%] h-0.5 border-t-2 border-dashed border-[#C0DD97] opacity-60 z-0"></div>
+			const response = await evaluateProfile(payload);
+			if (response.success) {
+				setEvaluationData({
+					matched: response.data.matched || [],
+					ineligible: response.data.ineligible || [],
+					summary: response.summary || {},
+				});
+				setResultsVisible(true);
+				setTimeout(() => {
+					resultsRef.current?.scrollIntoView({
+						behavior: "smooth",
+						block: "start",
+					});
+				}, 100);
+			}
+		} catch (err) {
+			console.error("Eligibility evaluation failed:", err);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-            {[
-              {
-                icon: "👤",
-                label: "Tell us about yourself",
-                desc: "Share your education, background, and financial status.",
-              },
-              {
-                icon: "⚡",
-                label: "Get matched instantly",
-                desc: "We scan the full database in seconds for your profile.",
-              },
-              {
-                icon: "📬",
-                label: "Review and apply",
-                desc: "Head straight to official pages and submit your application.",
-              },
-            ].map((step, i) => (
-              <div
-                key={i}
-                className="relative bg-white border border-gray-200/90 rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-[#5AAD1F] z-10 flex flex-col h-full shadow-2xs"
-              >
-                {/* Step Number Badge */}
-                <div className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[#F6FAF1] text-[#5AAD1F] text-sm font-bold flex items-center justify-center border border-[#C0DD97]">
-                  {i + 1}
-                </div>
+	const inputClass =
+		"w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
+	const selectClass =
+		"w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 appearance-none cursor-pointer shadow-2xs font-medium";
 
-                {/* Icon Container */}
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#EAF3DE] to-[#D4EBB0] flex items-center justify-center text-2xl mb-5 shadow-sm border border-white">
-                  {step.icon}
-                </div>
+	return (
+		<div className="min-h-screen bg-[#FAFAF8] text-gray-900 pb-24">
+			{/* Hero Section */}
+			<section className="bg-[#F6FAF1] border-b border-[#DDECCB] py-14 px-6">
+				<div className="max-w-4xl mx-auto text-center">
+					<Badge>Deterministic Rule Intelligence</Badge>
+					<h1 className="text-3xl md:text-5xl font-extrabold leading-tight mt-3 mb-3 text-gray-900">
+						Verifiable Scholarship <span className="text-[#5AAD1F]">Eligibility Engine</span>
+					</h1>
+					<p className="text-sm text-gray-600 leading-relaxed max-w-xl mx-auto">
+						No black-box guesses. We evaluate your profile against official government and foundation rule trees with mathematical certainty, document readiness checks, and source citations.
+					</p>
+				</div>
+			</section>
 
-                <h3 className="text-[18px] font-bold text-gray-900 mb-1.5 pr-8">
-                  {step.label}
-                </h3>
-                <p className="text-[13.5px] text-gray-600 leading-relaxed font-normal">
-                  {step.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+			{/* Form Container */}
+			<div className="max-w-3xl mx-auto px-6 -mt-6">
+				<form
+					onSubmit={handleCheckEligibility}
+					className="bg-white border border-gray-200/90 rounded-3xl p-6 md:p-10 shadow-xl space-y-8"
+				>
+					<div className="border-b border-gray-100 pb-4">
+						<h2 className="text-lg font-bold text-gray-900">
+							1. Student Academic & Demographic Profile
+						</h2>
+						<p className="text-xs text-gray-500 mt-0.5">
+							These attributes are mapped against the scheme's statutory eligibility criteria.
+						</p>
+					</div>
 
-      {/* Form + Sidebar */}
-      <section className="py-12 px-6">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[0.9fr_1.35fr] gap-8 items-start">
-          {/* Sidebar */}
-          <div className="hidden lg:flex flex-col gap-4 lg:sticky lg:top-24">
-            {/* Profile completion */}
-            <div className="bg-white border border-gray-200/90 rounded-2xl p-6 shadow-2xs">
-              <Badge>Your profile</Badge>
-              <h3 className="text-[18px] font-bold text-gray-900 mt-2 mb-1">
-                Profile completion
-              </h3>
-              <p className="text-[13.5px] text-gray-600 mb-5 font-normal">
-                Complete all fields to unlock the most accurate matches.
-              </p>
+					{/* Grid of Inputs */}
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+						<div>
+							<label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+								Current Degree Level
+							</label>
+							<select
+								value={formData.educationLevel}
+								onChange={(e) => handleInputChange("educationLevel", e.target.value)}
+								className={selectClass}
+							>
+								<option value="UG">Undergraduate (UG / B.Tech / B.Sc)</option>
+								<option value="PG">Postgraduate (PG / M.Tech / M.Sc)</option>
+								<option value="Diploma">Diploma / Polytechnic</option>
+								<option value="Class 12">Class 12th</option>
+								<option value="Class 10">Class 10th</option>
+								<option value="PhD">PhD / Doctoral</option>
+							</select>
+						</div>
 
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-[#27500A] uppercase tracking-wider">
-                  Progress
-                </span>
-                <span className="text-[13px] font-bold text-gray-900">
-                  {progress}%
-                </span>
-              </div>
-              <div className="h-2 rounded-full bg-[#EAF3DE] mb-6 overflow-hidden">
-                <div
-                  style={{ width: `${progress}%` }}
-                  className="h-full rounded-full bg-[#5AAD1F] transition-all duration-500"
-                />
-              </div>
+						<div>
+							<label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+								Field / Discipline Stream
+							</label>
+							<select
+								value={formData.courseStream}
+								onChange={(e) => handleInputChange("courseStream", e.target.value)}
+								className={selectClass}
+							>
+								<option value="Engineering">Engineering / Technology</option>
+								<option value="Medical">Medicine / Healthcare</option>
+								<option value="Science">Natural / Applied Sciences</option>
+								<option value="Commerce">Commerce / Management</option>
+								<option value="Arts">Humanities / Arts</option>
+								<option value="Other">Other Disciplines</option>
+							</select>
+						</div>
 
-              <div className="flex flex-col gap-3">
-                {[
-                  { label: "Academics", done: !!formData.educationLevel },
-                  { label: "Demographics", done: !!formData.category },
-                  { label: "Financials", done: !!formData.income },
-                ].map(({ label, done }) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-3 text-[13.5px]"
-                  >
-                    <div
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all duration-300 text-[11px] font-bold ${
-                        done
-                          ? "bg-[#5AAD1F] border-[#5AAD1F] text-white"
-                          : "bg-white border-gray-300 text-transparent"
-                      }`}
-                    >
-                      ✓
-                    </div>
-                    <span
-                      className={
-                        done ? "text-[#27500A] font-bold" : "text-gray-600 font-medium"
-                      }
-                    >
-                      {label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+						<div>
+							<label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+								Annual Family Income (₹)
+							</label>
+							<input
+								type="number"
+								min="0"
+								step="10000"
+								value={formData.familyIncome}
+								onChange={(e) => handleInputChange("familyIncome", e.target.value)}
+								className={inputClass}
+								placeholder="e.g. 250000"
+								required
+							/>
+							<span className="text-[11px] text-gray-400 mt-1 block">
+								As certified by competent local revenue authority
+							</span>
+						</div>
 
-            {/* Privacy card */}
-            <div className="bg-white border border-gray-200/90 rounded-2xl p-5 shadow-2xs flex items-start gap-4 hover:border-[#C0DD97] transition-colors duration-150">
-              <div className="w-9 h-9 rounded-xl bg-[#EAF3DE] flex items-center justify-center shrink-0 text-lg">
-                🔒
-              </div>
-              <div>
-                <h4 className="text-[14px] font-bold text-gray-900 mb-1">
-                  Privacy first
-                </h4>
-                <p className="text-[13px] text-gray-600 leading-relaxed">
-                  Your financial and demographic data is processed securely and
-                  never shared without explicit consent.
-                </p>
-              </div>
-            </div>
+						<div>
+							<label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+								Academic Score (CGPA / 10)
+							</label>
+							<input
+								type="number"
+								min="0"
+								max="10"
+								step="0.1"
+								value={formData.cgpa}
+								onChange={(e) => handleInputChange("cgpa", e.target.value)}
+								className={inputClass}
+								placeholder="e.g. 8.5"
+								required
+							/>
+						</div>
 
-            {/* Pro tip */}
-            <div className="bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl p-5 shadow-2xs">
-              <p className="text-[13.5px] text-gray-800 leading-relaxed">
-                <strong className="text-[#27500A]">Tip:</strong> Users who reach
-                100% completion are 4× more likely to discover high-value
-                regional grants.
-              </p>
-            </div>
-          </div>
+						<div>
+							<label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+								Gender
+							</label>
+							<select
+								value={formData.gender}
+								onChange={(e) => handleInputChange("gender", e.target.value)}
+								className={selectClass}
+							>
+								<option value="Female">Female</option>
+								<option value="Male">Male</option>
+								<option value="Other">Other</option>
+							</select>
+						</div>
 
-          {/* Form card */}
-          <div className="bg-white border border-gray-200/90 rounded-3xl shadow-sm overflow-hidden">
-            <div className="h-1.5 bg-[#5AAD1F]" />
+						<div>
+							<label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+								Social Category
+							</label>
+							<select
+								value={formData.casteCategory}
+								onChange={(e) => handleInputChange("casteCategory", e.target.value)}
+								className={selectClass}
+							>
+								<option value="General">General</option>
+								<option value="OBC">OBC (Other Backward Classes)</option>
+								<option value="SC">SC (Scheduled Caste)</option>
+								<option value="ST">ST (Scheduled Tribe)</option>
+								<option value="EWS">EWS (Economically Weaker Section)</option>
+							</select>
+						</div>
 
-            <form
-              onSubmit={handleCheckEligibility}
-              className="p-6 sm:p-8 flex flex-col gap-10"
-            >
-              {/* Section — Identity */}
-              <div>
-                <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100">
-                  <div className="w-8 h-8 rounded-lg bg-[#EAF3DE] flex items-center justify-center text-sm">
-                    👤
-                  </div>
-                  <h2 className="text-[18px] font-extrabold text-gray-900">
-                    Basic identity
-                  </h2>
-                </div>
+						<div>
+							<label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
+								Domicile State
+							</label>
+							<select
+								value={formData.state}
+								onChange={(e) => handleInputChange("state", e.target.value)}
+								className={selectClass}
+							>
+								<option value="All India">All India Resident</option>
+								<option value="UP">Uttar Pradesh</option>
+								<option value="Bihar">Bihar</option>
+								<option value="Maharashtra">Maharashtra</option>
+								<option value="Delhi">Delhi NCT</option>
+								<option value="Karnataka">Karnataka</option>
+								<option value="Tamil Nadu">Tamil Nadu</option>
+							</select>
+						</div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Full name{" "}
-                      <span className="text-gray-500 normal-case font-normal tracking-normal">
-                        (optional)
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Priya Sharma"
-                      value={formData.fullName}
-                      onChange={(e) =>
-                        handleInputChange("fullName", e.target.value)
-                      }
-                      className={inputClass}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Gender
-                    </label>
-                    <div className="flex gap-2 h-11.5">
-                      {["Male", "Female", "Other"].map((g) => (
-                        <button
-                          key={g}
-                          type="button"
-                          onClick={() => handleInputChange("gender", g)}
-                          className={`cursor-pointer flex-1 rounded-xl text-[13px] font-bold border transition-all duration-150 ${
-                            formData.gender === g
-                              ? "bg-[#5AAD1F] text-white border-[#5AAD1F] shadow-xs"
-                              : "bg-[#F6FAF1] border-[#C0DD97] text-gray-700 hover:border-[#5AAD1F] hover:bg-white"
-                          }`}
-                        >
-                          {g}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+						<div className="flex items-center gap-3 pt-6">
+							<input
+								type="checkbox"
+								id="disabilityCheck"
+								checked={formData.hasDisability}
+								onChange={(e) => handleInputChange("hasDisability", e.target.checked)}
+								className="w-4 h-4 text-[#5AAD1F] rounded focus:ring-[#5AAD1F]"
+							/>
+							<label htmlFor="disabilityCheck" className="text-xs font-semibold text-gray-700 cursor-pointer">
+								Documented Disability (PwD) Candidate
+							</label>
+						</div>
+					</div>
 
-              <div>
-                <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100">
-                  <div className="w-8 h-8 rounded-lg bg-[#EAF3DE] flex items-center justify-center text-sm">
-                    🎓
-                  </div>
-                  <h2 className="text-[18px] font-extrabold text-gray-900">
-                    Academic standing
-                  </h2>
-                </div>
+					{/* Document Readiness Checklist */}
+					<div className="pt-6 border-t border-gray-100">
+						<div className="flex items-center justify-between mb-3">
+							<div>
+								<h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+									<FileText className="w-4 h-4 text-blue-600" />
+									2. Your Current Document Inventory
+								</h2>
+								<p className="text-xs text-gray-500 mt-0.5">
+									Check off certificates you already possess to evaluate application readiness.
+								</p>
+							</div>
+							<span className="text-xs font-semibold text-[#27500A] bg-[#EAF3DE] px-2.5 py-1 rounded-full">
+								{documentsHeld.length} Documents Selected
+							</span>
+						</div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Education level
-                    </label>
-                    <select
-                      value={formData.educationLevel}
-                      onChange={(e) =>
-                        handleInputChange("educationLevel", e.target.value)
-                      }
-                      className={selectClass}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select level…
-                      </option>
-                      {educationLevels.map((l) => (
-                        <option key={l} value={l}>
-                          {l}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Course / stream
-                    </label>
-                    <select
-                      value={formData.courseStream}
-                      onChange={(e) =>
-                        handleInputChange("courseStream", e.target.value)
-                      }
-                      className={selectClass}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select stream…
-                      </option>
-                      {streams.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Current CGPA / %
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="100"
-                      placeholder="e.g. 8.5 or 85"
-                      value={formData.cgpa}
-                      onChange={(e) =>
-                        handleInputChange("cgpa", e.target.value)
-                      }
-                      className={inputClass}
-                      required
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Domicile state
-                    </label>
-                    <select
-                      value={formData.state}
-                      onChange={(e) =>
-                        handleInputChange("state", e.target.value)
-                      }
-                      className={selectClass}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select state…
-                      </option>
-                      {states.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+							{COMMON_DOCUMENTS.map((doc) => {
+								const isChecked = documentsHeld.includes(doc.code);
+								return (
+									<label
+										key={doc.code}
+										className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs cursor-pointer transition-all ${
+											isChecked
+												? "bg-[#F6FAF1] border-[#C0DD97] text-[#27500A] font-medium"
+												: "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+										}`}
+									>
+										<input
+											type="checkbox"
+											checked={isChecked}
+											onChange={() => toggleDocument(doc.code)}
+											className="w-4 h-4 text-[#5AAD1F] rounded focus:ring-[#5AAD1F]"
+										/>
+										<span className="truncate">{doc.name}</span>
+									</label>
+								);
+							})}
+						</div>
+					</div>
 
-              {/* Section — Financial & Category */}
-              <div>
-                <div className="flex items-center gap-2.5 mb-5 pb-4 border-b border-gray-100">
-                  <div className="w-8 h-8 rounded-lg bg-[#EAF3DE] flex items-center justify-center text-sm">
-                    💰
-                  </div>
-                  <h2 className="text-[18px] font-extrabold text-gray-900">
-                    Financial &amp; category
-                  </h2>
-                </div>
+					{/* Action Button */}
+					<div className="pt-4">
+						<button
+							type="submit"
+							disabled={isSubmitting}
+							className="w-full py-4 px-6 rounded-2xl bg-[#27500A] hover:bg-[#1E3E08] text-white text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer disabled:opacity-50"
+						>
+							{isSubmitting ? (
+								<>
+									<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+									Running Deterministic Rule Engine...
+								</>
+							) : (
+								<>
+									<Sparkles size={16} />
+									Evaluate Eligibility & Document Readiness
+								</>
+							)}
+						</button>
+					</div>
+				</form>
+			</div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Annual family income
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm font-bold">
-                        ₹
-                      </span>
-                      <input
-                        type="number"
-                        placeholder="0"
-                        value={formData.income}
-                        onChange={(e) =>
-                          handleInputChange("income", e.target.value)
-                        }
-                        className={inputClass + " pl-8"}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Category
-                    </label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) =>
-                        handleInputChange("category", e.target.value)
-                      }
-                      className={selectClass}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select category…
-                      </option>
-                      {categories.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-2 sm:col-span-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                      Person with disability (PwD)?
-                    </label>
-                    <div className="flex gap-2 h-11.5 max-w-50">
-                      {["No", "Yes"].map((opt) => (
-                        <button
-                          key={opt}
-                          type="button"
-                          onClick={() => handleInputChange("disability", opt)}
-                          className={`cursor-pointer flex-1 rounded-xl text-[13px] font-bold border transition-all duration-150 ${
-                            formData.disability === opt
-                              ? "bg-[#5AAD1F] text-white border-[#5AAD1F] shadow-xs"
-                              : "bg-[#F6FAF1] border-[#C0DD97] text-gray-700 hover:border-[#5AAD1F] hover:bg-white"
-                          }`}
-                        >
-                          {opt}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+			{/* Evaluation Results Section */}
+			<div ref={resultsRef} className="max-w-4xl mx-auto px-6 pt-12">
+				{resultsVisible && (
+					<div className="space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-300">
+						{/* Summary Dashboard Banner */}
+						<div className="bg-white border border-gray-200/90 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+							<div>
+								<h3 className="text-base font-bold text-gray-900">
+									Eligibility Audit Complete
+								</h3>
+								<p className="text-xs text-gray-500 mt-0.5">
+									Evaluated against {evaluationData.summary.totalEvaluated} active scholarship rule ASTs.
+								</p>
+							</div>
 
-              {/* Submit */}
-              <div className="pt-2 border-t border-gray-100">
-                {progress < 100 && (
-                  <p className="text-[13px] text-gray-600 mb-4 text-center font-medium">
-                    Fill all required fields to generate your matches.
-                  </p>
-                )}
-                <button
-                  type="submit"
-                  disabled={isSubmitting || progress < 100}
-                  className="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl
-                    bg-[#5AAD1F] hover:bg-[#4A9A18]
-                    text-white font-bold text-[15px]
-                    transition-all duration-200
-                    shadow-sm hover:shadow-md
-                    active:scale-[0.98]
-                    disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg
-                        className="animate-spin h-4 w-4 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
-                      Analyzing database…
-                    </>
-                  ) : (
-                    <>
-                      Generate scholarship matches
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2.5"
-                          d="M5 12h14M12 5l7 7-7 7"
-                        />
-                      </svg>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
+							<div className="flex items-center gap-3">
+								{/* Tab Controls */}
+								<button
+									onClick={() => setActiveTab("eligible")}
+									className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+										activeTab === "eligible"
+											? "bg-[#27500A] text-white shadow-sm"
+											: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+									}`}
+								>
+									Eligible Opportunities ({evaluationData.matched.length})
+								</button>
+								<button
+									onClick={() => setActiveTab("ineligible")}
+									className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+										activeTab === "ineligible"
+											? "bg-red-600 text-white shadow-sm"
+											: "bg-gray-100 text-gray-600 hover:bg-gray-200"
+									}`}
+								>
+									Why am I NOT eligible? ({evaluationData.ineligible.length})
+								</button>
+							</div>
+						</div>
 
-      {/* Results */}
-      <div ref={resultsRef} className="scroll-mt-10">
-        {resultsVisible && (
-          <section className="py-12 px-6 bg-[#F6FAF1] border-t border-[#DDECCB]">
-            <div className="max-w-5xl mx-auto">
-              <div className="mb-8">
-                <Badge>Your matches</Badge>
-                <h2 className="mt-3 text-3xl font-extrabold text-gray-900">
-                  Eligible scholarships
-                </h2>
-                <p className="text-[14px] text-gray-600 mt-1 font-medium">
-                  We found {filteredResults.length} opportunities tailored to
-                  your profile.
-                </p>
-              </div>
+						{/* Eligible Tab View */}
+						{activeTab === "eligible" && (
+							<div className="space-y-4">
+								{evaluationData.matched.length === 0 ? (
+									<div className="p-12 text-center bg-white rounded-3xl border border-gray-200 space-y-3">
+										<HelpCircle className="w-10 h-10 text-gray-400 mx-auto" />
+										<h4 className="text-base font-bold text-gray-800">
+											No direct matches found for this profile
+										</h4>
+										<p className="text-xs text-gray-500 max-w-sm mx-auto">
+											Check the "Why am I NOT eligible?" tab to inspect the specific requirements you missed and discover what changes can unlock eligibility.
+										</p>
+									</div>
+								) : (
+									evaluationData.matched.map((item) => {
+										const evalInfo = item.evaluation || {};
+										const docAudit = evalInfo.documentAudit || {};
 
-              {filteredResults.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredResults.map((s) => (
-                    <div
-                      key={s.id}
-                      className="bg-white border border-gray-200/90 hover:border-[#C0DD97] rounded-2xl p-6 transition-all duration-150 shadow-2xs hover:shadow-md"
-                    >
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {s.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#EAF3DE] text-[#27500A]"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <h3 className="text-[18px] font-bold text-gray-900 mb-1">
-                        {s.title}
-                      </h3>
-                      <p className="text-[14px] text-gray-700 leading-relaxed mb-4">
-                        {s.description}
-                      </p>
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                        <div>
-                          <p className="text-[18px] font-extrabold text-[#3B8210]">
-                            {s.amount}
-                          </p>
-                          <p className="text-[12.5px] text-gray-600 font-medium">
-                            Deadline: {s.deadline}
-                          </p>
-                        </div>
-                        <button className="cursor-pointer text-[13px] font-bold text-[#27500A] bg-[#EAF3DE] hover:bg-[#D4EBB0] px-4.5 py-2 rounded-full transition-colors duration-150 shadow-2xs">
-                          View details
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="bg-white border border-gray-200/90 rounded-2xl p-16 text-center shadow-2xs">
-                  <div className="w-14 h-14 bg-[#EAF3DE] rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
-                    🔍
-                  </div>
-                  <h3 className="text-xl font-extrabold text-gray-900 mb-2">
-                    No matches found
-                  </h3>
-                  <p className="text-[14px] text-gray-600 max-w-sm mx-auto mb-6 leading-relaxed">
-                    Your combination didn't match today, but new opportunities
-                    are added weekly.
-                  </p>
-                  <Link
-                    to="/scholarships"
-                    className="inline-block cursor-pointer bg-[#5AAD1F] text-white text-[13px] font-bold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors shadow-2xs"
-                  >
-                    Browse all scholarships
-                  </Link>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-      </div>
+										return (
+											<div
+												key={item._id}
+												className="bg-white border border-gray-200/90 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all space-y-5"
+											>
+												<div className="flex flex-col sm:flex-row items-start justify-between gap-3">
+													<div>
+														<div className="flex items-center gap-2 flex-wrap mb-1">
+															<span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#EAF3DE] text-[#27500A]">
+																{item.category}
+															</span>
+															<span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 flex items-center gap-1">
+																<CheckCircle2 size={12} />
+																{evalInfo.matchConfidence}% Match Confidence
+															</span>
+														</div>
+														<h4 className="text-lg font-bold text-gray-900">
+															{item.title}
+														</h4>
+														<p className="text-xs text-gray-500">
+															{item.organization} • Award:{" "}
+															<span className="font-bold text-gray-800">
+																{item.amount?.displayString}
+															</span>
+														</p>
+													</div>
 
-      {/* Bottom CTA */}
-      <section className="py-8 px-6 border-t border-gray-100">
-        <div className="max-w-5xl mx-auto bg-[#EAF3DE] border border-[#C0DD97] rounded-2xl px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-2xs">
-          <div>
-            <h3 className="text-[18px] font-bold text-gray-900 mb-1">
-              Prefer to browse on your own?
-            </h3>
-            <p className="text-[14px] text-gray-700 max-w-md leading-relaxed">
-              Explore our full directory and apply your own filters to find what
-              you need.
-            </p>
-          </div>
-          <Link
-            to="/scholarships"
-            className="cursor-pointer shrink-0 bg-[#5AAD1F] text-white text-[15px] font-bold px-6 py-2.5 rounded-full hover:bg-[#4A9A18] transition-colors shadow-2xs"
-          >
-            Explore all scholarships
-          </Link>
-        </div>
-      </section>
-    </div>
-  );
+													{/* Composite Readiness Meter */}
+													<div className="text-right sm:border-l sm:pl-5 border-gray-100 shrink-0">
+														<span className="text-[11px] font-bold text-gray-500 uppercase block">
+															Readiness Score
+														</span>
+														<span className="text-2xl font-black text-[#27500A]">
+															{evalInfo.readinessScore}%
+														</span>
+														<span className="text-[10px] text-gray-400 block">
+															{docAudit.missingCount === 0
+																? "Ready to apply now"
+																: `${docAudit.missingCount} doc missing`}
+														</span>
+													</div>
+												</div>
+
+												{/* Rule Verification Highlights */}
+												<div className="p-4 rounded-2xl bg-[#F6FAF1]/70 border border-[#DDECCB] space-y-2">
+													<span className="text-[11px] font-bold uppercase tracking-wider text-[#27500A] block">
+														Verified Rule Criteria (All Passed)
+													</span>
+													<ul className="space-y-1.5">
+														{evalInfo.passedRules?.map((r, idx) => (
+															<li
+																key={idx}
+																className="text-xs text-gray-700 flex items-start gap-2"
+															>
+																<CheckCircle2
+																	size={14}
+																	className="text-[#5AAD1F] shrink-0 mt-0.5"
+																/>
+																<span>
+																	<strong className="font-semibold text-gray-900">
+																		{r.description}
+																	</strong>{" "}
+																	— your profile: {String(r.actual)}
+																</span>
+															</li>
+														))}
+													</ul>
+												</div>
+
+												{/* Document Readiness Audit */}
+												<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2 border-t border-gray-100">
+													<div className="text-xs space-y-1">
+														<span className="font-bold text-gray-700">
+															Document Readiness: {docAudit.percentage}%
+														</span>
+														{docAudit.missing && docAudit.missing.length > 0 ? (
+															<p className="text-amber-800 text-[11px]">
+																⚠️ Missing for application:{" "}
+																<span className="font-semibold">
+																	{docAudit.missing.map((d) => d.name).join(", ")}
+																</span>
+															</p>
+														) : (
+															<p className="text-emerald-700 text-[11px] font-semibold">
+																✓ All prerequisite certificates are in your inventory!
+															</p>
+														)}
+													</div>
+
+													<div className="flex items-center gap-2 w-full sm:w-auto">
+														<button
+															onClick={() => {
+																setEvidenceScholarship(item);
+																setIsEvidenceOpen(true);
+															}}
+															className="py-2 px-3.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-800 text-xs font-bold hover:bg-blue-100 transition-colors flex items-center gap-1.5"
+														>
+															<FileText size={13} />
+															Inspect Official Proof
+														</button>
+														{item.applicationLink && (
+															<a
+																href={item.applicationLink}
+																target="_blank"
+																rel="noopener noreferrer"
+																className="py-2 px-3.5 rounded-xl bg-[#27500A] text-white text-xs font-bold hover:bg-[#1E3E08] transition-colors flex items-center gap-1.5"
+															>
+																Apply Portal <ExternalLink size={13} />
+															</a>
+														)}
+													</div>
+												</div>
+											</div>
+										);
+									})
+								)}
+							</div>
+						)}
+
+						{/* Ineligible Tab View ("Why Am I NOT Eligible?") */}
+						{activeTab === "ineligible" && (
+							<div className="space-y-4">
+								{evaluationData.ineligible.map((item) => {
+									const evalInfo = item.evaluation || {};
+
+									return (
+										<div
+											key={item._id}
+											className="bg-white border border-red-100 rounded-3xl p-6 shadow-sm space-y-4"
+										>
+											<div className="flex items-start justify-between gap-3">
+												<div>
+													<span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 inline-flex items-center gap-1 mb-1">
+														<XCircle size={12} />
+														Ineligible Under Current Criteria
+													</span>
+													<h4 className="text-base font-bold text-gray-900 mt-1">
+														{item.title}
+													</h4>
+													<p className="text-xs text-gray-500">
+														{item.organization}
+													</p>
+												</div>
+
+												<button
+													onClick={() => {
+														setEvidenceScholarship(item);
+														setIsEvidenceOpen(true);
+													}}
+													className="py-1.5 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
+												>
+													View Criteria
+												</button>
+											</div>
+
+											{/* Explicit Failure Diagnostics */}
+											<div className="p-4 rounded-2xl bg-red-50/70 border border-red-200/80 space-y-2">
+												<span className="text-[11px] font-bold uppercase tracking-wider text-red-900 block">
+													Reasons for Ineligibility
+												</span>
+												<ul className="space-y-1.5">
+													{evalInfo.failedRules?.map((f, idx) => (
+														<li
+															key={idx}
+															className="text-xs text-red-800 flex items-start gap-2"
+														>
+															<XCircle
+																size={14}
+																className="text-red-600 shrink-0 mt-0.5"
+															/>
+															<div>
+																<p className="font-semibold text-red-900">
+																	{f.failMessage}
+																</p>
+																<p className="text-[11px] text-red-700">
+																	Requirement: {f.required} | Your Profile:{" "}
+																	{String(f.actual)}
+																</p>
+																{f.citation && (
+																	<p className="text-[10px] text-red-600 italic mt-0.5">
+																		Cites: "{f.citation.quote}" ({f.citation.clause})
+																	</p>
+																)}
+															</div>
+														</li>
+													))}
+												</ul>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						)}
+					</div>
+				)}
+			</div>
+
+			{/* Evidence Modal Component */}
+			<EvidenceModal
+				isOpen={isEvidenceOpen}
+				onClose={() => {
+					setIsEvidenceOpen(false);
+					setEvidenceScholarship(null);
+				}}
+				scholarship={evidenceScholarship}
+			/>
+		</div>
+	);
 }

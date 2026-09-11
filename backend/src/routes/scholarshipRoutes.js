@@ -1,9 +1,10 @@
-import express from "express";
+﻿import express from "express";
 import {
 	getScholarships,
 	getFeaturedScholarships,
 	getScholarshipById,
-	matchScholarships,
+	getScholarshipHistory,
+	evaluateScholarships,
 } from "../controllers/scholarshipController.js";
 
 const router = express.Router();
@@ -11,7 +12,9 @@ const router = express.Router();
 router.get("/", getScholarships);
 router.get("/featured", getFeaturedScholarships);
 router.get("/:id", getScholarshipById);
+router.get("/:id/history", getScholarshipHistory);
 
-router.post("/match", matchScholarships);
+router.post("/evaluate", evaluateScholarships);
+router.post("/match", evaluateScholarships);
 
 export default router;
