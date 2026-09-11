@@ -3,7 +3,7 @@ import logoImg from "../assets/images/logo.png";
 
 function Footer() {
 	return (
-		<footer className="font-pangea bg-white border-t border-gray-100">
+		<footer className="bg-white border-t border-gray-100">
 			<div className="mx-auto max-w-7xl px-6 py-12 md:py-16 lg:px-8">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-gray-100">
 					<div className="lg:col-span-1 flex flex-col gap-4">

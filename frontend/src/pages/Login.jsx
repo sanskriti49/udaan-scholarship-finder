@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logoImg from "../assets/images/logo.png";
-import loginIllustration from "../assets/images/login-illustration.png";
+import loginIllustration from "../assets/images/login-illustration.webp";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { Turnstile } from "react-turnstile";
@@ -111,7 +111,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row font-pangea">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
       {/* ── Form panel — LEFT ── */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-14 xl:px-20 order-2 lg:order-1">
         <div className="max-w-md mx-auto w-full">

@@ -3,23 +3,24 @@ import { useNavigate } from "react-router-dom";
 
 function Hero() {
 	return (
-		<div className="font-pangea relative overflow-hidden bg-linear-to-b from-white via-gray-50/50 to-white">
+		<div className="relative overflow-hidden bg-linear-to-b from-white via-gray-50/50 to-white">
 			<div className="mx-auto max-w-7xl px-6 pt-12 pb-12 md:py-10 lg:px-8">
 				<div className="grid grid-cols-1 gap-12 items-start lg:grid-cols-2 lg:gap-12">
 					<div className="flex flex-col gap-8 justify-between">
 						<div className="flex flex-col gap-6">
-							<div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-full w-max px-4 py-1.5 text-xs font-semibold tracking-wide uppercase shadow-sm">
-								<span>🎓</span> One search can change a student's future
+							<div className="inline-flex items-center gap-3 text-[11px] font-bold text-emerald-800 uppercase tracking-[0.2em] opacity-80 mb-2">
+								<div className="h-px w-6 bg-emerald-800"></div>
+								One search can change a student's future
 							</div>
 
-							<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1]">
+							<h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.1] ">
 								Discover scholarships that help your dreams{" "}
 								<span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-600 to-teal-500">
 									take flight.
 								</span>
 							</h1>
 
-							<p className="text-gray-600 text-lg sm:text-xl max-w-xl font-normal leading-relaxed">
+							<p className="text-gray-600 text-base sm:text-lg max-w-xl font-normal leading-relaxed">
 								Empowering students to turn aspirations into achievements with
 								verified pathways and simple applications.
 							</p>
@@ -29,11 +30,11 @@ function Hero() {
 							<div className="relative grow">
 								<input
 									type="text"
-									placeholder="Search scholarships..."
-									className="w-full px-5 py-3 rounded-full border border-gray-200 bg-white text-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+									placeholder="Search scholarships (e.g., AICTE, Pragati, STEM)..."
+									className="w-full px-5 py-3 rounded-full border border-gray-300 bg-white text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
 								/>
 							</div>
-							<button className="cursor-pointer px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-md rounded-full transition-all duration-200 shadow-md shadow-emerald-600/10 active:scale-98">
+							<button className="cursor-pointer px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-full transition-all duration-200 shadow-md shadow-emerald-600/10 active:scale-98">
 								Explore Now
 							</button>
 						</div>
@@ -47,6 +48,8 @@ function Hero() {
 								<img
 									src={heroImage}
 									alt="Hero banner"
+									fetchpriority="high"
+									loading="eager"
 									className="w-full h-auto object-cover rounded-2xl shadow-xl border border-gray-100 transition-transform duration-500 group-hover:scale-[1.01]"
 								/>
 							</div>
@@ -56,7 +59,7 @@ function Hero() {
 								<h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-emerald-600">
 									1,000+
 								</h2>
-								<p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+								<p className="text-xs sm:text-sm text-gray-500 font-normal mt-1">
 									Scholarships Active
 								</p>
 							</div>
@@ -64,7 +67,7 @@ function Hero() {
 								<h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-emerald-600">
 									500+
 								</h2>
-								<p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+								<p className="text-xs sm:text-sm text-gray-500 font-normal mt-1">
 									Partner Colleges
 								</p>
 							</div>
@@ -72,7 +75,7 @@ function Hero() {
 								<h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-emerald-600">
 									95%
 								</h2>
-								<p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
+								<p className="text-xs sm:text-sm text-gray-500 font-normal mt-1">
 									Verified Rate
 								</p>
 							</div>

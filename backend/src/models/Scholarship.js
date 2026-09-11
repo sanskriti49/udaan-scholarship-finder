@@ -64,24 +64,7 @@ const scholarshipSchema = new mongoose.Schema(
 			],
 			required: true,
 		},
-		tags: [
-			{
-				type: String,
-				enum: [
-					"Merit-Based",
-					"Need-Based",
-					"Women Only",
-					"SC/ST/OBC",
-					"Minority",
-					"Sports",
-					"Disability",
-					"STEM",
-					"EWS",
-					"Rural",
-					"Differently Abled",
-				],
-			},
-		],
+		tags: [{ type: String, trim: true }],
 		level: {
 			type: String,
 			enum: ["Class 10", "Class 12", "UG", "PG", "PhD"],
@@ -121,6 +104,61 @@ const scholarshipSchema = new mongoose.Schema(
 		popular: { type: Boolean, default: false },
 		verified: { type: Boolean, default: false },
 
+		slug: { type: String, unique: true, sparse: true, index: true },
+		trustScore: { type: Number, default: 0.85, min: 0, max: 1 },
+		contentHash: { type: String },
+		hasChanges: { type: Boolean, default: false },
+		latestChangeSummary: { type: String },
+
+		rules: [
+			{
+				id: { type: String, required: true },
+				field: {
+					type: String,
+					enum: [
+						"familyIncome",
+						"cgpa",
+						"percentage",
+						"educationLevel",
+						"stream",
+						"gender",
+						"casteCategory",
+						"state",
+						"hasDisability",
+					],
+					required: true,
+				},
+				operator: {
+					type: String,
+					enum: ["LTE", "GTE", "EQ", "IN", "BOOLEAN_MATCH"],
+					required: true,
+				},
+				targetValue: mongoose.Schema.Types.Mixed,
+				isMandatory: { type: Boolean, default: true },
+				description: String,
+				failMessage: String,
+			},
+		],
+
+		requiredDocuments: [
+			{
+				code: { type: String, required: true },
+				name: { type: String, required: true },
+				mandatory: { type: Boolean, default: true },
+			},
+		],
+
+		provenanceQuotes: [
+			{
+				ruleId: String,
+				sourceUrl: String,
+				quote: String,
+				clause: String,
+				page: Number,
+				verifiedAt: { type: Date, default: Date.now },
+			},
+		],
+
 		rawData: { type: mongoose.Schema.Types.Mixed },
 	},
 	{ timestamps: true },
@@ -136,5 +174,6 @@ scholarshipSchema.index({ level: 1 });
 scholarshipSchema.index({ "amount.value": 1 });
 scholarshipSchema.index({ tags: 1 });
 scholarshipSchema.index({ popular: 1, verified: 1 });
+scholarshipSchema.index({ trustScore: -1 });
 
 export default mongoose.model("Scholarship", scholarshipSchema);
