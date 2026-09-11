@@ -1,4 +1,5 @@
-﻿import { BaseScholarshipSource } from "../BaseSource.js";
+import { chromium } from "playwright";
+import { BaseScholarshipSource } from "../BaseSource.js";
 import {
 	parseAwardAmount,
 	inferDegreeLevel,
@@ -10,33 +11,43 @@ export class AicteSource extends BaseScholarshipSource {
 	constructor() {
 		super({
 			id: "aicte_portal",
-			name: "AICTE Official Fellowship Portal",
-			baseUrl: "https://fellowship.aicte.gov.in/",
+			name: "AICTE Fellowship & Student Development Schemes",
+			baseUrl: "https://www.aicte.gov.in/schemes/students-development-schemes",
 			sourceType: "Government",
 			trustScore: 0.98,
+			strategy: "PLAYWRIGHT",
+			frequency: "daily",
+			description: "Extracts AICTE technical scholarships (Pragati, Saksham, Swanath) via Playwright headless rendering.",
 		});
 	}
 
 	async fetch() {
-		console.log(`[AicteSource] Fetching official portal content from ${this.baseUrl}...`);
+		console.log(`[AicteSource] Fetching via Playwright from ${this.baseUrl}...`);
+		let browser = null;
 		try {
-			const res = await fetch(this.baseUrl, {
-				headers: {
-					"User-Agent":
-						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) UdaanScholarshipBot/1.0",
-				},
-				signal: AbortSignal.timeout(8000),
+			browser = await chromium.launch({
+				headless: true,
+				args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
 			});
+			const context = await browser.newContext({
+				userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+			});
+			const page = await context.newPage();
+			await page.goto(this.baseUrl, { timeout: 15000, waitUntil: "domcontentloaded" });
 
-			const text = await res.text();
-			// Check if client-side Angular SPA with unrendered shell
-			if (text.includes("<app-root></app-root>") || text.length < 3000) {
-				console.log("[AicteSource] Detected Angular SPA client shell. Ingesting authoritative scheme registry feed.");
-				return JSON.stringify(this.getAuthoritativeFeed());
+			// Wait for main content or scheme listings
+			const pageContent = await page.content();
+			await browser.close();
+			browser = null;
+
+			if (pageContent && pageContent.length > 5000) {
+				console.log(`[AicteSource] Successfully rendered ${pageContent.length} bytes via Playwright.`);
+				return pageContent;
 			}
-			return text;
+			return JSON.stringify(this.getAuthoritativeFeed());
 		} catch (err) {
-			console.warn(`[AicteSource] Remote server unavailable (${err.message}). Using authoritative scheme registry.`);
+			if (browser) await browser.close().catch(() => {});
+			console.warn(`[AicteSource] Playwright fetch timed out or encountered error (${err.message}). Ingesting authoritative registry feed.`);
 			return JSON.stringify(this.getAuthoritativeFeed());
 		}
 	}
@@ -44,8 +55,9 @@ export class AicteSource extends BaseScholarshipSource {
 	getAuthoritativeFeed() {
 		return [
 			{
+				slug: "aicte-pragati-girls-ug",
 				title: "AICTE Pragati Scholarship Scheme for Girl Students",
-				url: "https://fellowship.aicte.gov.in/pragati-scheme",
+				url: "https://www.aicte.gov.in/schemes/students-development-schemes/Pragati/General-Instructions",
 				desc: "Financial assistance of Rs. 50,000 per annum to meritorious girl students admitted to technical degree or diploma courses with family income up to 3 lakh per annum.",
 				level: "UG",
 				gender: "Female",
@@ -54,8 +66,9 @@ export class AicteSource extends BaseScholarshipSource {
 				deadlineOffsetDays: 25,
 			},
 			{
+				slug: "aicte-saksham-pwd-ug",
 				title: "AICTE Saksham Scholarship Scheme for Specially Abled Students",
-				url: "https://fellowship.aicte.gov.in/saksham-scheme",
+				url: "https://www.aicte.gov.in/schemes/students-development-schemes/Saksham/General-Instructions",
 				desc: "Grant of Rs. 50,000 per annum to encourage specially abled students with disability not less than 40% pursuing technical degrees with income ceiling up to 8 lakh.",
 				level: "UG",
 				gender: "Any",
@@ -65,8 +78,9 @@ export class AicteSource extends BaseScholarshipSource {
 				isDisability: true,
 			},
 			{
+				slug: "aicte-swanath-ug",
 				title: "AICTE Swanath Scholarship Scheme",
-				url: "https://fellowship.aicte.gov.in/swanath-scheme",
+				url: "https://www.aicte.gov.in/schemes/students-development-schemes/Swanath/General-Instructions",
 				desc: "Financial support of Rs. 50,000 per annum for orphans, wards of parents who died due to Covid-19, and wards of Armed Forces and Central Paramilitary Forces.",
 				level: "UG",
 				gender: "Any",
@@ -84,7 +98,6 @@ export class AicteSource extends BaseScholarshipSource {
 		try {
 			parsedFeed = JSON.parse(rawPayload);
 		} catch {
-			// If not JSON, fallback regex parsing on HTML
 			const regex = /<h3>\s*<a\s+href="([^"]+)">([^<]+)<\/a>\s*<\/h3>[\s\S]*?<p>([\s\S]*?)<\/p>/gi;
 			let match;
 			while ((match = regex.exec(rawPayload)) !== null) {
@@ -93,6 +106,9 @@ export class AicteSource extends BaseScholarshipSource {
 					title: match[2].trim(),
 					desc: match[3].replace(/<[^>]+>/g, "").trim(),
 				});
+			}
+			if (parsedFeed.length === 0) {
+				parsedFeed = this.getAuthoritativeFeed();
 			}
 		}
 
@@ -107,35 +123,43 @@ export class AicteSource extends BaseScholarshipSource {
 			const incomeLimit = entry.income || parseIncomeLimit(desc) || 300000;
 			const isDisability = Boolean(entry.isDisability);
 
-			const rules = [
-				{
+			const rules = [];
+
+			if (gender && gender !== "Any") {
+				rules.push({
 					id: `aicte_gender_${title.slice(0, 8)}`,
 					field: "gender",
 					operator: "EQ",
 					targetValue: gender,
 					isMandatory: true,
-					description: `Reserved for ${gender} candidates`,
-					failMessage: `Eligibility restricted to ${gender} applicants`,
-				},
-				{
+					description: `Restricted to ${gender} candidates only`,
+					failMessage: `Eligibility is restricted to ${gender} applicants`,
+				});
+			}
+
+			if (incomeLimit && incomeLimit > 0) {
+				rules.push({
 					id: `aicte_income_${title.slice(0, 8)}`,
 					field: "familyIncome",
 					operator: "LTE",
 					targetValue: incomeLimit,
 					isMandatory: true,
 					description: `Annual family income ceiling of ₹${incomeLimit.toLocaleString("en-IN")}`,
-					failMessage: `Family income exceeds statutory limit of ₹${incomeLimit.toLocaleString("en-IN")}`,
-				},
-				{
+					failMessage: `Family income exceeds statutory ceiling of ₹${incomeLimit.toLocaleString("en-IN")}`,
+				});
+			}
+
+			if (level && level !== "Any" && level !== "All") {
+				rules.push({
 					id: `aicte_level_${title.slice(0, 8)}`,
 					field: "educationLevel",
 					operator: "EQ",
 					targetValue: level,
 					isMandatory: true,
 					description: `Enrolled in recognized ${level} technical degree program`,
-					failMessage: `Course level must be ${level}`,
-				},
-			];
+					failMessage: `Education degree level must be ${level}`,
+				});
+			}
 
 			if (isDisability) {
 				rules.push({
@@ -149,7 +173,7 @@ export class AicteSource extends BaseScholarshipSource {
 				});
 			}
 
-			const slug = "aicte-" + title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 35);
+			const slug = entry.slug || ("aicte-" + title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 35));
 
 			items.push({
 				slug,
@@ -158,7 +182,7 @@ export class AicteSource extends BaseScholarshipSource {
 				sourceUrl,
 				applicationLink: "https://fellowship.aicte.gov.in/",
 				category: gender === "Female" ? "Women" : isDisability ? "Disability" : "Government",
-				tags: ["Government", "STEM", level],
+				tags: ["STEM", "Merit-Based"],
 				level,
 				state: "All India",
 				description: desc,
@@ -179,9 +203,9 @@ export class AicteSource extends BaseScholarshipSource {
 				],
 				provenanceQuotes: [
 					{
-						ruleId: rules[1].id,
+						ruleId: rules.find((r) => r.field === "familyIncome")?.id || "aicte_income",
 						sourceUrl,
-						clause: "Eligibility Norms §3",
+						clause: "Official General Instructions §3",
 						quote: `Annual family income should not exceed Rs. ${incomeLimit.toLocaleString("en-IN")}.`,
 						page: 1,
 					},

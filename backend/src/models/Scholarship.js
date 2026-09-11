@@ -4,9 +4,7 @@ const scholarshipSchema = new mongoose.Schema(
 	{
 		sourceUrl: {
 			type: String,
-			unique: true,
 			required: true,
-			sparse: true,
 		},
 		applicationLink: String,
 

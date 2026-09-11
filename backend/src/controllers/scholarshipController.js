@@ -1,8 +1,9 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 import Scholarship from "../models/Scholarship.js";
 import ScholarshipVersion from "../models/ScholarshipVersion.js";
 import UserProfile from "../models/UserProfile.js";
 import { evaluateEligibility } from "../engine/ruleEvaluator.js";
+import { sourceRegistry } from "../ingestion/SourceRegistry.js";
 
 /**
  * GET /api/scholarships
@@ -273,3 +274,58 @@ export const evaluateScholarships = async (req, res) => {
 		});
 	}
 };
+
+/**
+ * GET /api/scholarships/crawler/status
+ * List configured crawler sources, strategies (Playwright/Cheerio), and health telemetry
+ */
+export const getCrawlerStatus = async (req, res) => {
+	try {
+		const sources = sourceRegistry.listSources();
+		return res.status(200).json({
+			success: true,
+			totalSources: sources.length,
+			lastRunAt: sourceRegistry.lastRunAt,
+			sources,
+		});
+	} catch (error) {
+		console.error("Error retrieving crawler status:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to retrieve crawler status",
+			error: error.message,
+		});
+	}
+};
+
+/**
+ * POST /api/scholarships/crawler/run
+ * Trigger full or source-specific crawler ingestion pipeline
+ */
+export const runCrawler = async (req, res) => {
+	try {
+		const { sourceId } = req.body || {};
+		if (sourceId) {
+			const report = await sourceRegistry.runSource(sourceId);
+			return res.status(200).json({
+				success: true,
+				sourceId,
+				report,
+			});
+		}
+
+		const summary = await sourceRegistry.runAll();
+		return res.status(200).json({
+			success: true,
+			summary,
+		});
+	} catch (error) {
+		console.error("Error running crawler:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Crawler execution encountered an error",
+			error: error.message,
+		});
+	}
+};
+

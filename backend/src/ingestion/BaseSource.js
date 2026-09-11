@@ -1,4 +1,4 @@
-﻿import crypto from "crypto";
+import crypto from "crypto";
 import Scholarship from "../models/Scholarship.js";
 import { detectAndApplyChanges } from "../engine/diffEngine.js";
 
@@ -16,6 +16,9 @@ export class BaseScholarshipSource {
 		this.baseUrl = config.baseUrl;
 		this.sourceType = config.sourceType || "Government";
 		this.trustScore = config.trustScore || 0.9;
+		this.strategy = config.strategy || "CHEERIO";
+		this.frequency = config.frequency || "daily";
+		this.description = config.description || "";
 	}
 
 	computeHash(content) {
@@ -63,12 +66,9 @@ export class BaseScholarshipSource {
 						lastScrapedAt: new Date(),
 					};
 
-					const existing = await Scholarship.findOne({
-						$or: [
-							{ slug: normalizedItem.slug },
-							{ sourceUrl: normalizedItem.sourceUrl },
-						],
-					});
+					const existing = normalizedItem.slug
+						? await Scholarship.findOne({ slug: normalizedItem.slug })
+						: await Scholarship.findOne({ sourceUrl: normalizedItem.sourceUrl });
 
 					if (existing) {
 						const diffResult = await detectAndApplyChanges(existing, normalizedItem);

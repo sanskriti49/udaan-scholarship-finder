@@ -125,9 +125,12 @@ function FeaturedScholarships() {
 										</span>
 									</span>
 								</div>
-								<button className="group/btn cursor-pointer flex items-center gap-1.5 px-4 py-2 bg-gray-900 hover:bg-[#5AAD1F] text-white text-xs font-bold rounded-full transition-colors duration-200 shadow-xs">
-									Apply now
-								</button>
+								<Link
+									to="/scholarships"
+									className="group/btn cursor-pointer flex items-center gap-1.5 px-4 py-2 bg-gray-900 hover:bg-[#5AAD1F] text-white text-xs font-bold rounded-full transition-colors duration-200 shadow-xs"
+								>
+									View Details
+								</Link>
 							</div>
 						</div>
 					))}
