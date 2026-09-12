@@ -3,6 +3,7 @@ import { detectAndApplyChanges } from "../engine/diffEngine.js";
 import { Validator } from "./core/Validator.js";
 import { Deduplicator } from "./core/Deduplicator.js";
 import { notificationService } from "../services/notificationService.js";
+import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 
 /**
  * BaseScholarshipSource
@@ -111,6 +112,9 @@ export class BaseScholarshipSource {
 			}
 
 			telemetry.finishedAt = new Date();
+			if (telemetry.created > 0 || telemetry.changesDetected > 0) {
+				await clearScholarshipCache();
+			}
 			console.log(
 				`[Ingestion Complete] ${this.name} -> Extracted: ${telemetry.totalExtracted}, Valid: ${telemetry.valid}, Quarantined: ${telemetry.quarantined}, Created: ${telemetry.created}, Updated: ${telemetry.updated}, Policy Changes: ${telemetry.changesDetected}`,
 			);

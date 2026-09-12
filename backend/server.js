@@ -1,12 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import mongoose from "mongoose";
 import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import scholarshipRoutes from "./src/routes/scholarshipRoutes.js";
 import notificationRoutes from "./src/routes/notificationRoutes.js";
 import { crawlerScheduler } from "./src/ingestion/core/Scheduler.js";
 import { notificationScheduler } from "./src/jobs/notificationScheduler.js";
+import { startReminderWorker, closeReminderWorker } from "./src/workers/reminderWorker.js";
+import { closeReminderQueue } from "./src/queues/reminderQueue.js";
+import { closeRedisClient } from "./src/config/redis.js";
 
 dotenv.config();
 const app = express();
@@ -29,10 +33,50 @@ app.get("/", (req, res) => {
 });
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
 	console.log(`Server running safely on port ${PORT}`);
 	crawlerScheduler.start();
 	notificationScheduler.start();
+
+	// Initialize BullMQ worker if enabled (default true)
+	if (process.env.ENABLE_BULLMQ_WORKER !== "false") {
+		startReminderWorker();
+	}
 });
+
+/**
+ * Graceful Shutdown for Process Termination (SIGTERM / SIGINT)
+ */
+const gracefulShutdown = async (signal) => {
+	console.log(`\n[Server] Received ${signal}. Commencing graceful shutdown...`);
+
+	crawlerScheduler.stop();
+	notificationScheduler.stop();
+
+	server.close(async () => {
+		console.log("[Server] HTTP server closed.");
+		try {
+			await closeReminderWorker();
+			await closeReminderQueue();
+			await closeRedisClient();
+			await mongoose.disconnect();
+			console.log("[Server] Database and queue connections closed. Exiting process.");
+			process.exit(0);
+		} catch (err) {
+			console.error("[Server] Error during teardown:", err.message);
+			process.exit(1);
+		}
+	});
+
+	// Force exit after 10s timeout if graceful shutdown hangs
+	setTimeout(() => {
+		console.error("[Server] Forced shutdown due to timeout.");
+		process.exit(1);
+	}, 10000).unref();
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+
 
 
