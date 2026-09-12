@@ -1,7 +1,20 @@
 import axios from "axios";
 
+function resolveApiBaseUrl() {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (!envUrl) {
+    return "http://localhost:5000/api";
+  }
+
+  const cleanUrl = envUrl.trim().replace(/\/+$/, "");
+  if (cleanUrl.endsWith("/api")) {
+    return cleanUrl;
+  }
+  return `${cleanUrl}/api`;
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: resolveApiBaseUrl(),
   withCredentials: true,
 });
 

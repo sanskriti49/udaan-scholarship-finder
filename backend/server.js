@@ -19,21 +19,76 @@ import { bootstrapDatabase } from "./src/utils/bootstrapDatabase.js";
 
 const app = express();
 
-app.use(
-	cors({
-		origin: process.env.FRONTEND_URL,
-		credentials: true,
-	}),
-);
+// Parse and normalize allowed CORS origins
+const configuredFrontends = (process.env.FRONTEND_URL || "")
+	.split(",")
+	.map((u) => u.trim().replace(/\/+$/, ""))
+	.filter(Boolean);
+
+const defaultAllowed = [
+	"http://localhost:5173",
+	"http://localhost:3000",
+	"https://udaan-scholarships.vercel.app",
+];
+
+const allowedOrigins = Array.from(new Set([...configuredFrontends, ...defaultAllowed]));
+
+const corsOptions = {
+	origin: (origin, callback) => {
+		// Allow requests with no origin (curl, mobile, server-to-server)
+		if (!origin) {
+			return callback(null, true);
+		}
+
+		const cleanOrigin = origin.replace(/\/+$/, "");
+
+		// Check explicit whitelist
+		if (allowedOrigins.includes(cleanOrigin)) {
+			return callback(null, true);
+		}
+
+		// Allow all Vercel production and preview deployments
+		if (/^https:\/\/.*\.vercel\.app$/.test(cleanOrigin)) {
+			return callback(null, true);
+		}
+
+		// Allow Render services
+		if (/^https:\/\/.*\.onrender\.com$/.test(cleanOrigin)) {
+			return callback(null, true);
+		}
+
+		return callback(null, false);
+	},
+	credentials: true,
+	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+	allowedHeaders: [
+		"Origin",
+		"X-Requested-With",
+		"Content-Type",
+		"Accept",
+		"Authorization",
+		"X-Cache",
+	],
+	exposedHeaders: ["X-Cache"],
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 connectDB().then(() => {
 	bootstrapDatabase();
 });
 
+// Canonical API Endpoints
 app.use("/api/auth", authRoutes);
 app.use("/api/scholarships", scholarshipRoutes);
 app.use("/api/notifications", notificationRoutes);
+
+// Fallback Aliases (protects against clients calling without /api prefix)
+app.use("/auth", authRoutes);
+app.use("/scholarships", scholarshipRoutes);
+app.use("/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
 	res.send("Backend running...");
