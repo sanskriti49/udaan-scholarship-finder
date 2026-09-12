@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import Redis from "ioredis";
 
 /**
@@ -16,10 +18,27 @@ let clientInstance = null;
  * Parse connection options from environment
  */
 export function getRedisConfig() {
+	// 1. If REDIS_URL exists (e.g. Render Key-Value), parse it
 	if (process.env.REDIS_URL) {
-		return process.env.REDIS_URL;
+		try {
+			const parsed = new URL(process.env.REDIS_URL);
+			return {
+				host: parsed.hostname,
+				port: parseInt(parsed.port, 10) || 6379,
+				username: parsed.username
+					? decodeURIComponent(parsed.username)
+					: undefined,
+				password: parsed.password
+					? decodeURIComponent(parsed.password)
+					: undefined,
+				tls: parsed.protocol === "rediss:" ? {} : undefined,
+			};
+		} catch (err) {
+			console.error("[Redis] Invalid REDIS_URL format:", err.message);
+		}
 	}
 
+	// 2. Fallback: Reads your Redis Cloud variables directly
 	return {
 		host: process.env.REDIS_HOST || "127.0.0.1",
 		port: parseInt(process.env.REDIS_PORT, 10) || 6379,
@@ -28,28 +47,15 @@ export function getRedisConfig() {
 		tls: process.env.REDIS_TLS === "true" ? {} : undefined,
 	};
 }
-
 /**
  * Dedicated connection configuration for BullMQ
  * Note: BullMQ strictly requires maxRetriesPerRequest: null
  */
-export const bullMqConnection = (() => {
-	const rawConfig = getRedisConfig();
-
-	if (typeof rawConfig === "string") {
-		return {
-			url: rawConfig,
-			maxRetriesPerRequest: null,
-			enableReadyCheck: false,
-		};
-	}
-
-	return {
-		...rawConfig,
-		maxRetriesPerRequest: null,
-		enableReadyCheck: false,
-	};
-})();
+export const bullMqConnection = {
+	...getRedisConfig(),
+	maxRetriesPerRequest: null,
+	enableReadyCheck: false,
+};
 
 /**
  * Singleton Redis client for Express cache middleware
@@ -62,9 +68,16 @@ export function getRedisClient() {
 
 	const rawConfig = getRedisConfig();
 	const clientOptions = {
+		// retryStrategy(times) {
+		// 	const delay = Math.min(times * 100, 3000);
+		// 	return delay;
+		// },
 		retryStrategy(times) {
-			const delay = Math.min(times * 100, 3000);
-			return delay;
+			// Stop spamming retries after 10 attempts to keep logs clean
+			if (times > 10) {
+				return null;
+			}
+			return Math.min(times * 200, 3000);
 		},
 		reconnectOnError(err) {
 			const targetError = "READONLY";
@@ -99,7 +112,9 @@ export function getRedisClient() {
 
 	clientInstance.on("error", (err) => {
 		isAvailable = false;
-		console.warn(`[Redis] Connection issue (${err.code || err.message}). Operating in fail-open fallback mode.`);
+		console.warn(
+			`[Redis] Connection issue (${err.code || err.message}). Operating in fail-open fallback mode.`,
+		);
 	});
 
 	clientInstance.on("close", () => {
@@ -109,7 +124,9 @@ export function getRedisClient() {
 	// Attempt non-blocking initial connection
 	clientInstance.connect().catch(() => {
 		isAvailable = false;
-		console.warn("[Redis] Initial connection unavailable. Cache layer operating in fail-open mode.");
+		console.warn(
+			"[Redis] Initial connection unavailable. Cache layer operating in fail-open mode.",
+		);
 	});
 
 	return clientInstance;
@@ -119,7 +136,9 @@ export function getRedisClient() {
  * Helper to inspect current connection health
  */
 export function isRedisAvailable() {
-	return isAvailable && clientInstance !== null && clientInstance.status === "ready";
+	return (
+		isAvailable && clientInstance !== null && clientInstance.status === "ready"
+	);
 }
 
 /**

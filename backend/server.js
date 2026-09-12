@@ -1,5 +1,6 @@
+//import dotenv from "dotenv";
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 import connectDB from "./src/config/db.js";
@@ -8,11 +9,14 @@ import scholarshipRoutes from "./src/routes/scholarshipRoutes.js";
 import notificationRoutes from "./src/routes/notificationRoutes.js";
 import { crawlerScheduler } from "./src/ingestion/core/Scheduler.js";
 import { notificationScheduler } from "./src/jobs/notificationScheduler.js";
-import { startReminderWorker, closeReminderWorker } from "./src/workers/reminderWorker.js";
+import {
+	startReminderWorker,
+	closeReminderWorker,
+} from "./src/workers/reminderWorker.js";
 import { closeReminderQueue } from "./src/queues/reminderQueue.js";
 import { closeRedisClient } from "./src/config/redis.js";
 
-dotenv.config();
+//dotenv.config();
 const app = express();
 
 app.use(
@@ -60,7 +64,9 @@ const gracefulShutdown = async (signal) => {
 			await closeReminderQueue();
 			await closeRedisClient();
 			await mongoose.disconnect();
-			console.log("[Server] Database and queue connections closed. Exiting process.");
+			console.log(
+				"[Server] Database and queue connections closed. Exiting process.",
+			);
 			process.exit(0);
 		} catch (err) {
 			console.error("[Server] Error during teardown:", err.message);
@@ -77,6 +83,3 @@ const gracefulShutdown = async (signal) => {
 
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));
-
-
-
