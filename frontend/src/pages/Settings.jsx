@@ -29,6 +29,28 @@ import {
   sendTestNotification,
 } from "../services/notificationService";
 
+function Toggle({ checked, onChange, disabled = false, ariaLabel = "Toggle setting" }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={ariaLabel}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-750/50 ${
+        checked ? "bg-emerald-800" : "bg-slate-300"
+      } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+    >
+      <span
+        className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out ${
+          checked ? "translate-x-4.5" : "translate-x-1"
+        }`}
+      />
+    </button>
+  );
+}
+
 export default function Settings() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
@@ -48,6 +70,17 @@ export default function Settings() {
     gender: "Female",
     disability: "No",
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfile((prev) => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+      }));
+    }
+  }, [user]);
 
   // Notification Preferences State (Database-backed)
   const [notifications, setNotifications] = useState({
@@ -96,7 +129,8 @@ export default function Settings() {
   ];
 
   useEffect(() => {
-    if (user) {
+    const token = localStorage.getItem("token");
+    if (user && token) {
       setNotifLoading(true);
       getPreferences()
         .then((res) => {
@@ -118,7 +152,9 @@ export default function Settings() {
           }
         })
         .catch((err) => {
-          console.error("Failed loading notification preferences:", err);
+          if (err.response?.status !== 401) {
+            console.warn("Using local alert settings fallback:", err?.message);
+          }
         })
         .finally(() => setNotifLoading(false));
     }
@@ -126,15 +162,25 @@ export default function Settings() {
 
   const handleProfileSave = (e) => {
     e.preventDefault();
-    toast.success("Profile preferences saved successfully!");
+    const token = localStorage.getItem("token");
+    if (!user || !token) {
+      toast.info("Preferences saved in session. Sign in to sync across devices.");
+      return;
+    }
+    toast.success("Profile preferences saved successfully.");
   };
 
   const handleNotificationsSave = async () => {
+    const token = localStorage.getItem("token");
+    if (!user || !token) {
+      toast.info("Preferences saved in session. Sign in to enable cloud alerts.");
+      return;
+    }
     setNotifSaving(true);
     try {
       const res = await updatePreferences(notifications);
       if (res.success) {
-        toast.success("Notification preferences saved successfully!");
+        toast.success("Notification preferences saved successfully.");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed saving alert settings");
@@ -145,13 +191,45 @@ export default function Settings() {
 
   const handleSendTestAlert = async () => {
     setTestingAlert(true);
+    const token = localStorage.getItem("token");
+
+    // Guest or unauthenticated simulation: dispatch local preview alert to NotificationCenter
+    if (!user || !token) {
+      setTimeout(() => {
+        const previewAlert = {
+          _id: `preview_${Date.now()}`,
+          title: "Upcoming Deadline: Post-Matric Scholarship",
+          message: "Application window closes in 7 days. Complete verification with your institute nodal officer.",
+          type: "DEADLINE_7_DAYS",
+          priority: "high",
+          isRead: false,
+          createdAt: new Date().toISOString(),
+          evidence: {
+            eligibilityReason: "Income < ₹2.5L and verified undergraduate student",
+          },
+        };
+        window.dispatchEvent(
+          new CustomEvent("preview-notification", { detail: previewAlert })
+        );
+        toast.success(
+          "Preview alert dispatched. Check the bell icon in your navigation bar."
+        );
+        setTestingAlert(false);
+      }, 350);
+      return;
+    }
+
     try {
       const res = await sendTestNotification();
       if (res.success) {
-        toast.success("Test notification dispatched! Check your top navigation bell.");
+        toast.success("Test notification dispatched. Check your top navigation bell.");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed dispatching test notification");
+      if (err.response?.status === 401) {
+        toast.error("Session expired. Please sign in again to dispatch live alerts.");
+      } else {
+        toast.error(err.response?.data?.message || "Failed dispatching test notification");
+      }
     } finally {
       setTestingAlert(false);
     }
@@ -214,9 +292,9 @@ export default function Settings() {
     <div className="min-h-screen bg-[#FAF9F6] py-10 px-5 sm:px-8 text-slate-900">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-emerald-800 uppercase mb-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>
             <span>Account Settings</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-slate-900 leading-tight">
@@ -226,6 +304,32 @@ export default function Settings() {
             Manage your academic profile, eligibility criteria, and deadline notification preferences.
           </p>
         </div>
+
+        {/* Guest Mode Banner */}
+        {!user && (
+          <div className="mb-8 p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 shadow-2xs">
+            <div className="flex items-start sm:items-center gap-2.5">
+              <AlertTriangle size={16} className="text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
+              <span>
+                You are viewing settings in guest mode. Sign in to save your profile to the cloud and receive automated deadline notifications.
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Link
+                to="/login"
+                className="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                className="px-3 py-1.5 rounded-xl border border-amber-300 bg-white font-semibold hover:bg-amber-100/50 transition"
+              >
+                Create Account
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Layout: Sidebar Tabs + Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 items-start">
@@ -560,7 +664,7 @@ export default function Settings() {
                     {/* Primary Alert Triggers */}
                     <div className="space-y-3">
                       {/* Instant Match */}
-                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/40 transition-colors">
+                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
                             <Sparkles size={15} className="text-emerald-700" />
@@ -572,24 +676,19 @@ export default function Settings() {
                             Automatically notify me the moment a newly discovered or updated scholarship matches my profile with 70% or higher confidence.
                           </p>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
-                          <input
-                            type="checkbox"
+                        <div className="shrink-0 mt-0.5">
+                          <Toggle
                             checked={notifications.instantMatch}
-                            onChange={(e) =>
-                              setNotifications({
-                                ...notifications,
-                                instantMatch: e.target.checked,
-                              })
+                            onChange={(val) =>
+                              setNotifications({ ...notifications, instantMatch: val })
                             }
-                            className="sr-only peer"
+                            ariaLabel="Instant Eligibility Match Alerts"
                           />
-                          <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"></div>
-                        </label>
+                        </div>
                       </div>
 
                       {/* Deadline Alerts & Sub-options */}
-                      <div className="p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/40 transition-colors space-y-3">
+                      <div className="p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors space-y-3">
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-0.5">
                             <div className="flex items-center gap-2">
@@ -602,25 +701,20 @@ export default function Settings() {
                               Proactive countdown alerts before closing dates of matching or bookmarked scholarships. Expired schemes are suppressed automatically.
                             </p>
                           </div>
-                          <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
-                            <input
-                              type="checkbox"
+                          <div className="shrink-0 mt-0.5">
+                            <Toggle
                               checked={notifications.deadlineAlerts}
-                              onChange={(e) =>
-                                setNotifications({
-                                  ...notifications,
-                                  deadlineAlerts: e.target.checked,
-                                })
+                              onChange={(val) =>
+                                setNotifications({ ...notifications, deadlineAlerts: val })
                               }
-                              className="sr-only peer"
+                              ariaLabel="Upcoming Deadline Reminders"
                             />
-                            <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"></div>
-                          </label>
+                          </div>
                         </div>
 
                         {notifications.deadlineAlerts && (
-                          <div className="pt-2 border-t border-slate-200/60 pl-6 space-y-2">
-                            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-800">
+                          <div className="pt-3 border-t border-slate-200/70 pl-6 space-y-2.5">
+                            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-slate-800">
                               <input
                                 type="checkbox"
                                 checked={notifications.deadline7Days}
@@ -635,7 +729,7 @@ export default function Settings() {
                               <span>7 Days Before Deadline (Preparation window)</span>
                             </label>
 
-                            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-slate-800">
+                            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-slate-800">
                               <input
                                 type="checkbox"
                                 checked={notifications.deadline48Hours}
@@ -654,7 +748,7 @@ export default function Settings() {
                       </div>
 
                       {/* State Grants */}
-                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/40 transition-colors">
+                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
                             <MapPin size={15} className="text-teal-700" />
@@ -666,24 +760,19 @@ export default function Settings() {
                             Special alerts whenever newly discovered state government schemes are announced for your domicile ({profile.state || "All India"}).
                           </p>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
-                          <input
-                            type="checkbox"
+                        <div className="shrink-0 mt-0.5">
+                          <Toggle
                             checked={notifications.newGrantsInState}
-                            onChange={(e) =>
-                              setNotifications({
-                                ...notifications,
-                                newGrantsInState: e.target.checked,
-                              })
+                            onChange={(val) =>
+                              setNotifications({ ...notifications, newGrantsInState: val })
                             }
-                            className="sr-only peer"
+                            ariaLabel="State & Regional Grant Updates"
                           />
-                          <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"></div>
-                        </label>
+                        </div>
                       </div>
 
                       {/* Weekly Digest */}
-                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/40 transition-colors">
+                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
                             <Mail size={15} className="text-sky-700" />
@@ -695,20 +784,15 @@ export default function Settings() {
                             A curated personalized summary sent every Monday morning highlighting top matching opportunities accepting applications this week.
                           </p>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
-                          <input
-                            type="checkbox"
+                        <div className="shrink-0 mt-0.5">
+                          <Toggle
                             checked={notifications.weeklyDigest}
-                            onChange={(e) =>
-                              setNotifications({
-                                ...notifications,
-                                weeklyDigest: e.target.checked,
-                              })
+                            onChange={(val) =>
+                              setNotifications({ ...notifications, weeklyDigest: val })
                             }
-                            className="sr-only peer"
+                            ariaLabel="Weekly Curated Scholarship Digest"
                           />
-                          <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-800"></div>
-                        </label>
+                        </div>
                       </div>
                     </div>
 
@@ -723,19 +807,18 @@ export default function Settings() {
                             <div className="text-xs font-bold text-slate-900">In-App Notification Center</div>
                             <div className="text-[11px] text-slate-500">Top navigation bell badge and panel</div>
                           </div>
-                          <input
-                            type="checkbox"
+                          <Toggle
                             checked={notifications.channels?.inApp}
-                            onChange={(e) =>
+                            onChange={(val) =>
                               setNotifications({
                                 ...notifications,
                                 channels: {
                                   ...notifications.channels,
-                                  inApp: e.target.checked,
+                                  inApp: val,
                                 },
                               })
                             }
-                            className="rounded border-slate-300 text-emerald-800 focus:ring-emerald-700 cursor-pointer"
+                            ariaLabel="In-App Notification Center"
                           />
                         </div>
 
@@ -744,19 +827,18 @@ export default function Settings() {
                             <div className="text-xs font-bold text-slate-900">Email Delivery</div>
                             <div className="text-[11px] text-slate-500 truncate max-w-44">{user?.email || "Account email"}</div>
                           </div>
-                          <input
-                            type="checkbox"
+                          <Toggle
                             checked={notifications.channels?.email}
-                            onChange={(e) =>
+                            onChange={(val) =>
                               setNotifications({
                                 ...notifications,
                                 channels: {
                                   ...notifications.channels,
-                                  email: e.target.checked,
+                                  email: val,
                                 },
                               })
                             }
-                            className="rounded border-slate-300 text-emerald-800 focus:ring-emerald-700 cursor-pointer"
+                            ariaLabel="Email Delivery"
                           />
                         </div>
                       </div>

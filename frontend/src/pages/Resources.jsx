@@ -305,7 +305,7 @@ export default function Resources() {
 											/>
 										</Link>
 										{isActive && (
-											<span className="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse" />
+											<span className="w-2 h-2 rounded-full bg-emerald-700 inline-block" />
 										)}
 									</div>
 								</div>

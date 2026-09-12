@@ -8,9 +8,23 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-    setLoading(false);
+    const syncUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    };
+
+    syncUser();
+    window.addEventListener("auth-changed", syncUser);
+    return () => window.removeEventListener("auth-changed", syncUser);
   }, []);
 
   const login = async (credentials) => {

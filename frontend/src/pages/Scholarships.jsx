@@ -100,7 +100,7 @@ function DeadlineTag({ deadline }) {
 	if (days <= 10)
 		return (
 			<span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/80">
-				<Clock size={12} className="text-rose-600 animate-pulse" /> {days} days
+				<Clock size={12} className="text-rose-600" /> {days} days
 				left (closing soon)
 			</span>
 		);

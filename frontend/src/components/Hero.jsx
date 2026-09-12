@@ -52,11 +52,8 @@ function Hero() {
 							mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
 						}`}
 					>
-						<div className="inline-flex items-center gap-2 text-xs font-bold tracking-wide text-emerald-800 w-fit">
-							<span className="relative flex h-2 w-2">
-								<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-								<span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
-							</span>
+						<div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide text-emerald-850 w-fit">
+							<span className="w-1.5 h-1.5 rounded-full bg-emerald-700 inline-block shrink-0" />
 							<span>From eligibility to opportunity</span>
 						</div>
 

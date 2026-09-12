@@ -20,9 +20,11 @@ import {
 	markAllAsRead,
 	deleteNotification,
 } from "../services/notificationService";
+import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 
 function formatRelativeTime(dateString) {
+
 	if (!dateString) return "";
 	const date = new Date(dateString);
 	const now = new Date();
@@ -88,6 +90,7 @@ function getNotificationMeta(type, priority) {
 }
 
 export default function NotificationCenter() {
+	const { user } = useAuth();
 	const [isOpen, setIsOpen] = useState(false);
 	const [notifications, setNotifications] = useState([]);
 	const [unreadCount, setUnreadCount] = useState(0);
@@ -96,46 +99,80 @@ export default function NotificationCenter() {
 	const dropdownRef = useRef(null);
 	const navigate = useNavigate();
 
-	// Fetch unread count periodically
+	// Fetch unread count periodically if user is logged in
 	const fetchUnread = async () => {
+		const token = localStorage.getItem("token");
+		if (!user || !token) {
+			return;
+		}
 		try {
 			const res = await getUnreadCount();
-			if (res.success) {
+			if (res && res.success) {
 				setUnreadCount(res.unreadCount);
 			}
-		} catch (_) {}
+		} catch (err) {
+			if (err.response?.status === 401) {
+				setUnreadCount(0);
+			}
+		}
 	};
 
 	// Fetch full notifications list when opened
 	const fetchList = async () => {
+		const token = localStorage.getItem("token");
+		if (!user || !token) {
+			setLoading(false);
+			return;
+		}
 		setLoading(true);
 		try {
 			const res = await getNotifications({
 				unread: activeTab === "unread" ? "true" : undefined,
 				limit: 30,
 			});
-			if (res.success) {
-				setNotifications(res.notifications);
-				setUnreadCount(res.unreadCount);
+			if (res && res.success) {
+				setNotifications(res.notifications || []);
+				setUnreadCount(res.unreadCount || 0);
 			}
 		} catch (err) {
-			console.error("Failed fetching notifications list:", err);
+			if (err.response?.status === 401) {
+				setNotifications([]);
+				setUnreadCount(0);
+			} else {
+				console.warn("Could not fetch notifications:", err.message);
+			}
 		} finally {
 			setLoading(false);
 		}
 	};
 
+	// Listen to local preview events (for instant test feedback even in guest mode)
 	useEffect(() => {
-		fetchUnread();
-		const interval = setInterval(fetchUnread, 45000);
-		return () => clearInterval(interval);
+		const handlePreview = (e) => {
+			if (e.detail) {
+				setNotifications((prev) => [e.detail, ...prev]);
+				setUnreadCount((prev) => prev + 1);
+			}
+		};
+		window.addEventListener("preview-notification", handlePreview);
+		return () => window.removeEventListener("preview-notification", handlePreview);
 	}, []);
 
 	useEffect(() => {
-		if (isOpen) {
+		if (user) {
+			fetchUnread();
+			const interval = setInterval(fetchUnread, 45000);
+			return () => clearInterval(interval);
+		} else {
+			setUnreadCount((prev) => (notifications.length > 0 ? prev : 0));
+		}
+	}, [user]);
+
+	useEffect(() => {
+		if (isOpen && user) {
 			fetchList();
 		}
-	}, [isOpen, activeTab]);
+	}, [isOpen, activeTab, user]);
 
 	// Close on click outside or escape key
 	useEffect(() => {
@@ -228,7 +265,7 @@ export default function NotificationCenter() {
 			>
 				<Bell size={17} />
 				{unreadCount > 0 && (
-					<span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center shadow-xs animate-pulse">
+					<span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-emerald-700 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
 						{unreadCount > 99 ? "99+" : unreadCount}
 					</span>
 				)}
@@ -247,7 +284,7 @@ export default function NotificationCenter() {
 								</span>
 							)}
 						</div>
-						{unreadCount > 0 && (
+						{unreadCount > 0 && user && (
 							<button
 								type="button"
 								onClick={handleMarkAll}
@@ -283,7 +320,7 @@ export default function NotificationCenter() {
 						>
 							<span>Unread</span>
 							{unreadCount > 0 && (
-								<span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+								<span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
 							)}
 						</button>
 					</div>
@@ -295,21 +332,57 @@ export default function NotificationCenter() {
 								Loading notifications...
 							</div>
 						) : displayedList.length === 0 ? (
-							<div className="py-12 px-4 flex flex-col items-center justify-center text-center">
-								<div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2">
-									<Inbox size={18} />
+							!user ? (
+								<div className="py-8 px-5 flex flex-col items-center justify-center text-center">
+									<div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/70 flex items-center justify-center mb-3">
+										<Bell size={18} />
+									</div>
+									<p className="text-xs font-bold text-slate-900">
+										Stay Ahead of Deadlines
+									</p>
+									<p className="text-[11px] text-slate-500 max-w-xs leading-relaxed mt-1 mb-4">
+										Sign in to receive instant eligibility match alerts, countdown reminders, and state grant updates.
+									</p>
+									<div className="flex items-center gap-2">
+										<button
+											type="button"
+											onClick={() => {
+												setIsOpen(false);
+												navigate("/login");
+											}}
+											className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs transition"
+										>
+											Sign In
+										</button>
+										<button
+											type="button"
+											onClick={() => {
+												setIsOpen(false);
+												navigate("/signup");
+											}}
+											className="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
+										>
+											Create Account
+										</button>
+									</div>
 								</div>
-								<p className="text-xs font-semibold text-slate-700">
-									{activeTab === "unread"
-										? "No unread notifications"
-										: "No notifications yet"}
-								</p>
-								<p className="text-[11px] text-slate-400 max-w-xs mt-0.5">
-									{activeTab === "unread"
-										? "You are all caught up with your scholarship opportunities."
-										: "Verified matches, deadline alerts, and regional grants will appear here."}
-								</p>
-							</div>
+							) : (
+								<div className="py-12 px-4 flex flex-col items-center justify-center text-center">
+									<div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2">
+										<Inbox size={18} />
+									</div>
+									<p className="text-xs font-semibold text-slate-700">
+										{activeTab === "unread"
+											? "No unread notifications"
+											: "No notifications yet"}
+									</p>
+									<p className="text-[11px] text-slate-400 max-w-xs mt-0.5">
+										{activeTab === "unread"
+											? "You are all caught up with your scholarship opportunities."
+											: "Verified matches, deadline alerts, and regional grants will appear here."}
+									</p>
+								</div>
+							)
 						) : (
 							displayedList.map((notif) => {
 								const meta = getNotificationMeta(notif.type, notif.priority);

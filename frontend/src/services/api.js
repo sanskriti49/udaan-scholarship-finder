@@ -24,4 +24,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.dispatchEvent(new Event("auth-changed"));
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

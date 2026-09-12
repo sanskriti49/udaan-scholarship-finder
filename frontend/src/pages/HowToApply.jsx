@@ -90,8 +90,8 @@ export default function HowToApply() {
 			{/* Hero Section */}
 			<section className="bg-white border-b border-slate-200/80 px-5 pt-12 pb-10 sm:pt-16 sm:pb-14 text-center">
 				<div className="max-w-3xl mx-auto">
-					<div className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-emerald-800 uppercase mb-3">
-						<span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+					<div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-3">
+						<span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>
 						<span>Student Application Guide</span>
 					</div>
 

@@ -158,8 +158,8 @@ function Support() {
 			<section className="bg-white border-b border-slate-200/80 py-12 md:py-16 px-5 sm:px-8 relative overflow-hidden">
 				<div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
 					<div className="lg:col-span-7 flex flex-col gap-5">
-						<div className="inline-flex items-center gap-2 text-xs font-bold tracking-wider text-emerald-800 uppercase">
-							<span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+						<div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase">
+							<span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>
 							<span>Help & Support Center</span>
 						</div>
 
