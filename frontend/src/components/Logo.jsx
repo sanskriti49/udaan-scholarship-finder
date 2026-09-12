@@ -98,7 +98,7 @@ export default function Logo({
 			{/* Brand Wordmark */}
 			<div className="flex items-center gap-1">
 				<span
-					className={`font-logo font-bold tracking-tight text-forest-950 transition-colors ${
+					className={`font-logo font-medium tracking-tight text-forest-950 transition-colors ${
 						animated ? "group-hover:text-emerald-900" : ""
 					} ${currentSize.title}`}
 				>
@@ -116,7 +116,7 @@ export default function Logo({
 			{/* Subtitle / Tagline */}
 			{tagline && (
 				<span
-					className={`font-sans font-semibold text-emerald-800 tracking-tight mt-0.5 transition-colors ${
+					className={`font-sans font-semibold text-emerald-800 tracking-tight -mt-0.5 transition-colors ${
 						animated ? "group-hover:text-emerald-950" : ""
 					} ${currentSize.tagline} ${taglineClassName}`}
 				>
