@@ -5,6 +5,7 @@ import UserProfile from "../models/UserProfile.js";
 import { evaluateEligibility } from "../engine/ruleEvaluator.js";
 import { sourceRegistry } from "../ingestion/SourceRegistry.js";
 import { crawlerScheduler } from "../ingestion/core/Scheduler.js";
+import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 
 /**
  * GET /api/scholarships
@@ -26,41 +27,48 @@ export const getScholarships = async (req, res) => {
 			limit = 12,
 		} = req.query;
 
-		const query = {};
-
+		const conditions = [];
+ 
 		if (search) {
-			query.$or = [
-				{ title: { $regex: search, $options: "i" } },
-				{ organization: { $regex: search, $options: "i" } },
-				{ description: { $regex: search, $options: "i" } },
-			];
+			conditions.push({
+				$or: [
+					{ title: { $regex: search, $options: "i" } },
+					{ organization: { $regex: search, $options: "i" } },
+					{ description: { $regex: search, $options: "i" } },
+				],
+			});
 		}
 
 		if (category && category !== "All") {
 			if (category === "STEM") {
-				query.$or = [{ category: "STEM" }, { tags: { $in: ["STEM", "Engineering"] } }];
+				conditions.push({
+					$or: [{ category: "STEM" }, { tags: { $in: ["STEM", "Engineering"] } }],
+				});
 			} else {
-				query.category = category;
+				conditions.push({ category });
 			}
 		}
-		if (level && level !== "All") query.level = level;
+		if (level && level !== "All") conditions.push({ level });
 		if (state && state !== "All" && state !== "All India") {
-			query.state = { $in: [state, "All India"] };
+			conditions.push({ state: { $in: [state, "All India"] } });
 		}
 		if (sourceType && sourceType !== "All") {
 			if (sourceType === "Corporate") {
-				query.sourceType = { $in: ["Corporate", "Corporate CSR"] };
+				conditions.push({ sourceType: { $in: ["Corporate", "Corporate CSR"] } });
 			} else {
-				query.sourceType = sourceType;
+				conditions.push({ sourceType });
 			}
 		}
-		if (hasChanges === "true") query.hasChanges = true;
+		if (hasChanges === "true") conditions.push({ hasChanges: true });
 
 		if (minAmount || maxAmount) {
-			query["amount.value"] = {};
-			if (minAmount) query["amount.value"].$gte = Number(minAmount);
-			if (maxAmount) query["amount.value"].$lte = Number(maxAmount);
+			const amountCond = {};
+			if (minAmount) amountCond.$gte = Number(minAmount);
+			if (maxAmount) amountCond.$lte = Number(maxAmount);
+			conditions.push({ "amount.value": amountCond });
 		}
+
+		const query = conditions.length > 0 ? { $and: conditions } : {};
 
 		let sortOptions = {};
 		if (sort === "deadline") sortOptions = { deadline: 1 };
@@ -333,25 +341,47 @@ export const getCrawlerStatus = async (req, res) => {
 export const runCrawler = async (req, res) => {
 	try {
 		const { sourceId } = req.body || {};
+		let result;
 		if (sourceId) {
 			const report = await sourceRegistry.runSource(sourceId);
-			return res.status(200).json({
-				success: true,
-				sourceId,
-				report,
-			});
+			result = { success: true, sourceId, report };
+		} else {
+			const summary = await sourceRegistry.runAll();
+			result = { success: true, summary };
 		}
 
-		const summary = await sourceRegistry.runAll();
-		return res.status(200).json({
-			success: true,
-			summary,
+		// Purge stale search cache keys on crawl run
+		await clearScholarshipCache().catch((err) => {
+			console.warn("[Crawler] Cache purge warning:", err.message);
 		});
+
+		return res.status(200).json(result);
 	} catch (error) {
 		console.error("Error running crawler:", error);
 		return res.status(500).json({
 			success: false,
 			message: "Crawler execution encountered an error",
+			error: error.message,
+		});
+	}
+};
+
+/**
+ * POST /api/scholarships/cache/clear
+ * Flush all Redis cached scholarship search and catalog keys
+ */
+export const flushScholarshipCache = async (req, res) => {
+	try {
+		const cleared = await clearScholarshipCache();
+		return res.status(200).json({
+			success: true,
+			message: `Purged ${cleared} cached search keys from Redis`,
+			cleared,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "Failed to flush scholarship cache",
 			error: error.message,
 		});
 	}

@@ -15,8 +15,8 @@ import {
 } from "./src/workers/reminderWorker.js";
 import { closeReminderQueue } from "./src/queues/reminderQueue.js";
 import { closeRedisClient } from "./src/config/redis.js";
+import { bootstrapDatabase } from "./src/utils/bootstrapDatabase.js";
 
-//dotenv.config();
 const app = express();
 
 app.use(
@@ -26,7 +26,10 @@ app.use(
 	}),
 );
 app.use(express.json());
-connectDB();
+
+connectDB().then(() => {
+	bootstrapDatabase();
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/scholarships", scholarshipRoutes);

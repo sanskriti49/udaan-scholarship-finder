@@ -41,15 +41,23 @@ export function cacheMiddleware(options = {}) {
 			const originalJson = res.json.bind(res);
 
 			res.json = (body) => {
-				// Only cache successful 200 responses
-				if (res.statusCode === 200 && body) {
-					try {
-						const serialized = JSON.stringify(body);
-						redisClient.set(cacheKey, serialized, "EX", ttl).catch((err) => {
-							console.warn(`[Cache] Failed writing key '${cacheKey}':`, err.message);
-						});
-					} catch (serializeErr) {
-						console.warn("[Cache] Serialization error on write:", serializeErr.message);
+				// Only cache successful 200 responses that contain actual records
+				if (res.statusCode === 200 && body && body.success !== false) {
+					// Guard against caching empty result sets for long TTLs
+					const isEmptyResult =
+						body.count === 0 ||
+						body.total === 0 ||
+						(Array.isArray(body.data) && body.data.length === 0);
+
+					if (!isEmptyResult) {
+						try {
+							const serialized = JSON.stringify(body);
+							redisClient.set(cacheKey, serialized, "EX", ttl).catch((err) => {
+								console.warn(`[Cache] Failed writing key '${cacheKey}':`, err.message);
+							});
+						} catch (serializeErr) {
+							console.warn("[Cache] Serialization error on write:", serializeErr.message);
+						}
 					}
 				}
 				return originalJson(body);

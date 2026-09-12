@@ -9,6 +9,7 @@ import { StateScholarshipSource } from "../ingestion/sources/StateScholarshipSou
 import { CorporateCsrSource } from "../ingestion/sources/CorporateCsrSource.js";
 import { Validator } from "../ingestion/core/Validator.js";
 import { Deduplicator } from "../ingestion/core/Deduplicator.js";
+import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 
 dotenv.config();
 
@@ -202,6 +203,9 @@ async function seedDatabase() {
 			await ScholarshipVersion.insertMany(versions);
 			console.log(`Generated ${versions.length} historical change versions.`);
 		}
+
+		await clearScholarshipCache();
+		console.log("Redis scholarship cache purged successfully.");
 
 		console.log(`\n=== Seeding Complete: ${inserted.length} schemes live in Udaan database ===`);
 		process.exit(0);

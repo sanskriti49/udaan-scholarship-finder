@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { evaluateProfile } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
+import peekingGuy from "../assets/images/peeking-guy.jpg";
 
 const COMMON_DOCUMENTS = [
 	{ code: "INCOME_CERT", name: "Family Income Certificate" },
@@ -121,16 +122,27 @@ export default function EligibilityPage() {
 						<span>Official Eligibility Matching Engine</span>
 					</div>
 					<h1 className="text-3xl sm:text-5xl md:text-6xl font-serif text-slate-900 tracking-tight">
-						Discover What You <span className="italic text-emerald-800 font-normal">Qualify For</span>
+						Discover What You{" "}
+						<span className="italic text-emerald-800 font-normal">
+							Qualify For
+						</span>
 					</h1>
 					<p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto font-sans">
-						Answer a few questions about your course, family income, and state. We compare your details directly against verified government circulars and trust policies.
+						Answer a few questions about your course, family income, and state.
+						We compare your details directly against verified government
+						circulars and trust policies.
 					</p>
 				</div>
 			</section>
 
 			{/* Form Container Card */}
-			<div className="max-w-3xl mx-auto px-5 sm:px-8 -mt-6">
+			<div className="max-w-3xl relative mx-auto px-5 sm:px-8 -mt-6">
+				{/* <img
+					src={peekingGuy}
+					alt=""
+					aria-hidden="true"
+					className="hidden lg:block absolute -right-20 top-8 w-44 z-0 pointer-events-none select-none transition-transform duration-500 ease-out hover:translate-x-3"
+				/> */}
 				<form
 					onSubmit={handleCheckEligibility}
 					className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-sm space-y-8"
@@ -142,7 +154,8 @@ export default function EligibilityPage() {
 								Academic & Background Details
 							</h2>
 							<p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-								Used to verify state quotas, income thresholds, and degree levels.
+								Used to verify state quotas, income thresholds, and degree
+								levels.
 							</p>
 						</div>
 
@@ -154,11 +167,17 @@ export default function EligibilityPage() {
 								</label>
 								<select
 									value={formData.educationLevel}
-									onChange={(e) => handleInputChange("educationLevel", e.target.value)}
+									onChange={(e) =>
+										handleInputChange("educationLevel", e.target.value)
+									}
 									className={selectClass}
 								>
-									<option value="UG">College / Undergraduate (B.Tech, B.Sc, BA, etc.)</option>
-									<option value="PG">Master's / Postgraduate (M.Tech, M.Sc, MA, etc.)</option>
+									<option value="UG">
+										College / Undergraduate (B.Tech, B.Sc, BA, etc.)
+									</option>
+									<option value="PG">
+										Master's / Postgraduate (M.Tech, M.Sc, MA, etc.)
+									</option>
 									<option value="Diploma">Diploma / Polytechnic</option>
 									<option value="Class 12">Class 12th</option>
 									<option value="Class 10">Class 10th</option>
@@ -172,7 +191,9 @@ export default function EligibilityPage() {
 								</label>
 								<select
 									value={formData.courseStream}
-									onChange={(e) => handleInputChange("courseStream", e.target.value)}
+									onChange={(e) =>
+										handleInputChange("courseStream", e.target.value)
+									}
 									className={selectClass}
 								>
 									<option value="Engineering">Engineering / Technology</option>
@@ -193,7 +214,9 @@ export default function EligibilityPage() {
 									min="0"
 									step="10000"
 									value={formData.familyIncome}
-									onChange={(e) => handleInputChange("familyIncome", e.target.value)}
+									onChange={(e) =>
+										handleInputChange("familyIncome", e.target.value)
+									}
 									className={inputClass}
 									placeholder="e.g. 250000"
 									required
@@ -244,7 +267,9 @@ export default function EligibilityPage() {
 								</label>
 								<select
 									value={formData.casteCategory}
-									onChange={(e) => handleInputChange("casteCategory", e.target.value)}
+									onChange={(e) =>
+										handleInputChange("casteCategory", e.target.value)
+									}
 									className={selectClass}
 								>
 									<option value="General">General Category</option>
@@ -264,7 +289,9 @@ export default function EligibilityPage() {
 									onChange={(e) => handleInputChange("state", e.target.value)}
 									className={selectClass}
 								>
-									<option value="All India">Any Indian State (Central Quota)</option>
+									<option value="All India">
+										Any Indian State (Central Quota)
+									</option>
 									<option value="UP">Uttar Pradesh</option>
 									<option value="Maharashtra">Maharashtra</option>
 									<option value="Karnataka">Karnataka</option>
@@ -279,10 +306,15 @@ export default function EligibilityPage() {
 									type="checkbox"
 									id="disabilityCheck"
 									checked={formData.hasDisability}
-									onChange={(e) => handleInputChange("hasDisability", e.target.checked)}
+									onChange={(e) =>
+										handleInputChange("hasDisability", e.target.checked)
+									}
 									className="w-4 h-4 text-emerald-800 rounded focus:ring-emerald-700"
 								/>
-								<label htmlFor="disabilityCheck" className="text-xs sm:text-sm font-semibold text-slate-700 cursor-pointer">
+								<label
+									htmlFor="disabilityCheck"
+									className="text-xs sm:text-sm font-semibold text-slate-700 cursor-pointer"
+								>
 									I have a documented PwD disability certificate (40%+)
 								</label>
 							</div>
@@ -297,7 +329,8 @@ export default function EligibilityPage() {
 									Certificates You Currently Have Ready
 								</h2>
 								<p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-									We calculate your exact document readiness score so you avoid surprises.
+									We calculate your exact document readiness score so you avoid
+									surprises.
 								</p>
 							</div>
 							<span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full w-fit">
@@ -364,7 +397,8 @@ export default function EligibilityPage() {
 									Your Eligibility Report
 								</h3>
 								<p className="text-xs sm:text-sm text-slate-500 mt-1">
-									Checked against {evaluationData.summary.totalEvaluated} verified government, state, and foundation schemes.
+									Checked against {evaluationData.summary.totalEvaluated}{" "}
+									verified government, state, and foundation schemes.
 								</p>
 							</div>
 
@@ -398,11 +432,12 @@ export default function EligibilityPage() {
 								{evaluationData.matched.length === 0 ? (
 									<div className="p-12 text-center bg-white rounded-3xl border border-slate-200 space-y-3 shadow-2xs">
 										<HelpCircle className="w-10 h-10 text-slate-400 mx-auto" />
-										<h4 className="text-lg font-serif font-bold text-slate-900">
+										<h4 className="text-lg font-sans font-bold text-slate-900">
 											No direct matches for this criteria
 										</h4>
 										<p className="text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
-											Switch to the "Not Eligible" tab above to see which specific requirements weren't met and why.
+											Switch to the "Not Eligible" tab above to see which
+											specific requirements weren't met and why.
 										</p>
 									</div>
 								) : (
@@ -424,10 +459,16 @@ export default function EligibilityPage() {
 															{item.title}
 														</h4>
 														<p className="text-xs sm:text-sm text-slate-500">
-															Authority: <span className="font-semibold text-slate-700">{item.organization}</span>
+															Authority:{" "}
+															<span className="font-semibold text-slate-700">
+																{item.organization}
+															</span>
 														</p>
 														<p className="text-sm sm:text-base font-bold text-slate-900 pt-2 font-serif">
-															Financial Benefit: <span className="text-emerald-800">{item.amount?.displayString}</span>
+															Financial Benefit:{" "}
+															<span className="text-emerald-800">
+																{item.amount?.displayString}
+															</span>
 														</p>
 													</div>
 
@@ -466,7 +507,11 @@ export default function EligibilityPage() {
 																	<strong className="font-semibold text-slate-900">
 																		{r.description}
 																	</strong>{" "}
-																	(Your profile: <span className="text-emerald-800 font-semibold">{String(r.actual)}</span>)
+																	(Your profile:{" "}
+																	<span className="text-emerald-800 font-semibold">
+																		{String(r.actual)}
+																	</span>
+																	)
 																</span>
 															</li>
 														))}
@@ -480,12 +525,15 @@ export default function EligibilityPage() {
 															<p className="text-amber-850 font-medium">
 																Missing certificate:{" "}
 																<span className="font-bold text-amber-950">
-																	{docAudit.missing.map((d) => d.name).join(", ")}
+																	{docAudit.missing
+																		.map((d) => d.name)
+																		.join(", ")}
 																</span>
 															</p>
 														) : (
 															<p className="text-emerald-800 font-semibold">
-																✓ You have all required documents to apply right now!
+																✓ You have all required documents to apply right
+																now!
 															</p>
 														)}
 													</div>
@@ -586,7 +634,9 @@ export default function EligibilityPage() {
 																{f.citation && (
 																	<div className="mt-2 p-3 rounded-xl bg-white border border-rose-200/70 text-xs text-slate-600 space-y-0.5">
 																		<span className="font-bold text-slate-800 block">
-																			Official Rule Clause ({f.citation.clause || "Gazette Guideline"}):
+																			Official Rule Clause (
+																			{f.citation.clause || "Gazette Guideline"}
+																			):
 																		</span>
 																		<p className="italic text-slate-500 leading-relaxed">
 																			"{f.citation.quote}"
@@ -619,4 +669,3 @@ export default function EligibilityPage() {
 		</div>
 	);
 }
-

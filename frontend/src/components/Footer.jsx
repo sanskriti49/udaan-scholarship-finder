@@ -12,7 +12,8 @@ function Footer() {
 						<Logo size="md" tagline="find your scholarship" />
 
 						<p className="text-slate-600 text-sm leading-relaxed max-w-sm font-normal">
-							Aggregating genuine Indian central, state, university, and corporate CSR scholarship circulars into verified, machine-executable eligibility logic.
+							Bringing the right scholarship opportunities closer to every
+							student.
 						</p>
 
 						<div className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-800 bg-emerald-50/70 border border-emerald-200/60 px-3 py-1.5 rounded-full w-fit mt-1">
@@ -141,11 +142,16 @@ function Footer() {
 				</div>
 
 				{/* Bottom Strip */}
-				<div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 text-xs text-slate-500">
-					<p>© {new Date().getFullYear()} Udaan Scholarship Finder. All rights reserved.</p>
+				<div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 text-xs text-emerald-950/70">
+					<p>
+						© {new Date().getFullYear()} Udaan Scholarship Finder. All rights
+						reserved.
+					</p>
 
 					<p className="flex items-center gap-1 font-medium">
-						Built for Indian students with <Heart size={13} className="text-rose-500 fill-rose-500" />
+						Built with
+						<Heart size={13} className="text-rose-500 fill-rose-500" />
+						to make scholarship hunting easier.
 					</p>
 
 					<div className="flex items-center gap-4 font-medium">
@@ -158,7 +164,10 @@ function Footer() {
 							GitHub
 						</a>
 						<span>•</span>
-						<Link to="/support" className="hover:text-slate-900 transition-colors">
+						<Link
+							to="/support"
+							className="hover:text-slate-900 transition-colors"
+						>
 							Support
 						</Link>
 					</div>
@@ -169,4 +178,3 @@ function Footer() {
 }
 
 export default Footer;
-

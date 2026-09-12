@@ -95,7 +95,8 @@ function DeadlineTag({ deadline }) {
 	if (days <= 10)
 		return (
 			<span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/80">
-				<Clock size={12} className="text-rose-600 animate-pulse" /> {days} days left (closing soon)
+				<Clock size={12} className="text-rose-600 animate-pulse" /> {days} days
+				left (closing soon)
 			</span>
 		);
 	if (days <= 30)
@@ -175,7 +176,8 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
 							Financial Grant
 						</span>
 						<span className="text-xl font-serif font-bold text-slate-900">
-							{s.amount?.displayString || `₹${s.amount?.value?.toLocaleString("en-IN")}`}
+							{s.amount?.displayString ||
+								`₹${s.amount?.value?.toLocaleString("en-IN")}`}
 						</span>
 						<span className="text-xs text-slate-500 font-normal ml-1">
 							/{s.amount?.period || "year"}
@@ -301,10 +303,14 @@ export default function Scholarships() {
 							<span>Verified Opportunities Catalog</span>
 						</div>
 						<h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-slate-900 tracking-tight">
-							Scholarship <span className="italic text-emerald-800 font-normal">Catalog</span>
+							Scholarship{" "}
+							<span className="italic text-emerald-800 font-normal">
+								Catalog
+							</span>
 						</h1>
 						<p className="text-sm sm:text-base text-slate-600 mt-2 max-w-xl leading-relaxed font-sans">
-							Browse genuine government, state, university, and trust schemes with verified deadlines and official rules.
+							Browse genuine government, state, university, and trust schemes
+							with verified deadlines and official rules.
 						</p>
 					</div>
 
@@ -362,7 +368,8 @@ export default function Scholarships() {
 								<span>Recently Updated Only</span>
 							</label>
 							<p className="text-[11px] text-amber-800 mt-1 pl-6 leading-relaxed">
-								Show scholarships where deadlines or income ceilings changed recently.
+								Show scholarships where deadlines or income ceilings changed
+								recently.
 							</p>
 						</div>
 
@@ -400,11 +407,17 @@ export default function Scholarships() {
 						{/* Sorting & Result Count Bar */}
 						<div className="flex items-center justify-between mb-6 flex-wrap gap-4">
 							<p className="text-sm font-medium text-slate-500">
-								Showing <span className="text-slate-900 font-bold">{scholarships.length}</span> verified schemes
+								Showing{" "}
+								<span className="text-slate-900 font-bold">
+									{scholarships.length}
+								</span>{" "}
+								verified schemes
 							</p>
 
 							<div className="flex items-center gap-2">
-								<span className="text-xs text-slate-500 font-medium">Sort by:</span>
+								<span className="text-xs text-slate-500 font-medium">
+									Sort by:
+								</span>
 								<select
 									value={sort}
 									onChange={(e) => setSort(e.target.value)}
@@ -450,11 +463,12 @@ export default function Scholarships() {
 						) : scholarships.length === 0 ? (
 							<div className="p-12 rounded-3xl bg-white border border-slate-200 text-center space-y-3 shadow-2xs">
 								<Sparkles className="w-10 h-10 text-slate-400 mx-auto" />
-								<h4 className="text-lg font-serif font-bold text-slate-900">
+								<h4 className="text-lg font-sans font-bold text-slate-900">
 									No matching scholarships found
 								</h4>
 								<p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-									Try resetting your filters or changing your search terms to discover more opportunities.
+									Try resetting your filters or changing your search terms to
+									discover more opportunities.
 								</p>
 								<button
 									onClick={clearAll}
@@ -540,7 +554,8 @@ export default function Scholarships() {
 										Grant Amount
 									</h4>
 									<p className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-										{selectedScholarship.amount?.displayString || `₹${selectedScholarship.amount?.value?.toLocaleString("en-IN")}`}
+										{selectedScholarship.amount?.displayString ||
+											`₹${selectedScholarship.amount?.value?.toLocaleString("en-IN")}`}
 										<span className="text-sm font-sans font-normal text-slate-500 ml-1">
 											/ {selectedScholarship.amount?.period || "year"}
 										</span>
@@ -558,53 +573,63 @@ export default function Scholarships() {
 								</div>
 
 								{/* Key Eligibility Rules */}
-								{selectedScholarship.rules && selectedScholarship.rules.length > 0 && (
-									<div>
-										<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-											Mandatory Eligibility Rules ({selectedScholarship.rules.length})
-										</h4>
-										<div className="space-y-2">
-											{selectedScholarship.rules.map((r, idx) => (
-												<div
-													key={idx}
-													className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs sm:text-sm flex items-center justify-between gap-3"
-												>
-													<span className="text-slate-800 font-medium">{r.description}</span>
-													<span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
-														Required
-													</span>
-												</div>
-											))}
+								{selectedScholarship.rules &&
+									selectedScholarship.rules.length > 0 && (
+										<div>
+											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+												Mandatory Eligibility Rules (
+												{selectedScholarship.rules.length})
+											</h4>
+											<div className="space-y-2">
+												{selectedScholarship.rules.map((r, idx) => (
+													<div
+														key={idx}
+														className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs sm:text-sm flex items-center justify-between gap-3"
+													>
+														<span className="text-slate-800 font-medium">
+															{r.description}
+														</span>
+														<span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
+															Required
+														</span>
+													</div>
+												))}
+											</div>
 										</div>
-									</div>
-								)}
+									)}
 
 								{/* Required Documents */}
-								{selectedScholarship.requiredDocuments && selectedScholarship.requiredDocuments.length > 0 && (
-									<div>
-										<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-											Required Documents ({selectedScholarship.requiredDocuments.length})
-										</h4>
-										<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-											{selectedScholarship.requiredDocuments.map((doc, idx) => (
-												<div
-													key={idx}
-													className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700 flex items-center gap-2"
-												>
-													<span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-													<span className="truncate">{doc.name}</span>
-												</div>
-											))}
+								{selectedScholarship.requiredDocuments &&
+									selectedScholarship.requiredDocuments.length > 0 && (
+										<div>
+											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+												Required Documents (
+												{selectedScholarship.requiredDocuments.length})
+											</h4>
+											<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+												{selectedScholarship.requiredDocuments.map(
+													(doc, idx) => (
+														<div
+															key={idx}
+															className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700 flex items-center gap-2"
+														>
+															<span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+															<span className="truncate">{doc.name}</span>
+														</div>
+													),
+												)}
+											</div>
 										</div>
-									</div>
-								)}
+									)}
 
 								{/* Issuing Authority Details */}
 								<div className="p-4 sm:p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200/80 text-sm text-slate-700 space-y-1">
 									<span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
 										Issuing Authority
 									</span>
-									<p className="font-semibold text-slate-900">{selectedScholarship.organization}</p>
+									<p className="font-semibold text-slate-900">
+										{selectedScholarship.organization}
+									</p>
 								</div>
 							</div>
 						</div>
@@ -652,4 +677,3 @@ export default function Scholarships() {
 		</div>
 	);
 }
-

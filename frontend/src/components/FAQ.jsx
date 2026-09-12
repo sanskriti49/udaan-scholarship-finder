@@ -97,9 +97,9 @@ function FAQ() {
 							<div className="pt-2">
 								<Link
 									to="/support"
-									className="w-full py-3 px-5 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-2xs"
+									className="w-full py-3 px-5 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white text-[14.5px] font-semibold flex items-center justify-center gap-2 transition-all shadow-2xs"
 								>
-									<MessageSquare size={14} />
+									<MessageSquare size={16} />
 									<span>Visit Help & Support Center</span>
 									<ArrowRight size={14} />
 								</Link>
