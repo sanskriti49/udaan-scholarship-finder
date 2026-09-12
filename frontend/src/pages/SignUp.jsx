@@ -1,36 +1,28 @@
-import { useState, useRef, useCallback } from "react";
-import logoImg from "../assets/images/logo.png";
+import { useState, useRef, useEffect } from "react";
+import Logo from "../components/Logo";
 import { Link, useNavigate } from "react-router-dom";
-import signupIllustration from "../assets/images/support1111.webp";
+import signupIllustration from "../assets/images/signup.webp";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { Turnstile } from "react-turnstile";
 import { useGoogleLogin } from "@react-oauth/google";
+import { ArrowRight, Eye, EyeOff, Check, Sparkles } from "lucide-react";
+import gsap from "gsap";
 
-function Badge({ children }) {
-	return (
-		<div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[10px] font-bold tracking-widest px-3 py-1 rounded-full">
-			<span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-			{children}
-		</div>
-	);
-}
-
-// Udaan-themed Google button
 function GoogleButton({ onClick, loading }) {
 	return (
 		<button
 			type="button"
 			onClick={onClick}
 			disabled={loading}
-			className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-[#DDECCB] bg-white hover:bg-[#F6FAF1] hover:border-[#C0DD97] transition-all duration-150 text-[14px] font-semibold text-gray-700 shadow-sm hover:shadow-md active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
+			className="w-full flex items-center justify-center gap-2.5 px-4 py-2 sm:py-2.5 rounded-xl border border-forest-900/10 bg-white hover:bg-mint-50/60 transition text-sm font-semibold text-forest-900 shadow-2xs cursor-pointer disabled:opacity-60"
 		>
-			{/* Google G SVG */}
 			<svg
 				width="18"
 				height="18"
 				viewBox="0 0 48 48"
 				xmlns="http://www.w3.org/2000/svg"
+				className="shrink-0"
 			>
 				<path
 					fill="#EA4335"
@@ -50,12 +42,13 @@ function GoogleButton({ onClick, loading }) {
 				/>
 				<path fill="none" d="M0 0h48v48H0z" />
 			</svg>
-			Continue with Google
+			<span>{loading ? "Signing up..." : "Continue with Google"}</span>
 		</button>
 	);
 }
 
 export default function SignUp() {
+	const containerRef = useRef(null);
 	const [form, setForm] = useState({
 		name: "",
 		email: "",
@@ -70,34 +63,58 @@ export default function SignUp() {
 	const { signup, loginWithGoogle } = useAuth();
 	const navigate = useNavigate();
 
+	useEffect(() => {
+		window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+		const ctx = gsap.context(() => {
+			gsap.fromTo(
+				containerRef.current,
+				{ opacity: 0, y: 6 },
+				{
+					opacity: 1,
+					y: 0,
+					duration: 0.28,
+					ease: "power2.out",
+					clearProps: "transform,opacity",
+				},
+			);
+		}, containerRef);
+		return () => ctx.revert();
+	}, []);
+
 	const inputClass =
-		"w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
+		"w-full bg-white border border-forest-900/12 rounded-xl px-3.5 py-2 text-sm outline-none focus:border-emerald-700 focus:ring-4 focus:ring-emerald-700/10 transition text-forest-950 placeholder-emerald-950/50 shadow-2xs font-medium";
 
 	const passwordStrength = (() => {
 		const p = form.password;
 		if (!p) return null;
 		if (p.length < 6)
-			return { label: "Too short", color: "bg-red-400", width: "w-1/4" };
+			return { label: "Too short", color: "bg-rose-500", width: "w-1/4" };
 		if (p.length < 8 || !/[0-9]/.test(p))
-			return { label: "Weak", color: "bg-amber-400", width: "w-2/4" };
+			return { label: "Weak", color: "bg-gold-ochre", width: "w-2/4" };
 		if (!/[^a-zA-Z0-9]/.test(p))
-			return { label: "Good", color: "bg-[#5AAD1F]", width: "w-3/4" };
-		return { label: "Strong", color: "bg-[#5AAD1F]", width: "w-full" };
+			return { label: "Good", color: "bg-sage-600", width: "w-3/4" };
+		return { label: "Strong", color: "bg-emerald-700", width: "w-full" };
 	})();
+
+	const hasTurnstile = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
+	const hasGoogleAuth = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		if (!turnstileToken) {
+		if (form.password !== form.confirmPassword) {
+			toast.error("Passwords do not match");
+			return;
+		}
+		if (hasTurnstile && !turnstileToken) {
 			toast.error("Please complete the security check");
 			return;
 		}
 		try {
-			await signup({ ...form, turnstileToken });
-			toast.success("Signed up successfully");
+			await signup({ ...form, turnstileToken: turnstileToken || "dev-bypass" });
+			toast.success("Account created successfully");
 			navigate("/");
 		} catch (err) {
 			toast.error(err.response?.data?.message || "Signup failed");
-			// Reset turnstile so user can retry
 			turnstileRef.current?.reset();
 			setTurnstileToken(null);
 		}
@@ -111,18 +128,43 @@ export default function SignUp() {
 				toast.success("Signed in with Google successfully!");
 				navigate("/");
 			} catch (err) {
-				toast.error("Google sign-in failed on the server.");
+				toast.error(
+					err.response?.data?.message ||
+						err.message ||
+						"Google sign-in failed on the server.",
+				);
 			} finally {
 				setGoogleLoading(false);
 			}
 		},
-		onError: () => {
-			toast.error("Google login failed.");
+		onError: (errorResponse) => {
+			toast.error(
+				errorResponse?.error_description ||
+					errorResponse?.error ||
+					"Google login cancelled or failed.",
+			);
 		},
 	});
 
 	const handleGoogleClick = async () => {
-		if (!turnstileToken) {
+		if (!hasGoogleAuth) {
+			if (import.meta.env.DEV) {
+				try {
+					setGoogleLoading(true);
+					await loginWithGoogle("dev-bypass");
+					toast.success("Signed in with Demo Google Account (Dev Mode)");
+					navigate("/");
+				} catch (err) {
+					toast.error(err.response?.data?.message || "Google sign-in failed.");
+				} finally {
+					setGoogleLoading(false);
+				}
+				return;
+			}
+			toast.error("Google login is not configured yet.");
+			return;
+		}
+		if (hasTurnstile && !turnstileToken) {
 			toast.error("Please complete the security check first");
 			return;
 		}
@@ -130,91 +172,70 @@ export default function SignUp() {
 	};
 
 	return (
-		<div className="min-h-screen bg-white flex flex-col lg:flex-row">
-			{/* ── Illustration panel — LEFT ── */}
-			<div className="hidden lg:flex lg:w-[45%] xl:w-[50%] bg-[#F6FAF1] border-r border-[#DDECCB] flex-col items-center justify-center px-8 py-12 relative">
-				<div className="absolute inset-0 overflow-hidden pointer-events-none">
-					<div className="absolute top-[-10%] left-[-10%] w-80 h-80 rounded-full bg-[#5AAD1F]/5" />
-					<div className="absolute bottom-[-5%] right-[-5%] w-60 h-60 rounded-full bg-[#3B7DC8]/5" />
-					<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full bg-[#C0DD97]/5" />
-				</div>
+		<div
+			ref={containerRef}
+			className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-cream-canvas flex flex-col lg:flex-row will-change-[opacity,transform]"
+		>
+			{/* Left Illustration Panel */}
+			<div className="hidden lg:flex lg:w-[45%] xl:w-[42%] relative overflow-hidden bg-forest-950 flex-col justify-between p-6 xl:p-10 h-full">
+				<div
+					className="absolute inset-0"
+					style={{
+						backgroundImage:
+							"radial-gradient(at 80% 10%, rgba(149,213,178,0.25) 0px, transparent 50%), radial-gradient(at 10% 85%, rgba(64,145,108,0.28) 0px, transparent 55%), radial-gradient(at 50% 45%, rgba(216,243,220,0.08) 0px, transparent 45%)",
+					}}
+				/>
+				<div
+					className="absolute inset-0 opacity-[0.07] mix-blend-overlay"
+					style={{
+						backgroundImage:
+							"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+					}}
+				/>
 
-				<div className="relative z-10 w-full max-w-md">
-					<img
-						src={signupIllustration}
-						alt="Students celebrating scholarship success"
-						className="w-full h-full object-cover rounded-3xl"
-					/>
-				</div>
-
-				<div className="relative z-10 mt-8 text-center max-w-sm">
-					<h2 className="text-2xl font-extrabold text-gray-900 mb-3 leading-snug">
-						Start your scholarship journey
-					</h2>
-					<p className="text-[15px] text-gray-500 leading-relaxed">
-						Join thousands of students who found funding they didn't know they
-						qualified for.
-					</p>
-				</div>
-
-				<div className="relative z-10 mt-8 bg-white/80 backdrop-blur-sm border border-[#C0DD97] rounded-2xl px-6 py-4 max-w-xs w-full shadow-sm">
-					<div className="flex items-center gap-4">
-						<div className="flex -space-x-2">
-							{["#5AAD1F", "#3B7DC8", "#E8884A"].map((c, i) => (
-								<div
-									key={i}
-									className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-sm"
-									style={{ backgroundColor: c }}
-								>
-									{["P", "R", "A"][i]}
-								</div>
-							))}
-						</div>
-						<div>
-							<p className="text-[13px] font-semibold text-gray-900">
-								2,400+ students
-							</p>
-							<p className="text-[11px] text-gray-500">joined this month</p>
-						</div>
+				<div className="relative flex-1 flex flex-col justify-center items-center my-auto w-full max-w-sm mx-auto">
+					<div className="max-h-[36vh] xl:max-h-[42vh] flex items-center justify-center animate-subtle-float">
+						<img
+							src={signupIllustration}
+							alt="Students celebrating scholarship success"
+							className="max-h-[32vh] xl:max-h-[38vh] w-auto object-contain rounded-2xl"
+						/>
 					</div>
+
+					<div className="mt-4 text-center space-y-1">
+						<h2 className="font-serif text-2xl xl:text-[1.75rem] leading-snug text-white">
+							Join over 2,400 students already ahead.
+						</h2>
+						<p className="text-xs xl:text-sm text-mint-100/70 leading-relaxed max-w-xs mx-auto">
+							Build your profile once. Udaan checks it against 37+ central,
+							state, and corporate schemes automatically.
+						</p>
+					</div>
+				</div>
+
+				<div className="relative flex items-center justify-center gap-2 text-mint-100/50 text-xs">
+					<Sparkles size={13} />
+					<span>No subscription fees. No hidden costs. Ever.</span>
 				</div>
 			</div>
 
-			{/* ── Form panel — RIGHT ── */}
-			<div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-14 xl:px-20">
-				<div className="max-w-md mx-auto w-full">
-					{/* Logo */}
-					<Link to="/" className="flex items-center gap-3 group mb-10">
-						<div className="w-12 h-12 rounded-xl bg-[#C0DD97]/20 border border-[#DDECCB] flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105">
-							<img
-								src={logoImg}
-								alt="Udaan"
-								className="w-10 h-10 object-contain"
-							/>
-						</div>
-						<div className="flex flex-col leading-none">
-							<span className="text-2xl font-black ">
-								<span style={{ color: "#5AAD1F" }}>uda</span>
-								<span style={{ color: "#3B7DC8" }}>an</span>
-							</span>
-							<span className="text-[8px] font-bold tracking-widest text-gray-400 uppercase mt-0.5">
-								find your scholarship
-							</span>
-						</div>
-					</Link>
+			{/* Right Form Panel */}
+			<div className="flex-1 flex flex-col justify-center px-6 py-5 sm:px-10 lg:px-12 xl:px-16 overflow-y-auto">
+				<div className="max-w-md mx-auto w-full my-auto py-1 sm:py-2">
+					<div className="mb-3.5 sm:mb-4">
+						<Logo size="md" tagline="find your scholarship" />
+					</div>
 
-					<Badge>Get started — it's free</Badge>
-					<h1 className="text-3xl font-extrabold  text-gray-900 mt-4 mb-2">
+					<h1 className="font-serif text-2xl sm:text-3xl leading-tight text-emerald-950 mb-0.5">
 						Create your account
 					</h1>
-					<p className="text-[14px] text-gray-600 mb-8 leading-relaxed font-medium">
-						Build your profile once. We'll match it against hundreds of
-						scholarships automatically.
+					<p className="text-sm text-emerald-950/90 mb-3 sm:mb-4 leading-relaxed">
+						Free forever for students: no subscription fees, no hidden costs.
 					</p>
 
-					<form onSubmit={handleSubmit} className="space-y-5">
-						<div className="space-y-1.5">
-							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+					<form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-3">
+						<div className="space-y-0.5">
+							<label className="text-xs font-semibold text-emerald-900/95">
 								Full name
 							</label>
 							<input
@@ -227,8 +248,8 @@ export default function SignUp() {
 							/>
 						</div>
 
-						<div className="space-y-1.5">
-							<label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+						<div className="space-y-0.5">
+							<label className="text-xs font-semibold text-emerald-900/95">
 								Email address
 							</label>
 							<input
@@ -241,8 +262,8 @@ export default function SignUp() {
 							/>
 						</div>
 
-						<div className="space-y-1.5">
-							<label className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">
+						<div className="space-y-0.5">
+							<label className="text-xs font-semibold text-emerald-900/95">
 								Password
 							</label>
 							<div className="relative">
@@ -254,187 +275,113 @@ export default function SignUp() {
 									onChange={(e) =>
 										setForm({ ...form, password: e.target.value })
 									}
-									className={`${inputClass} pr-12`}
+									className={`${inputClass} pr-11`}
 								/>
 								<button
 									type="button"
 									onClick={() => setShowPassword((p) => !p)}
-									className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+									className="absolute right-3 top-1/2 -translate-y-1/2 text-forest-900/35 hover:text-forest-900/70 cursor-pointer transition"
 									aria-label={showPassword ? "Hide password" : "Show password"}
 								>
-									{showPassword ? (
-										<svg
-											className="w-4 h-4"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth="2"
-												d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-											/>
-										</svg>
-									) : (
-										<svg
-											className="w-4 h-4"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth="2"
-												d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-											/>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth="2"
-												d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-											/>
-										</svg>
-									)}
+									{showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
 								</button>
 							</div>
 							{passwordStrength && (
-								<div className="flex items-center gap-3 mt-1.5">
-									<div className="flex-1 h-1.5 rounded-full bg-[#DDECCB] overflow-hidden">
+								<div className="flex items-center gap-2 mt-1">
+									<div className="flex-1 h-1 rounded-full bg-forest-900/10 overflow-hidden">
 										<div
 											className={`h-full rounded-full transition-all duration-300 ${passwordStrength.color} ${passwordStrength.width}`}
 										/>
 									</div>
-									<span className="text-[10px] font-bold text-gray-500 min-w-14">
+									<span className="text-[10px] font-semibold text-forest-900/50 min-w-12">
 										{passwordStrength.label}
 									</span>
 								</div>
 							)}
 						</div>
 
-						<div className="space-y-1.5">
-							<label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
+						<div className="space-y-0.5">
+							<label className="text-xs font-semibold text-emerald-900/95">
 								Confirm password
 							</label>
 							<div className="relative">
 								<input
 									type={showPassword ? "text" : "password"}
-									placeholder="Repeat your password"
+									placeholder="Repeat password"
 									required
 									value={form.confirmPassword}
 									onChange={(e) =>
 										setForm({ ...form, confirmPassword: e.target.value })
 									}
-									className={`${inputClass} ${
+									className={`${inputClass} pr-11 ${
 										form.confirmPassword &&
 										form.confirmPassword !== form.password
-											? "border-red-400 focus:border-red-500 focus:ring-red-100"
+											? "border-rose-400 focus:border-rose-500"
 											: form.confirmPassword &&
 												  form.confirmPassword === form.password
-												? "border-[#5AAD1F]"
+												? "border-emerald-600"
 												: ""
 									}`}
 								/>
 								{form.confirmPassword &&
 									form.confirmPassword === form.password && (
-										<div className="absolute right-4 top-1/2 -translate-y-1/2">
-											<svg
-												className="w-4 h-4 text-[#5AAD1F]"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth="2.5"
-													d="M5 13l4 4L19 7"
-												/>
-											</svg>
+										<div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-700">
+											<Check size={15} />
 										</div>
 									)}
 							</div>
 							{form.confirmPassword &&
 								form.confirmPassword !== form.password && (
-									<p className="text-xs text-red-600 font-bold mt-1">
-										Passwords don't match
+									<p className="text-[11px] text-rose-600 font-medium mt-0.5">
+										Passwords do not match
 									</p>
 								)}
 						</div>
 
-						{/* ── Turnstile widget ── */}
-						<div className="flex justify-center">
-							<Turnstile
-								ref={turnstileRef}
-								sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-								onVerify={(token) => setTurnstileToken(token)}
-								onExpire={() => setTurnstileToken(null)}
-								onError={() => {
-									setTurnstileToken(null);
-									toast.error("Security check failed. Please try again.");
-								}}
-								theme="light"
-							/>
-						</div>
-
-						<p className="text-[12px] text-gray-400 leading-relaxed">
-							By signing up you agree to our{" "}
-							<Link
-								to="/terms"
-								className="text-[#5AAD1F] font-semibold hover:underline"
-							>
-								Terms of Service
-							</Link>{" "}
-							and{" "}
-							<Link
-								to="/privacy"
-								className="text-[#5AAD1F] font-semibold hover:underline"
-							>
-								Privacy Policy
-							</Link>
-							.
-						</p>
+						{hasTurnstile && (
+							<div className="flex justify-center pt-1">
+								<Turnstile
+									ref={turnstileRef}
+									sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+									onVerify={(token) => setTurnstileToken(token)}
+									onExpire={() => setTurnstileToken(null)}
+									onError={() => {
+										setTurnstileToken(null);
+										toast.error("Security check failed. Please try again.");
+									}}
+									theme="light"
+								/>
+							</div>
+						)}
 
 						<button
 							type="submit"
-							disabled={!turnstileToken}
-							className="w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white font-semibold text-[14px] transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5AAD1F] disabled:hover:shadow-md"
+							disabled={hasTurnstile && !turnstileToken}
+							className="w-full py-2.5 sm:py-2.5 rounded-xl bg-forest-950 hover:bg-forest-900 text-white font-semibold text-sm transition shadow-[0_4px_16px_-4px_rgba(8,28,16,0.4)] hover:shadow-[0_8px_20px_-4px_rgba(8,28,16,0.45)] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 group mt-1"
 						>
-							Create account
-							<svg
-								className="w-4 h-4"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2.5"
-									d="M5 12h14M12 5l7 7-7 7"
-								/>
-							</svg>
+							<span>Create account</span>
+							<ArrowRight
+								size={15}
+								className="transition-transform group-hover:translate-x-0.5"
+							/>
 						</button>
 					</form>
 
-					{/* Divider */}
-					<div className="flex items-center gap-4 my-7">
-						<div className="flex-1 h-px bg-[#DDECCB]" />
-						<span className="text-xs text-gray-500 font-semibold tracking-wider uppercase">
-							or continue with
+					<div className="flex items-center gap-3 my-2.5 sm:my-3">
+						<div className="flex-1 h-px bg-forest-900/10" />
+						<span className="text-[10px] text-forest-900/40 font-semibold tracking-wide uppercase">
+							or
 						</span>
-						<div className="flex-1 h-px bg-[#DDECCB]" />
+						<div className="flex-1 h-px bg-forest-900/10" />
 					</div>
 
-					{/* Udaan-themed Google button */}
 					<GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
 
-					<p className="text-center text-[13.5px] text-gray-600 mt-7 font-medium">
+					<p className="text-center text-xs text-forest-900/60 mt-2.5 sm:mt-3">
 						Already have an account?{" "}
 						<Link
 							to="/login"
-							className="text-[#27500A] font-bold hover:underline transition-colors"
+							className="text-emerald-700 font-semibold hover:text-emerald-800 hover:underline"
 						>
 							Log in
 						</Link>

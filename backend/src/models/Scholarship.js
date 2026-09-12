@@ -4,9 +4,7 @@ const scholarshipSchema = new mongoose.Schema(
 	{
 		sourceUrl: {
 			type: String,
-			unique: true,
 			required: true,
-			sparse: true,
 		},
 		applicationLink: String,
 
@@ -76,7 +74,7 @@ const scholarshipSchema = new mongoose.Schema(
 		},
 		sourceType: {
 			type: String,
-			enum: ["Government", "Institution", "NGO / Trust", "Corporate"],
+			enum: ["Government", "Institution", "NGO / Trust", "Corporate", "Corporate CSR"],
 			default: "Government",
 		},
 		eligibility: {

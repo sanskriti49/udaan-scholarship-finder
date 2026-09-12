@@ -17,7 +17,7 @@ export const faqs = [
 	{
 		question: "How accurate and up-to-date is the scholarship data?",
 		answer:
-			"We run an automated data ingestion and web-crawling pipeline that checks trusted sources—like the National Scholarship Portal, state portals, and verified NGO foundations—on a scheduled weekly basis to update deadlines, remove expired listings, and capture new opportunities.",
+			"We run an automated data ingestion and web-crawling pipeline that checks trusted sources (like the National Scholarship Portal, state portals, and verified NGO foundations) on a scheduled weekly basis to update deadlines, remove expired listings, and capture new opportunities.",
 	},
 	{
 		question: "What does the percentage match mean next to a scholarship?",

@@ -1,19 +1,18 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { AicteSource } from "../ingestion/sources/AicteSource.js";
+import { sourceRegistry } from "../ingestion/SourceRegistry.js";
 
 dotenv.config();
 
 async function runPipeline() {
 	try {
 		await mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/udaan");
-		console.log("Connected to MongoDB for Ingestion Pipeline Run.");
+		console.log("Connected to MongoDB for Source Registry Pipeline Crawl.");
 
-		const aicte = new AicteSource();
-		const telemetry = await aicte.run();
+		const summary = await sourceRegistry.runAll();
 
-		console.log("\n=== Ingestion Telemetry Summary ===");
-		console.log(JSON.stringify(telemetry, null, 2));
+		console.log("\n=== Full Ingestion Pipeline Summary ===");
+		console.log(JSON.stringify(summary, null, 2));
 
 		process.exit(0);
 	} catch (err) {

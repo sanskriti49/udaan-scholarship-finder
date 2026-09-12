@@ -8,7 +8,7 @@ const sampleScholarship = {
 			field: "gender",
 			operator: "EQ",
 			targetValue: "Female",
-			description: "Open to female students only",
+			description: "Restricted to female candidates only",
 			failMessage: "Scheme is strictly reserved for female applicants",
 		},
 		{
@@ -45,7 +45,7 @@ const sampleScholarship = {
 	provenanceQuotes: [
 		{
 			ruleId: "r2",
-			sourceUrl: "https://fellowship.aicte.gov.in/guidelines-2026.pdf",
+			sourceUrl: "https://fellowship.aicte.gov.in/",
 			clause: "Clause 3.1",
 			quote: "Total family income from all sources should not exceed Rs. 3.00 Lakh per annum.",
 		},
@@ -65,7 +65,6 @@ const resultPass = evaluateEligibility(profilePassing, sampleScholarship);
 console.log("Eligible:", resultPass.isEligible);
 console.log("Match Confidence:", resultPass.matchConfidence + "%");
 console.log("Readiness Score:", resultPass.readinessScore + "%");
-console.log("Missing Docs:", resultPass.documentAudit.missing.map(d => d.name));
 console.log("Passed Rules Count:", resultPass.passedRules.length);
 
 console.log("\n=== RUNNING TEST 2: Ineligible Profile (Income & Gender Exclusions) ===");
@@ -79,11 +78,49 @@ const profileFailing = {
 
 const resultFail = evaluateEligibility(profileFailing, sampleScholarship);
 console.log("Eligible:", resultFail.isEligible);
-console.log("Failed Rules Reasons:");
+console.log("Failed Rules Count:", resultFail.failedRules.length);
 resultFail.failedRules.forEach(r => console.log(" - " + r.failMessage));
 
-if (resultPass.isEligible && !resultFail.isEligible && resultFail.failedRules.length === 2) {
-	console.log("\n✅ ALL TESTS PASSED SUCCESSFULLY!");
+console.log("\n=== RUNNING TEST 3: Open Scheme ('Any' Gender, 'All India' State) ===");
+const openScholarship = {
+	title: "AICTE Swanath Scholarship Scheme",
+	rules: [
+		{
+			id: "s1",
+			field: "familyIncome",
+			operator: "LTE",
+			targetValue: 800000,
+			description: "Family income ceiling of ₹8,00,000",
+		},
+		{
+			id: "s2",
+			field: "gender",
+			operator: "EQ",
+			targetValue: "Any", // Open to any gender
+			description: "Open to all genders",
+		},
+	],
+	requiredDocuments: [],
+};
+
+const femaleProfile = {
+	gender: "Female",
+	familyIncome: 250000,
+	educationLevel: "UG",
+};
+
+const resultOpen = evaluateEligibility(femaleProfile, openScholarship);
+console.log("Eligible (should be true):", resultOpen.isEligible);
+console.log("Failed rules count (should be 0):", resultOpen.failedRules.length);
+
+if (
+	resultPass.isEligible &&
+	!resultFail.isEligible &&
+	resultFail.failedRules.length === 2 &&
+	resultOpen.isEligible &&
+	resultOpen.failedRules.length === 0
+) {
+	console.log("\n✅ ALL TESTS (INCLUDING 'ANY' WILDCARD) PASSED PERFECTLY!");
 } else {
 	console.error("\n❌ TESTS FAILED!");
 	process.exit(1);

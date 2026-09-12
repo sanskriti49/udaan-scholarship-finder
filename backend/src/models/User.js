@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
 	{
@@ -21,7 +22,6 @@ const userSchema = new mongoose.Schema(
 		},
 		password: {
 			type: String,
-			// Removed minlength from here so it doesn't conflict with OAuth users
 			select: false,
 		},
 		googleId: {
@@ -37,16 +37,23 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true },
 );
 
-userSchema.pre("save", function (next) {
-	if (this.authProvider === "local" && this.isModified("password")) {
-		if (!this.password || this.password.length < 6) {
-			return next(
-				new Error("An account must have a password of at least 6 characters"),
-			);
-		}
-	}
+userSchema.pre("save", async function () {
+	if (this.authProvider != "local" || !this.isModified("password")) return;
 
-	next();
+	if (!this.password || this.password.length < 6) {
+		throw new Error("Password must be at least 6 characters");
+	}
+	// if (this.authProvider === "local" && this.isModified("password")) {
+	// 	if (!this.password || this.password.length < 6) {
+	// 		return next(
+	// 			new Error("An account must have a password of at least 6 characters"),
+	// 		);
+	// 	}
+	// }
+
+	// next();
+	const salt = await bcrypt.genSalt(10);
+	this.password = await bcrypt.hash(this.password, salt);
 });
 
 export default mongoose.models.User || mongoose.model("User", userSchema);

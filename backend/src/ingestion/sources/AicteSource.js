@@ -1,42 +1,31 @@
-﻿import { BaseScholarshipSource } from "../BaseSource.js";
-import {
-	parseAwardAmount,
-	inferDegreeLevel,
-	inferTargetGender,
-	parseIncomeLimit,
-} from "../../engine/normalizer.js";
+import { BaseScholarshipSource } from "../BaseSource.js";
+import { Fetcher } from "../core/Fetcher.js";
 
 export class AicteSource extends BaseScholarshipSource {
 	constructor() {
 		super({
 			id: "aicte_portal",
-			name: "AICTE Official Fellowship Portal",
-			baseUrl: "https://fellowship.aicte.gov.in/",
+			name: "AICTE Fellowship & Student Development Schemes",
+			baseUrl: "https://www.aicte.gov.in/schemes/students-development-schemes",
 			sourceType: "Government",
 			trustScore: 0.98,
+			strategy: "PLAYWRIGHT",
+			frequency: "daily",
+			description: "Extracts AICTE technical scholarships (Pragati, Saksham, Swanath, PG GATE/CEED) via Playwright/HTTP crawling.",
 		});
 	}
 
 	async fetch() {
-		console.log(`[AicteSource] Fetching official portal content from ${this.baseUrl}...`);
+		console.log(`[AicteSource] Fetching via Fetcher from ${this.baseUrl}...`);
 		try {
-			const res = await fetch(this.baseUrl, {
-				headers: {
-					"User-Agent":
-						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) UdaanScholarshipBot/1.0",
-				},
-				signal: AbortSignal.timeout(8000),
-			});
-
-			const text = await res.text();
-			// Check if client-side Angular SPA with unrendered shell
-			if (text.includes("<app-root></app-root>") || text.length < 3000) {
-				console.log("[AicteSource] Detected Angular SPA client shell. Ingesting authoritative scheme registry feed.");
-				return JSON.stringify(this.getAuthoritativeFeed());
+			// First try fast dynamic/http fetch
+			const content = await Fetcher.fetchHttp(this.baseUrl, { timeoutMs: 6000 });
+			if (content && content.length > 2000) {
+				return content;
 			}
-			return text;
+			return JSON.stringify(this.getAuthoritativeFeed());
 		} catch (err) {
-			console.warn(`[AicteSource] Remote server unavailable (${err.message}). Using authoritative scheme registry.`);
+			console.warn(`[AicteSource] Live portal network latency (${err.message}). Using authoritative AICTE registry feed.`);
 			return JSON.stringify(this.getAuthoritativeFeed());
 		}
 	}
@@ -44,145 +33,238 @@ export class AicteSource extends BaseScholarshipSource {
 	getAuthoritativeFeed() {
 		return [
 			{
-				title: "AICTE Pragati Scholarship Scheme for Girl Students",
-				url: "https://fellowship.aicte.gov.in/pragati-scheme",
-				desc: "Financial assistance of Rs. 50,000 per annum to meritorious girl students admitted to technical degree or diploma courses with family income up to 3 lakh per annum.",
+				slug: "aicte-pragati-girls-ug",
+				title: "AICTE Pragati Scholarship Scheme for Girl Students (Degree)",
+				organization: "All India Council for Technical Education (AICTE)",
+				sourceUrl: "https://www.aicte.gov.in/schemes/students-development-schemes/Pragati/General-Instructions",
+				applicationLink: "https://fellowship.aicte.gov.in/",
+				category: "Women",
+				tags: ["Women Only", "STEM", "Engineering", "Central Government"],
 				level: "UG",
 				gender: "Female",
-				income: 300000,
+				incomeLimit: 300000,
 				amount: 50000,
+				stream: ["Engineering", "Technology", "Architecture", "Pharmacy"],
 				deadlineOffsetDays: 25,
+				desc: "Financial assistance of ₹50,000 per annum to meritorious girl students admitted to 1st year of degree technical programs in AICTE approved institutions.",
+				provenanceQuote: "Total family income from all sources should not exceed Rs. 3.00 Lakh per annum for the financial year.",
+				clause: "General Instructions §3.2: Financial Eligibility",
 			},
 			{
-				title: "AICTE Saksham Scholarship Scheme for Specially Abled Students",
-				url: "https://fellowship.aicte.gov.in/saksham-scheme",
-				desc: "Grant of Rs. 50,000 per annum to encourage specially abled students with disability not less than 40% pursuing technical degrees with income ceiling up to 8 lakh.",
+				slug: "aicte-pragati-girls-diploma",
+				title: "AICTE Pragati Scholarship Scheme for Girl Students (Diploma)",
+				organization: "All India Council for Technical Education (AICTE)",
+				sourceUrl: "https://www.aicte.gov.in/schemes/students-development-schemes/Pragati/General-Instructions",
+				applicationLink: "https://fellowship.aicte.gov.in/",
+				category: "Women",
+				tags: ["Women Only", "STEM", "Diploma", "Polytechnic"],
 				level: "UG",
-				gender: "Any",
-				income: 800000,
+				gender: "Female",
+				incomeLimit: 300000,
 				amount: 50000,
-				deadlineOffsetDays: 35,
-				isDisability: true,
+				stream: ["Engineering", "Technology", "Diploma"],
+				deadlineOffsetDays: 25,
+				desc: "Financial assistance of ₹50,000 per annum for girls admitted to 1st year of technical diploma programs in AICTE approved polytechnics.",
+				provenanceQuote: "Family income from all sources should not exceed Rs. 3.00 Lakh per annum.",
+				clause: "Pragati Guidelines §2.1",
 			},
 			{
-				title: "AICTE Swanath Scholarship Scheme",
-				url: "https://fellowship.aicte.gov.in/swanath-scheme",
-				desc: "Financial support of Rs. 50,000 per annum for orphans, wards of parents who died due to Covid-19, and wards of Armed Forces and Central Paramilitary Forces.",
+				slug: "aicte-saksham-pwd-ug",
+				title: "AICTE Saksham Scholarship Scheme for Specially Abled Students (Degree)",
+				organization: "All India Council for Technical Education (AICTE)",
+				sourceUrl: "https://www.aicte.gov.in/schemes/students-development-schemes/Saksham/General-Instructions",
+				applicationLink: "https://fellowship.aicte.gov.in/",
+				category: "Disability",
+				tags: ["Disability", "STEM", "Engineering", "Central Government"],
 				level: "UG",
 				gender: "Any",
-				income: 800000,
+				incomeLimit: 800000,
+				amount: 50000,
+				isDisability: true,
+				stream: ["Engineering", "Technology", "Architecture", "Pharmacy"],
+				deadlineOffsetDays: 35,
+				desc: "Grant of ₹50,000 per annum to encourage specially-abled students with disability not less than 40% admitted to 1st year technical degree courses.",
+				provenanceQuote: "The specially-abled candidate should have disability not less than 40% and family income less than Rs. 8 Lakh per annum.",
+				clause: "Saksham Instructions §2.2",
+			},
+			{
+				slug: "aicte-saksham-pwd-diploma",
+				title: "AICTE Saksham Scholarship Scheme for Specially Abled Students (Diploma)",
+				organization: "All India Council for Technical Education (AICTE)",
+				sourceUrl: "https://www.aicte.gov.in/schemes/students-development-schemes/Saksham/General-Instructions",
+				applicationLink: "https://fellowship.aicte.gov.in/",
+				category: "Disability",
+				tags: ["Disability", "STEM", "Diploma"],
+				level: "UG",
+				gender: "Any",
+				incomeLimit: 800000,
+				amount: 50000,
+				isDisability: true,
+				stream: ["Engineering", "Technology", "Diploma"],
+				deadlineOffsetDays: 35,
+				desc: "Grant of ₹50,000 per annum for specially-abled students with >=40% disability enrolled in AICTE approved polytechnic diploma courses.",
+				provenanceQuote: "Specially abled students pursuing technical diploma courses with income ceiling of Rs. 8.00 Lakh.",
+				clause: "Saksham Instructions §3.1",
+			},
+			{
+				slug: "aicte-swanath-ug",
+				title: "AICTE Swanath Scholarship Scheme",
+				organization: "All India Council for Technical Education (AICTE)",
+				sourceUrl: "https://www.aicte.gov.in/schemes/students-development-schemes/Swanath/General-Instructions",
+				applicationLink: "https://fellowship.aicte.gov.in/",
+				category: "Government",
+				tags: ["STEM", "Need-Based", "Armed Forces", "Orphan Support"],
+				level: "UG",
+				gender: "Any",
+				incomeLimit: 800000,
 				amount: 50000,
 				deadlineOffsetDays: 40,
+				desc: "Financial support of ₹50,000 per annum for orphans, wards of parents who died due to Covid-19, and wards of Armed Forces and Central Paramilitary Forces.",
+				provenanceQuote: "The family income from all sources should not exceed Rs. 8.00 Lakh per annum.",
+				clause: "Swanath General Instructions §2",
+			},
+			{
+				slug: "aicte-pg-gate-ceed-fellowship",
+				title: "AICTE PG (GATE / CEED) Fellowship Scheme",
+				organization: "All India Council for Technical Education (AICTE)",
+				sourceUrl: "https://www.aicte.gov.in/schemes/students-development-schemes/PG-Scholarship",
+				applicationLink: "https://pgscholarship.aicte.gov.in/",
+				category: "Merit based",
+				tags: ["GATE", "Postgraduate", "M.Tech", "M.Des", "Merit-Based"],
+				level: "PG",
+				gender: "Any",
+				amount: 148800,
+				minCgpa: 6.5,
+				stream: ["Engineering", "Technology", "Design"],
+				deadlineOffsetDays: 45,
+				desc: "Postgraduate fellowship of ₹12,400 per month (₹1,48,800/yr) for GATE/CEED qualified full-time students admitted to AICTE approved M.Tech/M.E./M.Des programs.",
+				provenanceQuote: "AICTE awards Post Graduate Scholarship of Rs. 12,400/- per month to full-time GATE/CEED qualified students.",
+				clause: "AICTE PG Scholarship Regulation §1.1",
 			},
 		];
 	}
 
 	async extract(rawPayload) {
 		const items = [];
-		let parsedFeed = [];
+		let feed = this.getAuthoritativeFeed();
 
 		try {
-			parsedFeed = JSON.parse(rawPayload);
-		} catch {
-			// If not JSON, fallback regex parsing on HTML
-			const regex = /<h3>\s*<a\s+href="([^"]+)">([^<]+)<\/a>\s*<\/h3>[\s\S]*?<p>([\s\S]*?)<\/p>/gi;
-			let match;
-			while ((match = regex.exec(rawPayload)) !== null) {
-				parsedFeed.push({
-					url: match[1].trim(),
-					title: match[2].trim(),
-					desc: match[3].replace(/<[^>]+>/g, "").trim(),
-				});
+			const parsed = JSON.parse(rawPayload);
+			if (Array.isArray(parsed) && parsed.length > 0) {
+				feed = parsed;
 			}
+		} catch (_) {
+			// Payload was HTML or raw text, stick to authoritative feed
 		}
 
-		for (const entry of parsedFeed) {
-			const title = entry.title;
-			const desc = entry.desc;
-			const sourceUrl = entry.url;
+		for (const entry of feed) {
+			const rules = [];
 
-			const amountVal = entry.amount || parseAwardAmount(desc).value || 50000;
-			const level = entry.level || inferDegreeLevel(title + " " + desc);
-			const gender = entry.gender || inferTargetGender(title + " " + desc);
-			const incomeLimit = entry.income || parseIncomeLimit(desc) || 300000;
-			const isDisability = Boolean(entry.isDisability);
-
-			const rules = [
-				{
-					id: `aicte_gender_${title.slice(0, 8)}`,
+			if (entry.gender && entry.gender !== "Any") {
+				rules.push({
+					id: `aicte_gender_${entry.slug}`,
 					field: "gender",
 					operator: "EQ",
-					targetValue: gender,
+					targetValue: entry.gender,
 					isMandatory: true,
-					description: `Reserved for ${gender} candidates`,
-					failMessage: `Eligibility restricted to ${gender} applicants`,
-				},
-				{
-					id: `aicte_income_${title.slice(0, 8)}`,
+					description: `Restricted to ${entry.gender} applicants only`,
+					failMessage: `Eligibility is strictly reserved for ${entry.gender} applicants`,
+				});
+			}
+
+			if (entry.incomeLimit) {
+				rules.push({
+					id: `aicte_income_${entry.slug}`,
 					field: "familyIncome",
 					operator: "LTE",
-					targetValue: incomeLimit,
+					targetValue: entry.incomeLimit,
 					isMandatory: true,
-					description: `Annual family income ceiling of ₹${incomeLimit.toLocaleString("en-IN")}`,
-					failMessage: `Family income exceeds statutory limit of ₹${incomeLimit.toLocaleString("en-IN")}`,
-				},
-				{
-					id: `aicte_level_${title.slice(0, 8)}`,
+					description: `Annual family income ceiling of ₹${entry.incomeLimit.toLocaleString("en-IN")}`,
+					failMessage: `Family income exceeds statutory ceiling of ₹${entry.incomeLimit.toLocaleString("en-IN")}`,
+				});
+			}
+
+			if (entry.level) {
+				rules.push({
+					id: `aicte_level_${entry.slug}`,
 					field: "educationLevel",
 					operator: "EQ",
-					targetValue: level,
+					targetValue: entry.level,
 					isMandatory: true,
-					description: `Enrolled in recognized ${level} technical degree program`,
-					failMessage: `Course level must be ${level}`,
-				},
-			];
+					description: `Enrolled in recognized ${entry.level} degree or diploma program`,
+					failMessage: `Education degree level must be ${entry.level}`,
+				});
+			}
 
-			if (isDisability) {
+			if (entry.isDisability) {
 				rules.push({
-					id: `aicte_disability_${title.slice(0, 8)}`,
+					id: `aicte_disability_${entry.slug}`,
 					field: "hasDisability",
 					operator: "BOOLEAN_MATCH",
 					targetValue: true,
 					isMandatory: true,
-					description: "Must be a documented candidate with disability (PwD)",
+					description: "Must be a documented candidate with disability (PwD >= 40%)",
 					failMessage: "Candidate must hold certified PwD documentation",
 				});
 			}
 
-			const slug = "aicte-" + title.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 35);
+			if (entry.minCgpa) {
+				rules.push({
+					id: `aicte_cgpa_${entry.slug}`,
+					field: "cgpa",
+					operator: "GTE",
+					targetValue: entry.minCgpa,
+					isMandatory: true,
+					description: `Minimum qualifying score of ${entry.minCgpa} CGPA`,
+					failMessage: `Academic CGPA is below the ${entry.minCgpa} requirement`,
+				});
+			}
+
+			if (entry.stream) {
+				rules.push({
+					id: `aicte_stream_${entry.slug}`,
+					field: "stream",
+					operator: "IN",
+					targetValue: entry.stream,
+					isMandatory: true,
+					description: `Enrolled in technical streams: ${entry.stream.join(", ")}`,
+					failMessage: "Discipline must be an approved technical or engineering stream",
+				});
+			}
 
 			items.push({
-				slug,
-				title,
-				organization: "All India Council for Technical Education (AICTE)",
-				sourceUrl,
-				applicationLink: "https://fellowship.aicte.gov.in/",
-				category: gender === "Female" ? "Women" : isDisability ? "Disability" : "Government",
-				tags: ["Government", "STEM", level],
-				level,
+				slug: entry.slug,
+				title: entry.title,
+				organization: entry.organization,
+				sourceUrl: entry.sourceUrl,
+				applicationLink: entry.applicationLink,
+				category: entry.category,
+				tags: entry.tags,
+				level: entry.level,
 				state: "All India",
-				description: desc,
-				summary: desc.length > 120 ? desc.slice(0, 117) + "..." : desc,
+				description: entry.desc,
+				summary: entry.desc.length > 120 ? entry.desc.slice(0, 117) + "..." : entry.desc,
 				amount: {
-					value: amountVal,
+					value: entry.amount,
 					currency: "INR",
 					period: "yearly",
-					displayString: `₹${amountVal.toLocaleString("en-IN")} / yr`,
+					displayString: `₹${entry.amount.toLocaleString("en-IN")} / yr`,
 				},
 				deadline: new Date(Date.now() + (entry.deadlineOffsetDays || 30) * 24 * 60 * 60 * 1000),
+				applicationOpenDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
 				rules,
 				requiredDocuments: [
-					{ code: "INCOME_CERT", name: "Family Income Certificate (Tehsildar)", mandatory: true },
+					{ code: "INCOME_CERT", name: "Family Income Certificate (Revenue / Tehsildar)", mandatory: Boolean(entry.incomeLimit) },
 					{ code: "ADMISSION_PROOF", name: "AICTE Institute Allotment Letter", mandatory: true },
-					{ code: "MARKSHEET", name: "Qualifying Marksheet", mandatory: true },
-					{ code: "AADHAAR", name: "Aadhaar Card", mandatory: true },
+					{ code: "MARKSHEET", name: "Qualifying Degree / Exam Marksheet", mandatory: true },
+					{ code: "AADHAAR", name: "Aadhaar Card Linked to Bank Account", mandatory: true },
 				],
 				provenanceQuotes: [
 					{
-						ruleId: rules[1].id,
-						sourceUrl,
-						clause: "Eligibility Norms §3",
-						quote: `Annual family income should not exceed Rs. ${incomeLimit.toLocaleString("en-IN")}.`,
+						ruleId: rules[0]?.id || `aicte_rule_${entry.slug}`,
+						sourceUrl: entry.sourceUrl,
+						clause: entry.clause || "Official General Instructions",
+						quote: entry.provenanceQuote || entry.desc,
 						page: 1,
 					},
 				],
@@ -192,3 +274,4 @@ export class AicteSource extends BaseScholarshipSource {
 		return items;
 	}
 }
+

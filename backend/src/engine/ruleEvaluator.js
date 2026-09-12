@@ -40,9 +40,73 @@ export function normalizeProfile(rawProfile = {}) {
 	};
 }
 
+export function formatRequirement(field, operator, target) {
+	if (String(target).toLowerCase() === "any" || String(target).toLowerCase() === "all") {
+		return "Open to all applicants";
+	}
+
+	switch (field) {
+		case "familyIncome":
+			return `Annual family income ≤ ₹${Number(target).toLocaleString("en-IN")}`;
+		case "cgpa":
+			return `Minimum ${target} CGPA`;
+		case "percentage":
+			return `Minimum ${target}% marks`;
+		case "educationLevel": {
+			const levels = Array.isArray(target) ? target.join(" or ") : target;
+			return `${levels} degree required`;
+		}
+		case "gender":
+			return `Restricted to ${target} candidates only`;
+		case "casteCategory": {
+			const cats = Array.isArray(target) ? target.join(", ") : target;
+			return `Quota categories: ${cats}`;
+		}
+		case "state":
+			return `${target} permanent domicile required`;
+		case "hasDisability":
+			return "Documented PwD status required";
+		case "stream": {
+			const streams = Array.isArray(target) ? target.join(", ") : target;
+			return `Enrolled in ${streams}`;
+		}
+		default:
+			return `${operator} ${Array.isArray(target) ? target.join(", ") : target}`;
+	}
+}
+
+export function formatActualValue(field, actual) {
+	if (actual === undefined || actual === null || actual === "") return "Not specified";
+	switch (field) {
+		case "familyIncome":
+			return `₹${Number(actual).toLocaleString("en-IN")}`;
+		case "cgpa":
+			return `${actual} CGPA`;
+		case "percentage":
+			return `${actual}%`;
+		case "hasDisability":
+			return actual ? "Yes (PwD)" : "No";
+		default:
+			return String(actual);
+	}
+}
+
 function evaluateCondition(actual, operator, target) {
 	if (actual === undefined || actual === null || Number.isNaN(actual)) {
 		return { result: false, missingActual: true };
+	}
+
+	const targetStr = String(target).trim().toLowerCase();
+	const actualStr = String(actual).trim().toLowerCase();
+
+	// Universal wildcard rule: "Any", "All", or "*" imposes NO restriction
+	if (targetStr === "any" || targetStr === "all" || targetStr === "*") {
+		return { result: true };
+	}
+
+	// State / Domicile wildcard: "All India" matches any resident
+	if (targetStr === "all india" || actualStr === "all india") {
+		return { result: true };
 	}
 
 	switch (operator) {
@@ -51,13 +115,14 @@ function evaluateCondition(actual, operator, target) {
 		case "GTE":
 			return { result: Number(actual) >= Number(target) };
 		case "EQ":
-			return {
-				result: String(actual).trim().toLowerCase() ===
-					String(target).trim().toLowerCase(),
-			};
+			return { result: actualStr === targetStr };
 		case "IN": {
 			const targetArr = Array.isArray(target) ? target : [target];
-			const actualStr = String(actual).trim().toLowerCase();
+			const hasWildcard = targetArr.some((t) => {
+				const s = String(t).trim().toLowerCase();
+				return s === "any" || s === "all" || s === "*" || s === "all india";
+			});
+			if (hasWildcard) return { result: true };
 			return {
 				result: targetArr.some(
 					(t) => String(t).trim().toLowerCase() === actualStr,
@@ -85,6 +150,12 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		? scholarship.rules
 		: buildFallbackRules(scholarship);
 
+	// Filter out bogus unconstrained rules (e.g. targetValue: "Any" or "All")
+	rules = rules.filter((r) => {
+		const t = String(r.targetValue).trim().toLowerCase();
+		return t !== "any" && t !== "all" && t !== "*";
+	});
+
 	const passedRules = [];
 	const failedRules = [];
 	const unknownRules = [];
@@ -98,13 +169,16 @@ export function evaluateEligibility(rawProfile, scholarship) {
 			Number.isNaN(actualValue);
 
 		const citation = provenanceMap.get(rule.id) || null;
+		const reqText = formatRequirement(rule.field, rule.operator, rule.targetValue);
+		const actualText = formatActualValue(rule.field, actualValue);
 
 		if (isValueMissing) {
 			unknownRules.push({
 				ruleId: rule.id,
 				field: rule.field,
-				description: rule.description,
-				required: `${rule.operator} ${rule.targetValue}`,
+				description: rule.description || reqText,
+				required: reqText,
+				actual: actualText,
 				citation,
 			});
 			continue;
@@ -120,21 +194,21 @@ export function evaluateEligibility(rawProfile, scholarship) {
 			passedRules.push({
 				ruleId: rule.id,
 				field: rule.field,
-				description: rule.description,
-				actual: actualValue,
-				condition: `${rule.operator} ${rule.targetValue}`,
+				description: rule.description || reqText,
+				actual: actualText,
+				condition: reqText,
 				citation,
 			});
 		} else {
 			failedRules.push({
 				ruleId: rule.id,
 				field: rule.field,
-				description: rule.description,
-				actual: actualValue,
-				required: `${rule.operator} ${rule.targetValue}`,
+				description: rule.description || reqText,
+				actual: actualText,
+				required: reqText,
 				failMessage:
 					rule.failMessage ||
-					`Profile value '${actualValue}' does not meet ${rule.description} (${rule.operator} ${rule.targetValue})`,
+					`Your ${rule.field} (${actualText}) does not meet the requirement: ${reqText}`,
 				citation,
 			});
 		}
@@ -145,7 +219,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 	const matchConfidence =
 		totalKnownRules > 0
 			? Math.round((passedRules.length / (totalKnownRules + unknownRules.length)) * 100)
-			: 50;
+			: 100;
 
 	// Document Readiness Audit
 	const requiredDocs = Array.isArray(scholarship.requiredDocuments)
