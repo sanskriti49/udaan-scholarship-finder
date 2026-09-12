@@ -1,53 +1,55 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
 	X,
-	ShieldCheck,
 	ExternalLink,
 	FileText,
 	Clock,
 	History,
-	AlertCircle,
 	ArrowUpRight,
 } from "lucide-react";
 
 export default function EvidenceModal({ isOpen, onClose, scholarship }) {
+	useEffect(() => {
+		if (!isOpen) return;
+		const handleKeyDown = (e) => {
+			if (e.key === "Escape") {
+				onClose();
+			}
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [isOpen, onClose]);
+
 	if (!isOpen || !scholarship) return null;
 
 	const quotes = scholarship.provenanceQuotes || [];
 	const history = scholarship.history || [];
-	const trustPct = Math.round((scholarship.trustScore || 0.85) * 100);
 	const specificSchemeUrl = scholarship.sourceUrl || quotes[0]?.sourceUrl;
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-			<div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-100">
+		<div
+			className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4 sm:p-6 animate-in fade-in duration-200"
+			onClick={(e) => {
+				if (e.target === e.currentTarget) onClose();
+			}}
+		>
+			<div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-slate-200">
 				{/* Modal Header */}
-				<div className="p-6 sm:p-7 border-b border-slate-100 flex items-start justify-between bg-slate-50/60">
-					<div className="space-y-2 pr-6">
-						<div className="flex items-center gap-2 flex-wrap">
-							<span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800">
-								<ShieldCheck className="w-3.5 h-3.5" />
-								{trustPct}% Verified Primary Source
-							</span>
-							<span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-800">
-								{scholarship.sourceType || "Government"}
-							</span>
-							{scholarship.hasChanges && (
-								<span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-amber-100 text-amber-800">
-									<History className="w-3.5 h-3.5" /> Recently Updated
-								</span>
-							)}
-						</div>
-						<h3 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">
+				<div className="p-6 sm:p-7 border-b border-slate-100 flex items-start justify-between bg-[#FAF9F6]">
+					<div className="space-y-1.5 pr-6">
+						<span className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+							{scholarship.sourceType || "Official Scheme"}
+						</span>
+						<h3 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 leading-snug">
 							{scholarship.title}
 						</h3>
-						<p className="text-sm text-slate-500">
-							Authority: <span className="font-semibold text-slate-700">{scholarship.organization}</span>
+						<p className="text-sm text-slate-600 font-medium">
+							Issuing Body: <span className="font-semibold text-slate-900">{scholarship.organization}</span>
 						</p>
 					</div>
 					<button
 						onClick={onClose}
-						className="p-2.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
+						className="p-2.5 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer shrink-0"
 						aria-label="Close dialog"
 					>
 						<X className="w-5 h-5" />
@@ -55,73 +57,57 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 				</div>
 
 				{/* Modal Body */}
-				<div className="p-6 sm:p-7 overflow-y-auto space-y-6 text-sm text-slate-700">
-					{/* Recent Update Notice if any */}
-					{scholarship.latestChangeSummary && (
-						<div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
-							<div className="flex items-start gap-3">
-								<History className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-								<div className="space-y-1">
-									<h4 className="font-bold text-amber-950 text-sm">
-										Recent Eligibility or Deadline Update
-									</h4>
-									<p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
-										{scholarship.latestChangeSummary}
-									</p>
-								</div>
-							</div>
-						</div>
-					)}
-
-					{/* Direct Official Scheme Page Banner */}
+				<div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700">
+					{/* Dedicated Scheme Page Banner */}
 					{specificSchemeUrl && (
-						<div className="p-4.5 rounded-2xl bg-blue-50/70 border border-blue-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+						<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 							<div>
-								<h4 className="font-bold text-blue-950 text-sm">
-									Dedicated Scheme Page & Official Guidelines
+								<h4 className="font-bold text-slate-900 text-sm sm:text-base">
+									Official Circular & Guidelines Page
 								</h4>
-								<p className="text-xs text-blue-800 mt-0.5">
-									Opens the exact government / university instruction page for this specific scholarship.
+								<p className="text-xs sm:text-sm text-slate-600 mt-1">
+									Access the official instruction notice directly on the issuing authority portal.
 								</p>
 							</div>
 							<a
 								href={specificSchemeUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm shrink-0"
+								className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-slate-900 hover:bg-emerald-800 text-white text-sm font-semibold transition-colors shadow-2xs shrink-0"
 							>
-								Open Scheme Page <ArrowUpRight className="w-4 h-4" />
+								<span>Open Source Circular</span>
+								<ArrowUpRight className="w-4 h-4" />
 							</a>
 						</div>
 					)}
 
-					{/* Official Guidelines & Quotations */}
+					{/* Official Eligibility Rules & Quotes */}
 					<div>
 						<h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
-							<FileText className="w-4 h-4 text-blue-600" />
-							Official Eligibility Rules & Verified Clauses ({quotes.length})
+							<FileText className="w-4 h-4 text-emerald-800" />
+							Eligibility Clauses ({quotes.length})
 						</h4>
 
 						{quotes.length === 0 ? (
-							<div className="p-5 bg-slate-50 rounded-2xl text-sm text-slate-600 space-y-2.5 border border-slate-100">
+							<div className="p-4 bg-[#FAF9F6] rounded-2xl text-sm text-slate-600 border border-slate-200/80">
 								<p>
-									This scheme is verified directly from the official authority portal.
+									This scheme is ingested directly from the official authority portal circular.
 								</p>
 							</div>
 						) : (
-							<div className="space-y-4">
+							<div className="space-y-3.5">
 								{quotes.map((q, idx) => (
 									<div
 										key={idx}
-										className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-blue-300 transition-all space-y-2.5 shadow-2xs"
+										className="p-4 sm:p-5 rounded-2xl border border-slate-200/90 bg-white space-y-2 shadow-2xs"
 									>
-										<div className="flex items-center justify-between text-xs text-slate-500 flex-wrap gap-2">
-											<span className="font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200/60">
+										<div className="flex items-center justify-between text-xs sm:text-sm text-slate-500">
+											<span className="font-bold text-slate-800">
 												{q.clause || `Clause §${idx + 1}`}
 											</span>
-											{q.page && <span className="text-xs font-medium">Page {q.page} of Circular / Guidelines</span>}
+											{q.page && <span>Page {q.page}</span>}
 										</div>
-										<blockquote className="border-l-3 border-blue-500 pl-4 italic text-slate-800 text-sm leading-relaxed">
+										<blockquote className="border-l-2 border-emerald-700 pl-3.5 italic text-slate-700 text-sm leading-relaxed">
 											"{q.quote}"
 										</blockquote>
 									</div>
@@ -130,21 +116,21 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 						)}
 					</div>
 
-					{/* Update History */}
+					{/* Update History if available */}
 					{history.length > 0 && (
 						<div>
 							<h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-2">
-								<Clock className="w-4 h-4 text-amber-600" />
-								Recent Updates & Changes ({history.length})
+								<Clock className="w-4 h-4 text-amber-700" />
+								Observed Updates ({history.length})
 							</h4>
 							<div className="space-y-3">
 								{history.map((ver, idx) => (
 									<div
 										key={idx}
-										className="p-4 rounded-2xl border border-amber-200 bg-amber-50/40 text-xs sm:text-sm space-y-2"
+										className="p-4 rounded-2xl border border-amber-200 bg-amber-50/50 text-sm space-y-1.5"
 									>
 										<div className="flex items-center justify-between text-slate-600">
-											<span className="font-bold text-amber-900 capitalize">
+											<span className="font-bold text-amber-950 capitalize text-sm">
 												{ver.changeType?.replace(/_/g, " ").toLowerCase()}
 											</span>
 											<span className="text-xs text-slate-500">
@@ -155,80 +141,28 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 												})}
 											</span>
 										</div>
-										<p className="text-slate-800 leading-relaxed">{ver.summary}</p>
-										{ver.deltas && ver.deltas.length > 0 && (
-											<div className="mt-2 pt-2 border-t border-amber-200/60 space-y-1">
-												{ver.deltas.map((d, dIdx) => (
-													<p key={dIdx} className="text-xs text-slate-600">
-														• {d.humanReadable || `${d.field}: ${d.oldValue} ➔ ${d.newValue}`}
-													</p>
-												))}
-											</div>
-										)}
+										<p className="text-slate-800 leading-relaxed text-sm">{ver.summary}</p>
 									</div>
 								))}
 							</div>
 						</div>
 					)}
-
-					{/* Required Documents Matrix */}
-					{scholarship.requiredDocuments && scholarship.requiredDocuments.length > 0 && (
-						<div>
-							<h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-								Certificates Needed to Apply ({scholarship.requiredDocuments.length})
-							</h4>
-							<ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-								{scholarship.requiredDocuments.map((doc, idx) => (
-									<li
-										key={idx}
-										className="flex items-center gap-2.5 text-xs sm:text-sm p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800"
-									>
-										<span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
-										<span className="truncate">{doc.name}</span>
-										{doc.mandatory && (
-											<span className="text-xs text-red-600 ml-auto shrink-0 font-bold">
-												Mandatory
-											</span>
-										)}
-									</li>
-								))}
-							</ul>
-						</div>
-					)}
 				</div>
 
 				{/* Modal Footer */}
-				<div className="p-5 sm:p-6 border-t border-slate-100 bg-slate-50 flex items-center justify-between gap-4 flex-wrap">
+				<div className="p-5 sm:p-6 border-t border-slate-100 bg-[#FAF9F6] flex items-center justify-between gap-4">
 					<span className="text-xs sm:text-sm text-slate-500">
-						Verified by Udaan:{" "}
-						<strong className="text-slate-700 font-semibold">
-							{new Date(scholarship.updatedAt || Date.now()).toLocaleDateString("en-IN", {
-								day: "numeric",
-								month: "short",
-								year: "numeric",
-							})}
-						</strong>
+						Press <kbd className="px-2 py-0.5 text-xs bg-white border border-slate-300 rounded font-mono">Esc</kbd> or click outside to dismiss
 					</span>
-					<div className="flex gap-2.5 w-full sm:w-auto flex-wrap">
-						{scholarship.applicationLink && scholarship.applicationLink !== specificSchemeUrl && (
-							<a
-								href={scholarship.applicationLink}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-[#27500A] text-white hover:bg-[#1E3E08] transition-colors shadow-sm"
-							>
-								Apply on Portal <ExternalLink className="w-3.5 h-3.5" />
-							</a>
-						)}
-						<button
-							onClick={onClose}
-							className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition-colors cursor-pointer ml-auto"
-						>
-							Close
-						</button>
-					</div>
+					<button
+						onClick={onClose}
+						className="px-5 py-2.5 rounded-full text-sm font-semibold bg-slate-900 text-white hover:bg-emerald-800 transition-colors cursor-pointer"
+					>
+						Done
+					</button>
 				</div>
 			</div>
 		</div>
 	);
 }
+

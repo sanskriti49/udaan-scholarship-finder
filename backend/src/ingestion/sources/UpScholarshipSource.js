@@ -40,7 +40,7 @@ export class UpScholarshipSource extends BaseScholarshipSource {
 				incomeLimit: 200000,
 				desc: "Financial support and fee reimbursement scheme for domicile students of Uttar Pradesh pursuing Post-Matriculation, Graduation, or Diploma studies in recognized UP institutes.",
 				provenanceQuote: "The student must be a bonafide resident and domicile holder of Uttar Pradesh.",
-				clause: "State Guidelines §1 — Domicile Requirement",
+				clause: "State Guidelines §1: Domicile Requirement",
 			},
 		];
 	}

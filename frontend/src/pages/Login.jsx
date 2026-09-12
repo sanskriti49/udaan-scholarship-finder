@@ -1,331 +1,319 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoImg from "../assets/images/logo.png";
-import loginIllustration from "../assets/images/login-illustration.webp";
+import Logo from "../components/Logo";
+import loginIllustration from "../assets/images/login.webp";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { Turnstile } from "react-turnstile";
 import { useGoogleLogin } from "@react-oauth/google";
+import { ArrowRight, Eye, EyeOff, Sparkles } from "lucide-react";
+import gsap from "gsap";
 
-function Badge({ children }) {
-  return (
-    <div className="inline-flex items-center gap-1.5 bg-[#EAF3DE] border border-[#C0DD97] text-[#27500A] text-[10px] font-bold tracking-widest px-3 py-1 rounded-full">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-      {children}
-    </div>
-  );
-}
-
-// Udaan-themed Google button
 function GoogleButton({ onClick, loading }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={loading}
-      className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-[#DDECCB] bg-white hover:bg-[#F6FAF1] hover:border-[#C0DD97] transition-all duration-150 text-[14px] font-semibold text-gray-700 shadow-sm hover:shadow-md active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed"
-    >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 48 48"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          fill="#EA4335"
-          d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-        />
-        <path
-          fill="#4285F4"
-          d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-        />
-        <path
-          fill="#FBBC05"
-          d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-        />
-        <path
-          fill="#34A853"
-          d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-        />
-        <path fill="none" d="M0 0h48v48H0z" />
-      </svg>
-      Continue with Google
-    </button>
-  );
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			disabled={loading}
+			className="w-full flex items-center justify-center gap-2.5 px-4 py-2.5 sm:py-3 rounded-xl border border-forest-900/10 bg-white hover:bg-mint-50/60 transition text-sm font-semibold text-forest-900 shadow-2xs cursor-pointer disabled:opacity-60"
+		>
+			<svg
+				width="18"
+				height="18"
+				viewBox="0 0 48 48"
+				xmlns="http://www.w3.org/2000/svg"
+				className="shrink-0"
+			>
+				<path
+					fill="#EA4335"
+					d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+				/>
+				<path
+					fill="#4285F4"
+					d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+				/>
+				<path
+					fill="#FBBC05"
+					d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+				/>
+				<path
+					fill="#34A853"
+					d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+				/>
+				<path fill="none" d="M0 0h48v48H0z" />
+			</svg>
+			<span>{loading ? "Signing in..." : "Continue with Google"}</span>
+		</button>
+	);
 }
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState(null);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const turnstileRef = useRef(null);
+	const containerRef = useRef(null);
+	const [form, setForm] = useState({ email: "", password: "" });
+	const [showPassword, setShowPassword] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState(null);
+	const [googleLoading, setGoogleLoading] = useState(false);
+	const turnstileRef = useRef(null);
 
-  const { login, loginWithGoogle } = useAuth();
-  const navigate = useNavigate();
+	const { login, loginWithGoogle } = useAuth();
+	const navigate = useNavigate();
 
-  const inputClass =
-    "w-full bg-[#F6FAF1] border border-[#C0DD97] rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#5AAD1F] focus:ring-2 focus:ring-[#5AAD1F]/20 transition text-gray-900 placeholder-gray-500 shadow-2xs";
+	useEffect(() => {
+		window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+		const ctx = gsap.context(() => {
+			gsap.fromTo(
+				containerRef.current,
+				{ opacity: 0, y: 6 },
+				{
+					opacity: 1,
+					y: 0,
+					duration: 0.28,
+					ease: "power2.out",
+					clearProps: "transform,opacity",
+				},
+			);
+		}, containerRef);
+		return () => ctx.revert();
+	}, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!turnstileToken) {
-      toast.error("Please complete the security check");
-      return;
-    }
-    try {
-      await login({ ...form, turnstileToken });
-      toast.success("Logged in successfully");
-      navigate("/");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed");
-      turnstileRef.current?.reset();
-      setTurnstileToken(null);
-    }
-  };
+	const inputClass =
+		"w-full bg-white border border-forest-900/12 rounded-xl px-3.5 py-2.5 sm:py-2.5 text-sm outline-none focus:border-emerald-700 focus:ring-4 focus:ring-emerald-700/10 transition text-forest-950 placeholder-emerald-900/50 shadow-2xs font-medium";
 
-  const triggerGoogleOAuth = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        setGoogleLoading(true);
-        await loginWithGoogle(tokenResponse.access_token);
-        toast.success("Signed in with Google successfully!");
-        navigate("/");
-      } catch (err) {
-        toast.error("Google sign-in failed on the server.");
-      } finally {
-        setGoogleLoading(false);
-      }
-    },
-    onError: () => {
-      toast.error("Google login failed.");
-    },
-  });
+	const hasTurnstile = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
+	const hasGoogleAuth = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID);
 
-  const handleGoogleClick = async () => {
-    if (!turnstileToken) {
-      toast.error("Please complete the security check first");
-      return;
-    }
-    triggerGoogleOAuth();
-  };
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		if (hasTurnstile && !turnstileToken) {
+			toast.error("Please complete the security check");
+			return;
+		}
+		try {
+			await login({ ...form, turnstileToken: turnstileToken || "dev-bypass" });
+			toast.success("Logged in successfully");
+			navigate("/");
+		} catch (err) {
+			toast.error(err.response?.data?.message || "Login failed");
+			turnstileRef.current?.reset();
+			setTurnstileToken(null);
+		}
+	};
 
-  return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
-      {/* ── Form panel — LEFT ── */}
-      <div className="flex-1 flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-14 xl:px-20 order-2 lg:order-1">
-        <div className="max-w-md mx-auto w-full">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group mb-8">
-            <div className="w-12 h-12 rounded-xl bg-[#C0DD97]/20 border border-[#DDECCB] flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105">
-              <img
-                src={logoImg}
-                alt="Udaan"
-                className="w-10 h-10 object-contain"
-              />
-            </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-2xl font-black">
-                <span style={{ color: "#5AAD1F" }}>uda</span>
-                <span style={{ color: "#3B7DC8" }}>an</span>
-              </span>
-              <span className="text-[10px] font-bold tracking-wider text-emerald-800 uppercase mt-1">
-                find your scholarship
-              </span>
-            </div>
-          </Link>
+	const triggerGoogleOAuth = useGoogleLogin({
+		onSuccess: async (tokenResponse) => {
+			try {
+				setGoogleLoading(true);
+				await loginWithGoogle(tokenResponse.access_token);
+				toast.success("Signed in with Google successfully!");
+				navigate("/");
+			} catch (err) {
+				toast.error(
+					err.response?.data?.message ||
+						err.message ||
+						"Google sign-in failed on the server.",
+				);
+			} finally {
+				setGoogleLoading(false);
+			}
+		},
+		onError: (errorResponse) => {
+			toast.error(
+				errorResponse?.error_description ||
+					errorResponse?.error ||
+					"Google login cancelled or failed.",
+			);
+		},
+	});
 
-          <Badge>Welcome back</Badge>
-          <h1 className="text-3xl font-extrabold text-gray-900 mt-4 mb-2">
-            Sign in to your account
-          </h1>
-          <p className="text-[14px] text-gray-600 mb-8 leading-relaxed font-medium">
-            Pick up right where you left off — your bookmarks, matches, and
-            applications are waiting.
-          </p>
+	const handleGoogleClick = async () => {
+		if (!hasGoogleAuth) {
+			if (import.meta.env.DEV) {
+				try {
+					setGoogleLoading(true);
+					await loginWithGoogle("dev-bypass");
+					toast.success("Signed in with Demo Google Account (Dev Mode)");
+					navigate("/");
+				} catch (err) {
+					toast.error(err.response?.data?.message || "Google sign-in failed.");
+				} finally {
+					setGoogleLoading(false);
+				}
+				return;
+			}
+			toast.error("Google sign-in is not configured yet.");
+			return;
+		}
+		if (hasTurnstile && !turnstileToken) {
+			toast.error("Please complete the security check first");
+			return;
+		}
+		triggerGoogleOAuth();
+	};
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                Email address
-              </label>
-              <input
-                type="email"
-                placeholder="priya@example.com"
-                required
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className={inputClass}
-              />
-            </div>
+	return (
+		<div
+			ref={containerRef}
+			className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-cream-canvas flex flex-col lg:flex-row will-change-[opacity,transform]"
+		>
+			{/* Form Panel (Left) */}
+			<div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-10 lg:px-12 xl:px-16 overflow-y-auto">
+				<div className="max-w-md mx-auto w-full my-auto py-2 sm:py-4">
+					{/* Logo */}
+					<div className="mb-4 sm:mb-5">
+						<Logo size="md" tagline="find your scholarship" />
+					</div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Password
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-[13px] text-[#27500A] font-bold hover:underline transition-colors"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  required
-                  value={form.password}
-                  onChange={(e) =>
-                    setForm({ ...form, password: e.target.value })
-                  }
-                  className={`${inputClass} pr-12`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((p) => !p)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
+					<h1 className="font-serif text-3xl sm:text-4xl leading-tight text-emerald-950 mb-1">
+						Welcome back
+					</h1>
+					<p className="text-xs sm:text-sm text-emerald-950/90 mb-4 sm:mb-5 leading-relaxed">
+						Sign in to access your saved scholarships, eligibility results, and
+						tracked deadlines.
+					</p>
 
-            {/* ── Turnstile widget ── */}
-            <div className="flex justify-center">
-              <Turnstile
-                ref={turnstileRef}
-                sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-                onVerify={(token) => setTurnstileToken(token)}
-                onExpire={() => setTurnstileToken(null)}
-                onError={() => {
-                  setTurnstileToken(null);
-                  toast.error("Security check failed. Please try again.");
-                }}
-                theme="light"
-              />
-            </div>
+					<form onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5">
+						<div className="space-y-1">
+							<label className="text-[13.5px] font-semibold text-emerald-900/90">
+								Email address
+							</label>
+							<input
+								type="email"
+								placeholder="student@example.com"
+								required
+								value={form.email}
+								onChange={(e) => setForm({ ...form, email: e.target.value })}
+								className={inputClass}
+							/>
+						</div>
 
-            <button
-              type="submit"
-              disabled={!turnstileToken}
-              className="cursor-pointer w-full inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-3xl bg-[#5AAD1F] hover:bg-[#4A9A18] active:bg-[#3D8813] text-white font-bold text-[15px] transition-all duration-200 shadow-md hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#5AAD1F] disabled:hover:shadow-md"
-            >
-              Sign in
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2.5"
-                  d="M5 12h14M12 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </form>
+						<div className="space-y-1">
+							<div className="flex items-center justify-between">
+								<label className="text-[13.5px] font-semibold text-emerald-900/90">
+									Password
+								</label>
+								<Link
+									to="/forgot-password"
+									className="text-[13.5px] text-emerald-700 font-semibold hover:text-emerald-800 hover:underline"
+								>
+									Forgot password?
+								</Link>
+							</div>
+							<div className="relative">
+								<input
+									type={showPassword ? "text" : "password"}
+									placeholder="Enter your password"
+									required
+									value={form.password}
+									onChange={(e) =>
+										setForm({ ...form, password: e.target.value })
+									}
+									className={`${inputClass} pr-11`}
+								/>
+								<button
+									type="button"
+									onClick={() => setShowPassword((p) => !p)}
+									className="absolute right-3 top-1/2 -translate-y-1/2 text-forest-900/35 hover:text-forest-900/70 cursor-pointer transition"
+									aria-label={showPassword ? "Hide password" : "Show password"}
+								>
+									{showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+								</button>
+							</div>
+						</div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-7">
-            <div className="flex-1 h-px bg-[#DDECCB]" />
-            <span className="text-xs text-gray-500 font-semibold tracking-wider uppercase">
-              or continue with
-            </span>
-            <div className="flex-1 h-px bg-[#DDECCB]" />
-          </div>
+						{hasTurnstile && (
+							<div className="flex justify-center pt-1">
+								<Turnstile
+									ref={turnstileRef}
+									sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+									onVerify={(token) => setTurnstileToken(token)}
+									onExpire={() => setTurnstileToken(null)}
+									onError={() => {
+										setTurnstileToken(null);
+										toast.error("Security check failed. Please try again.");
+									}}
+									theme="light"
+								/>
+							</div>
+						)}
 
-          {/* Udaan-themed Google button */}
-          <GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
+						<button
+							type="submit"
+							disabled={hasTurnstile && !turnstileToken}
+							className="w-full py-2.5 sm:py-3 rounded-xl bg-forest-950 hover:bg-forest-900 text-white font-semibold text-sm transition shadow-[0_4px_16px_-4px_rgba(8,28,16,0.4)] hover:shadow-[0_8px_20px_-4px_rgba(8,28,16,0.45)] cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2 group mt-1"
+						>
+							<span>Sign in</span>
+							<ArrowRight
+								size={15}
+								className="transition-transform group-hover:translate-x-0.5"
+							/>
+						</button>
+					</form>
 
-          <p className="text-center text-[13.5px] text-gray-600 mt-7 font-medium">
-            Don't have an account?{" "}
-            <Link
-              to="/signup"
-              className="text-[#27500A] font-bold hover:underline transition-colors"
-            >
-              Create one free
-            </Link>
-          </p>
-        </div>
-      </div>
+					<div className="flex items-center gap-3 my-3.5 sm:my-4">
+						<div className="flex-1 h-px bg-forest-900/10" />
+						<span className="text-[11px] text-forest-900/40 font-semibold tracking-wide uppercase">
+							or
+						</span>
+						<div className="flex-1 h-px bg-forest-900/10" />
+					</div>
 
-      {/* ── Illustration panel — RIGHT ── */}
-      <div className="hidden lg:flex lg:w-[45%] xl:w-[50%] bg-[#F6FAF1] border-l border-[#DDECCB] flex-col items-center justify-center px-8 py-12 relative order-1 lg:order-2">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] right-[-10%] w-80 h-80 rounded-full bg-[#5AAD1F]/5" />
-          <div className="absolute bottom-[-5%] left-[-5%] w-60 h-60 rounded-full bg-[#3B7DC8]/5" />
-          <div className="absolute top-1/2 right-1/2 translate-x-1/2 -translate-y-1/2 w-125 h-125 rounded-full bg-[#C0DD97]/5" />
-        </div>
+					<GoogleButton onClick={handleGoogleClick} loading={googleLoading} />
 
-        <div className="relative z-10 w-full max-w-md">
-          <img
-            src={loginIllustration}
-            alt="Student accessing scholarships"
-            className="w-full h-auto object-contain"
-          />
-        </div>
+					<p className="text-center text-xs text-forest-900/60 mt-3.5 sm:mt-4">
+						Don't have an account?{" "}
+						<Link
+							to="/signup"
+							className="text-emerald-700 font-semibold hover:text-emerald-800 hover:underline"
+						>
+							Create one free
+						</Link>
+					</p>
+				</div>
+			</div>
 
-        <div className="relative z-10 mt-8 text-center max-w-sm">
-          <h2 className="text-2xl font-extrabold text-gray-900 mb-3 leading-snug">
-            Your scholarships are waiting
-          </h2>
-          <p className="text-[15px] text-gray-600 leading-relaxed font-medium">
-            Over 500 verified grants updated every week. Sign in to see what
-            matches your profile today.
-          </p>
-        </div>
+			{/* Illustration Panel (Right) */}
+			<div className="hidden lg:flex lg:w-[45%] xl:w-[42%] relative overflow-hidden bg-forest-950 flex-col justify-between p-6 xl:p-10 h-full">
+				{/* layered mesh glows on dark ground */}
+				<div
+					className="absolute inset-0"
+					style={{
+						backgroundImage:
+							"radial-gradient(at 20% 15%, rgba(116,198,157,0.28) 0px, transparent 50%), radial-gradient(at 85% 75%, rgba(82,183,136,0.22) 0px, transparent 55%), radial-gradient(at 60% 0%, rgba(183,228,199,0.12) 0px, transparent 40%)",
+					}}
+				/>
+				<div
+					className="absolute inset-0 opacity-[0.07] mix-blend-overlay"
+					style={{
+						backgroundImage:
+							"url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+					}}
+				/>
 
-        <div className="relative z-10 flex flex-wrap justify-center gap-2.5 mt-8">
-          {["500+ scholarships", "100% free", "Verified listings"].map((t) => (
-            <span
-              key={t}
-              className="inline-flex items-center gap-1.5 bg-white border border-[#C0DD97] text-[#27500A] text-[13px] font-bold px-3.5 py-2 rounded-full shadow-2xs hover:shadow-xs transition-shadow duration-200"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#5AAD1F]" />
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+				<div className="relative flex-1 flex flex-col justify-center items-center my-auto w-full max-w-sm mx-auto">
+					<div className="max-h-[38vh] xl:max-h-[44vh] flex items-center justify-center animate-subtle-float">
+						<img
+							src={loginIllustration}
+							alt="Student accessing scholarships"
+							className="max-h-[34vh] xl:max-h-[80vh] w-auto object-contain rounded-2xl"
+						/>
+					</div>
+
+					<div className="mt-4 text-center space-y-1">
+						<h2 className="font-serif text-2xl xl:text-[1.75rem] leading-snug text-white">
+							Every scholarship, verified at the source.
+						</h2>
+						<p className="text-xs xl:text-sm text-mint-100/70 leading-relaxed max-w-xs mx-auto">
+							Official circulars, automated eligibility checks, and deadline
+							tracking for Indian colleges and universities.
+						</p>
+					</div>
+				</div>
+
+				<div className="relative flex items-center justify-center gap-2 text-mint-100/50 text-xs">
+					<Sparkles size={13} />
+					<span>Trusted by students across 2,400+ profiles</span>
+				</div>
+			</div>
+		</div>
+	);
 }

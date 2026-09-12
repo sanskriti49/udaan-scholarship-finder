@@ -1,10 +1,13 @@
-import crypto from "crypto";
 import Scholarship from "../models/Scholarship.js";
 import { detectAndApplyChanges } from "../engine/diffEngine.js";
+import { Validator } from "./core/Validator.js";
+import { Deduplicator } from "./core/Deduplicator.js";
+import { notificationService } from "../services/notificationService.js";
 
 /**
  * BaseScholarshipSource
  * Contract and orchestration pipeline for all ingestion adapters.
+ * Implements 8-stage pipeline: Fetch -> Extract -> Normalize -> Deduplicate -> Validate -> Diff & Persist
  */
 export class BaseScholarshipSource {
 	constructor(config) {
@@ -22,10 +25,7 @@ export class BaseScholarshipSource {
 	}
 
 	computeHash(content) {
-		return crypto
-			.createHash("sha256")
-			.update(typeof content === "string" ? content : JSON.stringify(content))
-			.digest("hex");
+		return Deduplicator.computeHash(content);
 	}
 
 	async fetch() {
@@ -42,6 +42,8 @@ export class BaseScholarshipSource {
 			sourceId: this.id,
 			startedAt: new Date(),
 			totalExtracted: 0,
+			valid: 0,
+			quarantined: 0,
 			created: 0,
 			updated: 0,
 			changesDetected: 0,
@@ -55,17 +57,31 @@ export class BaseScholarshipSource {
 			const items = await this.extract(rawPayload);
 			telemetry.totalExtracted = items.length;
 
-			for (const item of items) {
+			for (const rawItem of items) {
 				try {
+					const slug = rawItem.slug || Deduplicator.generateSlug(rawItem.organization, rawItem.title, rawItem.level);
 					const normalizedItem = {
-						...item,
-						sourceSite: this.name,
-						sourceType: this.sourceType,
-						trustScore: this.trustScore,
+						...rawItem,
+						slug,
+						sourceSite: rawItem.sourceSite || this.name,
+						sourceType: rawItem.sourceType || this.sourceType,
+						trustScore: rawItem.trustScore || this.trustScore,
 						contentHash,
 						lastScrapedAt: new Date(),
 					};
 
+					// Stage: Validation & Integrity Check
+					const validation = Validator.validate(normalizedItem);
+					if (!validation.isValid) {
+						console.warn(`[Quarantined] '${normalizedItem.title}' failed schema contract:`, validation.errors);
+						telemetry.quarantined++;
+						telemetry.errors.push({ itemTitle: normalizedItem.title, reasons: validation.errors });
+						continue;
+					}
+
+					telemetry.valid++;
+
+					// Stage: Deduplication & Database Persistence
 					const existing = normalizedItem.slug
 						? await Scholarship.findOne({ slug: normalizedItem.slug })
 						: await Scholarship.findOne({ sourceUrl: normalizedItem.sourceUrl });
@@ -78,21 +94,25 @@ export class BaseScholarshipSource {
 							console.log(
 								`[Change Alert] Drift detected in '${existing.title}': ${diffResult.summary}`,
 							);
+							// Trigger notification hook for policy drift / deadline change
+							await notificationService.onScholarshipIngested(existing, false, diffResult);
 						}
 					} else {
-						await Scholarship.create(normalizedItem);
+						const created = await Scholarship.create(normalizedItem);
 						telemetry.created++;
 						console.log(`[New Scheme] Ingested: '${normalizedItem.title}'`);
+						// Trigger notification hook for newly discovered scheme
+						await notificationService.onScholarshipIngested(created, true, null);
 					}
 				} catch (err) {
 					console.error(`[Error] Failed processing item:`, err.message);
-					telemetry.errors.push({ itemTitle: item.title, error: err.message });
+					telemetry.errors.push({ itemTitle: rawItem.title, error: err.message });
 				}
 			}
 
 			telemetry.finishedAt = new Date();
 			console.log(
-				`[Ingestion Complete] ${this.name} -> Created: ${telemetry.created}, Updated: ${telemetry.updated}, Policy Changes: ${telemetry.changesDetected}`,
+				`[Ingestion Complete] ${this.name} -> Extracted: ${telemetry.totalExtracted}, Valid: ${telemetry.valid}, Quarantined: ${telemetry.quarantined}, Created: ${telemetry.created}, Updated: ${telemetry.updated}, Policy Changes: ${telemetry.changesDetected}`,
 			);
 			return telemetry;
 		} catch (fatalErr) {
@@ -102,3 +122,4 @@ export class BaseScholarshipSource {
 		}
 	}
 }
+

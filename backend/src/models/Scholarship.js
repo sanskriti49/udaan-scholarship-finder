@@ -74,7 +74,7 @@ const scholarshipSchema = new mongoose.Schema(
 		},
 		sourceType: {
 			type: String,
-			enum: ["Government", "Institution", "NGO / Trust", "Corporate"],
+			enum: ["Government", "Institution", "NGO / Trust", "Corporate", "Corporate CSR"],
 			default: "Government",
 		},
 		eligibility: {

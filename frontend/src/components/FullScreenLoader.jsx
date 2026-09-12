@@ -1,23 +1,23 @@
+import Logo from "./Logo";
+
 export default function FullScreenLoader() {
 	return (
-		<div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-[#F6FAF1]">
-			<div className="relative w-14 h-14 mb-5">
-				{/* Faded background ring */}
-				<div className="absolute inset-0 rounded-full border-[3px] border-[#C0DD97]/40"></div>
-				{/* Spinning gradient-like ring using Udaan colors */}
-				<div className="absolute inset-0 rounded-full border-[3px] border-t-[#5AAD1F] border-r-[#3B7DC8] border-b-transparent border-l-transparent animate-spin"></div>
+		<div className="fixed inset-0 z-100 flex flex-col items-center justify-center bg-[#FAF9F6]">
+			<div className="relative mb-6">
+				{/* Ambient Glow */}
+				<div className="absolute -inset-2 bg-gradient-to-tr from-emerald-500/20 via-teal-500/10 to-sky-500/20 rounded-3xl blur-md"></div>
+				
+				{/* Centralized Logo with micro-scale animation */}
+				<div className="relative animate-pulse">
+					<Logo size="lg" to={false} tagline="Finding Opportunities..." animated={false} />
+				</div>
 			</div>
 
-			{/* Pulsing Logo Text */}
-			<div className="flex flex-col items-center animate-pulse">
-				<span className="text-2xl font-black leading-none mb-1">
-					<span style={{ color: "#5AAD1F" }}>uda</span>
-					<span style={{ color: "#3B7DC8" }}>an</span>
-				</span>
-				<span className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">
-					Loading...
-				</span>
+			{/* Loading track bar */}
+			<div className="w-36 h-1 bg-slate-200/80 rounded-full overflow-hidden">
+				<div className="h-full bg-gradient-to-r from-emerald-600 via-teal-500 to-sky-500 rounded-full animate-pulse"></div>
 			</div>
 		</div>
 	);
 }
+

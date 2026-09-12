@@ -1,5 +1,10 @@
 export const verifyTurnstile = async (req, res, next) => {
 	try {
+		// If Turnstile secret key is not configured in environment, skip verification in dev
+		if (!process.env.TURNSTILE_SECRET_KEY) {
+			return next();
+		}
+
 		const { turnstileToken } = req.body;
 		if (!turnstileToken) {
 			return res.status(400).json({ message: "Turnstile token missing" });
@@ -25,6 +30,10 @@ export const verifyTurnstile = async (req, res, next) => {
 		}
 		next();
 	} catch (error) {
+		// If verification service is unavailable, let through in development or return error
+		if (!process.env.TURNSTILE_SECRET_KEY) {
+			return next();
+		}
 		return res.status(500).json({
 			message: "Turnstile server error",
 			error: error.message,

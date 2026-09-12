@@ -49,7 +49,7 @@ export class TataTrustSource extends BaseScholarshipSource {
 				minCgpa: 7.0,
 				desc: "Need-cum-merit financial assistance awarded to students pursuing professional bachelor degrees in Engineering, Technology, and Medicine, covering tuition fees.",
 				provenanceQuote: "Family annual income from all legitimate sources must not exceed Rs. 5.00 Lakhs.",
-				clause: "Individual Grants Policy §2.3 — Means Assessment",
+				clause: "Individual Grants Policy §2.3: Means Assessment",
 			},
 		];
 	}

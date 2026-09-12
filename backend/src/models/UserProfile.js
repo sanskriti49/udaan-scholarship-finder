@@ -1,4 +1,4 @@
-﻿import mongoose from "mongoose";
+import mongoose from "mongoose";
 
 const profileSchema = new mongoose.Schema(
 	{
@@ -47,13 +47,12 @@ const profileSchema = new mongoose.Schema(
 	{ timestamps: true },
 );
 
-profileSchema.pre("save", function (next) {
+profileSchema.pre("save", function () {
 	if (this.income && !this.familyIncome) this.familyIncome = this.income;
 	if (this.familyIncome && !this.income) this.income = this.familyIncome;
 	if (this.courseStream && !this.stream) this.stream = this.courseStream;
 	if (this.caste_category && !this.casteCategory)
 		this.casteCategory = this.caste_category;
-	next();
 });
 
 export default mongoose.models.UserProfile ||

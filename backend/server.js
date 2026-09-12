@@ -4,6 +4,9 @@ import cors from "cors";
 import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import scholarshipRoutes from "./src/routes/scholarshipRoutes.js";
+import notificationRoutes from "./src/routes/notificationRoutes.js";
+import { crawlerScheduler } from "./src/ingestion/core/Scheduler.js";
+import { notificationScheduler } from "./src/jobs/notificationScheduler.js";
 
 dotenv.config();
 const app = express();
@@ -19,6 +22,7 @@ connectDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/scholarships", scholarshipRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
 	res.send("Backend running...");
@@ -27,4 +31,8 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
 	console.log(`Server running safely on port ${PORT}`);
+	crawlerScheduler.start();
+	notificationScheduler.start();
 });
+
+

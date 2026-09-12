@@ -1,8 +1,8 @@
 import { AicteSource } from "./sources/AicteSource.js";
 import { UgcSource } from "./sources/UgcSource.js";
 import { NspSource } from "./sources/NspSource.js";
-import { UpScholarshipSource } from "./sources/UpScholarshipSource.js";
-import { TataTrustSource } from "./sources/TataTrustSource.js";
+import { StateScholarshipSource } from "./sources/StateScholarshipSource.js";
+import { CorporateCsrSource } from "./sources/CorporateCsrSource.js";
 
 /**
  * SourceRegistry
@@ -19,8 +19,8 @@ class SourceRegistry {
 		this.register(new AicteSource());
 		this.register(new UgcSource());
 		this.register(new NspSource());
-		this.register(new UpScholarshipSource());
-		this.register(new TataTrustSource());
+		this.register(new StateScholarshipSource());
+		this.register(new CorporateCsrSource());
 	}
 
 	register(sourceInstance) {
@@ -97,6 +97,8 @@ class SourceRegistry {
 			successfulSources: 0,
 			failedSources: 0,
 			totalExtracted: 0,
+			totalValid: 0,
+			totalQuarantined: 0,
 			totalCreated: 0,
 			totalUpdated: 0,
 			totalChangesDetected: 0,
@@ -109,6 +111,8 @@ class SourceRegistry {
 				results.push(report);
 				summary.successfulSources++;
 				summary.totalExtracted += report.totalExtracted || 0;
+				summary.totalValid += report.valid || 0;
+				summary.totalQuarantined += report.quarantined || 0;
 				summary.totalCreated += report.created || 0;
 				summary.totalUpdated += report.updated || 0;
 				summary.totalChangesDetected += report.changesDetected || 0;
@@ -130,7 +134,7 @@ class SourceRegistry {
 		console.log("\n========================================================");
 		console.log(`[SourceRegistry] Pipeline execution complete!`);
 		console.log(`Sources: ${summary.successfulSources}/${summary.totalSources} succeeded.`);
-		console.log(`Extracted: ${summary.totalExtracted} | Created: ${summary.totalCreated} | Updated: ${summary.totalUpdated} | Policy Drift Detected: ${summary.totalChangesDetected}`);
+		console.log(`Extracted: ${summary.totalExtracted} | Valid: ${summary.totalValid} | Quarantined: ${summary.totalQuarantined} | Created: ${summary.totalCreated} | Updated: ${summary.totalUpdated} | Policy Drift Detected: ${summary.totalChangesDetected}`);
 		console.log("========================================================\n");
 
 		return summary;

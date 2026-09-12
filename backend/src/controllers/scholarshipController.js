@@ -4,6 +4,7 @@ import ScholarshipVersion from "../models/ScholarshipVersion.js";
 import UserProfile from "../models/UserProfile.js";
 import { evaluateEligibility } from "../engine/ruleEvaluator.js";
 import { sourceRegistry } from "../ingestion/SourceRegistry.js";
+import { crawlerScheduler } from "../ingestion/core/Scheduler.js";
 
 /**
  * GET /api/scholarships
@@ -35,12 +36,24 @@ export const getScholarships = async (req, res) => {
 			];
 		}
 
-		if (category && category !== "All") query.category = category;
+		if (category && category !== "All") {
+			if (category === "STEM") {
+				query.$or = [{ category: "STEM" }, { tags: { $in: ["STEM", "Engineering"] } }];
+			} else {
+				query.category = category;
+			}
+		}
 		if (level && level !== "All") query.level = level;
 		if (state && state !== "All" && state !== "All India") {
 			query.state = { $in: [state, "All India"] };
 		}
-		if (sourceType && sourceType !== "All") query.sourceType = sourceType;
+		if (sourceType && sourceType !== "All") {
+			if (sourceType === "Corporate") {
+				query.sourceType = { $in: ["Corporate", "Corporate CSR"] };
+			} else {
+				query.sourceType = sourceType;
+			}
+		}
 		if (hasChanges === "true") query.hasChanges = true;
 
 		if (minAmount || maxAmount) {
@@ -277,15 +290,30 @@ export const evaluateScholarships = async (req, res) => {
 
 /**
  * GET /api/scholarships/crawler/status
- * List configured crawler sources, strategies (Playwright/Cheerio), and health telemetry
+ * List configured crawler sources, strategies (Playwright/Cheerio), DB catalog health, and scheduler status
  */
 export const getCrawlerStatus = async (req, res) => {
 	try {
 		const sources = sourceRegistry.listSources();
+		const now = new Date();
+
+		const [totalScholarships, activeScholarships, totalVersions] = await Promise.all([
+			Scholarship.countDocuments({}),
+			Scholarship.countDocuments({ deadline: { $gte: now } }),
+			ScholarshipVersion.countDocuments({}),
+		]);
+
 		return res.status(200).json({
 			success: true,
 			totalSources: sources.length,
 			lastRunAt: sourceRegistry.lastRunAt,
+			databaseCatalog: {
+				totalScholarships,
+				activeScholarships,
+				expiredScholarships: totalScholarships - activeScholarships,
+				totalVersionsTracked: totalVersions,
+			},
+			scheduler: crawlerScheduler.getStatus(),
 			sources,
 		});
 	} catch (error) {
