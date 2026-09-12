@@ -10,6 +10,8 @@ import {
 	CheckCircle2,
 	Bookmark,
 	ArrowRight,
+	Search,
+	X,
 } from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 import { useAuth } from "../hooks/useAuth";
@@ -21,9 +23,21 @@ const Navbar = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isScrolled, setIsScrolled] = useState(false);
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
+	const [navSearch, setNavSearch] = useState("");
+	const [isSearchOpen, setIsSearchOpen] = useState(false);
 	const { user, logout } = useAuth();
 	const navigate = useNavigate();
 	const profileRef = useRef(null);
+
+	const handleNavSearch = (e) => {
+		e.preventDefault();
+		if (navSearch.trim()) {
+			navigate(`/scholarships?search=${encodeURIComponent(navSearch.trim())}`);
+			setIsSearchOpen(false);
+			setIsOpen(false);
+			setNavSearch("");
+		}
+	};
 
 	useEffect(() => {
 		const handleScroll = () => setIsScrolled(window.scrollY > 15);
@@ -109,6 +123,47 @@ const Navbar = () => {
 
 					{/* Right Action / Auth Buttons */}
 					<div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+						{/* Quick Global Search Bar */}
+						<form onSubmit={handleNavSearch} className="relative hidden md:flex items-center">
+							<div
+								className={`flex items-center transition-all duration-200 ${
+									isSearchOpen
+										? "w-56 sm:w-64 bg-white border border-slate-300 shadow-2xs"
+										: "w-9 sm:w-36 bg-white/80 border border-slate-200/90 hover:border-slate-300 hover:bg-white"
+								} rounded-full px-2.5 py-1`}
+							>
+								<Search
+									size={14}
+									className="text-slate-400 shrink-0 cursor-pointer hover:text-emerald-700"
+									onClick={() => setIsSearchOpen(true)}
+								/>
+								<input
+									type="text"
+									value={navSearch}
+									onChange={(e) => setNavSearch(e.target.value)}
+									onFocus={() => setIsSearchOpen(true)}
+									onBlur={() => {
+										if (!navSearch) setIsSearchOpen(false);
+									}}
+									placeholder="Quick search..."
+									className="w-full bg-transparent border-none text-xs outline-none ml-2 text-slate-800 placeholder:text-slate-400 font-sans"
+								/>
+								{navSearch && (
+									<button
+										type="button"
+										onClick={() => {
+											setNavSearch("");
+											setIsSearchOpen(false);
+										}}
+										className="text-slate-400 hover:text-slate-600 cursor-pointer ml-1"
+										title="Clear input"
+									>
+										<X size={12} />
+									</button>
+								)}
+							</div>
+						</form>
+
 						{user ? (
 							<>
 								<NotificationCenter />
@@ -243,6 +298,30 @@ const Navbar = () => {
 								</div>
 							</div>
 						)}
+
+						{/* Mobile Search Input */}
+						<form onSubmit={handleNavSearch} className="relative mb-2.5">
+							<Search
+								size={15}
+								className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+							/>
+							<input
+								type="text"
+								value={navSearch}
+								onChange={(e) => setNavSearch(e.target.value)}
+								placeholder="Search scholarships..."
+								className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-9 py-2 text-xs outline-none focus:bg-white focus:border-emerald-700 text-slate-800 font-sans"
+							/>
+							{navSearch && (
+								<button
+									type="button"
+									onClick={() => setNavSearch("")}
+									className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+								>
+									<X size={13} />
+								</button>
+							)}
+						</form>
 
 						{navLinks.map((link) => (
 							<NavLink

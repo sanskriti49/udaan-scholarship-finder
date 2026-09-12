@@ -8,6 +8,13 @@ import { crawlerScheduler } from "../ingestion/core/Scheduler.js";
 import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 
 /**
+ * Safely escape regex special characters to prevent syntax errors and ReDoS
+ */
+function escapeRegex(text) {
+	return String(text).replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
+/**
  * GET /api/scholarships
  * List & search scholarships with filtering and sorting
  */
@@ -28,15 +35,28 @@ export const getScholarships = async (req, res) => {
 		} = req.query;
 
 		const conditions = [];
- 
-		if (search) {
-			conditions.push({
-				$or: [
-					{ title: { $regex: search, $options: "i" } },
-					{ organization: { $regex: search, $options: "i" } },
-					{ description: { $regex: search, $options: "i" } },
-				],
+
+		// Multi-token, tag-aware, ReDoS-safe search
+		if (search && search.trim()) {
+			const rawTokens = search.trim().split(/\s+/).filter(Boolean);
+			const escapedTokens = rawTokens.map(escapeRegex);
+
+			const tokenConditions = escapedTokens.map((token) => {
+				const tokenRegex = new RegExp(token, "i");
+				return {
+					$or: [
+						{ title: tokenRegex },
+						{ organization: tokenRegex },
+						{ description: tokenRegex },
+						{ tags: tokenRegex },
+						{ category: tokenRegex },
+					],
+				};
 			});
+
+			if (tokenConditions.length > 0) {
+				conditions.push({ $and: tokenConditions });
+			}
 		}
 
 		if (category && category !== "All") {
@@ -382,6 +402,54 @@ export const flushScholarshipCache = async (req, res) => {
 		return res.status(500).json({
 			success: false,
 			message: "Failed to flush scholarship cache",
+			error: error.message,
+		});
+	}
+};
+
+/**
+ * GET /api/scholarships/suggestions
+ * Ultra-fast suggestions and autocomplete for scholarship search bars
+ */
+export const getScholarshipSuggestions = async (req, res) => {
+	try {
+		const { q } = req.query;
+		if (!q || !q.trim()) {
+			return res.status(200).json({ success: true, count: 0, data: [] });
+		}
+
+		const rawTokens = q.trim().split(/\s+/).filter(Boolean);
+		const escapedTokens = rawTokens.map(escapeRegex);
+
+		const tokenConditions = escapedTokens.map((token) => {
+			const tokenRegex = new RegExp(token, "i");
+			return {
+				$or: [
+					{ title: tokenRegex },
+					{ organization: tokenRegex },
+					{ tags: tokenRegex },
+					{ category: tokenRegex },
+				],
+			};
+		});
+
+		const query = tokenConditions.length > 0 ? { $and: tokenConditions } : {};
+
+		const suggestions = await Scholarship.find(query)
+			.select("title organization slug category amount deadline tags state")
+			.limit(6)
+			.lean();
+
+		return res.status(200).json({
+			success: true,
+			count: suggestions.length,
+			data: suggestions,
+		});
+	} catch (error) {
+		console.error("Error retrieving suggestions:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to retrieve suggestions",
 			error: error.message,
 		});
 	}

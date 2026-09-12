@@ -8,6 +8,7 @@ import {
 	getCrawlerStatus,
 	runCrawler,
 	flushScholarshipCache,
+	getScholarshipSuggestions,
 } from "../controllers/scholarshipController.js";
 import { cacheMiddleware } from "../middlewares/cacheMiddleware.js";
 
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get("/", cacheMiddleware({ ttl: 1800 }), getScholarships);
 router.get("/featured", cacheMiddleware({ ttl: 1800 }), getFeaturedScholarships);
+router.get("/suggestions", cacheMiddleware({ ttl: 300 }), getScholarshipSuggestions);
 
 // Cache Control Endpoint
 router.post("/cache/clear", flushScholarshipCache);

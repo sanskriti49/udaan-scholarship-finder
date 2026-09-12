@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
 	Search,
 	Bookmark,
@@ -15,8 +16,12 @@ import {
 	ChevronRight,
 	RotateCcw,
 	ArrowUpRight,
+	Tag,
 } from "lucide-react";
-import { getScholarships } from "../services/scholarshipService";
+import {
+	getScholarships,
+	getScholarshipSuggestions,
+} from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
 
 const CATEGORIES = [
@@ -211,28 +216,107 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
 }
 
 export default function Scholarships() {
+	const [searchParams, setSearchParams] = useSearchParams();
+
+	// Read initial values from URL query parameters
+	const [search, setSearch] = useState(() => searchParams.get("search") || "");
+	const [cat, setCat] = useState(() => searchParams.get("category") || "All");
+	const [level, setLevel] = useState(() => searchParams.get("level") || "All");
+	const [state, setState] = useState(() => searchParams.get("state") || "All India");
+	const [source, setSource] = useState(() => searchParams.get("sourceType") || "All");
+	const [sort, setSort] = useState(() => searchParams.get("sort") || "deadline");
+	const [hasChangesOnly, setHasChangesOnly] = useState(
+		() => searchParams.get("hasChanges") === "true",
+	);
+
 	const [scholarships, setScholarships] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
-	const [search, setSearch] = useState("");
-	const [cat, setCat] = useState("All");
-	const [level, setLevel] = useState("All");
-	const [state, setState] = useState("All India");
-	const [source, setSource] = useState("All");
-	const [sort, setSort] = useState("deadline");
-	const [hasChangesOnly, setHasChangesOnly] = useState(false);
+	const [suggestions, setSuggestions] = useState([]);
+	const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+	const searchContainerRef = useRef(null);
 
 	const [saved, setSaved] = useState(new Set());
 	const [selectedScholarship, setSelectedScholarship] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	// Synchronize state if URL query parameters change (e.g. from Hero or Navbar)
+	useEffect(() => {
+		const qSearch = searchParams.get("search") || "";
+		const qCat = searchParams.get("category") || "All";
+		const qLevel = searchParams.get("level") || "All";
+		const qState = searchParams.get("state") || "All India";
+		const qSource = searchParams.get("sourceType") || "All";
+		const qSort = searchParams.get("sort") || "deadline";
+		const qChanges = searchParams.get("hasChanges") === "true";
+
+		if (qSearch !== search) setSearch(qSearch);
+		if (qCat !== cat) setCat(qCat);
+		if (qLevel !== level) setLevel(qLevel);
+		if (qState !== state) setState(qState);
+		if (qSource !== source) setSource(qSource);
+		if (qSort !== sort) setSort(qSort);
+		if (qChanges !== hasChangesOnly) setHasChangesOnly(qChanges);
+	}, [searchParams]);
+
+	// Keep URL query string in sync with current filter selections
+	useEffect(() => {
+		const updated = new URLSearchParams();
+		if (search.trim()) updated.set("search", search.trim());
+		if (cat && cat !== "All") updated.set("category", cat);
+		if (level && level !== "All") updated.set("level", level);
+		if (state && state !== "All India") updated.set("state", state);
+		if (source && source !== "All") updated.set("sourceType", source);
+		if (hasChangesOnly) updated.set("hasChanges", "true");
+		if (sort && sort !== "deadline") updated.set("sort", sort);
+
+		setSearchParams(updated, { replace: true });
+	}, [search, cat, level, state, source, sort, hasChangesOnly]);
+
+	// Autocomplete suggestions debounce
+	useEffect(() => {
+		if (!search || search.trim().length < 2) {
+			setSuggestions([]);
+			setIsSuggestionsOpen(false);
+			return;
+		}
+
+		const timer = setTimeout(async () => {
+			try {
+				const res = await getScholarshipSuggestions(search);
+				if (res.success && Array.isArray(res.data)) {
+					setSuggestions(res.data);
+					setIsSuggestionsOpen(res.data.length > 0);
+				}
+			} catch {
+				setSuggestions([]);
+			}
+		}, 180);
+
+		return () => clearTimeout(timer);
+	}, [search]);
+
+	// Close suggestions on outside click
+	useEffect(() => {
+		const handleClickOutside = (e) => {
+			if (
+				searchContainerRef.current &&
+				!searchContainerRef.current.contains(e.target)
+			) {
+				setIsSuggestionsOpen(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 
 	const fetchLiveScholarships = async () => {
 		try {
 			setLoading(true);
 			setError(null);
 			const params = {
-				search: search || undefined,
+				search: search.trim() || undefined,
 				category: cat !== "All" ? cat : undefined,
 				level: level !== "All" ? level : undefined,
 				state: state !== "All India" ? state : undefined,
@@ -243,7 +327,7 @@ export default function Scholarships() {
 			};
 			const res = await getScholarships(params);
 			if (res.success) {
-				setScholarships(res.data);
+				setScholarships(res.data || []);
 			} else {
 				setError("Unable to load scholarships.");
 			}
@@ -258,7 +342,7 @@ export default function Scholarships() {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			fetchLiveScholarships();
-		}, 250);
+		}, 200);
 		return () => clearTimeout(timer);
 	}, [search, cat, level, state, source, sort, hasChangesOnly]);
 
@@ -290,6 +374,7 @@ export default function Scholarships() {
 		setSearch("");
 		setHasChangesOnly(false);
 		setSort("deadline");
+		setIsSuggestionsOpen(false);
 	};
 
 	return (
@@ -314,8 +399,8 @@ export default function Scholarships() {
 						</p>
 					</div>
 
-					{/* Quick Search Input */}
-					<div className="w-full md:w-96 relative">
+					{/* Interactive Search Input with Live Suggestions */}
+					<div ref={searchContainerRef} className="w-full md:w-96 relative">
 						<Search
 							className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
 							size={18}
@@ -324,16 +409,69 @@ export default function Scholarships() {
 							type="text"
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
+							onFocus={() => {
+								if (suggestions.length > 0) setIsSuggestionsOpen(true);
+							}}
 							placeholder="Search by degree, scheme, or authority..."
 							className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl pl-10 pr-10 py-3 text-sm outline-none focus:bg-white focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 shadow-2xs text-slate-800 transition"
 						/>
 						{search && (
 							<button
-								onClick={() => setSearch("")}
-								className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+								onClick={() => {
+									setSearch("");
+									setIsSuggestionsOpen(false);
+								}}
+								className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+								title="Clear search"
 							>
 								<X size={16} />
 							</button>
+						)}
+
+						{/* Live Autocomplete Suggestions Dropdown */}
+						{isSuggestionsOpen && suggestions.length > 0 && (
+							<div className="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-40 overflow-hidden divide-y divide-slate-100 animate-in fade-in-50 duration-150">
+								<div className="px-4 py-2 bg-slate-50/80 flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+									<span>Live Matches</span>
+									<span>{suggestions.length} suggestions</span>
+								</div>
+								<div className="max-h-64 overflow-y-auto py-1">
+									{suggestions.map((item) => (
+										<button
+											key={item.slug || item._id}
+											type="button"
+											onClick={() => {
+												setSearch(item.title);
+												setIsSuggestionsOpen(false);
+											}}
+											className="w-full px-4 py-2.5 text-left hover:bg-emerald-50/60 transition-colors flex items-start gap-3 group cursor-pointer"
+										>
+											<Search
+												size={14}
+												className="mt-1 text-slate-400 group-hover:text-emerald-700 shrink-0"
+											/>
+											<div className="min-w-0 flex-1">
+												<p className="text-xs font-bold text-slate-900 truncate group-hover:text-emerald-800">
+													{item.title}
+												</p>
+												<p className="text-[11px] text-slate-500 truncate mt-0.5">
+													{item.organization} &bull;{" "}
+													<span className="text-emerald-700 font-medium">
+														{item.category}
+													</span>
+												</p>
+											</div>
+										</button>
+									))}
+								</div>
+								<button
+									type="button"
+									onClick={() => setIsSuggestionsOpen(false)}
+									className="w-full py-2.5 text-center text-xs font-bold text-emerald-800 bg-emerald-50/40 hover:bg-emerald-50 transition-colors block cursor-pointer"
+								>
+									Search all results for &ldquo;{search}&rdquo; &rarr;
+								</button>
+							</div>
 						)}
 					</div>
 				</div>
@@ -431,6 +569,92 @@ export default function Scholarships() {
 								</select>
 							</div>
 						</div>
+
+						{/* Active Search & Filters Strip */}
+						{(search ||
+							cat !== "All" ||
+							level !== "All" ||
+							state !== "All India" ||
+							source !== "All" ||
+							hasChangesOnly) && (
+							<div className="flex items-center gap-2 flex-wrap mb-6 pb-4 border-b border-slate-100 text-xs">
+								<span className="text-slate-400 font-medium">Active filters:</span>
+								{search && (
+									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 font-medium">
+										<Search size={11} className="text-emerald-700" />
+										<span>&ldquo;{search}&rdquo;</span>
+										<button
+											onClick={() => setSearch("")}
+											className="hover:text-emerald-950 cursor-pointer ml-0.5"
+											title="Remove search filter"
+										>
+											<X size={12} />
+										</button>
+									</span>
+								)}
+								{cat !== "All" && (
+									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
+										<span>{cat}</span>
+										<button
+											onClick={() => setCat("All")}
+											className="hover:text-slate-950 cursor-pointer"
+										>
+											<X size={12} />
+										</button>
+									</span>
+								)}
+								{level !== "All" && (
+									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
+										<span>{level}</span>
+										<button
+											onClick={() => setLevel("All")}
+											className="hover:text-slate-950 cursor-pointer"
+										>
+											<X size={12} />
+										</button>
+									</span>
+								)}
+								{state !== "All India" && (
+									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
+										<span>{state}</span>
+										<button
+											onClick={() => setState("All India")}
+											className="hover:text-slate-950 cursor-pointer"
+										>
+											<X size={12} />
+										</button>
+									</span>
+								)}
+								{source !== "All" && (
+									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
+										<span>{source}</span>
+										<button
+											onClick={() => setSource("All")}
+											className="hover:text-slate-950 cursor-pointer"
+										>
+											<X size={12} />
+										</button>
+									</span>
+								)}
+								{hasChangesOnly && (
+									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 font-medium">
+										<span>Recently Updated</span>
+										<button
+											onClick={() => setHasChangesOnly(false)}
+											className="hover:text-amber-950 cursor-pointer"
+										>
+											<X size={12} />
+										</button>
+									</span>
+								)}
+								<button
+									onClick={clearAll}
+									className="text-xs font-semibold text-emerald-800 hover:underline cursor-pointer ml-1"
+								>
+									Clear all
+								</button>
+							</div>
+						)}
 
 						{/* Loading State */}
 						{loading ? (

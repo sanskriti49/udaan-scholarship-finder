@@ -1,4 +1,4 @@
-﻿import api from "./api";
+import api from "./api";
 
 export const getScholarships = async (params = {}) => {
 	const response = await api.get("/scholarships", { params });
@@ -17,5 +17,13 @@ export const evaluateProfile = async (profileData) => {
 
 export const getScholarshipHistory = async (id) => {
 	const response = await api.get(`/scholarships/${id}/history`);
+	return response.data;
+};
+
+export const getScholarshipSuggestions = async (q) => {
+	if (!q || !q.trim()) return { success: true, count: 0, data: [] };
+	const response = await api.get("/scholarships/suggestions", {
+		params: { q: q.trim() },
+	});
 	return response.data;
 };
