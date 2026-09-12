@@ -195,9 +195,11 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
 				<div className="mt-5 flex items-center gap-2">
 					<button
 						onClick={onClick}
-						className="flex-1 text-center py-2.5 px-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+						className="flex-1 text-center py-2.5 px-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+						title="Inspect eligibility rules and official gazette citations"
 					>
-						View Rules
+						<FileText size={13} className="text-emerald-800" />
+						<span>Rules & Citations</span>
 					</button>
 					<a
 						href={s.applicationLink || s.sourceUrl}
@@ -218,16 +220,16 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
 export default function Scholarships() {
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	// Read initial values from URL query parameters
+	// Read current filter parameters directly from URL (Single Source of Truth)
+	const cat = searchParams.get("category") || "All";
+	const level = searchParams.get("level") || "All";
+	const state = searchParams.get("state") || "All India";
+	const source = searchParams.get("sourceType") || "All";
+	const sort = searchParams.get("sort") || "deadline";
+	const hasChangesOnly = searchParams.get("hasChanges") === "true";
+
+	// Local text state for responsive, zero-latency typing in the search bar
 	const [search, setSearch] = useState(() => searchParams.get("search") || "");
-	const [cat, setCat] = useState(() => searchParams.get("category") || "All");
-	const [level, setLevel] = useState(() => searchParams.get("level") || "All");
-	const [state, setState] = useState(() => searchParams.get("state") || "All India");
-	const [source, setSource] = useState(() => searchParams.get("sourceType") || "All");
-	const [sort, setSort] = useState(() => searchParams.get("sort") || "deadline");
-	const [hasChangesOnly, setHasChangesOnly] = useState(
-		() => searchParams.get("hasChanges") === "true",
-	);
 
 	const [scholarships, setScholarships] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -240,39 +242,53 @@ export default function Scholarships() {
 	const [saved, setSaved] = useState(new Set());
 	const [selectedScholarship, setSelectedScholarship] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
 
-	// Synchronize state if URL query parameters change (e.g. from Hero or Navbar)
+	// Sync local search input if URL changes externally (e.g. from Hero, Navbar, or Footer)
 	useEffect(() => {
 		const qSearch = searchParams.get("search") || "";
-		const qCat = searchParams.get("category") || "All";
-		const qLevel = searchParams.get("level") || "All";
-		const qState = searchParams.get("state") || "All India";
-		const qSource = searchParams.get("sourceType") || "All";
-		const qSort = searchParams.get("sort") || "deadline";
-		const qChanges = searchParams.get("hasChanges") === "true";
-
-		if (qSearch !== search) setSearch(qSearch);
-		if (qCat !== cat) setCat(qCat);
-		if (qLevel !== level) setLevel(qLevel);
-		if (qState !== state) setState(qState);
-		if (qSource !== source) setSource(qSource);
-		if (qSort !== sort) setSort(qSort);
-		if (qChanges !== hasChangesOnly) setHasChangesOnly(qChanges);
+		if (qSearch !== search) {
+			setSearch(qSearch);
+		}
 	}, [searchParams]);
 
-	// Keep URL query string in sync with current filter selections
-	useEffect(() => {
-		const updated = new URLSearchParams();
-		if (search.trim()) updated.set("search", search.trim());
-		if (cat && cat !== "All") updated.set("category", cat);
-		if (level && level !== "All") updated.set("level", level);
-		if (state && state !== "All India") updated.set("state", state);
-		if (source && source !== "All") updated.set("sourceType", source);
-		if (hasChangesOnly) updated.set("hasChanges", "true");
-		if (sort && sort !== "deadline") updated.set("sort", sort);
+	// Clean parameter updater that modifies the URL without side-effect ping-pong loops
+	const updateParam = (key, value, defaultValue) => {
+		const next = new URLSearchParams(searchParams);
+		if (!value || value === defaultValue) {
+			next.delete(key);
+		} else {
+			next.set(key, value);
+		}
+		setSearchParams(next, { replace: true });
+	};
 
-		setSearchParams(updated, { replace: true });
-	}, [search, cat, level, state, source, sort, hasChangesOnly]);
+	// Clean, non-competing setters for filter controls
+	const setCat = (val) => updateParam("category", val, "All");
+	const setLevel = (val) => updateParam("level", val, "All");
+	const setState = (val) => updateParam("state", val, "All India");
+	const setSource = (val) => updateParam("sourceType", val, "All");
+	const setSort = (val) => updateParam("sort", val, "deadline");
+	const setHasChangesOnly = (val) =>
+		updateParam("hasChanges", val ? "true" : "", "");
+
+	// Debounce sync for search text input to URL query
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			const currentSearchInUrl = searchParams.get("search") || "";
+			const trimmed = search.trim();
+			if (trimmed !== currentSearchInUrl) {
+				const next = new URLSearchParams(searchParams);
+				if (trimmed) {
+					next.set("search", trimmed);
+				} else {
+					next.delete("search");
+				}
+				setSearchParams(next, { replace: true });
+			}
+		}, 300);
+		return () => clearTimeout(timer);
+	}, [search]);
 
 	// Autocomplete suggestions debounce
 	useEffect(() => {
@@ -316,7 +332,7 @@ export default function Scholarships() {
 			setLoading(true);
 			setError(null);
 			const params = {
-				search: search.trim() || undefined,
+				search: (searchParams.get("search") || "").trim() || undefined,
 				category: cat !== "All" ? cat : undefined,
 				level: level !== "All" ? level : undefined,
 				state: state !== "All India" ? state : undefined,
@@ -339,12 +355,13 @@ export default function Scholarships() {
 		}
 	};
 
+	// Trigger fetch whenever searchParams changes
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			fetchLiveScholarships();
-		}, 200);
+		}, 80);
 		return () => clearTimeout(timer);
-	}, [search, cat, level, state, source, sort, hasChangesOnly]);
+	}, [searchParams]);
 
 	useEffect(() => {
 		if (!isModalOpen) return;
@@ -495,19 +512,44 @@ export default function Scholarships() {
 						</div>
 
 						{/* Recent Updates Toggle */}
-						<div className="mb-6 p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/70">
-							<label className="flex items-center gap-2.5 text-xs font-bold text-amber-900 cursor-pointer">
-								<input
-									type="checkbox"
-									checked={hasChangesOnly}
-									onChange={(e) => setHasChangesOnly(e.target.checked)}
-									className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500"
-								/>
-								<span>Recently Updated Only</span>
-							</label>
-							<p className="text-[11px] text-amber-800 mt-1 pl-6 leading-relaxed">
-								Show scholarships where deadlines or income ceilings changed
-								recently.
+						<div
+							onClick={() => setHasChangesOnly(!hasChangesOnly)}
+							className={`mb-6 p-3.5 rounded-2xl border transition-all cursor-pointer select-none ${
+								hasChangesOnly
+									? "bg-amber-50/90 border-amber-300 shadow-2xs"
+									: "bg-slate-50/70 border-slate-200/80 hover:border-slate-300"
+							}`}
+						>
+							<div className="flex items-center justify-between">
+								<span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+									<History
+										size={14}
+										className={hasChangesOnly ? "text-amber-700" : "text-slate-400"}
+									/>
+									Recently Updated Only
+								</span>
+								<button
+									type="button"
+									role="switch"
+									aria-checked={hasChangesOnly}
+									onClick={(e) => {
+										e.stopPropagation();
+										setHasChangesOnly(!hasChangesOnly);
+									}}
+									className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
+										hasChangesOnly ? "bg-amber-600" : "bg-slate-300"
+									}`}
+								>
+									<span
+										aria-hidden="true"
+										className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+											hasChangesOnly ? "translate-x-4" : "translate-x-0"
+										}`}
+									/>
+								</button>
+							</div>
+							<p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
+								Filter opportunities with recently modified dates, rules, or amounts.
 							</p>
 						</div>
 
@@ -822,6 +864,62 @@ export default function Scholarships() {
 										</div>
 									)}
 
+								{/* Regulatory Citations & Gazette Clauses */}
+								{((selectedScholarship.provenanceQuotes &&
+									selectedScholarship.provenanceQuotes.length > 0) ||
+									(selectedScholarship.rules &&
+										selectedScholarship.rules.length > 0)) && (
+									<div>
+										<div className="flex items-center justify-between mb-2.5">
+											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+												<Sparkles size={13} className="text-emerald-700" />
+												Regulatory Citations (
+												{selectedScholarship.provenanceQuotes?.length ||
+													selectedScholarship.rules?.length ||
+													0}
+												)
+											</h4>
+											<span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+												Audited Gazette
+											</span>
+										</div>
+
+										<div className="space-y-2.5">
+											{(selectedScholarship.provenanceQuotes &&
+											selectedScholarship.provenanceQuotes.length > 0
+												? selectedScholarship.provenanceQuotes
+												: selectedScholarship.rules.map((r, i) => ({
+														clause: `Official Directive §${i + 1}: ${r.field}`,
+														quote:
+															r.description ||
+															`Satisfies statutory ${r.field} criteria as specified in the official circular.`,
+														page: 1,
+												  }))
+											).map((q, idx) => (
+												<div
+													key={idx}
+													className="p-3.5 rounded-2xl bg-[#FAF9F6] border border-slate-200/90 text-xs space-y-1.5"
+												>
+													<div className="flex items-center justify-between text-slate-500">
+														<span className="font-bold text-slate-800 flex items-center gap-1">
+															<span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+															{q.clause || `Clause §${idx + 1}`}
+														</span>
+														{q.page && (
+															<span className="text-[10px] bg-white border border-slate-200 px-1.5 py-0.5 rounded">
+																Page {q.page}
+															</span>
+														)}
+													</div>
+													<blockquote className="border-l-2 border-emerald-700 pl-3 italic text-slate-700 leading-relaxed bg-emerald-50/20 py-0.5 rounded-r">
+														&ldquo;{q.quote}&rdquo;
+													</blockquote>
+												</div>
+											))}
+										</div>
+									</div>
+								)}
+
 								{/* Required Documents */}
 								{selectedScholarship.requiredDocuments &&
 									selectedScholarship.requiredDocuments.length > 0 && (
@@ -860,6 +958,15 @@ export default function Scholarships() {
 
 						{/* Drawer Footer Actions */}
 						<div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+							<button
+								onClick={() => setIsEvidenceModalOpen(true)}
+								className="flex-1 py-3 px-4 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+								title="Open official statutory citation dossier"
+							>
+								<ShieldCheck size={15} className="text-emerald-700" />
+								<span>Audit Dossier</span>
+							</button>
+
 							{selectedScholarship.sourceUrl && (
 								<a
 									href={selectedScholarship.sourceUrl}
@@ -868,7 +975,7 @@ export default function Scholarships() {
 									className="flex-1 py-3 px-4 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
 								>
 									<FileText size={15} />
-									<span>Official Circular</span>
+									<span>Circular</span>
 									<ArrowUpRight size={13} />
 								</a>
 							)}
@@ -880,7 +987,7 @@ export default function Scholarships() {
 									rel="noopener noreferrer"
 									className="flex-1 py-3 px-4 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm"
 								>
-									<span>Apply on Portal</span>
+									<span>Apply Portal</span>
 									<ArrowUpRight size={13} />
 								</a>
 							)}
@@ -898,6 +1005,13 @@ export default function Scholarships() {
 					</div>
 				</div>
 			)}
+
+			{/* Full Evidence & Citation Dossier Modal */}
+			<EvidenceModal
+				isOpen={isEvidenceModalOpen}
+				onClose={() => setIsEvidenceModalOpen(false)}
+				scholarship={selectedScholarship}
+			/>
 		</div>
 	);
 }

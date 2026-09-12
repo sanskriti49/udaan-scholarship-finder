@@ -12,23 +12,21 @@ function Mainlayout() {
   const { loading } = useAuth();
 
   useEffect(() => {
-    // Instant scroll to top on route change so no abrupt scroll jumps occur
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    // Smooth scroll to top on pathname change so transitions feel calm and fluid
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 
-    // Smooth, quick, fluid GSAP route transition
+    // Soft, natural GSAP route fade without aggressive vertical shifts
     const ctx = gsap.context(() => {
       gsap.fromTo(
         pageRef.current,
         {
-          opacity: 0,
-          y: 8,
+          opacity: 0.4,
         },
         {
           opacity: 1,
-          y: 0,
-          duration: 0.28,
-          ease: "power2.out",
-          clearProps: "transform,opacity",
+          duration: 0.22,
+          ease: "power1.out",
+          clearProps: "opacity",
         },
       );
     }, pageRef);

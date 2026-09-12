@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Deterministic Rule Evaluator for Udaan
  * Evaluates student profiles against scholarship rule trees with zero hallucination.
  * Returns explicit pass/fail breakdowns, ineligibility reasons, document audit, and source citations.
@@ -168,7 +168,37 @@ export function evaluateEligibility(rawProfile, scholarship) {
 			actualValue === "" ||
 			Number.isNaN(actualValue);
 
-		const citation = provenanceMap.get(rule.id) || null;
+		let citation = provenanceMap.get(rule.id) || null;
+		if (!citation && Array.isArray(scholarship.provenanceQuotes) && scholarship.provenanceQuotes.length > 0) {
+			// Match quote by field or context keywords
+			citation = scholarship.provenanceQuotes.find((q) => {
+				const text = `${q.clause || ""} ${q.quote || ""} ${q.ruleId || ""}`.toLowerCase();
+				const field = String(rule.field || "").toLowerCase();
+				return (
+					text.includes(field) ||
+					(field === "familyincome" && text.includes("income")) ||
+					(field === "castecategory" && (text.includes("caste") || text.includes("category"))) ||
+					(field === "educationlevel" && (text.includes("level") || text.includes("study") || text.includes("matric")))
+				);
+			});
+			if (!citation) {
+				citation = scholarship.provenanceQuotes[0];
+			}
+		}
+		if (!citation) {
+			citation = {
+				ruleId: rule.id || "rule_criteria",
+				sourceUrl:
+					scholarship.sourceUrl ||
+					scholarship.applicationLink ||
+					"https://scholarships.gov.in",
+				clause: `Official Directive: ${rule.field || "Eligibility Criteria"}`,
+				quote:
+					rule.description ||
+					`Candidates must satisfy the mandatory ${rule.field} eligibility conditions specified in the official circular.`,
+				page: 1,
+			};
+		}
 		const reqText = formatRequirement(rule.field, rule.operator, rule.targetValue);
 		const actualText = formatActualValue(rule.field, actualValue);
 

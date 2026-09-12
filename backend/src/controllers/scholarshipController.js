@@ -15,6 +15,16 @@ function escapeRegex(text) {
 }
 
 /**
+ * Build a flexible, ReDoS-safe regex where hyphens and spaces match interchangeably
+ * e.g., "Post-Matric" matches "Post-Matric", "Post Matric", and "Postmatric"
+ */
+function buildSearchRegex(token) {
+	const escaped = escapeRegex(token);
+	const flexible = escaped.replace(/\\-/g, "[- ]?");
+	return new RegExp(flexible, "i");
+}
+
+/**
  * GET /api/scholarships
  * List & search scholarships with filtering and sorting
  */
@@ -36,13 +46,15 @@ export const getScholarships = async (req, res) => {
 
 		const conditions = [];
 
-		// Multi-token, tag-aware, ReDoS-safe search
+		// Multi-token, tag-aware, hyphen-flexible, ReDoS-safe search
 		if (search && search.trim()) {
-			const rawTokens = search.trim().split(/\s+/).filter(Boolean);
-			const escapedTokens = rawTokens.map(escapeRegex);
+			const cleanedSearch = search.trim().replace(/\s*-\s*/g, "-");
+			const rawTokens = cleanedSearch
+				.split(/\s+/)
+				.filter((t) => t.length > 0 && t !== "-");
 
-			const tokenConditions = escapedTokens.map((token) => {
-				const tokenRegex = new RegExp(token, "i");
+			const tokenConditions = rawTokens.map((token) => {
+				const tokenRegex = buildSearchRegex(token);
 				return {
 					$or: [
 						{ title: tokenRegex },
@@ -50,6 +62,7 @@ export const getScholarships = async (req, res) => {
 						{ description: tokenRegex },
 						{ tags: tokenRegex },
 						{ category: tokenRegex },
+						{ state: tokenRegex },
 					],
 				};
 			});
@@ -418,17 +431,20 @@ export const getScholarshipSuggestions = async (req, res) => {
 			return res.status(200).json({ success: true, count: 0, data: [] });
 		}
 
-		const rawTokens = q.trim().split(/\s+/).filter(Boolean);
-		const escapedTokens = rawTokens.map(escapeRegex);
+		const cleanedSearch = q.trim().replace(/\s*-\s*/g, "-");
+		const rawTokens = cleanedSearch
+			.split(/\s+/)
+			.filter((t) => t.length > 0 && t !== "-");
 
-		const tokenConditions = escapedTokens.map((token) => {
-			const tokenRegex = new RegExp(token, "i");
+		const tokenConditions = rawTokens.map((token) => {
+			const tokenRegex = buildSearchRegex(token);
 			return {
 				$or: [
 					{ title: tokenRegex },
 					{ organization: tokenRegex },
 					{ tags: tokenRegex },
 					{ category: tokenRegex },
+					{ state: tokenRegex },
 				],
 			};
 		});

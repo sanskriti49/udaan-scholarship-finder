@@ -544,9 +544,11 @@ export default function EligibilityPage() {
 																setEvidenceScholarship(item);
 																setIsEvidenceOpen(true);
 															}}
-															className="flex-1 sm:flex-initial py-2 px-4 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold transition cursor-pointer"
+															className="flex-1 sm:flex-initial py-2 px-4 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-1.5"
+															title="Inspect official gazette clauses and eligibility citations"
 														>
-															View Citations
+															<FileText size={13} className="text-emerald-800" />
+															<span>View Citations</span>
 														</button>
 														<a
 															href={item.applicationLink || item.sourceUrl}
@@ -590,18 +592,30 @@ export default function EligibilityPage() {
 													</p>
 												</div>
 
-												{item.sourceUrl && (
-													<a
-														href={item.sourceUrl}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="py-1.5 px-3.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center gap-1 shrink-0"
+												<div className="flex items-center gap-2 shrink-0">
+													<button
+														onClick={() => {
+															setEvidenceScholarship(item);
+															setIsEvidenceOpen(true);
+														}}
+														className="py-1.5 px-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center gap-1 cursor-pointer"
+														title="View official statutory clauses"
 													>
-														<FileText size={13} />
-														<span>Guidelines</span>
-														<ArrowUpRight size={12} />
-													</a>
-												)}
+														<FileText size={12} className="text-rose-700" />
+														<span>View Citations</span>
+													</button>
+													{item.sourceUrl && (
+														<a
+															href={item.sourceUrl}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="py-1.5 px-3.5 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition flex items-center gap-1"
+														>
+															<span>Guidelines</span>
+															<ArrowUpRight size={12} />
+														</a>
+													)}
+												</div>
 											</div>
 
 											{/* Reason Breakdown */}
