@@ -197,13 +197,13 @@ export default function TrustShield() {
               <Lock size={18} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Zero-Storage Privacy Guarantee</h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+              <h3 className="text-base font-bold text-slate-900">Zero-Storage Privacy Guarantee</h3>
+              <p className="text-sm text-slate-600 leading-relaxed font-normal mt-0.5">
                 Udaan never records or stores the URLs, circular texts, or queries you submit. All audits are performed ephemerally with zero tracking.
               </p>
             </div>
           </div>
-          <span className="text-[11px] font-semibold text-emerald-850 bg-emerald-100/60 border border-emerald-300/60 px-3 py-1 rounded-full whitespace-nowrap self-start sm:self-center">
+          <span className="text-xs font-semibold text-emerald-850 bg-emerald-100/60 border border-emerald-300/60 px-3 py-1 rounded-full whitespace-nowrap self-start sm:self-center">
             Zero PII Stored
           </span>
         </div>
@@ -212,8 +212,8 @@ export default function TrustShield() {
         <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-2xs space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4 flex-wrap gap-3">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Verify a Portal or Circular</h2>
-              <p className="text-xs text-slate-500">Scan for fee demands, fake guarantees, and unverified domains.</p>
+              <h2 className="text-xl font-bold text-slate-900">Verify a Portal or Circular</h2>
+              <p className="text-sm text-slate-500 mt-0.5">Scan for fee demands, fake guarantees, and unverified domains.</p>
             </div>
 
             {/* Mode Switcher */}
@@ -245,7 +245,7 @@ export default function TrustShield() {
 
           {/* Quick Presets */}
           <div className="space-y-2">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
               Quick Demonstration Presets:
             </span>
             <div className="flex flex-wrap gap-2">
@@ -325,34 +325,34 @@ export default function TrustShield() {
                       <Icon size={20} />
                     </div>
                     <div>
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${details.color}`}>
+                      <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md ${details.color}`}>
                         {details.badge}
                       </span>
-                      <h3 className="text-base font-bold text-slate-900 mt-1">{details.title}</h3>
+                      <h3 className="text-lg font-bold text-slate-900 mt-1">{details.title}</h3>
                     </div>
                   </div>
 
                   <div className="text-right sm:text-right">
-                    <div className="text-xs text-slate-500">Calculated Trust Score</div>
+                    <div className="text-xs text-slate-500 font-medium">Calculated Trust Score</div>
                     <div className="text-2xl font-serif font-bold text-slate-900">{result.score}/100</div>
                   </div>
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
                   {details.summary}
                 </p>
 
                 {/* Findings Checklist */}
                 {result.findings && result.findings.length > 0 && (
-                  <div className="space-y-2 pt-2">
+                  <div className="space-y-2.5 pt-2">
                     <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                       Security & Heuristic Findings
                     </h4>
-                    <div className="space-y-2">
+                    <div className="space-y-2.5">
                       {result.findings.map((finding, fIdx) => (
                         <div
                           key={fIdx}
-                          className={`p-3 rounded-xl border text-xs flex items-start gap-2.5 bg-white ${
+                          className={`p-3.5 rounded-xl border text-sm flex items-start gap-3 bg-white ${
                             finding.severity === "critical"
                               ? "border-rose-300 text-rose-950"
                               : finding.severity === "positive"
@@ -361,15 +361,15 @@ export default function TrustShield() {
                           }`}
                         >
                           {finding.severity === "positive" ? (
-                            <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                            <CheckCircle2 size={18} className="text-emerald-700 shrink-0 mt-0.5" />
                           ) : finding.severity === "critical" ? (
-                            <ShieldAlert size={16} className="text-rose-600 shrink-0 mt-0.5" />
+                            <ShieldAlert size={18} className="text-rose-600 shrink-0 mt-0.5" />
                           ) : (
-                            <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                            <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
                           )}
                           <div>
-                            <span className="font-bold block">{finding.title}</span>
-                            <span className="text-slate-600 mt-0.5 block font-normal leading-relaxed">
+                            <span className="font-bold block text-sm">{finding.title}</span>
+                            <span className="text-slate-600 mt-0.5 block font-normal text-sm leading-relaxed">
                               {finding.description}
                             </span>
                           </div>
@@ -383,13 +383,13 @@ export default function TrustShield() {
                 {result.crossReferencedScheme && (
                   <div className="bg-white border border-emerald-300/80 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
+                      <div className="text-xs font-bold uppercase tracking-wider text-emerald-800">
                         Official Scheme Match in Udaan
                       </div>
-                      <h4 className="text-xs font-bold text-slate-900 mt-0.5">
+                      <h4 className="text-sm font-bold text-slate-900 mt-0.5">
                         {result.crossReferencedScheme.title}
                       </h4>
-                      <p className="text-[11px] text-slate-500">
+                      <p className="text-xs text-slate-500 mt-0.5">
                         Issued by: {result.crossReferencedScheme.organization}
                       </p>
                     </div>
@@ -398,10 +398,10 @@ export default function TrustShield() {
                         href={result.crossReferencedScheme.officialPortal}
                         target="_blank"
                         rel="noreferrer"
-                        className="cursor-pointer inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg transition shrink-0"
+                        className="cursor-pointer inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-1.5 rounded-xl transition shrink-0"
                       >
                         <span>Open Official Portal</span>
-                        <ExternalLink size={12} />
+                        <ExternalLink size={13} />
                       </a>
                     )}
                   </div>
@@ -410,17 +410,17 @@ export default function TrustShield() {
                 {/* Actionable Recommendations */}
                 {result.verdict === "HIGH_RISK_SUSPICIOUS" && (
                   <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-rose-200/80">
-                    <span className="text-xs text-rose-800 font-medium">
+                    <span className="text-sm text-rose-800 font-semibold">
                       Never transfer money or send Aadhaar numbers via unverified channels.
                     </span>
                     <a
                       href="https://cybercrime.gov.in"
                       target="_blank"
                       rel="noreferrer"
-                      className="cursor-pointer inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-2xs shrink-0"
+                      className="cursor-pointer inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-xl transition shadow-2xs shrink-0"
                     >
                       <span>Report to Cyber Crime (cybercrime.gov.in)</span>
-                      <ExternalLink size={12} />
+                      <ExternalLink size={13} />
                     </a>
                   </div>
                 )}
@@ -434,14 +434,14 @@ export default function TrustShield() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-slate-900">Verified Sovereign & CSR Directory</h2>
-              <p className="text-xs text-slate-500">Official portals verified by ministry gazettes and statutory guidelines.</p>
+              <p className="text-sm text-slate-500 mt-0.5">Official portals verified by ministry gazettes and statutory guidelines.</p>
             </div>
             <Link
               to="/scholarships"
-              className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
+              className="text-sm font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
             >
               <span>Explore All Schemes</span>
-              <ArrowRight size={13} />
+              <ArrowRight size={14} />
             </Link>
           </div>
 
@@ -453,31 +453,31 @@ export default function TrustShield() {
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-850 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-850 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
                       {item.type}
                     </span>
-                    <span className="text-[10px] text-emerald-750 font-semibold flex items-center gap-1">
-                      <Lock size={10} /> SSL Verified
+                    <span className="text-xs text-emerald-750 font-semibold flex items-center gap-1">
+                      <Lock size={12} /> SSL Verified
                     </span>
                   </div>
-                  <h3 className="text-xs font-bold text-slate-900 leading-snug">{item.name}</h3>
-                  <p className="text-[11px] text-slate-500 mt-1 font-normal line-clamp-2">
+                  <h3 className="text-sm font-bold text-slate-900 leading-snug">{item.name}</h3>
+                  <p className="text-xs sm:text-sm text-slate-500 mt-1 font-normal line-clamp-2">
                     {item.description}
                   </p>
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400 font-mono truncate max-w-36">
+                  <span className="text-xs text-slate-400 font-mono truncate max-w-36">
                     {item.domain}
                   </span>
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs font-bold text-slate-800 hover:text-emerald-800 flex items-center gap-1 transition"
+                    className="text-xs sm:text-sm font-bold text-slate-800 hover:text-emerald-800 flex items-center gap-1 transition"
                   >
                     <span>Visit</span>
-                    <ExternalLink size={11} />
+                    <ExternalLink size={12} />
                   </a>
                 </div>
               </div>
@@ -487,25 +487,25 @@ export default function TrustShield() {
 
         {/* Safety Education Section */}
         <div className="bg-[#FAF9F6] border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-            <HelpCircle size={16} className="text-emerald-800" /> Three Golden Rules for Scholarship Safety
+          <h3 className="text-base font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <HelpCircle size={18} className="text-emerald-800" /> Three Golden Rules for Scholarship Safety
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-1.5">
-              <span className="font-bold text-slate-900 block">1. 100% Free Application</span>
-              <p className="text-slate-600 leading-relaxed font-normal">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-2">
+              <span className="font-bold text-slate-900 block text-base">1. 100% Free Application</span>
+              <p className="text-slate-600 leading-relaxed font-normal text-sm">
                 Under Indian law, no government ministry, state department, or genuine CSR charges an application or processing fee.
               </p>
             </div>
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-1.5">
-              <span className="font-bold text-slate-900 block">2. Verify Domain Extensions</span>
-              <p className="text-slate-600 leading-relaxed font-normal">
-                Official government portals always end in <span className="font-mono text-emerald-800">.gov.in</span> or <span className="font-mono text-emerald-800">.nic.in</span>. Watch out for lookalikes ending in .com or .xyz.
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-2">
+              <span className="font-bold text-slate-900 block text-base">2. Verify Domain Extensions</span>
+              <p className="text-slate-600 leading-relaxed font-normal text-sm">
+                Official government portals always end in <span className="font-mono text-emerald-800 font-semibold">.gov.in</span> or <span className="font-mono text-emerald-800 font-semibold">.nic.in</span>. Watch out for lookalikes ending in .com or .xyz.
               </p>
             </div>
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 space-y-1.5">
-              <span className="font-bold text-slate-900 block">3. Direct Benefit Transfer (DBT)</span>
-              <p className="text-slate-600 leading-relaxed font-normal">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-2">
+              <span className="font-bold text-slate-900 block text-base">3. Direct Benefit Transfer (DBT)</span>
+              <p className="text-slate-600 leading-relaxed font-normal text-sm">
                 Disbursements are credited directly to your Aadhaar-seeded bank account through PFMS. Nobody can disburse grants via cash or UPI.
               </p>
             </div>

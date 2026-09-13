@@ -244,13 +244,13 @@ export default function DocumentVault() {
               <Lock size={18} />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Zero Document Upload Guarantee</h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+              <h3 className="text-base font-bold text-slate-900">Zero Document Upload Guarantee</h3>
+              <p className="text-sm text-slate-600 leading-relaxed font-normal mt-0.5">
                 Udaan never asks for, uploads, or stores your Aadhaar number, certificate files, or bank details. All readiness checks are performed locally in your browser.
               </p>
             </div>
           </div>
-          <span className="text-[11px] font-semibold text-emerald-850 bg-emerald-100/60 border border-emerald-300/60 px-3 py-1 rounded-full whitespace-nowrap self-start sm:self-center">
+          <span className="text-xs font-semibold text-emerald-850 bg-emerald-100/60 border border-emerald-300/60 px-3 py-1 rounded-full whitespace-nowrap self-start sm:self-center">
             100% Local & Private
           </span>
         </div>
@@ -259,8 +259,8 @@ export default function DocumentVault() {
         <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-2xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Application Portfolio Checklist</h2>
-              <p className="text-xs text-slate-500">
+              <h2 className="text-xl font-bold text-slate-900">Application Portfolio Checklist</h2>
+              <p className="text-sm text-slate-500 mt-0.5">
                 Track required documents and verify competent authorities before portal cutoffs.
               </p>
             </div>
@@ -309,8 +309,8 @@ export default function DocumentVault() {
                         <FileText size={16} />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900">{doc.name}</h4>
-                        <span className="text-[11px] text-slate-500">
+                        <h4 className="text-base font-bold text-slate-900">{doc.name}</h4>
+                        <span className="text-xs text-slate-500">
                           Authority: <strong className="text-slate-700">{doc.authority}</strong>
                         </span>
                       </div>
@@ -348,17 +348,17 @@ export default function DocumentVault() {
                   </div>
 
                   {/* Pitfall Alert */}
-                  <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3 text-xs text-amber-950 flex items-start gap-2 leading-relaxed">
-                    <AlertTriangle size={14} className="text-amber-700 shrink-0 mt-0.5" />
+                  <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 text-sm text-amber-950 flex items-start gap-2.5 leading-relaxed">
+                    <AlertTriangle size={16} className="text-amber-700 shrink-0 mt-0.5" />
                     <div>
-                      <strong className="font-bold">Avoid Rejection: </strong>
-                      <span>{doc.pitfall}</span>
+                      <strong className="font-bold text-amber-900">Avoid Rejection: </strong>
+                      <span className="font-normal">{doc.pitfall}</span>
                     </div>
                   </div>
 
                   {/* Actions Strip */}
-                  <div className="pt-2 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <span className="text-[11px] text-slate-500">
+                  <div className="pt-2.5 border-t border-slate-200/60 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+                    <span className="text-xs text-slate-500">
                       Validity: <span className="font-semibold text-slate-700">{doc.validity}</span>
                     </span>
 
@@ -367,9 +367,9 @@ export default function DocumentVault() {
                         <button
                           type="button"
                           onClick={() => setBonafideModalOpen(true)}
-                          className="cursor-pointer text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg transition"
+                          className="cursor-pointer text-xs sm:text-sm font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl transition"
                         >
-                          <Printer size={12} />
+                          <Printer size={13} />
                           <span>Generate Bonafide Template</span>
                         </button>
                       )}
@@ -378,9 +378,9 @@ export default function DocumentVault() {
                         <button
                           type="button"
                           onClick={() => setDbtModalOpen(true)}
-                          className="cursor-pointer text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-lg transition"
+                          className="cursor-pointer text-xs sm:text-sm font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl transition"
                         >
-                          <HelpCircle size={12} />
+                          <HelpCircle size={13} />
                           <span>NPCI DBT Seeding Guide</span>
                         </button>
                       )}
@@ -399,8 +399,8 @@ export default function DocumentVault() {
               <Calendar size={20} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Income Certificate Validity Auditor</h2>
-              <p className="text-xs text-slate-500">
+              <h2 className="text-xl font-bold text-slate-900">Income Certificate Validity Auditor</h2>
+              <p className="text-sm text-slate-500 mt-0.5">
                 Check whether your certificate meets the current financial year requirement for statutory portals.
               </p>
             </div>
@@ -409,7 +409,7 @@ export default function DocumentVault() {
           <form onSubmit={handleAuditIncomeDate} className="space-y-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <div className="w-full sm:w-72">
-                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
                   Certificate Issue Date
                 </label>
                 <input
@@ -422,9 +422,9 @@ export default function DocumentVault() {
 
               <button
                 type="submit"
-                className="cursor-pointer inline-flex items-center gap-2 bg-slate-900 hover:bg-emerald-900 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition shadow-2xs sm:mt-5"
+                className="cursor-pointer inline-flex items-center gap-2 bg-slate-900 hover:bg-emerald-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition shadow-2xs sm:mt-5"
               >
-                <Sparkles size={13} />
+                <Sparkles size={14} />
                 <span>Audit Financial Year Validity</span>
               </button>
             </div>
@@ -432,26 +432,26 @@ export default function DocumentVault() {
 
           {expiryAuditResult && (
             <div
-              className={`rounded-2xl border p-4 sm:p-5 text-xs space-y-2 ${
+              className={`rounded-2xl border p-4 sm:p-5 text-sm space-y-2 ${
                 expiryAuditResult.valid
                   ? "bg-emerald-50 border-emerald-200 text-emerald-950"
                   : "bg-rose-50 border-rose-200 text-rose-950"
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm flex items-center gap-1.5">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <span className="font-bold text-base flex items-center gap-2">
                   {expiryAuditResult.valid ? (
-                    <CheckCircle2 size={16} className="text-emerald-700" />
+                    <CheckCircle2 size={18} className="text-emerald-700" />
                   ) : (
-                    <AlertTriangle size={16} className="text-rose-600" />
+                    <AlertTriangle size={18} className="text-rose-600" />
                   )}
                   {expiryAuditResult.valid ? "Certificate Valid for Current FY" : "Certificate Outdated (Requires Renewal)"}
                 </span>
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white border border-slate-200">
+                <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-white border border-slate-200">
                   Issued in FY: {expiryAuditResult.certFY} (Current: FY {expiryAuditResult.currentFY})
                 </span>
               </div>
-              <p className="leading-relaxed font-normal">{expiryAuditResult.remedy}</p>
+              <p className="leading-relaxed font-normal text-sm">{expiryAuditResult.remedy}</p>
             </div>
           )}
         </div>
@@ -460,7 +460,7 @@ export default function DocumentVault() {
         <div className="space-y-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900">Official State e-District Issuing Portals</h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm text-slate-500 mt-0.5">
               Direct sovereign portals to issue or renew Income, Domicile, and Caste certificates without private intermediaries.
             </p>
           </div>
@@ -472,10 +472,10 @@ export default function DocumentVault() {
                 className="bg-white border border-slate-200/90 rounded-2xl p-4 flex items-center justify-between hover:border-emerald-300 transition shadow-2xs"
               >
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-850">
+                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-850">
                     {sp.state}
                   </span>
-                  <h3 className="text-xs font-bold text-slate-900 mt-0.5">{sp.portal}</h3>
+                  <h3 className="text-sm font-bold text-slate-900 mt-0.5">{sp.portal}</h3>
                 </div>
                 <a
                   href={sp.url}

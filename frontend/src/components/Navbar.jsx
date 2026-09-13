@@ -62,15 +62,22 @@ const Navbar = () => {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
-	const navLinks = [
+	const guestLinks = [
+		{ name: "Home", path: "/" },
+		{ name: "Scholarships", path: "/scholarships" },
+		{ name: "Trust Shield", path: "/trust-shield" },
+		{ name: "Resources", path: "/resources" },
+	];
+
+	const loggedInLinks = [
 		{ name: "Home", path: "/" },
 		{ name: "Scholarships", path: "/scholarships" },
 		{ name: "Eligibility", path: "/eligibility" },
 		{ name: "Documents", path: "/documents" },
-		{ name: "Trust Shield", path: "/trust-shield" },
 		{ name: "Resources", path: "/resources" },
-		{ name: "Support", path: "/support" },
 	];
+
+	const activeNavLinks = user ? loggedInLinks : guestLinks;
 
 	const handleLogout = async () => {
 		await logout();
@@ -108,7 +115,7 @@ const Navbar = () => {
 
 					{/* Center Navigation Links (Desktop Floating Segmented Pill) */}
 					<nav className="hidden lg:flex items-center bg-white/95 backdrop-blur-xs border border-slate-200/80 rounded-full p-1 shadow-2xs">
-						{navLinks.map((link) => (
+						{activeNavLinks.map((link) => (
 							<NavLink
 								key={link.name}
 								to={link.path}
@@ -266,15 +273,15 @@ const Navbar = () => {
 							<div className="hidden sm:flex items-center gap-2 font-heading">
 								<NavLink
 									to="/login"
-									className="px-3.5 py-1.5  text-[15px] font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+									className="px-3.5 py-1.5 text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors"
 								>
 									Log in
 								</NavLink>
 								<NavLink
-									to="/eligibility"
-									className="px-4 py-2 text-[15px] font-semibold rounded-full bg-emerald-800 hover:bg-emerald-900 text-white transition-all duration-150 shadow-2xs hover:shadow-xs flex items-center gap-1.5"
+									to="/signup"
+									className="px-4 py-2 text-sm font-semibold rounded-full bg-emerald-800 hover:bg-emerald-900 text-white transition-all duration-150 shadow-2xs hover:shadow-xs flex items-center gap-1.5"
 								>
-									<span>Check Eligibility</span>
+									<span>Get Started</span>
 									<ArrowRight size={13} />
 								</NavLink>
 							</div>
@@ -343,7 +350,7 @@ const Navbar = () => {
 							)}
 						</form>
 
-						{navLinks.map((link) => (
+						{activeNavLinks.map((link) => (
 							<NavLink
 								key={link.name}
 								to={link.path}
