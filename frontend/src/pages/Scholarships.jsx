@@ -100,8 +100,8 @@ function DeadlineTag({ deadline }) {
 	if (days <= 10)
 		return (
 			<span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/80">
-				<Clock size={12} className="text-rose-600" /> {days} days
-				left (closing soon)
+				<Clock size={12} className="text-rose-600" /> {days} days left (closing
+				soon)
 			</span>
 		);
 	if (days <= 30)
@@ -117,109 +117,153 @@ function DeadlineTag({ deadline }) {
 	);
 }
 
-function ScholarshipCard({ s, saved, onSave, onClick }) {
+function ScholarshipCard({ s, saved, onSave, onClick, onOpenEvidence }) {
+	// Determine concrete provenance rather than a generic "Safe" label
+	const provenanceLabel = s.sourceType
+		? `${s.sourceType} Gazette`
+		: "Audited Circular";
+
+	// Format financial grant value cleanly without redundant suffix (e.g. avoiding "₹50,000 / yr / yearly")
+	const formatGrantDisplay = () => {
+		const raw = s.amount?.displayString || (s.amount?.value ? `₹${s.amount.value.toLocaleString("en-IN")}` : "Variable Grant");
+		// If the string already contains a period slash suffix like '/ yr', '/year', '/ mo', use it directly
+		if (raw.includes("/") || raw.includes("per") || raw.toLowerCase().includes("annum")) {
+			return { main: raw, period: null };
+		}
+		const periodText = s.amount?.period || "year";
+		return { main: raw, period: `/${periodText}` };
+	};
+
+	const grantInfo = formatGrantDisplay();
+
 	return (
-		<div className="group bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 hover:border-emerald-300 hover:shadow-md shadow-2xs">
+		<div className="group bg-white border border-slate-200/90 rounded-2xl p-6 flex flex-col justify-between transition-all duration-200 hover:border-slate-300 hover:shadow-sm">
 			<div>
-				{/* Top Row: Category & Bookmark */}
-				<div className="flex items-center justify-between gap-2 mb-3">
+				{/* Top Row: Crisp Ledger Header */}
+				<div className="flex items-center justify-between gap-2 mb-3.5">
 					<div className="flex items-center gap-2 flex-wrap">
-						<span className="text-xs font-bold text-slate-700 tracking-wide uppercase">
+						{/* Understated Category Label */}
+						<span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-medium">
 							{s.category}
 						</span>
-						<span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-850 border border-emerald-200/80">
-							<ShieldCheck size={11} className="text-emerald-700" /> Verified Safe
+
+						<span className="text-slate-200 select-none">/</span>
+
+						{/* Concrete Provenance Tag */}
+						<span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-700 bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded-md tracking-tight">
+							<span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+							{provenanceLabel}
 						</span>
+
+						{/* Revision Pip */}
 						{s.hasChanges && (
-							<span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
-								<History size={11} /> Updated
+							<span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-800 bg-amber-50/80 border border-amber-200/70 px-2 py-0.5 rounded-md">
+								<History size={10} className="text-amber-600" />
+								Updated
 							</span>
 						)}
 					</div>
+
 					<button
 						onClick={(e) => {
 							e.stopPropagation();
 							onSave(s._id || s.id);
 						}}
-						className="p-1.5 rounded-lg text-slate-400 hover:text-emerald-700 hover:bg-slate-50 transition-colors"
+						className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors"
 						title={saved ? "Remove bookmark" : "Save scholarship"}
 					>
 						{saved ? (
-							<BookmarkCheck size={18} className="text-emerald-700" />
+							<BookmarkCheck size={17} className="text-slate-900" />
 						) : (
-							<Bookmark size={18} />
+							<Bookmark size={17} />
 						)}
 					</button>
 				</div>
 
-				{/* Title & Authority */}
+				{/* Title */}
 				<h3
 					onClick={onClick}
-					className="text-lg sm:text-xl font-bold text-slate-900 group-hover:text-emerald-800 transition-colors leading-snug cursor-pointer font-sans"
+					className="text-lg font-bold text-slate-900 group-hover:text-emerald-900 transition-colors leading-snug cursor-pointer"
 				>
 					{s.title}
 				</h3>
-				<p className="text-xs sm:text-sm text-slate-500 font-medium mt-1 mb-3.5">
-					{s.organization}
-				</p>
 
-				{/* Recent change banner if observed */}
+				{/* Integrated Authority & Verification Line */}
+				<div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1 mb-4 flex-wrap">
+					<span className="text-slate-800 font-semibold">{s.organization}</span>
+					<span className="text-slate-300">•</span>
+					<span className="inline-flex items-center gap-1 text-slate-500 text-[11px]">
+						<ShieldCheck
+							size={12}
+							className="text-slate-400 group-hover:text-emerald-700 transition-colors"
+						/>
+						Verified Source
+					</span>
+				</div>
+
+				{/* Change Notice */}
 				{s.latestChangeSummary && (
-					<div className="mb-3.5 p-3 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2">
-						<History size={14} className="shrink-0 mt-0.5 text-amber-700" />
+					<div className="mb-4 p-3 rounded-xl bg-amber-50/60 border border-amber-200/70 text-xs text-amber-900 flex items-start gap-2">
+						<History size={13} className="shrink-0 mt-0.5 text-amber-700" />
 						<span className="leading-relaxed">{s.latestChangeSummary}</span>
 					</div>
 				)}
 
-				<p className="text-sm text-slate-600 line-clamp-2 mb-6 leading-relaxed font-normal">
+				<p className="text-sm text-slate-600 line-clamp-2 mb-6 leading-relaxed">
 					{s.summary || s.description}
 				</p>
 			</div>
 
 			<div>
-				{/* Amount & Deadline */}
-				<div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+				{/* Financial Ledger & Deadline */}
+				<div className="pt-4 border-t border-slate-100 flex items-baseline justify-between gap-2 flex-wrap">
 					<div>
-						<span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">
-							Financial Grant
+						<span className="text-[10px] font-mono font-semibold tracking-wider text-slate-400 uppercase block mb-0.5">
+							Grant Value
 						</span>
-						<span className="text-xl font-serif font-bold text-slate-900">
-							{s.amount?.displayString ||
-								`₹${s.amount?.value?.toLocaleString("en-IN")}`}
-						</span>
-						<span className="text-xs text-slate-500 font-normal ml-1">
-							/{s.amount?.period || "year"}
-						</span>
+						<div className="flex items-baseline gap-1">
+							<span className="text-xl font-serif font-bold text-slate-900">
+								{grantInfo.main}
+							</span>
+							{grantInfo.period && (
+								<span className="text-xs text-slate-500 font-normal">
+									{grantInfo.period}
+								</span>
+							)}
+						</div>
 					</div>
 					<DeadlineTag deadline={s.deadline} />
 				</div>
 
-				{/* Card Actions */}
+				{/* Actions */}
 				<div className="mt-5 flex items-center gap-2">
 					<button
-						onClick={onClick}
-						className="flex-1 text-center py-2.5 px-3 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-						title="Inspect eligibility rules and official gazette citations"
+						onClick={(e) => {
+							e.stopPropagation();
+							if (onOpenEvidence) onOpenEvidence();
+							else onClick();
+						}}
+						className="flex-1 text-center py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-emerald-200/80"
+						title="Open interactive Rules & Gazette dossier popup"
 					>
-						<FileText size={13} className="text-emerald-800" />
-						<span>Rules & Citations</span>
+						<FileText size={13} className="text-emerald-700" />
+						<span>Rules & Gazette</span>
 					</button>
 					<a
 						href={s.applicationLink || s.sourceUrl}
 						target="_blank"
 						rel="noopener noreferrer"
 						onClick={(e) => e.stopPropagation()}
-						className="flex-1 py-2.5 px-3 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs"
-						title="Open official portal"
+						className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
 					>
-						Official Site <ArrowUpRight size={13} />
+						<span>Official Portal</span>
+						<ArrowUpRight size={13} />
 					</a>
 				</div>
 			</div>
 		</div>
 	);
 }
-
 export default function Scholarships() {
 	const [searchParams, setSearchParams] = useSearchParams();
 
@@ -527,7 +571,9 @@ export default function Scholarships() {
 								<span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
 									<History
 										size={14}
-										className={hasChangesOnly ? "text-amber-700" : "text-slate-400"}
+										className={
+											hasChangesOnly ? "text-amber-700" : "text-slate-400"
+										}
 									/>
 									Recently Updated Only
 								</span>
@@ -552,7 +598,8 @@ export default function Scholarships() {
 								</button>
 							</div>
 							<p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
-								Filter opportunities with recently modified dates, rules, or amounts.
+								Filter opportunities with recently modified dates, rules, or
+								amounts.
 							</p>
 						</div>
 
@@ -623,7 +670,9 @@ export default function Scholarships() {
 							source !== "All" ||
 							hasChangesOnly) && (
 							<div className="flex items-center gap-2 flex-wrap mb-6 pb-4 border-b border-slate-100 text-xs">
-								<span className="text-slate-400 font-medium">Active filters:</span>
+								<span className="text-slate-400 font-medium">
+									Active filters:
+								</span>
 								{search && (
 									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 font-medium">
 										<Search size={11} className="text-emerald-700" />
@@ -758,6 +807,10 @@ export default function Scholarships() {
 											setSelectedScholarship(s);
 											setIsModalOpen(true);
 										}}
+										onOpenEvidence={() => {
+											setSelectedScholarship(s);
+											setIsEvidenceModalOpen(true);
+										}}
 									/>
 								))}
 							</div>
@@ -823,11 +876,17 @@ export default function Scholarships() {
 										Grant Amount
 									</h4>
 									<p className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-										{selectedScholarship.amount?.displayString ||
-											`₹${selectedScholarship.amount?.value?.toLocaleString("en-IN")}`}
-										<span className="text-sm font-sans font-normal text-slate-500 ml-1">
-											/ {selectedScholarship.amount?.period || "year"}
-										</span>
+										{selectedScholarship.amount?.displayString?.includes("/")
+											? selectedScholarship.amount.displayString
+											: (
+												<>
+													{selectedScholarship.amount?.displayString ||
+														`₹${selectedScholarship.amount?.value?.toLocaleString("en-IN")}`}
+													<span className="text-sm font-sans font-normal text-slate-500 ml-1">
+														/ {selectedScholarship.amount?.period || "year"}
+													</span>
+												</>
+											)}
 									</p>
 								</div>
 
@@ -897,7 +956,7 @@ export default function Scholarships() {
 															r.description ||
 															`Satisfies statutory ${r.field} criteria as specified in the official circular.`,
 														page: 1,
-												  }))
+													}))
 											).map((q, idx) => (
 												<div
 													key={idx}

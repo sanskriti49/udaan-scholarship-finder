@@ -1,7 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Newsreader:ital,opsz,wght@0,6..72,300..800;1,6..72,300..800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Valley+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import "./assets/fonts/ClashDisplay_Complete/Fonts/WEB/css/clash-display.css";
-@import "./assets/fonts/Satoshi/Fonts/WEB/css/satoshi.css";
+
 @import "tailwindcss";
 
 @theme {
@@ -24,14 +25,15 @@
 	--color-warm-amber: #d97706;
 	--color-gold-ochre: #b45309;
 
-	--font-sans:
-		"Satoshi", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-		Roboto, sans-serif;
+	--font-heading:
+		"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	--font-serif:
 		"Newsreader", "Source Serif 4", "Instrument Serif", Georgia, serif;
-	--font-heading: "Valley Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+	--font-sans: "Valley Sans", -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-display: "Newsreader", Georgia, serif;
-	--font-logo: "ClashDisplay-Variable", "ClashDisplay-Bold", "Plus Jakarta Sans", sans-serif;
+	--font-logo:
+		"ClashDisplay-Variable", "ClashDisplay-Bold", "Plus Jakarta Sans",
+		sans-serif;
 }
 
 @layer base {
