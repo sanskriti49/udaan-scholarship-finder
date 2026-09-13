@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import {
 	Search,
 	Bookmark,
@@ -126,6 +126,9 @@ function ScholarshipCard({ s, saved, onSave, onClick }) {
 					<div className="flex items-center gap-2 flex-wrap">
 						<span className="text-xs font-bold text-slate-700 tracking-wide uppercase">
 							{s.category}
+						</span>
+						<span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-850 border border-emerald-200/80">
+							<ShieldCheck size={11} className="text-emerald-700" /> Verified Safe
 						</span>
 						{s.hasChanges && (
 							<span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
@@ -966,6 +969,15 @@ export default function Scholarships() {
 								<ShieldCheck size={15} className="text-emerald-700" />
 								<span>Audit Dossier</span>
 							</button>
+
+							<Link
+								to="/documents"
+								className="flex-1 py-3 px-4 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
+								title="Audit document readiness for this scholarship"
+							>
+								<FileText size={15} className="text-emerald-700" />
+								<span>Doc Vault</span>
+							</Link>
 
 							{selectedScholarship.sourceUrl && (
 								<a

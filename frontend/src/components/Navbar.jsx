@@ -12,6 +12,8 @@ import {
 	ArrowRight,
 	Search,
 	X,
+	ShieldCheck,
+	FileText,
 } from "lucide-react";
 import { Squash as Hamburger } from "hamburger-react";
 import { useAuth } from "../hooks/useAuth";
@@ -63,7 +65,9 @@ const Navbar = () => {
 	const navLinks = [
 		{ name: "Home", path: "/" },
 		{ name: "Scholarships", path: "/scholarships" },
-		{ name: "Eligibility Checker", path: "/eligibility" },
+		{ name: "Eligibility", path: "/eligibility" },
+		{ name: "Documents", path: "/documents" },
+		{ name: "Trust Shield", path: "/trust-shield" },
 		{ name: "Resources", path: "/resources" },
 		{ name: "Support", path: "/support" },
 	];
@@ -219,6 +223,22 @@ const Navbar = () => {
 										>
 											<Compass size={14} className="text-slate-400" />
 											Explore Catalog
+										</NavLink>
+										<NavLink
+											to="/documents"
+											onClick={() => setIsProfileOpen(false)}
+											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+										>
+											<FileText size={14} className="text-slate-400" />
+											Document Vault
+										</NavLink>
+										<NavLink
+											to="/trust-shield"
+											onClick={() => setIsProfileOpen(false)}
+											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+										>
+											<ShieldCheck size={14} className="text-slate-400" />
+											Trust Shield
 										</NavLink>
 										<NavLink
 											to="/settings"

@@ -7,6 +7,7 @@ import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import scholarshipRoutes from "./src/routes/scholarshipRoutes.js";
 import notificationRoutes from "./src/routes/notificationRoutes.js";
+import verifyRoutes from "./src/routes/verifyRoutes.js";
 import { crawlerScheduler } from "./src/ingestion/core/Scheduler.js";
 import { notificationScheduler } from "./src/jobs/notificationScheduler.js";
 import {
@@ -84,11 +85,13 @@ connectDB().then(() => {
 app.use("/api/auth", authRoutes);
 app.use("/api/scholarships", scholarshipRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/verify", verifyRoutes);
 
 // Fallback Aliases (protects against clients calling without /api prefix)
 app.use("/auth", authRoutes);
 app.use("/scholarships", scholarshipRoutes);
 app.use("/notifications", notificationRoutes);
+app.use("/verify", verifyRoutes);
 
 app.get("/", (req, res) => {
 	res.send("Backend running...");

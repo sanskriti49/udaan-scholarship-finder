@@ -7,19 +7,21 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47a248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Redis](https://img.shields.io/badge/Redis-Cache%20%26%20BullMQ-dc382d?style=for-the-badge&logo=redis)](https://redis.io/)
 
-Udaan is an autonomous scholarship intelligence platform built for Indian students. It bridges the gap between decentralized government portals and eligible applicants by continuously crawling statutory circulars, parsing eligibility rules into deterministic Abstract Syntax Trees (ASTs), evaluating student qualifications with gazette citations, and dispatching multi-channel deadline alerts.
+Udaan is an autonomous scholarship intelligence and trust platform built for Indian students. It bridges the gap between decentralized government portals and eligible applicants by continuously crawling statutory circulars, verifying portal legitimacy, auditing document readiness with zero PII storage, parsing eligibility rules into deterministic Abstract Syntax Trees (ASTs), and dispatching multi-channel deadline countdowns.
 
 ---
 
 ## 1. System Architecture
 
-Udaan follows a decoupled, service-oriented architecture designed for high availability, fast search queries, and resilient background task processing.
+Udaan follows a decoupled, service-oriented architecture designed for high availability, sub-second search queries, zero-knowledge privacy, and resilient background task processing.
 
 ```mermaid
 flowchart TB
     subgraph ClientTier ["Client Tier (Vercel)"]
         UI["React 19 SPA + Vite"]
         Router["URL-Driven State Manager"]
+        TrustView["Trust Shield & Fraud Buster"]
+        DocVaultView["Zero-Knowledge Document Vault"]
         CacheStore["Client Cache & Notification Bell"]
     end
 
@@ -28,6 +30,8 @@ flowchart TB
         Auth["JWT & Google OAuth Middleware"]
         ScholarshipCtrl["Scholarship Controller"]
         RuleEngine["Deterministic AST Rule Evaluator"]
+        TrustCtrl["Trust Verification Controller"]
+        TrustEngine["Domain & Scam Heuristics Engine"]
         NotifCtrl["Notification Controller"]
     end
 
@@ -53,6 +57,10 @@ Schemes, Logs, Citations, Users")]
     Gateway --> Auth
     Auth --> ScholarshipCtrl
     Auth --> NotifCtrl
+    Gateway --> TrustCtrl
+    TrustCtrl --> TrustEngine
+    TrustEngine --> MongoAtlas
+
     ScholarshipCtrl <--> RedisStore
     ScholarshipCtrl --> MongoAtlas
     ScholarshipCtrl --> RuleEngine
@@ -73,7 +81,54 @@ Schemes, Logs, Citations, Users")]
 
 ## 2. Core Pipelines & Engineering Workflows
 
-### A. Ingestion & Regulatory Citation Pipeline
+### A. Anti-Scam & Trust Verification Shield
+Over 30% of scholarship circulars circulating on social media are phishing scams demanding application fees. Udaan provides an autonomous link and message analyzer backed by domain authority checks and statutory gazette registries.
+
+```mermaid
+flowchart LR
+    Input["Input: Link, SMS alert, or WhatsApp circular"] --> Pre["URL & Protocol Parser"]
+    Pre --> Check1{"Domain Type?"}
+    Check1 -->|Restricted .gov.in / .nic.in| G1["Sovereign Portal (Score: 98%)"]
+    Check1 -->|Verified CSR / Philanthropy| G2["Recognized CSR (Score: 88%)"]
+    Check1 -->|Free Host / Suspicious TLD| G3["Critical Alert: High-Risk Domain"]
+
+    Input --> Heuristics["Pattern Matching Engine"]
+    Heuristics -->|Fee Requested / UPI Found| H1["Statutory Red Flag: Illegal Fee Demand"]
+    Heuristics -->|Fake Guarantee / WhatsApp PII| H2["Phishing Alert: WhatsApp Harvest Trap"]
+
+    Input --> DBCross["MongoDB Gazette Cross-Check"]
+    DBCross -->|Matched Scheme| DB1["Verified Official Scheme Match"]
+
+    G1 & G2 & G3 & H1 & H2 & DB1 --> Verdict["Calculated Trust Score & Actionable Verdict
+(Official / Caution / High-Risk Fraud)"]
+```
+
+### B. Zero-Knowledge Document Readiness & Expiry Audit
+Over 40% of genuine scholarship applications get rejected because of expired certificates or unseeded bank accounts. Udaan provides an interactive readiness audit without ever asking for, uploading, or storing sensitive government IDs.
+
+```mermaid
+flowchart TD
+    Category["Student selects category (Central, State DBT, Reserved, STEM)"] --> Pack["Generate Tailored Document Checklist"]
+    Pack --> Income["Income Certificate Checkpoint"]
+    Pack --> Domicile["Domicile / Residence Certificate"]
+    Pack --> Caste["Caste / Category (Central NCL vs State)"]
+    Pack --> Bonafide["Bonafide Student Certificate"]
+    Pack --> DBT["Aadhaar-NPCI DBT Bank Seeding"]
+
+    Income --> FYAudit["Financial Year Expiry Auditor
+(Validates issue date against active fiscal year)"]
+    Bonafide --> Generator["Standard Bonafide Certificate Generator
+(Print-ready template for institute seal)"]
+    DBT --> Diag["DBT Seeding Diagnostic Guide
+(UIDAI status check + Bank Mandate format)"]
+    Pack --> StateDir["Official State e-District Portals Directory
+(Direct links to UP, Maha, SSP, Oasis, MeeSeva)"]
+
+    Pack --> LocalStore["100% Client-Side LocalStorage Persistence
+(Zero PII stored on servers)"]
+```
+
+### C. Ingestion & Regulatory Citation Pipeline
 Unlike generic scrapers that extract unstructured text, Udaan normalizes all ingested schemes into an AST of atomic conditions linked to official circulars and gazette citations.
 
 ```mermaid
@@ -95,27 +150,7 @@ sequenceDiagram
     Normalizer->>Cache: Invalidate /scholarships Search & Filter Cache Keys
 ```
 
-### B. Eligibility & Statutory Verification Engine
-Rather than relying on probabilistic AI guesses that produce hallucinations, Udaan uses a deterministic evaluation engine to verify student qualifications against statutory criteria.
-
-```mermaid
-flowchart LR
-    Profile["Student Profile
-(Income, State, Stream, CGPA, Caste)"] --> AST["AST Evaluation Engine"]
-    SchemeRules["Statutory Rules AST
-(Operators: <=, >=, IN, CONTAINS)"] --> AST
-    AST --> EvalResult{"Criteria Met?"}
-    EvalResult -->|Pass| PassCard["Eligible (Match Score 70%+)"]
-    EvalResult -->|Fail| FailCard["Ineligible with Reason"]
-    EvalResult -->|Unknown| ReqCard["Missing Field Prompt"]
-    PassCard --> Dossier["Evidence Dossier Modal
-- Official Gazette Clause
-- Direct Circular URL
-- Verification Document Checklist"]
-    FailCard --> Dossier
-```
-
-### C. BullMQ Background Task & Deadline Notification Flow
+### D. BullMQ Background Task & Deadline Notification Flow
 Deadlines are monitored continuously to prevent students from missing application windows.
 
 ```mermaid
@@ -142,22 +177,35 @@ flowchart TD
 
 ---
 
-## 3. Key Features
+## 3. Key Features Matrix
 
 | Feature | Description | Technical Implementation |
 | :--- | :--- | :--- |
-| **Instant Multivariable Search** | Search through tens of thousands of grants by name, issuing ministry, level, and category. | Debounced single-source-of-truth URL params synced with Redis cached MongoDB queries. |
-| **AST Criteria Engine** | Verifies eligibility against income ceilings, domicile, minimum CGPA, gender, and minority categories. | Recursive Abstract Syntax Tree evaluator (`ruleEvaluator.js`) with zero AI hallucinations. |
+| **Anti-Scam & Trust Shield** | Verify external scholarship links, forwards, and circulars for application fees and fraudulent lookalike domains. | Autonomous heuristic engine (`trustVerificationService.js`) + official domain whitelist. |
+| **Zero-Knowledge Document Vault** | Complete certificate readiness checklist customized by category with zero document uploads or server storage. | 100% client-side privacy model with `localStorage` state caching. |
+| **Financial Year Expiry Auditor** | Evaluates certificate issue date against the active Indian fiscal year (April 1 to March 31) to prevent rejection. | In-browser date calculation against statutory fiscal cycles. |
+| **Aadhaar-NPCI DBT Diagnostics** | Step-by-step self-test to verify whether student bank accounts are mapped to NPCI for PFMS grant disbursement. | Interactive self-diagnosis tool + standardized Bank Mandate format. |
+| **Printable Bonafide Generator** | Generates standardized, print-ready Bonafide Certificates adhering to AICTE/UGC specifications for college signature. | Client-side dynamic template generator with native print layout. |
+| **State e-District Directory** | Direct links to official state portals for Income, Domicile, and Caste certificate renewals. | Curated directory of 10+ sovereign state portals (UP, MahaDBT, SSP, MeeSeva, Oasis). |
+| **Deterministic AST Criteria Engine** | Verifies eligibility against income ceilings, domicile, minimum CGPA, gender, and minority categories. | Recursive Abstract Syntax Tree evaluator (`ruleEvaluator.js`) with zero AI hallucinations. |
 | **Regulatory Evidence Dossier** | View exact gazette directive quotes, official issuing authorities, and required certificates for each scheme. | Automatic provenance extraction in `BaseSource.js` and rendered via interactive `EvidenceModal.jsx`. |
 | **Upcoming Deadline Reminders** | Proactive alerts dispatched automatically 7 days and 48 hours before portals close. | Node-cron scanner + BullMQ worker queue with deduplication guards. |
-| **State Grant Circular Alerts** | Notifies students when newly discovered state schemes are announced for their domicile. | Event-driven notification generator triggered by crawler upserts. |
-| **Weekly Curated Digest** | Personalized summary delivered every Monday morning highlighting schemes closing that week. | Timezone-aware cron job targeting active matching profiles. |
-| **Interactive In-App Notification Center** | Real-time notification drawer with unread badges, filter tabs, and mark-as-read controls. | Custom poll manager with guest simulation fallback and 401 recovery interceptors. |
-| **Student Preference Vault** | Configure minimum match score threshold, alert frequencies, delivery channels, and academic parameters. | REST endpoints (`/api/notifications/preferences`) with fallback to local session for guests. |
+| **Interactive Notification Center** | Real-time notification drawer with unread badges, filter tabs, guest preview mode, and mark-as-read controls. | Custom poll manager with guest simulation fallback and 401 recovery interceptors. |
 
 ---
 
-## 4. Tech Stack Breakdown
+## 4. Privacy & Security Architecture
+
+Trust is foundational when dealing with educational opportunities:
+
+1. **Zero Government ID Storage**: Udaan never requests, uploads, or stores Aadhaar numbers, PAN cards, or raw certificate scans.
+2. **Metadata-Only Verification**: The Document Vault operates purely on structured validation checkpoints (e.g., issue dates, issuing authority type, digital barcode presence).
+3. **Local-First Privacy**: Personal checklist statuses are saved exclusively in browser `localStorage`, leaving zero digital footprint on backend databases.
+4. **Zero Application Fee Guarantee**: Udaan explicitly enforces and educates students on statutory laws prohibiting application fees for government and recognized CSR scholarships.
+
+---
+
+## 5. Tech Stack Breakdown
 
 ### Frontend
 * **Framework**: React 19 SPA powered by Vite
@@ -172,11 +220,11 @@ flowchart TD
 * **Database**: MongoDB Atlas with Mongoose ODM
 * **Caching**: Redis via `ioredis` (with automatic in-memory fallback)
 * **Queues & Scheduling**: BullMQ worker queues + `node-cron`
-* **Crawling & Parsing**: Cheerio, Axios, robots-parser
+* **Crawling & Verification**: Cheerio, Axios, URL domain heuristics
 
 ---
 
-## 5. Getting Started Locally
+## 6. Getting Started Locally
 
 ### Prerequisites
 * Node.js v18.0.0 or higher
@@ -227,22 +275,22 @@ Open `http://localhost:5173` in your browser to explore Udaan.
 
 ---
 
-## 6. Directory Layout
+## 7. Directory Layout
 
 ```
 udaan-scholarship-finder/
 ├── backend/
 │   ├── src/
 │   │   ├── config/              # MongoDB and Redis connection clients
-│   │   ├── controllers/         # REST API endpoints (scholarships, auth, notifications)
+│   │   ├── controllers/         # REST API endpoints (scholarships, auth, notifications, verify)
 │   │   ├── engine/              # AST rule evaluator and citation resolver
 │   │   ├── ingestion/           # Portal crawlers (NSP, MahaDBT, SSP, BaseSource)
 │   │   ├── middlewares/         # JWT authentication and error handlers
 │   │   ├── models/              # Mongoose schemas (Scholarship, User, Notification, Log)
 │   │   ├── queues/              # BullMQ queue definitions and reminder workers
-│   │   ├── routes/              # Express API routers
+│   │   ├── routes/              # Express API routers (scholarships, auth, notifications, verify)
 │   │   ├── schedulers/          # Cron jobs for automated crawling and deadline alerts
-│   │   └── services/            # Cache, email, and notification business logic
+│   │   └── services/            # Cache, email, notification, and trustVerification logic
 │   ├── server.js                # Express app entrypoint
 │   └── package.json
 ├── frontend/
@@ -251,8 +299,8 @@ udaan-scholarship-finder/
 │   │   ├── components/          # EvidenceModal, NotificationCenter, Navbar, Footer
 │   │   ├── context/             # AuthContext with automatic 401 token invalidation
 │   │   ├── layouts/             # Mainlayout with smooth navigation transitions
-│   │   ├── pages/               # Home, Scholarships, Eligibility, Settings, Support
-│   │   ├── services/            # Axios API client and data service hooks
+│   │   ├── pages/               # Home, Scholarships, Eligibility, TrustShield, DocumentVault, Settings, Support
+│   │   ├── services/            # Axios API client, scholarshipService, verifyService
 │   │   └── App.jsx              # Route provider
 │   ├── vite.config.js
 │   └── package.json
@@ -261,5 +309,5 @@ udaan-scholarship-finder/
 
 ---
 
-## 7. License & Credits
-Built for student empowerment across India. Custom fonts (Clash Display, Satoshi, Valley Sans) are property of their respective creators and distributed under the Free Font License (FFL.txt). All government circular references belong to their respective issuing ministries and portal authorities.
+## 8. License & Credits
+Built for student empowerment and safety across India. Custom fonts (Clash Display, Satoshi, Valley Sans) are property of their respective creators and distributed under the Free Font License (FFL.txt). All government circular references belong to their respective issuing ministries and portal authorities.

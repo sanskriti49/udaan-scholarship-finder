@@ -96,10 +96,19 @@ function Footer() {
 							</li>
 							<li>
 								<Link
-									to="/resources"
-									className="hover:text-emerald-800 transition-colors"
+									to="/documents"
+									className="hover:text-emerald-800 transition-colors font-medium text-slate-700"
 								>
-									Documents
+									Document Vault
+								</Link>
+							</li>
+							<li>
+								<Link
+									to="/trust-shield"
+									className="hover:text-emerald-800 transition-colors font-medium text-emerald-850 flex items-center gap-1"
+								>
+									<span>Trust Shield</span>
+									<span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-bold">New</span>
 								</Link>
 							</li>
 							<li>

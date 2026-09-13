@@ -12,6 +12,8 @@ import Scholarships from "./pages/Scholarships";
 import ApplicationGuide from "./pages/ApplicationGuide";
 import HowToApply from "./pages/HowToApply";
 import Settings from "./pages/Settings";
+import TrustShield from "./pages/TrustShield";
+import DocumentVault from "./pages/DocumentVault";
 import NotFoundPage from "./pages/NotFoundPage";
 
 const router = createBrowserRouter([
@@ -22,6 +24,10 @@ const router = createBrowserRouter([
 			{ path: "support", element: <Support /> },
 			{ path: "eligibility", element: <EligibilityPage /> },
 			{ path: "scholarships", element: <Scholarships /> },
+			{ path: "trust-shield", element: <TrustShield /> },
+			{ path: "verify", element: <TrustShield /> },
+			{ path: "documents", element: <DocumentVault /> },
+			{ path: "document-vault", element: <DocumentVault /> },
 			{ path: "resources", element: <Resources /> },
 			{ path: "application-guide", element: <ApplicationGuide /> },
 			{ path: "how-to-apply", element: <HowToApply /> },
