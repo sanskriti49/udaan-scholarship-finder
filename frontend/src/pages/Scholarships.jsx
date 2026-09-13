@@ -125,9 +125,17 @@ function ScholarshipCard({ s, saved, onSave, onClick, onOpenEvidence }) {
 
 	// Format financial grant value cleanly without redundant suffix (e.g. avoiding "₹50,000 / yr / yearly")
 	const formatGrantDisplay = () => {
-		const raw = s.amount?.displayString || (s.amount?.value ? `₹${s.amount.value.toLocaleString("en-IN")}` : "Variable Grant");
+		const raw =
+			s.amount?.displayString ||
+			(s.amount?.value
+				? `₹${s.amount.value.toLocaleString("en-IN")}`
+				: "Variable Grant");
 		// If the string already contains a period slash suffix like '/ yr', '/year', '/ mo', use it directly
-		if (raw.includes("/") || raw.includes("per") || raw.toLowerCase().includes("annum")) {
+		if (
+			raw.includes("/") ||
+			raw.includes("per") ||
+			raw.toLowerCase().includes("annum")
+		) {
 			return { main: raw, period: null };
 		}
 		const periodText = s.amount?.period || "year";
@@ -876,17 +884,19 @@ export default function Scholarships() {
 										Grant Amount
 									</h4>
 									<p className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-										{selectedScholarship.amount?.displayString?.includes("/")
-											? selectedScholarship.amount.displayString
-											: (
-												<>
-													{selectedScholarship.amount?.displayString ||
-														`₹${selectedScholarship.amount?.value?.toLocaleString("en-IN")}`}
-													<span className="text-sm font-sans font-normal text-slate-500 ml-1">
-														/ {selectedScholarship.amount?.period || "year"}
-													</span>
-												</>
-											)}
+										{selectedScholarship.amount?.displayString?.includes(
+											"/",
+										) ? (
+											selectedScholarship.amount.displayString
+										) : (
+											<>
+												{selectedScholarship.amount?.displayString ||
+													`₹${selectedScholarship.amount?.value?.toLocaleString("en-IN")}`}
+												<span className="text-sm font-sans font-normal text-slate-500 ml-1">
+													/ {selectedScholarship.amount?.period || "year"}
+												</span>
+											</>
+										)}
 									</p>
 								</div>
 

@@ -10,6 +10,7 @@ class EmailService {
 	constructor() {
 		this.transporter = null;
 		this.isConfigured = false;
+		// Lazily evaluated or initialized when first invoked if env vars were not ready at import
 		this.init();
 	}
 
@@ -18,24 +19,53 @@ class EmailService {
 
 		if (SMTP_HOST && SMTP_USER && SMTP_PASS) {
 			try {
+				const port = parseInt(SMTP_PORT, 10) || 587;
 				this.transporter = nodemailer.createTransport({
 					host: SMTP_HOST,
-					port: parseInt(SMTP_PORT, 10) || 587,
-					secure: parseInt(SMTP_PORT, 10) === 465,
+					port,
+					secure: port === 465, // true for 465, false for 587/STARTTLS
 					auth: {
 						user: SMTP_USER,
 						pass: SMTP_PASS,
 					},
 				});
 				this.isConfigured = true;
-				console.log("[EmailService] Production SMTP transporter initialized.");
+				console.log(
+					`[EmailService] Production SMTP transporter initialized (${SMTP_HOST}:${port}).`,
+				);
 			} catch (err) {
-				console.error("[EmailService] Failed initializing SMTP transport:", err.message);
+				console.error(
+					"[EmailService] Failed initializing SMTP transport:",
+					err.message,
+				);
 				this.transporter = null;
 				this.isConfigured = false;
 			}
 		} else {
-			console.log("[EmailService] SMTP credentials not detected. Running in simulated fallback mode (logs to DB).");
+			console.log(
+				"[EmailService] SMTP credentials not detected. Running in simulated fallback mode (logs to DB).",
+			);
+		}
+	}
+
+	/**
+	 * Optional connection verify utility for server startup
+	 */
+	async verifyConnection() {
+		if (!this.isConfigured && process.env.SMTP_HOST) {
+			this.init();
+		}
+		if (!this.transporter) return false;
+		try {
+			await this.transporter.verify();
+			console.log("[EmailService] SMTP connection verified successfully.");
+			return true;
+		} catch (err) {
+			console.error(
+				"[EmailService] SMTP connection verification failed:",
+				err.message,
+			);
+			return false;
 		}
 	}
 
@@ -89,14 +119,31 @@ class EmailService {
 </html>`;
 	}
 
+	formatAmount(amount) {
+		if (!amount) return "Tuition and Grant";
+		const numeric =
+			typeof amount === "number"
+				? amount
+				: Number(String(amount).replace(/[^0-9.-]+/g, ""));
+		return !isNaN(numeric) && numeric > 0
+			? `₹${numeric.toLocaleString("en-IN")}`
+			: String(amount);
+	}
+
 	renderTemplate(type, data) {
 		const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
 		switch (type) {
 			case "INSTANT_MATCH": {
 				const matchScore = data.evidence?.matchScore || 85;
-				const amount = data.amount ? `Rs. ${Number(data.amount).toLocaleString("en-IN")}` : "Tuition and Grant";
-				const deadlineStr = data.deadline ? new Date(data.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Open";
+				const amount = this.formatAmount(data.amount);
+				const deadlineStr = data.deadline
+					? new Date(data.deadline).toLocaleDateString("en-IN", {
+							day: "numeric",
+							month: "short",
+							year: "numeric",
+						})
+					: "Open Application";
 				const passedRules = data.evidence?.passedRulesSummary || [];
 
 				const contentHtml = `
@@ -107,28 +154,35 @@ class EmailService {
           <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0 0 16px 0;">
             A newly discovered scholarship matches your profile with high confidence. Here is why this opportunity was selected for you:
           </p>
-
           <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
             <div style="font-size: 12px; font-weight: 700; color: #081C10; margin-bottom: 8px;">Opportunity Highlights</div>
             <div style="font-size: 13px; color: #334155; margin-bottom: 4px;"><strong>Grant Amount:</strong> ${amount}</div>
             <div style="font-size: 13px; color: #334155; margin-bottom: 4px;"><strong>Deadline:</strong> ${deadlineStr}</div>
             ${data.evidence?.state ? `<div style="font-size: 13px; color: #334155;"><strong>Region / Domicile:</strong> ${data.evidence.state}</div>` : ""}
           </div>
-
-          ${passedRules.length > 0 ? `
+          ${
+						passedRules.length > 0
+							? `
             <div style="margin-bottom: 20px;">
               <div style="font-size: 12px; font-weight: 700; color: #081C10; margin-bottom: 8px;">Verified Eligibility Criteria</div>
               <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #334155; line-height: 1.6;">
-                ${passedRules.slice(0, 4).map((r) => `<li>${r}</li>`).join("")}
+                ${passedRules
+									.slice(0, 4)
+									.map((r) => `<li>${r}</li>`)
+									.join("")}
               </ul>
             </div>
-          ` : ""}
-
+          `
+							: ""
+					}
           <a href="${frontendUrl}${data.link || "/scholarships"}" class="cta-button">View Scheme Details & Apply</a>
         `;
 				return {
 					subject: `[High Match] ${matchScore}% Match: ${data.scholarshipTitle || "New Scholarship Opportunity"}`,
-					html: this.getBaseLayout(contentHtml, `${matchScore}% eligibility match found on Udaan`),
+					html: this.getBaseLayout(
+						contentHtml,
+						`${matchScore}% eligibility match found on Udaan`,
+					),
 				};
 			}
 
@@ -137,7 +191,13 @@ class EmailService {
 				const isUrgent = type === "DEADLINE_48_HOURS";
 				const daysLeft = isUrgent ? "48 Hours" : "7 Days";
 				const badgeClass = isUrgent ? "badge-rose" : "badge-amber";
-				const deadlineStr = data.deadline ? new Date(data.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Closing Soon";
+				const deadlineStr = data.deadline
+					? new Date(data.deadline).toLocaleDateString("en-IN", {
+							day: "numeric",
+							month: "short",
+							year: "numeric",
+						})
+					: "Closing Soon";
 
 				const contentHtml = `
           <div style="margin-bottom: 16px;">
@@ -147,18 +207,19 @@ class EmailService {
           <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0 0 16px 0;">
             This is an automated reminder that the official portal deadline for this scholarship is arriving on <strong>${deadlineStr}</strong>.
           </p>
-
           <div style="background-color: ${isUrgent ? "#FFF1F2" : "#FFFBEB"}; border: 1px solid ${isUrgent ? "#FECDD3" : "#FDE68A"}; border-radius: 12px; padding: 16px; margin-bottom: 20px;">
             <div style="font-size: 13px; color: ${isUrgent ? "#9F1239" : "#92400E"}; font-weight: 600;">
               Please make sure your certificates and institutional verification documents are uploaded before the cutoff window.
             </div>
           </div>
-
           <a href="${frontendUrl}${data.link || "/scholarships"}" class="cta-button">Submit Application on Official Portal</a>
         `;
 				return {
 					subject: `[Reminder] ${daysLeft} Left to Apply: ${data.scholarshipTitle || "Scholarship Deadline"}`,
-					html: this.getBaseLayout(contentHtml, `Deadline reminder: ${daysLeft} remaining to submit application`),
+					html: this.getBaseLayout(
+						contentHtml,
+						`Deadline reminder: ${daysLeft} remaining to submit application`,
+					),
 				};
 			}
 
@@ -172,17 +233,21 @@ class EmailService {
           <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0 0 16px 0;">
             A new state-specific scholarship notification was recently ingested from official portals matching your registered domicile in <strong>${stateName}</strong>.
           </p>
-
           <a href="${frontendUrl}${data.link || "/scholarships"}" class="cta-button">Review State Scheme Guidelines</a>
         `;
 				return {
 					subject: `[State Grant] New Opportunity for ${stateName} Students: ${data.scholarshipTitle || data.title}`,
-					html: this.getBaseLayout(contentHtml, `New state scholarship circular published for ${stateName}`),
+					html: this.getBaseLayout(
+						contentHtml,
+						`New state scholarship circular published for ${stateName}`,
+					),
 				};
 			}
 
 			case "WEEKLY_DIGEST": {
-				const items = Array.isArray(data.data?.topScholarships) ? data.data.topScholarships : [];
+				const items = Array.isArray(data.data?.topScholarships)
+					? data.data.topScholarships
+					: [];
 				const contentHtml = `
           <div style="margin-bottom: 16px;">
             <span class="badge badge-emerald">Monday Scholarship Digest</span>
@@ -191,22 +256,28 @@ class EmailService {
           <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0 0 20px 0;">
             Here are your top personalized scholarship matches currently accepting applications this week:
           </p>
-
-          ${items.map((item) => `
+          ${items
+						.map(
+							(item) => `
             <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
               <div style="font-size: 14px; font-weight: 700; color: #081C10; margin-bottom: 4px;">${item.title}</div>
               <div style="font-size: 12px; color: #64748B; margin-bottom: 8px;">${item.organization}</div>
               <div style="font-size: 12px; color: #2D6A4F; font-weight: 600;">
-                ${item.amount ? `Rs. ${Number(item.amount).toLocaleString("en-IN")}` : "Grant"} &bull; Deadline: ${item.deadline ? new Date(item.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : "Ongoing"}
+                ${this.formatAmount(item.amount)} &bull; Deadline: ${item.deadline ? new Date(item.deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : "Ongoing"}
               </div>
             </div>
-          `).join("")}
-
+          `,
+						)
+						.join("")}
           <a href="${frontendUrl}/scholarships" class="cta-button">Browse All Matching Schemes</a>
         `;
 				return {
-					subject: "Your Weekly Udaan Scholarship Digest: Fresh Matches for Monday",
-					html: this.getBaseLayout(contentHtml, "Your curated scholarship digest for this week"),
+					subject:
+						"Your Weekly Udaan Scholarship Digest: Fresh Matches for Monday",
+					html: this.getBaseLayout(
+						contentHtml,
+						"Your curated scholarship digest for this week",
+					),
 				};
 			}
 
@@ -225,8 +296,16 @@ class EmailService {
 	}
 
 	async sendEmail({ to, type, data, notificationId, userId }) {
+		// Fallback re-init if process.env was loaded after module evaluation
+		if (!this.isConfigured && process.env.SMTP_HOST && process.env.SMTP_USER) {
+			this.init();
+		}
+
 		const { subject, html } = this.renderTemplate(type, data);
-		const fromAddress = process.env.EMAIL_FROM || '"Udaan Scholarship Finder" <notifications@udaan.edu>';
+		const fromAddress =
+			process.env.EMAIL_FROM ||
+			process.env.SMTP_USER ||
+			'"Udaan Scholarship Finder" <notifications@udaan.edu>';
 
 		let attempt = 1;
 		const maxAttempts = 2;
@@ -257,7 +336,9 @@ class EmailService {
 				} else {
 					// Simulated dispatch for development
 					const mockMessageId = `mock-email-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-					console.log(`[EmailService (Simulated)] Dispatched '${subject}' to <${to}> [ID: ${mockMessageId}]`);
+					console.log(
+						`[EmailService (Simulated)] Dispatched '${subject}' to <${to}> [ID: ${mockMessageId}]`,
+					);
 
 					await NotificationLog.create({
 						notification: notificationId,
@@ -275,7 +356,10 @@ class EmailService {
 				}
 			} catch (err) {
 				lastError = err;
-				console.error(`[EmailService] Attempt ${attempt} failed sending to ${to}:`, err.message);
+				console.error(
+					`[EmailService] Attempt ${attempt} failed sending to ${to}:`,
+					err.message,
+				);
 				attempt++;
 				if (attempt <= maxAttempts) {
 					await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -283,7 +367,6 @@ class EmailService {
 			}
 		}
 
-		// Permanent Failure Log
 		await NotificationLog.create({
 			notification: notificationId,
 			user: userId,

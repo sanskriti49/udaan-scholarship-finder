@@ -8,17 +8,12 @@ import Bookmark from "../models/Bookmark.js";
 import { evaluateEligibility } from "../engine/ruleEvaluator.js";
 import { emailService } from "./emailService.js";
 
-/**
- * Notification Service
- * Orchestrates multi-channel delivery (in-app + email), deterministic rule-based matching,
- * ingestion hooks, deadline alerts, deduplication, and weekly digests.
- */
 class NotificationService {
 	/**
-	 * Get or create default notification preferences for a user
+	 * Get or initialize default user notification preferences
 	 */
 	async getPreferences(userId) {
-		let prefs = await NotificationPreference.findOne({ user: userId });
+		let prefs = await NotificationPreference.findOne({ user: userId }).lean();
 		if (!prefs) {
 			prefs = await NotificationPreference.create({
 				user: userId,
@@ -38,72 +33,90 @@ class NotificationService {
 	}
 
 	/**
-	 * Update notification preferences for a user
+	 * Updates notification preferences
 	 */
 	async updatePreferences(userId, updateData) {
-		const prefs = await NotificationPreference.findOneAndUpdate(
+		return await NotificationPreference.findOneAndUpdate(
 			{ user: userId },
 			{ $set: updateData },
 			{ new: true, upsert: true, runValidators: true },
 		);
-		return prefs;
 	}
 
 	/**
-	 * Create and dispatch a notification idempotently
+	 * Dispatches notification with DB-level idempotency
 	 */
 	async createNotification(userId, payload) {
 		const prefs = await this.getPreferences(userId);
 
-		// Respect disabled preferences immediately
+		// Preference gates
 		if (payload.type === "INSTANT_MATCH" && !prefs.instantMatch) return null;
-		if (payload.type === "DEADLINE_7_DAYS" && (!prefs.deadlineAlerts || !prefs.deadline7Days)) return null;
-		if (payload.type === "DEADLINE_48_HOURS" && (!prefs.deadlineAlerts || !prefs.deadline48Hours)) return null;
-		if (payload.type === "STATE_GRANT_UPDATE" && !prefs.newGrantsInState) return null;
+		if (
+			payload.type === "DEADLINE_7_DAYS" &&
+			(!prefs.deadlineAlerts || !prefs.deadline7Days)
+		)
+			return null;
+		if (
+			payload.type === "DEADLINE_48_HOURS" &&
+			(!prefs.deadlineAlerts || !prefs.deadline48Hours)
+		)
+			return null;
+		if (payload.type === "STATE_GRANT_UPDATE" && !prefs.newGrantsInState)
+			return null;
 		if (payload.type === "WEEKLY_DIGEST" && !prefs.weeklyDigest) return null;
 
-		// Deduplication check
-		if (payload.dedupKey) {
-			const existing = await Notification.findOne({ dedupKey: payload.dedupKey });
-			if (existing) {
-				return existing;
+		let notification;
+		try {
+			notification = await Notification.create({
+				user: userId,
+				...payload,
+				deliveryChannels: {
+					inApp: {
+						status: prefs.channels?.inApp ? "delivered" : "skipped",
+						deliveredAt: new Date(),
+					},
+					email: {
+						status: prefs.channels?.email ? "pending" : "skipped",
+					},
+				},
+			});
+		} catch (err) {
+			// E11000 duplicate key error confirms job was already delivered
+			if (err.code === 11000) {
+				return null;
 			}
+			throw err;
 		}
 
-		// Create in-app notification
-		const notification = await Notification.create({
-			user: userId,
-			...payload,
-			deliveryChannels: {
-				inApp: {
-					status: prefs.channels?.inApp ? "delivered" : "read",
-					deliveredAt: new Date(),
-				},
-				email: {
-					status: prefs.channels?.email ? "pending" : "skipped",
-				},
-			},
-		});
-
-		// Dispatch email if enabled
+		// Email transport execution
 		if (prefs.channels?.email) {
-			const user = await User.findById(userId).select("email name");
-			if (user && user.email) {
-				const emailResult = await emailService.sendEmail({
-					to: user.email,
-					type: payload.type,
-					data: payload,
-					notificationId: notification._id,
-					userId,
-				});
+			try {
+				const user = await User.findById(userId).select("email name").lean();
+				if (user?.email) {
+					const emailResult = await emailService.sendEmail({
+						to: user.email,
+						type: payload.type,
+						data: payload,
+						notificationId: notification._id,
+						userId,
+					});
 
-				notification.deliveryChannels.email = {
-					status: emailResult.success ? "sent" : "failed",
-					sentAt: new Date(),
-					error: emailResult.error || null,
-					messageId: emailResult.messageId || null,
-				};
-				await notification.save();
+					await Notification.findByIdAndUpdate(notification._id, {
+						$set: {
+							"deliveryChannels.email.status": emailResult.success
+								? "sent"
+								: "failed",
+							"deliveryChannels.email.sentAt": new Date(),
+							"deliveryChannels.email.error": emailResult.error || null,
+							"deliveryChannels.email.messageId": emailResult.messageId || null,
+						},
+					});
+				}
+			} catch (emailErr) {
+				console.error(
+					`[NotificationService] Email delivery failure for ${userId}:`,
+					emailErr.message,
+				);
 			}
 		}
 
@@ -111,12 +124,10 @@ class NotificationService {
 	}
 
 	/**
-	 * Ingestion Pipeline Hook: Called after a scholarship is created or updated
+	 * Ingestion hook for real-time scholarship updates
 	 */
 	async onScholarshipIngested(scholarship, isNew, diffResult) {
-		console.log(`[NotificationService] Processing ingestion hook for: '${scholarship.title}' (isNew: ${isNew})`);
 		try {
-			// 1. If newly ingested, evaluate for State Grant Updates & Instant Matches
 			if (isNew) {
 				await this.handleNewScholarshipIngested(scholarship);
 			} else if (diffResult?.hasChanges) {
@@ -128,185 +139,228 @@ class NotificationService {
 	}
 
 	/**
-	 * Handle newly scraped scholarship
+	 * Evaluates new schemes against registered profiles with concurrency chunking
 	 */
 	async handleNewScholarshipIngested(scholarship) {
-		// Fetch all user profiles with linked users
 		const profiles = await UserProfile.find({}).lean();
-		if (!profiles || profiles.length === 0) return;
+		if (!profiles.length) return;
 
-		let instantAlertsCount = 0;
-		const maxInstantAlertsPerRun = 5; // Rate limit guard
+		const isStateSpecific =
+			scholarship.state && scholarship.state !== "All India";
 
-		for (const profile of profiles) {
-			try {
-				const userId = profile.user;
-				const prefs = await this.getPreferences(userId);
+		// Chunk profile processing to prevent event-loop starvation
+		const CHUNK_SIZE = 25;
+		for (let i = 0; i < profiles.length; i += CHUNK_SIZE) {
+			const chunk = profiles.slice(i, i + CHUNK_SIZE);
 
-				// 1. Regional / State Grant Update
-				const isStateSpecific = scholarship.state && scholarship.state !== "All India";
-				const stateMatches = isStateSpecific && profile.state &&
-					scholarship.state.toLowerCase().includes(profile.state.toLowerCase());
+			await Promise.allSettled(
+				chunk.map(async (profile) => {
+					const userId = profile.user;
+					const prefs = await this.getPreferences(userId);
 
-				if (stateMatches && prefs.newGrantsInState) {
-					const evaluation = evaluateEligibility(profile, scholarship);
-					if (evaluation.isEligible) {
-						await this.createNotification(userId, {
-							type: "STATE_GRANT_UPDATE",
-							title: `New State Scheme for ${profile.state}: ${scholarship.title}`,
-							message: `A newly published state grant for ${profile.state} is open for applications.`,
-							priority: "medium",
-							scholarship: scholarship._id,
-							scholarshipTitle: scholarship.title,
-							deadline: scholarship.deadline,
-							amount: scholarship.amount?.value,
-							evidence: {
-								matchScore: evaluation.matchConfidence,
-								passedRulesSummary: evaluation.passedRules.map((r) => r.condition),
-								eligibilityReason: `Matches permanent domicile in ${profile.state}`,
-								state: scholarship.state,
-								category: scholarship.category,
-							},
-							link: `/scholarships`,
-							dedupKey: `state_grant:${userId}:${scholarship._id}`,
-						});
+					// 1. Domicile-specific alert
+					const stateMatches =
+						isStateSpecific &&
+						profile.state &&
+						scholarship.state
+							.toLowerCase()
+							.includes(profile.state.toLowerCase());
+
+					if (stateMatches && prefs.newGrantsInState) {
+						const evaluation = evaluateEligibility(profile, scholarship);
+						if (evaluation.isEligible) {
+							await this.createNotification(userId, {
+								type: "STATE_GRANT_UPDATE",
+								title: `New State Scheme for ${profile.state}: ${scholarship.title}`,
+								message: `A newly published state grant for ${profile.state} is open for applications.`,
+								priority: "medium",
+								scholarship: scholarship._id,
+								scholarshipTitle: scholarship.title,
+								deadline: scholarship.deadline,
+								amount: scholarship.amount?.value,
+								evidence: {
+									matchScore: evaluation.matchConfidence,
+									passedRulesSummary: evaluation.passedRules.map(
+										(r) => r.condition,
+									),
+									eligibilityReason: `Matches permanent domicile in ${profile.state}`,
+									state: scholarship.state,
+									category: scholarship.category,
+								},
+								link: `/scholarships`,
+								dedupKey: `state_grant:${userId}:${scholarship._id}`,
+							});
+						}
 					}
-				}
 
-				// 2. Instant Match Alert (High Confidence >= minMatchScore)
-				if (prefs.instantMatch && instantAlertsCount < maxInstantAlertsPerRun) {
-					const evaluation = evaluateEligibility(profile, scholarship);
-					const minScore = prefs.minMatchScore || 70;
+					// 2. High-confidence instant match
+					if (prefs.instantMatch) {
+						const evaluation = evaluateEligibility(profile, scholarship);
+						const minScore = prefs.minMatchScore || 70;
 
-					if (evaluation.isEligible && evaluation.readinessScore >= minScore) {
-						await this.createNotification(userId, {
-							type: "INSTANT_MATCH",
-							title: `Instant Match (${evaluation.readinessScore}%): ${scholarship.title}`,
-							message: `Verified match against your ${profile.stream || "course"} and academic criteria.`,
-							priority: evaluation.readinessScore >= 85 ? "high" : "medium",
-							scholarship: scholarship._id,
-							scholarshipTitle: scholarship.title,
-							deadline: scholarship.deadline,
-							amount: scholarship.amount?.value,
-							evidence: {
-								matchScore: evaluation.readinessScore,
-								passedRulesSummary: evaluation.passedRules.map((r) => r.condition),
-								eligibilityReason: evaluation.passedRules.length > 0
-									? `Passed ${evaluation.passedRules.length} verified requirements`
-									: "Fully eligible based on student criteria",
-								state: scholarship.state,
-								category: scholarship.category,
-							},
-							link: `/scholarships`,
-							dedupKey: `instant_match:${userId}:${scholarship._id}`,
-						});
-						instantAlertsCount++;
+						if (
+							evaluation.isEligible &&
+							evaluation.readinessScore >= minScore
+						) {
+							await this.createNotification(userId, {
+								type: "INSTANT_MATCH",
+								title: `Instant Match (${evaluation.readinessScore}%): ${scholarship.title}`,
+								message: `Verified match against your ${profile.stream || "course"} criteria.`,
+								priority: evaluation.readinessScore >= 85 ? "high" : "medium",
+								scholarship: scholarship._id,
+								scholarshipTitle: scholarship.title,
+								deadline: scholarship.deadline,
+								amount: scholarship.amount?.value,
+								evidence: {
+									matchScore: evaluation.readinessScore,
+									passedRulesSummary: evaluation.passedRules.map(
+										(r) => r.condition,
+									),
+									eligibilityReason:
+										"Fully eligible based on verified criteria",
+									state: scholarship.state,
+									category: scholarship.category,
+								},
+								link: `/scholarships`,
+								dedupKey: `instant_match:${userId}:${scholarship._id}`,
+							});
+						}
 					}
-				}
-			} catch (itemErr) {
-				console.error(`[NotificationService] Error matching user ${profile.user}:`, itemErr.message);
-			}
+				}),
+			);
 		}
 	}
 
 	/**
-	 * Handle policy changes / deadline extensions on existing scholarships
+	 * Notifies users on bookmarked scholarship changes
 	 */
 	async handleScholarshipChanged(scholarship, diffResult) {
-		const isDeadlineChange = diffResult.summary?.toLowerCase().includes("deadline");
-		if (!isDeadlineChange) return;
+		if (!diffResult.summary?.toLowerCase().includes("deadline")) return;
 
-		// Notify users who bookmarked this scholarship
-		const bookmarks = await Bookmark.find({ scholarship: scholarship._id }).lean();
-		for (const bm of bookmarks) {
-			await this.createNotification(bm.user, {
-				type: "DEADLINE_CHANGED",
-				title: `Deadline Extended: ${scholarship.title}`,
-				message: `The application deadline has been updated to ${new Date(scholarship.deadline).toLocaleDateString("en-IN")}.`,
-				priority: "medium",
-				scholarship: scholarship._id,
-				scholarshipTitle: scholarship.title,
-				deadline: scholarship.deadline,
-				amount: scholarship.amount?.value,
-				link: `/scholarships`,
-				dedupKey: `deadline_change:${bm.user}:${scholarship._id}:${new Date(scholarship.deadline).toISOString().slice(0, 10)}`,
-			});
-		}
-	}
-
-	/**
-	 * Background Job: Scan for upcoming deadlines (7 Days and 48 Hours)
-	 * Idempotent, timezone-aware, and ignores expired schemes.
-	 */
-	async runDeadlineCheck() {
-		const now = new Date();
-		console.log(`[NotificationService] Running deadline alert scan at: ${now.toISOString()}`);
-
-		// Active, non-expired scholarships
-		const activeScholarships = await Scholarship.find({
-			deadline: { $gt: now },
+		const bookmarks = await Bookmark.find({
+			scholarship: scholarship._id,
 		}).lean();
+		const deadlineFormatted = new Date(scholarship.deadline).toLocaleDateString(
+			"en-IN",
+		);
+		const deadlineDateStr = new Date(scholarship.deadline)
+			.toISOString()
+			.slice(0, 10);
 
-		let alertsGenerated = 0;
-
-		for (const scholarship of activeScholarships) {
-			const msUntilDeadline = new Date(scholarship.deadline).getTime() - now.getTime();
-			const hoursUntilDeadline = msUntilDeadline / (1000 * 60 * 60);
-			const daysUntilDeadline = hoursUntilDeadline / 24;
-
-			let alertType = null;
-			if (daysUntilDeadline >= 6.0 && daysUntilDeadline <= 7.5) {
-				alertType = "DEADLINE_7_DAYS";
-			} else if (hoursUntilDeadline >= 40 && hoursUntilDeadline <= 52) {
-				alertType = "DEADLINE_48_HOURS";
-			}
-
-			if (!alertType) continue;
-
-			const deadlineIsoDate = new Date(scholarship.deadline).toISOString().slice(0, 10);
-
-			// Find interested users: Bookmarks OR matching profiles
-			const bookmarks = await Bookmark.find({ scholarship: scholarship._id }).lean();
-			const bookmarkedUserIds = new Set(bookmarks.map((b) => String(b.user)));
-
-			// Also evaluate active profiles
-			const profiles = await UserProfile.find({}).lean();
-			const candidateUsers = new Set([...bookmarkedUserIds]);
-
-			for (const profile of profiles) {
-				if (!candidateUsers.has(String(profile.user))) {
-					const evaluation = evaluateEligibility(profile, scholarship);
-					if (evaluation.isEligible) {
-						candidateUsers.add(String(profile.user));
-					}
-				}
-			}
-
-			for (const userId of candidateUsers) {
-				const dedupKey = `${alertType.toLowerCase()}:${userId}:${scholarship._id}:${deadlineIsoDate}`;
-				const isUrgent = alertType === "DEADLINE_48_HOURS";
-
-				const notif = await this.createNotification(userId, {
-					type: alertType,
-					title: isUrgent
-						? `Urgent: 48 Hours Left to Apply: ${scholarship.title}`
-						: `7 Days Remaining: ${scholarship.title}`,
-					message: `Application closes on ${new Date(scholarship.deadline).toLocaleDateString("en-IN")}. Complete your official portal submission.`,
-					priority: isUrgent ? "urgent" : "high",
+		await Promise.allSettled(
+			bookmarks.map((bm) =>
+				this.createNotification(bm.user, {
+					type: "DEADLINE_CHANGED",
+					title: `Deadline Extended: ${scholarship.title}`,
+					message: `The application deadline has been officially updated to ${deadlineFormatted}.`,
+					priority: "medium",
 					scholarship: scholarship._id,
 					scholarshipTitle: scholarship.title,
 					deadline: scholarship.deadline,
 					amount: scholarship.amount?.value,
-					evidence: {
-						eligibilityReason: "You have bookmarked or matched the criteria for this scheme",
-						state: scholarship.state,
-						category: scholarship.category,
-					},
 					link: `/scholarships`,
-					dedupKey,
-				});
+					dedupKey: `deadline_change:${bm.user}:${scholarship._id}:${deadlineDateStr}`,
+				}),
+			),
+		);
+	}
 
-				if (notif) alertsGenerated++;
+	/**
+	 * Periodic background scan using deterministic threshold queries
+	 */
+	async runDeadlineCheck() {
+		const now = new Date();
+		console.log(
+			`[NotificationService] Running deadline alert scan at: ${now.toISOString()}`,
+		);
+
+		// Pull active scholarships closing within the next 8 days
+		const eightDaysFromNow = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000);
+		const closingScholarships = await Scholarship.find({
+			deadline: { $gt: now, $lte: eightDaysFromNow },
+		}).lean();
+
+		if (!closingScholarships.length) {
+			console.log(
+				`[NotificationService] No scholarships closing in the 8-day window.`,
+			);
+			return { activeScholarshipsChecked: 0, alertsGenerated: 0 };
+		}
+
+		// Cache candidate datasets once for the entire scan
+		const scholarshipIds = closingScholarships.map((s) => s._id);
+		const [allBookmarks, allProfiles] = await Promise.all([
+			Bookmark.find({ scholarship: { $in: scholarshipIds } }).lean(),
+			UserProfile.find({}).lean(),
+		]);
+
+		let alertsGenerated = 0;
+
+		for (const scholarship of closingScholarships) {
+			const msUntilDeadline =
+				new Date(scholarship.deadline).getTime() - now.getTime();
+			const hoursUntilDeadline = msUntilDeadline / (1000 * 60 * 60);
+			const daysUntilDeadline = hoursUntilDeadline / 24;
+
+			// Threshold evaluations: as long as it entered the window, check for delivery
+			const eligibleAlertTypes = [];
+			if (hoursUntilDeadline <= 48) {
+				eligibleAlertTypes.push("DEADLINE_48_HOURS");
+			} else if (daysUntilDeadline <= 7.5) {
+				eligibleAlertTypes.push("DEADLINE_7_DAYS");
+			}
+
+			if (!eligibleAlertTypes.length) continue;
+
+			const deadlineIso = new Date(scholarship.deadline)
+				.toISOString()
+				.slice(0, 10);
+
+			// Assemble interested users (Bookmarks + Eligible Profiles)
+			const targetUsers = new Set(
+				allBookmarks
+					.filter((b) => String(b.scholarship) === String(scholarship._id))
+					.map((b) => String(b.user)),
+			);
+
+			for (const profile of allProfiles) {
+				if (!targetUsers.has(String(profile.user))) {
+					const evaluation = evaluateEligibility(profile, scholarship);
+					if (evaluation.isEligible) {
+						targetUsers.add(String(profile.user));
+					}
+				}
+			}
+
+			for (const alertType of eligibleAlertTypes) {
+				const isUrgent = alertType === "DEADLINE_48_HOURS";
+
+				for (const userId of targetUsers) {
+					const dedupKey = `${alertType.toLowerCase()}:${userId}:${scholarship._id}:${deadlineIso}`;
+
+					const notif = await this.createNotification(userId, {
+						type: alertType,
+						title: isUrgent
+							? `Urgent: 48 Hours Left to Apply: ${scholarship.title}`
+							: `7 Days Remaining: ${scholarship.title}`,
+						message: `Application closes on ${new Date(scholarship.deadline).toLocaleDateString("en-IN")}. Complete your official portal submission.`,
+						priority: isUrgent ? "urgent" : "high",
+						scholarship: scholarship._id,
+						scholarshipTitle: scholarship.title,
+						deadline: scholarship.deadline,
+						amount: scholarship.amount?.value,
+						evidence: {
+							eligibilityReason:
+								"You have bookmarked or matched the criteria for this scheme",
+							state: scholarship.state,
+							category: scholarship.category,
+						},
+						link: `/scholarships`,
+						dedupKey,
+					});
+
+					if (notif) alertsGenerated++;
+				}
 			}
 		}
 
@@ -314,99 +368,106 @@ class NotificationService {
 			jobName: "DEADLINE_SCAN",
 			channel: "job",
 			status: "SUCCESS",
-			metadata: { activeScholarshipsChecked: activeScholarships.length, alertsGenerated },
+			metadata: {
+				activeScholarshipsChecked: closingScholarships.length,
+				alertsGenerated,
+			},
 		});
 
-		console.log(`[NotificationService] Deadline scan finished. Generated ${alertsGenerated} alerts.`);
-		return { activeScholarshipsChecked: activeScholarships.length, alertsGenerated };
+		console.log(
+			`[NotificationService] Deadline scan completed. Generated ${alertsGenerated} alerts.`,
+		);
+		return {
+			activeScholarshipsChecked: closingScholarships.length,
+			alertsGenerated,
+		};
 	}
 
 	/**
-	 * Background Job: Monday Morning Weekly Curated Digest
+	 * Weekly Digest using ISO calendar week keys
 	 */
 	async runWeeklyDigest(force = false) {
 		const now = new Date();
 		const dayOfWeek = now.getDay(); // 1 = Monday
-		const hour = now.getHours();
 
-		// Unless forced, only execute on Mondays between 06:00 and 12:00
-		if (!force && (dayOfWeek !== 1 || hour < 6 || hour > 12)) {
-			console.log("[NotificationService] Weekly digest skipped: not scheduled Monday morning window.");
-			return { skipped: true, reason: "Not Monday morning window" };
+		if (!force && dayOfWeek !== 1) {
+			console.log(
+				"[NotificationService] Weekly digest skipped: today is not Monday.",
+			);
+			return { skipped: true, reason: "Not Monday" };
 		}
 
-		console.log(`[NotificationService] Generating weekly scholarship digest for students...`);
-
-		// Calculate current ISO week identifier
-		const year = now.getFullYear();
-		const startOfYear = new Date(year, 0, 1);
-		const weekNum = Math.ceil(((now - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
-		const weekIdentifier = `${year}_W${weekNum}`;
+		// Calculate ISO calendar week identifier (e.g., "2026_W37")
+		const tempDate = new Date(
+			Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()),
+		);
+		tempDate.setUTCDate(
+			tempDate.getUTCDate() + 4 - (tempDate.getUTCDay() || 7),
+		);
+		const yearStart = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1));
+		const weekNum = Math.ceil(((tempDate - yearStart) / 86400000 + 1) / 7);
+		const weekIdentifier = `${tempDate.getUTCFullYear()}_W${weekNum}`;
 
 		const activeScholarships = await Scholarship.find({
 			deadline: { $gt: now },
 		}).lean();
-
-		const users = await User.find({ role: "student" }).lean();
+		const students = await User.find({ role: "student" }).lean();
 		let digestsSent = 0;
 
-		for (const user of users) {
+		for (const student of students) {
 			try {
-				const prefs = await this.getPreferences(user._id);
+				const prefs = await this.getPreferences(student._id);
 				if (!prefs.weeklyDigest) continue;
 
-				const dedupKey = `weekly_digest:${user._id}:${weekIdentifier}`;
-				const existing = await Notification.findOne({ dedupKey });
-				if (existing) continue;
+				const dedupKey = `weekly_digest:${student._id}:${weekIdentifier}`;
+				const profile = await UserProfile.findOne({ user: student._id }).lean();
 
-				const profile = await UserProfile.findOne({ user: user._id }).lean();
-				const candidateMatches = [];
-
-				for (const scholarship of activeScholarships) {
+				const matched = [];
+				for (const s of activeScholarships) {
 					if (profile) {
-						const evaluation = evaluateEligibility(profile, scholarship);
-						if (evaluation.isEligible) {
-							candidateMatches.push({
-								id: scholarship._id,
-								title: scholarship.title,
-								organization: scholarship.organization,
-								amount: scholarship.amount?.value,
-								deadline: scholarship.deadline,
-								readinessScore: evaluation.readinessScore || 80,
+						const evalResult = evaluateEligibility(profile, s);
+						if (evalResult.isEligible) {
+							matched.push({
+								id: s._id,
+								title: s.title,
+								organization: s.organization,
+								amount: s.amount?.value,
+								deadline: s.deadline,
+								readinessScore: evalResult.readinessScore || 80,
 							});
 						}
-					} else {
-						// For users without profiles yet, provide popular / verified active scholarships
-						if (scholarship.popular || scholarship.verified) {
-							candidateMatches.push({
-								id: scholarship._id,
-								title: scholarship.title,
-								organization: scholarship.organization,
-								amount: scholarship.amount?.value,
-								deadline: scholarship.deadline,
-								readinessScore: 75,
-							});
-						}
+					} else if (s.popular || s.verified) {
+						matched.push({
+							id: s._id,
+							title: s.title,
+							organization: s.organization,
+							amount: s.amount?.value,
+							deadline: s.deadline,
+							readinessScore: 75,
+						});
 					}
 				}
 
-				candidateMatches.sort((a, b) => b.readinessScore - a.readinessScore);
-				const topPicks = candidateMatches.slice(0, 4);
+				matched.sort((a, b) => b.readinessScore - a.readinessScore);
+				const topPicks = matched.slice(0, 4);
 
 				if (topPicks.length > 0) {
-					await this.createNotification(user._id, {
+					const dispatched = await this.createNotification(student._id, {
 						type: "WEEKLY_DIGEST",
 						title: "Your Monday Scholarship Digest",
-						message: `We found ${topPicks.length} active scholarship opportunities tailored to your profile this week.`,
+						message: `We found ${topPicks.length} active opportunities tailored to your profile this week.`,
 						priority: "low",
 						data: { topScholarships: topPicks, week: weekIdentifier },
 						link: "/scholarships",
 						dedupKey,
 					});
-					digestsSent++;
+					if (dispatched) digestsSent++;
 				}
-			} catch (uErr) {
-				console.error(`[NotificationService] Digest error for user ${user._id}:`, uErr.message);
+			} catch (err) {
+				console.error(
+					`[NotificationService] Digest error for user ${student._id}:`,
+					err.message,
+				);
 			}
 		}
 
@@ -417,37 +478,8 @@ class NotificationService {
 			metadata: { weekIdentifier, digestsSent },
 		});
 
-		console.log(`[NotificationService] Weekly digest completed. Dispatched: ${digestsSent}`);
+		console.log(`[NotificationService] Weekly digest sent: ${digestsSent}`);
 		return { digestsSent, weekIdentifier };
-	}
-
-	/**
-	 * Send test notification for instant user verification
-	 */
-	async sendTestNotification(userId) {
-		const sampleTitle = "Prime Minister Research Fellowship (PMRF)";
-		return await this.createNotification(userId, {
-			type: "INSTANT_MATCH",
-			title: `[Test Notification] High Match (96%): ${sampleTitle}`,
-			message: "This is a live test notification verifying your in-app and email delivery pipeline.",
-			priority: "medium",
-			scholarshipTitle: sampleTitle,
-			deadline: new Date(Date.now() + 14 * 86400000),
-			amount: 70000,
-			evidence: {
-				matchScore: 96,
-				passedRulesSummary: [
-					"Enrolled in approved technical degree program",
-					"CGPA requirement of 8.0 or above satisfied",
-					"Valid institute verification document present",
-				],
-				eligibilityReason: "Satisfies all 3 mandatory scheme criteria with zero exceptions",
-				state: "All India",
-				category: "Merit based",
-			},
-			link: "/scholarships",
-			dedupKey: `test_notif:${userId}:${Date.now()}`,
-		});
 	}
 }
 

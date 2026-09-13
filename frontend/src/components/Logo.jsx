@@ -31,28 +31,28 @@ export default function Logo({
 		sm: {
 			container: "w-8 h-8 sm:w-9 sm:h-9",
 			title: "text-lg sm:text-xl",
-			dot: "w-1.5 h-1.5",
+			//dot: "w-1.5 h-1.5",
 			tagline: "text-[10px] sm:text-[11px]",
 			spacing: "gap-2 sm:gap-2.5",
 		},
 		md: {
 			container: "w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12",
 			title: "text-xl sm:text-2xl md:text-[1.65rem]",
-			dot: "w-1.5 h-1.5 sm:w-2 sm:h-2",
+			//dot: "w-1.5 h-1.5 sm:w-2 sm:h-2",
 			tagline: "text-[11px] sm:text-xs",
 			spacing: "gap-2.5 sm:gap-3",
 		},
 		lg: {
 			container: "w-13 h-13 sm:w-15 sm:h-15",
 			title: "text-2xl sm:text-3xl",
-			dot: "w-2 h-2 sm:w-2.5 sm:h-2.5",
+			//dot: "w-2 h-2 sm:w-2.5 sm:h-2.5",
 			tagline: "text-xs sm:text-sm",
 			spacing: "gap-3 sm:gap-3.5",
 		},
 		xl: {
 			container: "w-16 h-16 sm:w-20 sm:h-20",
 			title: "text-3xl sm:text-4xl",
-			dot: "w-2.5 h-2.5 sm:w-3 sm:h-3",
+			//dot: "w-2.5 h-2.5 sm:w-3 sm:h-3",
 			tagline: "text-sm sm:text-base",
 			spacing: "gap-3.5 sm:gap-4",
 		},
@@ -105,12 +105,12 @@ export default function Logo({
 					udaan
 				</span>
 				{/* Stylized Brand Accent Dot echoing the vibrant green/blue/amber emblem */}
-				{showDot && (
+				{/* {showDot && (
 					<span
 						className={`inline-block rounded-full bg-gradient-to-tr from-emerald-500 via-teal-500 to-sky-500 shrink-0 shadow-2xs ${currentSize.dot}`}
 						aria-hidden="true"
 					/>
-				)}
+				)} */}
 			</div>
 
 			{/* Subtitle / Tagline */}
