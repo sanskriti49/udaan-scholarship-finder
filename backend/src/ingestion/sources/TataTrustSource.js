@@ -50,6 +50,8 @@ export class TataTrustSource extends BaseScholarshipSource {
 				desc: "Need-cum-merit financial assistance awarded to students pursuing professional bachelor degrees in Engineering, Technology, and Medicine, covering tuition fees.",
 				provenanceQuote: "Family annual income from all legitimate sources must not exceed Rs. 5.00 Lakhs.",
 				clause: "Individual Grants Policy §2.3: Means Assessment",
+				deadline: new Date("2026-11-30T23:59:59.000Z"),
+				applicationOpenDate: new Date("2026-08-01T00:00:00.000Z"),
 			},
 		];
 	}
@@ -115,8 +117,8 @@ export class TataTrustSource extends BaseScholarshipSource {
 					period: "yearly",
 					displayString: `₹${entry.amount.toLocaleString("en-IN")} / yr`,
 				},
-				deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-				applicationOpenDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+				deadline: entry.deadline ? new Date(entry.deadline) : new Date("2026-11-30T23:59:59.000Z"),
+				applicationOpenDate: entry.applicationOpenDate ? new Date(entry.applicationOpenDate) : new Date("2026-08-01T00:00:00.000Z"),
 				rules,
 				requiredDocuments: [
 					{ code: "INCOME_CERT", name: "Salary Slips or IT Return / Tehsildar Income Certificate", mandatory: true },

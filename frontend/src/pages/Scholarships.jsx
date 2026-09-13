@@ -21,6 +21,8 @@ import {
 import {
 	getScholarships,
 	getScholarshipSuggestions,
+	getBookmarks,
+	toggleBookmark as apiToggleBookmark,
 } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
 
@@ -430,12 +432,36 @@ export default function Scholarships() {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isModalOpen]);
 
-	const toggleSave = (id) => {
+	// Fetch saved bookmarks from server if logged in
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) return;
+		getBookmarks()
+			.then((res) => {
+				if (res.success && Array.isArray(res.data)) {
+					const ids = new Set(res.data.map((s) => s._id || s.id));
+					setSaved(ids);
+				}
+			})
+			.catch(() => {});
+	}, []);
+
+	const toggleSave = async (id) => {
+		// Optimistic UI state toggle
 		setSaved((prev) => {
 			const next = new Set(prev);
 			next.has(id) ? next.delete(id) : next.add(id);
 			return next;
 		});
+
+		const token = localStorage.getItem("token");
+		if (token) {
+			try {
+				await apiToggleBookmark(id);
+			} catch (err) {
+				console.warn("Could not sync bookmark with backend:", err.message);
+			}
+		}
 	};
 
 	const clearAll = () => {

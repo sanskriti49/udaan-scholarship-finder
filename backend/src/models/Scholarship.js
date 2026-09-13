@@ -162,11 +162,25 @@ const scholarshipSchema = new mongoose.Schema(
 	{ timestamps: true },
 );
 
-scholarshipSchema.index({
-	title: "text",
-	organization: "text",
-	description: "text",
-});
+scholarshipSchema.index(
+	{
+		title: "text",
+		organization: "text",
+		tags: "text",
+		category: "text",
+		description: "text",
+	},
+	{
+		weights: {
+			title: 10,
+			organization: 6,
+			tags: 5,
+			category: 3,
+			description: 1,
+		},
+		name: "ScholarshipTextSearchIndex",
+	},
+);
 scholarshipSchema.index({ state: 1, category: 1, deadline: 1 });
 scholarshipSchema.index({ level: 1 });
 scholarshipSchema.index({ "amount.value": 1 });

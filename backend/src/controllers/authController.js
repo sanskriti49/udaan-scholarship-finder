@@ -105,11 +105,16 @@ export const googleLogin = async (req, res) => {
 
 		let name, email, sub;
 
-		// Development fallback for local testing without active Google credentials
+		// Development fallback for local testing without active Google credentials (strictly disabled in production)
+		const isMockAllowed =
+			process.env.NODE_ENV !== "production" &&
+			(process.env.ENABLE_MOCK_AUTH === "true" || process.env.ALLOW_MOCK_AUTH === "true");
+
 		if (
-			credential === "dev-bypass" ||
-			credential === "mock-token" ||
-			credential.startsWith("mock-")
+			isMockAllowed &&
+			(credential === "dev-bypass" ||
+				credential === "mock-token" ||
+				credential.startsWith("mock-"))
 		) {
 			email = "demo.student@udaan.edu";
 			name = "Demo Student";

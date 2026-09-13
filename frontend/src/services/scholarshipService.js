@@ -27,3 +27,28 @@ export const getScholarshipSuggestions = async (q) => {
 	});
 	return response.data;
 };
+
+export const getUserProfile = async () => {
+	const response = await api.get("/user/profile");
+	return response.data;
+};
+
+export const updateUserProfile = async (profileData) => {
+	const response = await api.put("/user/profile", profileData);
+	return response.data;
+};
+
+export const getBookmarks = async () => {
+	const response = await api.get("/bookmarks");
+	return response.data;
+};
+
+export const toggleBookmark = async (scholarshipId) => {
+	const response = await api.post(`/bookmarks/${scholarshipId}`);
+	return response.data;
+};
+
+export const removeBookmark = async (scholarshipId) => {
+	const response = await api.delete(`/bookmarks/${scholarshipId}`);
+	return response.data;
+};

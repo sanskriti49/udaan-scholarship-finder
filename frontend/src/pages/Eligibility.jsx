@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
 	ShieldCheck,
@@ -14,7 +14,7 @@ import {
 	Check,
 	AlertCircle,
 } from "lucide-react";
-import { evaluateProfile } from "../services/scholarshipService";
+import { evaluateProfile, getUserProfile } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
 import peekingGuy from "../assets/images/peeking-guy.jpg";
 
@@ -61,6 +61,33 @@ export default function EligibilityPage() {
 	const [isEvidenceOpen, setIsEvidenceOpen] = useState(false);
 
 	const resultsRef = useRef(null);
+
+	// Load saved student profile if authenticated
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) return;
+		getUserProfile()
+			.then((res) => {
+				if (res.success && res.data) {
+					const p = res.data;
+					setFormData((prev) => ({
+						fullName: p.fullName || prev.fullName,
+						educationLevel: p.educationLevel || prev.educationLevel,
+						courseStream: p.courseStream || p.stream || prev.courseStream,
+						familyIncome: p.familyIncome !== undefined ? p.familyIncome : (p.income !== undefined ? p.income : prev.familyIncome),
+						gender: p.gender || prev.gender,
+						casteCategory: p.casteCategory || p.caste_category || prev.casteCategory,
+						state: p.state || prev.state,
+						cgpa: p.cgpa !== undefined ? p.cgpa : prev.cgpa,
+						hasDisability: p.hasDisability !== undefined ? p.hasDisability : prev.hasDisability,
+					}));
+					if (Array.isArray(p.documentsHeld) && p.documentsHeld.length > 0) {
+						setDocumentsHeld(p.documentsHeld);
+					}
+				}
+			})
+			.catch(() => {});
+	}, []);
 
 	const toggleDocument = (code) => {
 		setDocumentsHeld((prev) =>

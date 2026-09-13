@@ -2,12 +2,17 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
 import mongoose from "mongoose";
 import connectDB from "./src/config/db.js";
 import authRoutes from "./src/routes/authRoutes.js";
 import scholarshipRoutes from "./src/routes/scholarshipRoutes.js";
 import notificationRoutes from "./src/routes/notificationRoutes.js";
 import verifyRoutes from "./src/routes/verifyRoutes.js";
+import profileRoutes from "./src/routes/profileRoutes.js";
+import bookmarkRoutes from "./src/routes/bookmarkRoutes.js";
+import { apiLimiter } from "./src/middlewares/rateLimiterMiddleware.js";
 import { crawlerScheduler } from "./src/ingestion/core/Scheduler.js";
 import { notificationScheduler } from "./src/jobs/notificationScheduler.js";
 import {
@@ -73,9 +78,21 @@ const corsOptions = {
 	exposedHeaders: ["X-Cache"],
 };
 
-app.use(cors(corsOptions));
+// Security HTTP headers
+app.use(
+	helmet({
+		crossOriginResourcePolicy: { policy: "cross-origin" },
+	}),
+);
 
+// HTTP request logging
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Global API Rate Limiting
+app.use("/api", apiLimiter);
 
 connectDB().then(() => {
 	bootstrapDatabase();
@@ -86,12 +103,16 @@ app.use("/api/auth", authRoutes);
 app.use("/api/scholarships", scholarshipRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/verify", verifyRoutes);
+app.use("/api/user/profile", profileRoutes);
+app.use("/api/bookmarks", bookmarkRoutes);
 
 // Fallback Aliases (protects against clients calling without /api prefix)
 app.use("/auth", authRoutes);
 app.use("/scholarships", scholarshipRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/verify", verifyRoutes);
+app.use("/user/profile", profileRoutes);
+app.use("/bookmarks", bookmarkRoutes);
 
 app.get("/", (req, res) => {
 	res.send("Backend running...");

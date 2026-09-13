@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import mongoose from "mongoose";
 import Scholarship from "../models/Scholarship.js";
 import ScholarshipVersion from "../models/ScholarshipVersion.js";
@@ -6,6 +7,7 @@ import { evaluateEligibility } from "../engine/ruleEvaluator.js";
 import { sourceRegistry } from "../ingestion/SourceRegistry.js";
 import { crawlerScheduler } from "../ingestion/core/Scheduler.js";
 import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
+import { getRedisClient, isRedisAvailable } from "../config/redis.js";
 
 /**
  * Safely escape regex special characters to prevent syntax errors and ReDoS
@@ -46,30 +48,10 @@ export const getScholarships = async (req, res) => {
 
 		const conditions = [];
 
-		// Multi-token, tag-aware, hyphen-flexible, ReDoS-safe search
+		let isTextSearch = false;
 		if (search && search.trim()) {
-			const cleanedSearch = search.trim().replace(/\s*-\s*/g, "-");
-			const rawTokens = cleanedSearch
-				.split(/\s+/)
-				.filter((t) => t.length > 0 && t !== "-");
-
-			const tokenConditions = rawTokens.map((token) => {
-				const tokenRegex = buildSearchRegex(token);
-				return {
-					$or: [
-						{ title: tokenRegex },
-						{ organization: tokenRegex },
-						{ description: tokenRegex },
-						{ tags: tokenRegex },
-						{ category: tokenRegex },
-						{ state: tokenRegex },
-					],
-				};
-			});
-
-			if (tokenConditions.length > 0) {
-				conditions.push({ $and: tokenConditions });
-			}
+			conditions.push({ $text: { $search: search.trim() } });
+			isTextSearch = true;
 		}
 
 		if (category && category !== "All") {
@@ -103,9 +85,13 @@ export const getScholarships = async (req, res) => {
 
 		const query = conditions.length > 0 ? { $and: conditions } : {};
 
+		let projection = isTextSearch ? { score: { $meta: "textScore" } } : {};
 		let sortOptions = {};
-		if (sort === "deadline") sortOptions = { deadline: 1 };
-		else if (sort === "amount_high") sortOptions = { "amount.value": -1 };
+		if (sort === "relevance") {
+			sortOptions = isTextSearch ? { score: { $meta: "textScore" } } : { deadline: 1 };
+		} else if (sort === "deadline") {
+			sortOptions = isTextSearch ? { score: { $meta: "textScore" }, deadline: 1 } : { deadline: 1 };
+		} else if (sort === "amount_high") sortOptions = { "amount.value": -1 };
 		else if (sort === "amount_low") sortOptions = { "amount.value": 1 };
 		else if (sort === "trust") sortOptions = { trustScore: -1, deadline: 1 };
 		else if (sort === "newest") sortOptions = { createdAt: -1 };
@@ -114,14 +100,50 @@ export const getScholarships = async (req, res) => {
 		const limitNum = Math.max(1, parseInt(limit, 10) || 12);
 		const skip = (pageNum - 1) * limitNum;
 
-		const [scholarships, total] = await Promise.all([
-			Scholarship.find(query)
-				.sort(sortOptions)
-				.skip(skip)
-				.limit(limitNum)
-				.lean(),
-			Scholarship.countDocuments(query),
-		]);
+		let scholarships, total;
+		try {
+			[scholarships, total] = await Promise.all([
+				Scholarship.find(query, projection)
+					.sort(sortOptions)
+					.skip(skip)
+					.limit(limitNum)
+					.lean(),
+				Scholarship.countDocuments(query),
+			]);
+		} catch (mongoErr) {
+			// Resilient fallback to regex if text index is rebuilding
+			if (isTextSearch) {
+				const fallbackConditions = conditions.filter((c) => !c.$text);
+				const cleanedSearch = search.trim().replace(/\s*-\s*/g, "-");
+				const rawTokens = cleanedSearch.split(/\s+/).filter((t) => t.length > 0 && t !== "-");
+				const tokenConditions = rawTokens.map((token) => {
+					const tokenRegex = buildSearchRegex(token);
+					return {
+						$or: [
+							{ title: tokenRegex },
+							{ organization: tokenRegex },
+							{ description: tokenRegex },
+							{ tags: tokenRegex },
+							{ category: tokenRegex },
+							{ state: tokenRegex },
+						],
+					};
+				});
+				if (tokenConditions.length > 0) fallbackConditions.push({ $and: tokenConditions });
+				const fallbackQuery = fallbackConditions.length > 0 ? { $and: fallbackConditions } : {};
+				delete sortOptions.score;
+				[scholarships, total] = await Promise.all([
+					Scholarship.find(fallbackQuery)
+						.sort(sortOptions)
+						.skip(skip)
+						.limit(limitNum)
+						.lean(),
+					Scholarship.countDocuments(fallbackQuery),
+				]);
+			} else {
+				throw mongoErr;
+			}
+		}
 
 		return res.status(200).json({
 			success: true,
@@ -263,13 +285,75 @@ export const evaluateScholarships = async (req, res) => {
 			});
 		}
 
-		const allScholarships = await Scholarship.find({}).lean();
+		// Auto-save/sync profile in background if user is authenticated
+		if (req.user && req.body && Object.keys(req.body).length > 0) {
+			UserProfile.findOneAndUpdate(
+				{ user: req.user._id },
+				{
+					$set: {
+						...req.body,
+						user: req.user._id,
+					},
+				},
+				{ upsert: true, new: true, runValidators: false },
+			).catch((err) =>
+				console.warn("[Evaluate] Non-fatal profile auto-save warning:", err.message),
+			);
+		}
+
+		// Deterministic cache key based on profile attributes
+		const profileFingerprint = {
+			income: profile.familyIncome || profile.income,
+			cgpa: profile.cgpa,
+			percentage: profile.percentage,
+			educationLevel: profile.educationLevel,
+			stream: profile.courseStream || profile.stream,
+			gender: profile.gender,
+			casteCategory: profile.casteCategory || profile.caste_category,
+			state: profile.state,
+			hasDisability: profile.hasDisability,
+			documents: (profile.documentsHeld || []).slice().sort(),
+		};
+		const profileHash = crypto
+			.createHash("sha256")
+			.update(JSON.stringify(profileFingerprint))
+			.digest("hex")
+			.slice(0, 16);
+		const cacheKey = `scholarship:eval:${profileHash}`;
+
+		// Check Redis cache
+		if (isRedisAvailable()) {
+			try {
+				const cached = await getRedisClient().get(cacheKey);
+				if (cached) {
+					res.setHeader("X-Cache", "HIT");
+					return res.status(200).json(JSON.parse(cached));
+				}
+			} catch (_) {}
+		}
+
+		// DB Pre-filtering: Only evaluate active scholarships and coarse demographic filters
+		const now = new Date();
+		const query = {
+			deadline: { $gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+		};
+
+		if (profile.state && profile.state !== "All India") {
+			query.state = { $in: [profile.state, "All India"] };
+		}
+		if (profile.gender === "Male") {
+			query["eligibility.gender"] = { $ne: "Female" };
+		} else if (profile.gender === "Female") {
+			query["eligibility.gender"] = { $ne: "Male" };
+		}
+
+		const candidateScholarships = await Scholarship.find(query).lean();
 
 		const matched = [];
 		const ineligible = [];
 		const missingProfileData = [];
 
-		for (const scholarship of allScholarships) {
+		for (const scholarship of candidateScholarships) {
 			const evaluation = evaluateEligibility(profile, scholarship);
 
 			const cardData = {
@@ -305,10 +389,10 @@ export const evaluateScholarships = async (req, res) => {
 			(a, b) => b.evaluation.matchConfidence - a.evaluation.matchConfidence,
 		);
 
-		return res.status(200).json({
+		const responsePayload = {
 			success: true,
 			summary: {
-				totalEvaluated: allScholarships.length,
+				totalEvaluated: candidateScholarships.length,
 				eligibleCount: matched.length,
 				ineligibleCount: ineligible.length,
 				missingInfoCount: missingProfileData.length,
@@ -318,7 +402,22 @@ export const evaluateScholarships = async (req, res) => {
 				ineligible,
 				missingProfileData,
 			},
-		});
+		};
+
+		// Cache in Redis with 5-minute TTL
+		if (isRedisAvailable()) {
+			try {
+				await getRedisClient().set(
+					cacheKey,
+					JSON.stringify(responsePayload),
+					"EX",
+					300,
+				);
+			} catch (_) {}
+		}
+
+		res.setHeader("X-Cache", "MISS");
+		return res.status(200).json(responsePayload);
 	} catch (error) {
 		console.error("Evaluation error:", error);
 		return res.status(500).json({
