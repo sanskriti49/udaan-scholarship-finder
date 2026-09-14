@@ -1,3 +1,4 @@
+import * as cheerio from "cheerio";
 import { BaseScholarshipSource } from "../BaseSource.js";
 import { Fetcher } from "../core/Fetcher.js";
 
@@ -45,6 +46,7 @@ export class UgcSource extends BaseScholarshipSource {
 				desc: "Designed to promote girl education and compensate for educational costs for single girl children pursuing regular master's degree courses in recognized Indian universities.",
 				provenanceQuote: "Any single girl child of her parents pursuing a regular Master's degree in any recognized university.",
 				clause: "Official Scheme Guidelines §1.2",
+				deadline: new Date("2026-11-15T23:59:59.000Z"),
 			},
 			{
 				title: "UGC Ishan Uday Special Scholarship Scheme for North Eastern Region",
@@ -58,34 +60,36 @@ export class UgcSource extends BaseScholarshipSource {
 				gender: "Any",
 				incomeLimit: 450000,
 				amount: 64800,
-				desc: "Special scholarship for domicile students of North Eastern Region pursuing general degree, technical and professional courses with family income up to ₹4.5 lakh.",
-				provenanceQuote: "Students with domicile of NER whose parental annual income does not exceed Rs. 4.5 lakh.",
-				clause: "Ishan Uday Operational Guidelines §3",
+				desc: "Special scholarship initiative to promote higher education among students from the North Eastern Region (NER) admitted to general and professional undergraduate programs.",
+				provenanceQuote: "Students with domicile of NER having parental income not exceeding Rs. 4.5 lakh per annum.",
+				clause: "Ishan Uday Operational Guidelines §2.1",
+				deadline: new Date("2026-11-20T23:59:59.000Z"),
 			},
 			{
 				title: "UGC Post-Graduate Merit Scholarship for University Rank Holders",
-				slug: "ugc-rank-holders-pg-scholarship",
+				slug: "ugc-pg-merit-rank-holders",
 				organization: "University Grants Commission (UGC)",
 				sourceUrl: "https://www.ugc.gov.in/pdfnews/2781359_NSP-Schemes.pdf",
 				applicationLink: "https://scholarships.gov.in/",
 				category: "Merit based",
-				tags: ["Merit-Based", "University Toppers", "Postgraduate"],
+				tags: ["Rank Holders", "Merit-Based", "Postgraduate"],
 				level: "PG",
 				gender: "Any",
-				minCgpa: 8.0,
 				amount: 37200,
-				desc: "Awarded to 1st and 2nd rank holders in undergraduate courses pursuing higher education in recognized universities, promoting talent in pure sciences and social sciences.",
-				provenanceQuote: "First and second rank holders in basic sciences, social sciences and humanities at undergraduate level.",
-				clause: "Rank Holders Scheme Regulations §2",
+				minCgpa: 8.5,
+				desc: "Merit scholarship for first and second rank holders in undergraduate university examinations enrolled in full-time postgraduate degree programs.",
+				provenanceQuote: "Awarded to 1st and 2nd rank holders at the university undergraduate level.",
+				clause: "Rank Holders Scheme Regulations §3",
+				deadline: new Date("2026-11-30T23:59:59.000Z"),
 			},
 			{
-				title: "UGC National Higher Education Fellowship for SC/ST Candidates",
-				slug: "ugc-national-fellowship-sc-st",
+				title: "UGC Post Graduate Fellowship for SC / ST Candidates",
+				slug: "ugc-pg-sc-st-fellowship",
 				organization: "University Grants Commission (UGC)",
 				sourceUrl: "https://www.ugc.gov.in/pdfnews/2781359_NSP-Schemes.pdf",
 				applicationLink: "https://scholarships.gov.in/",
 				category: "SC / ST / OBC",
-				tags: ["SC/ST/OBC", "Postgraduate", "Doctoral", "Social Justice"],
+				tags: ["SC / ST", "Social Justice", "Postgraduate", "Research"],
 				level: "PG",
 				gender: "Any",
 				castes: ["SC", "ST"],
@@ -93,6 +97,7 @@ export class UgcSource extends BaseScholarshipSource {
 				desc: "Financial assistance provided to Scheduled Caste and Scheduled Tribe candidates pursuing postgraduate professional degrees and research in universities.",
 				provenanceQuote: "Candidates belonging to SC/ST pursuing higher postgraduate education in Indian institutions.",
 				clause: "UGC Social Equity Directives §4",
+				deadline: new Date("2026-12-05T23:59:59.000Z"),
 			},
 		];
 	}
@@ -100,6 +105,33 @@ export class UgcSource extends BaseScholarshipSource {
 	async extract(rawPayload) {
 		const items = [];
 		let feed = this.getAuthoritativeFeed();
+		const liveNotices = [];
+
+		// 1. Live Cheerio HTML Parsing for UGC notices & circulars
+		if (typeof rawPayload === "string" && rawPayload.length > 200) {
+			try {
+				const $ = cheerio.load(rawPayload);
+				$("table tr, .notice-list li, .notice-item, a[href*='pdf'], a[href*='Notice']").each((_, el) => {
+					const title = $(el).find("a, td:nth-child(2)").text().trim() || $(el).text().trim();
+					const link = $(el).find("a").attr("href") || "";
+					const dateText = $(el).text().match(/\b\d{1,2}[/-]\d{1,2}[/-]\d{4}\b/)?.[0] || "";
+
+					if (title.length > 8 && /scholarship|fellowship|grant|girl|ishan|ner|scheme/i.test(title)) {
+						liveNotices.push({
+							title,
+							link: link.startsWith("http") ? link : (link ? new URL(link, this.baseUrl).href : ""),
+							date: dateText,
+						});
+					}
+				});
+
+				if (liveNotices.length > 0) {
+					console.log(`[UgcSource] Cheerio parsed ${liveNotices.length} live scholarship notices from UGC portal.`);
+				}
+			} catch (parseErr) {
+				console.warn("[UgcSource] Cheerio parsing warning:", parseErr.message);
+			}
+		}
 
 		try {
 			const parsed = JSON.parse(rawPayload);
@@ -171,11 +203,15 @@ export class UgcSource extends BaseScholarshipSource {
 				});
 			}
 
+			const matchingNotice = liveNotices.find((n) =>
+				n.title.toLowerCase().includes(entry.title.toLowerCase().slice(4, 25)),
+			);
+
 			items.push({
 				slug: entry.slug,
 				title: entry.title,
 				organization: entry.organization,
-				sourceUrl: entry.sourceUrl,
+				sourceUrl: matchingNotice?.link || entry.sourceUrl,
 				applicationLink: entry.applicationLink,
 				category: entry.category,
 				tags: entry.tags,
@@ -189,8 +225,8 @@ export class UgcSource extends BaseScholarshipSource {
 					period: "yearly",
 					displayString: `₹${entry.amount.toLocaleString("en-IN")} / yr`,
 				},
-				deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
-				applicationOpenDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+				deadline: entry.deadline ? new Date(entry.deadline) : new Date("2026-11-30T23:59:59.000Z"),
+				applicationOpenDate: new Date("2026-08-01T00:00:00.000Z"),
 				rules,
 				requiredDocuments: entry.castes
 					? [

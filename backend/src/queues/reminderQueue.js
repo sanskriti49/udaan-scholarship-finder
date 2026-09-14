@@ -59,6 +59,12 @@ export async function scheduleDeadlineReminder({
 		return null;
 	}
 
+	// Guard: If Redis is offline/unavailable, fail open immediately without hanging
+	if (!isRedisAvailable()) {
+		console.warn(`[ReminderQueue] Redis unavailable. Operating in fail-open mode, skipping reminder enqueue.`);
+		return null;
+	}
+
 	// Calculate target execution time
 	let targetTime;
 	if (reminderWindow === "7_days") {

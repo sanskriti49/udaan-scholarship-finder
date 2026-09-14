@@ -250,8 +250,8 @@ export class AicteSource extends BaseScholarshipSource {
 					period: "yearly",
 					displayString: `₹${entry.amount.toLocaleString("en-IN")} / yr`,
 				},
-				deadline: new Date(Date.now() + (entry.deadlineOffsetDays || 30) * 24 * 60 * 60 * 1000),
-				applicationOpenDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+				deadline: entry.deadline ? new Date(entry.deadline) : new Date("2026-11-25T23:59:59.000Z"),
+				applicationOpenDate: new Date("2026-08-01T00:00:00.000Z"),
 				rules,
 				requiredDocuments: [
 					{ code: "INCOME_CERT", name: "Family Income Certificate (Revenue / Tehsildar)", mandatory: Boolean(entry.incomeLimit) },

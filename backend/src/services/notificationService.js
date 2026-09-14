@@ -139,14 +139,45 @@ class NotificationService {
 	}
 
 	/**
-	 * Evaluates new schemes against registered profiles with concurrency chunking
+	 * Evaluates new schemes against registered profiles with indexed pre-filtering and concurrency chunking
 	 */
 	async handleNewScholarshipIngested(scholarship) {
-		const profiles = await UserProfile.find({}).lean();
-		if (!profiles.length) return;
-
 		const isStateSpecific =
 			scholarship.state && scholarship.state !== "All India";
+
+		// Database-level pre-filtering: eliminate irrelevant student profiles at the index layer
+		const profileConditions = [];
+
+		if (isStateSpecific && scholarship.state) {
+			profileConditions.push({
+				$or: [
+					{ state: scholarship.state },
+					{ state: "All India" },
+					{ state: null },
+					{ state: { $exists: false } },
+				],
+			});
+		}
+
+		if (
+			scholarship.eligibility?.gender &&
+			scholarship.eligibility.gender !== "Any"
+		) {
+			profileConditions.push({
+				gender: { $in: [scholarship.eligibility.gender, "Other", null] },
+			});
+		}
+
+		if (scholarship.level) {
+			profileConditions.push({
+				educationLevel: { $in: [scholarship.level, null] },
+			});
+		}
+
+		const query =
+			profileConditions.length > 0 ? { $and: profileConditions } : {};
+		const profiles = await UserProfile.find(query).lean();
+		if (!profiles.length) return;
 
 		// Chunk profile processing to prevent event-loop starvation
 		const CHUNK_SIZE = 25;
@@ -412,63 +443,96 @@ class NotificationService {
 			deadline: { $gt: now },
 		}).lean();
 		const students = await User.find({ role: "student" }).lean();
+		if (!students.length || !activeScholarships.length) {
+			return { digestsSent: 0, weekIdentifier };
+		}
+
+		// Batch pre-fetch all student profiles and preferences in 2 bulk queries (eliminates N+1 queries)
+		const studentIds = students.map((s) => s._id);
+		const [profilesList, prefsList] = await Promise.all([
+			UserProfile.find({ user: { $in: studentIds } }).lean(),
+			NotificationPreference.find({ user: { $in: studentIds } }).lean(),
+		]);
+
+		const profileMap = new Map(profilesList.map((p) => [String(p.user), p]));
+		const prefsMap = new Map(prefsList.map((p) => [String(p.user), p]));
+
+		// In-memory evaluation cache for this batch run to avoid re-evaluating identical profiles
+		const evalCache = new Map();
 		let digestsSent = 0;
 
-		for (const student of students) {
-			try {
-				const prefs = await this.getPreferences(student._id);
-				if (!prefs.weeklyDigest) continue;
+		// Process students in chunks with event-loop yielding
+		const STUDENT_CHUNK = 50;
+		for (let i = 0; i < students.length; i += STUDENT_CHUNK) {
+			const chunk = students.slice(i, i + STUDENT_CHUNK);
 
-				const dedupKey = `weekly_digest:${student._id}:${weekIdentifier}`;
-				const profile = await UserProfile.findOne({ user: student._id }).lean();
+			for (const student of chunk) {
+				try {
+					const prefs =
+						prefsMap.get(String(student._id)) ||
+						(await this.getPreferences(student._id));
+					if (!prefs.weeklyDigest) continue;
 
-				const matched = [];
-				for (const s of activeScholarships) {
-					if (profile) {
-						const evalResult = evaluateEligibility(profile, s);
-						if (evalResult.isEligible) {
+					const dedupKey = `weekly_digest:${student._id}:${weekIdentifier}`;
+					const profile = profileMap.get(String(student._id));
+
+					const matched = [];
+					for (const s of activeScholarships) {
+						if (profile) {
+							const cacheKey = `${profile.familyIncome || profile.income}_${profile.stream}_${profile.educationLevel}_${profile.gender}_${profile.state}_${s._id}`;
+							let evalResult = evalCache.get(cacheKey);
+							if (!evalResult) {
+								evalResult = evaluateEligibility(profile, s);
+								evalCache.set(cacheKey, evalResult);
+							}
+
+							if (evalResult.isEligible) {
+								matched.push({
+									id: s._id,
+									title: s.title,
+									organization: s.organization,
+									amount: s.amount?.value,
+									deadline: s.deadline,
+									readinessScore: evalResult.readinessScore || 80,
+								});
+							}
+						} else if (s.popular || s.verified) {
 							matched.push({
 								id: s._id,
 								title: s.title,
 								organization: s.organization,
 								amount: s.amount?.value,
 								deadline: s.deadline,
-								readinessScore: evalResult.readinessScore || 80,
+								readinessScore: 75,
 							});
 						}
-					} else if (s.popular || s.verified) {
-						matched.push({
-							id: s._id,
-							title: s.title,
-							organization: s.organization,
-							amount: s.amount?.value,
-							deadline: s.deadline,
-							readinessScore: 75,
-						});
 					}
-				}
 
-				matched.sort((a, b) => b.readinessScore - a.readinessScore);
-				const topPicks = matched.slice(0, 4);
+					matched.sort((a, b) => b.readinessScore - a.readinessScore);
+					const topPicks = matched.slice(0, 4);
 
-				if (topPicks.length > 0) {
-					const dispatched = await this.createNotification(student._id, {
-						type: "WEEKLY_DIGEST",
-						title: "Your Monday Scholarship Digest",
-						message: `We found ${topPicks.length} active opportunities tailored to your profile this week.`,
-						priority: "low",
-						data: { topScholarships: topPicks, week: weekIdentifier },
-						link: "/scholarships",
-						dedupKey,
-					});
-					if (dispatched) digestsSent++;
+					if (topPicks.length > 0) {
+						const dispatched = await this.createNotification(student._id, {
+							type: "WEEKLY_DIGEST",
+							title: "Your Monday Scholarship Digest",
+							message: `We found ${topPicks.length} active opportunities tailored to your profile this week.`,
+							priority: "low",
+							data: { topScholarships: topPicks, week: weekIdentifier },
+							link: "/scholarships",
+							dedupKey,
+						});
+						if (dispatched) digestsSent++;
+					}
+				} catch (err) {
+					console.error(
+						`[NotificationService] Digest error for user ${student._id}:`,
+						err.message,
+					);
 				}
-			} catch (err) {
-				console.error(
-					`[NotificationService] Digest error for user ${student._id}:`,
-					err.message,
-				);
 			}
+
+			// Yield execution to the Node event loop between chunks so HTTP requests are never blocked
+			await new Promise((resolve) => setImmediate(resolve));
 		}
 
 		await NotificationLog.create({

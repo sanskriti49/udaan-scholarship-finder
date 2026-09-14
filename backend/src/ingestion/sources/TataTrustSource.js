@@ -59,16 +59,53 @@ export class TataTrustSource extends BaseScholarshipSource {
 	async extract(rawPayload) {
 		const items = [];
 		const feed = this.getAuthoritativeFeed();
+		let liveParsedMeta = null;
 
-		if (typeof rawPayload === "string" && rawPayload.includes("Individual Grants")) {
+		// 1. Live HTML Parsing with Cheerio
+		if (typeof rawPayload === "string" && rawPayload.length > 200) {
 			try {
 				const $ = cheerio.load(rawPayload);
-				const heading = $("h1, h2, title").first().text().trim();
-				if (heading) console.log(`[TataTrustSource] Verified live portal title: "${heading}"`);
-			} catch (_) {}
+
+				// Extract main page heading or portal title
+				const liveHeading =
+					$("h1, .page-title, .hero-title").first().text().trim() ||
+					$("title").first().text().trim();
+
+				// Search for specific grant cards or education section blocks
+				const grantBlocks = [];
+				$("h2, h3, .card, .content-block, section").each((_, el) => {
+					const text = $(el).text().trim();
+					if (/education|individual|grant|medical|engineering/i.test(text)) {
+						const anchor = $(el).find("a[href]").first();
+						const link = anchor.attr("href") || "";
+						grantBlocks.push({
+							title: $(el).find("h2, h3, h4, strong").first().text().trim() || text.slice(0, 80),
+							link: link.startsWith("http") ? link : (link ? new URL(link, this.baseUrl).href : this.baseUrl),
+							snippet: text.slice(0, 300),
+						});
+					}
+				});
+
+				if (grantBlocks.length > 0 || liveHeading) {
+					liveParsedMeta = {
+						liveHeading: liveHeading || "Tata Trusts Individual Education Grants",
+						blocks: grantBlocks,
+					};
+					console.log(
+						`[TataTrustSource] Cheerio parsed live HTML: "${liveHeading}" (${grantBlocks.length} grant sections detected).`,
+					);
+				}
+			} catch (parseErr) {
+				console.warn("[TataTrustSource] Cheerio selector parsing error:", parseErr.message);
+			}
 		}
 
 		for (const entry of feed) {
+			// If live Cheerio parsing extracted an updated title or active application link, augment canonical entry
+			const liveBlock = liveParsedMeta?.blocks?.[0];
+			const finalTitle = entry.title;
+			const finalApplicationLink = liveBlock?.link || entry.applicationLink;
+			const finalDesc = liveBlock?.snippet && liveBlock.snippet.length > 50 ? liveBlock.snippet : entry.desc;
 			const rules = [
 				{
 					id: `tata_income_${entry.slug}`,
@@ -101,16 +138,16 @@ export class TataTrustSource extends BaseScholarshipSource {
 
 			items.push({
 				slug: entry.slug,
-				title: entry.title,
+				title: finalTitle,
 				organization: entry.organization,
 				sourceUrl: entry.sourceUrl,
-				applicationLink: entry.applicationLink,
+				applicationLink: finalApplicationLink,
 				category: entry.category,
 				tags: entry.tags,
 				level: entry.level,
 				state: "All India",
-				description: entry.desc,
-				summary: entry.desc.length > 120 ? entry.desc.slice(0, 117) + "..." : entry.desc,
+				description: finalDesc,
+				summary: finalDesc.length > 120 ? finalDesc.slice(0, 117) + "..." : finalDesc,
 				amount: {
 					value: entry.amount,
 					currency: "INR",

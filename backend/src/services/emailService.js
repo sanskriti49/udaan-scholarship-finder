@@ -1,16 +1,37 @@
 import nodemailer from "nodemailer";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 import NotificationLog from "../models/NotificationLog.js";
 
-/**
- * Email Service
- * Handles transactional, branded email notifications for Udaan students.
- * Supports production SMTP transport with graceful dev fallback and full audit logging.
- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Target candidate paths for logo.png (checks your exact frontend structure)
+const CANDIDATE_PATHS = [
+	"C:\\Users\\sansk\\Downloads\\udaan-scholarship-finder\\frontend\\src\\assets\\images\\logo.png",
+	path.resolve(__dirname, "../../frontend/src/assets/images/logo.png"),
+	path.resolve(__dirname, "../../../frontend/src/assets/images/logo.png"),
+	path.resolve(process.cwd(), "frontend/src/assets/images/logo.png"),
+	path.resolve(process.cwd(), "../frontend/src/assets/images/logo.png"),
+	process.env.LOGO_PATH,
+].filter(Boolean);
+
+const RESOLVED_LOGO_PATH =
+	CANDIDATE_PATHS.find((p) => fs.existsSync(p)) || null;
+
+if (RESOLVED_LOGO_PATH) {
+	console.log(`[EmailService] Logo found: ${RESOLVED_LOGO_PATH}`);
+} else {
+	console.warn(
+		"[EmailService] Logo file not found. Ensure path to frontend logo.png is valid.",
+	);
+}
+
 class EmailService {
 	constructor() {
 		this.transporter = null;
 		this.isConfigured = false;
-		// Lazily evaluated or initialized when first invoked if env vars were not ready at import
 		this.init();
 	}
 
@@ -23,7 +44,7 @@ class EmailService {
 				this.transporter = nodemailer.createTransport({
 					host: SMTP_HOST,
 					port,
-					secure: port === 465, // true for 465, false for 587/STARTTLS
+					secure: port === 465,
 					auth: {
 						user: SMTP_USER,
 						pass: SMTP_PASS,
@@ -43,14 +64,11 @@ class EmailService {
 			}
 		} else {
 			console.log(
-				"[EmailService] SMTP credentials not detected. Running in simulated fallback mode (logs to DB).",
+				"[EmailService] Running in simulated mode (logs to database).",
 			);
 		}
 	}
 
-	/**
-	 * Optional connection verify utility for server startup
-	 */
 	async verifyConnection() {
 		if (!this.isConfigured && process.env.SMTP_HOST) {
 			this.init();
@@ -70,6 +88,11 @@ class EmailService {
 	}
 
 	getBaseLayout(contentHtml, preheader = "Udaan Scholarship Intelligence") {
+		const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+		const logoSrc =
+			process.env.EMAIL_LOGO_URL ||
+			(RESOLVED_LOGO_PATH ? "cid:udaanLogo" : `${frontendUrl}/logo.png`);
+
 		return `
 <!DOCTYPE html>
 <html lang="en">
@@ -77,20 +100,88 @@ class EmailService {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Udaan Notification</title>
+  <!-- Clash Display from official Fontshare CDN -->
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #FAF8F5; color: #081C10; }
-    .wrapper { max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; overflow: hidden; margin-top: 24px; margin-bottom: 24px; }
-    .header { background-color: #081C10; padding: 24px 32px; text-align: left; }
-    .brand-title { color: #FFFFFF; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin: 0; }
-    .brand-subtitle { color: #74C69D; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    @import url('https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap');
+
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      background-color: #FAF8F5; 
+      color: #081C10; 
+    }
+    .wrapper { 
+      max-width: 600px; 
+      margin: 24px auto; 
+      background-color: #FFFFFF; 
+      border: 1px solid #E2E8F0; 
+      border-radius: 16px; 
+      overflow: hidden; 
+    }
+    .header { 
+      background-color: #081C10; 
+      padding: 24px 32px; 
+      text-align: left; 
+    }
+    .brand-title { 
+      font-family: 'Clash Display', 'ClashDisplay-Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 25px; 
+      font-weight: 600; 
+      letter-spacing: -0.5px; 
+      color: #FFFFFF; 
+      margin: 0; 
+      line-height: 1.05; 
+    }
+    .brand-subtitle { 
+      color: #74C69D; 
+      font-size: 11px; 
+      font-weight: 600; 
+      letter-spacing: 0.6px; 
+      text-transform: uppercase;
+      margin-top: 3px; 
+      line-height: 1.2; 
+    }
     .body-content { padding: 32px; }
-    .badge { display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .badge { 
+      display: inline-block; 
+      padding: 4px 12px; 
+      border-radius: 9999px; 
+      font-size: 11px; 
+      font-weight: 700; 
+      letter-spacing: 0.5px; 
+      text-transform: uppercase; 
+    }
     .badge-emerald { background-color: #EDF7F0; color: #1B432A; border: 1px solid #B7E4C7; }
     .badge-amber { background-color: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
     .badge-rose { background-color: #FFE4E6; color: #9F1239; border: 1px solid #FECDD3; }
-    .cta-button { display: inline-block; background-color: #081C10; color: #FFFFFF !important; font-size: 14px; font-weight: 600; text-decoration: none; padding: 12px 28px; border-radius: 12px; margin-top: 20px; }
-    .footer { background-color: #F8FAFC; border-top: 1px solid #E2E8F0; padding: 20px 32px; font-size: 12px; color: #64748B; text-align: center; }
+    .cta-button { 
+      display: inline-block; 
+      background-color: #081C10; 
+      color: #FFFFFF !important; 
+      font-size: 14px; 
+      font-weight: 600; 
+      text-decoration: none; 
+      padding: 12px 28px; 
+      border-radius: 12px; 
+      margin-top: 20px; 
+    }
+    .footer { 
+      background-color: #F8FAFC; 
+      border-top: 1px solid #E2E8F0; 
+      padding: 20px 32px; 
+      font-size: 12px; 
+      color: #64748B; 
+      text-align: center; 
+    }
   </style>
+  <!--[if mso]>
+  <style type="text/css">
+    /* Prevents Outlook desktop from defaulting to Times New Roman */
+    .brand-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important; font-weight: 700 !important; }
+  </style>
+  <![endif]-->
 </head>
 <body>
   <div style="display:none;font-size:1px;color:#FAF8F5;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">
@@ -101,15 +192,32 @@ class EmailService {
       <td align="center">
         <div class="wrapper">
           <div class="header">
-            <h1 class="brand-title">udaan</h1>
-            <div class="brand-subtitle">Scholarship Intelligence</div>
+            <a href="${frontendUrl}" style="text-decoration: none; display: inline-block;">
+              <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse;">
+                <tr>
+                  <td valign="middle" style="padding-right: 12px; vertical-align: middle;">
+                    <img 
+                      src="${logoSrc}" 
+                      alt="Udaan" 
+                      width="40" 
+                      height="40" 
+                      style="display: block; width: 40px; height: 40px; border: 0; outline: none; text-decoration: none; object-fit: contain;" 
+                    />
+                  </td>
+                  <td valign="middle" style="vertical-align: middle;">
+                    <div class="brand-title">udaan</div>
+                    <div class="brand-subtitle">Scholarship Intelligence</div>
+                  </td>
+                </tr>
+              </table>
+            </a>
           </div>
           <div class="body-content">
             ${contentHtml}
           </div>
           <div class="footer">
             <p style="margin: 0 0 6px 0;">You are receiving this update based on your notification preferences in Udaan.</p>
-            <p style="margin: 0;"><a href="${process.env.FRONTEND_URL || "http://localhost:5173"}/settings" style="color: #2D6A4F; text-decoration: underline;">Manage Notification Preferences</a></p>
+            <p style="margin: 0;"><a href="${frontendUrl}/settings" style="color: #2D6A4F; text-decoration: underline;">Manage Notification Preferences</a></p>
           </div>
         </div>
       </td>
@@ -296,7 +404,6 @@ class EmailService {
 	}
 
 	async sendEmail({ to, type, data, notificationId, userId }) {
-		// Fallback re-init if process.env was loaded after module evaluation
 		if (!this.isConfigured && process.env.SMTP_HOST && process.env.SMTP_USER) {
 			this.init();
 		}
@@ -306,6 +413,16 @@ class EmailService {
 			process.env.EMAIL_FROM ||
 			process.env.SMTP_USER ||
 			'"Udaan Scholarship Finder" <notifications@udaan.edu>';
+
+		// Attach logo via CID if valid local file exists and no remote CDN URL is set
+		const attachments = [];
+		if (!process.env.EMAIL_LOGO_URL && RESOLVED_LOGO_PATH) {
+			attachments.push({
+				filename: "logo.png",
+				path: RESOLVED_LOGO_PATH,
+				cid: "udaanLogo",
+			});
+		}
 
 		let attempt = 1;
 		const maxAttempts = 2;
@@ -319,38 +436,42 @@ class EmailService {
 						to,
 						subject,
 						html,
+						attachments,
 					});
 
-					await NotificationLog.create({
-						notification: notificationId,
-						user: userId,
-						channel: "email",
-						status: "SUCCESS",
-						recipient: to,
-						subject,
-						attempt,
-						messageId: info.messageId,
-					});
+					try {
+						await NotificationLog.create({
+							notification: notificationId,
+							user: userId,
+							channel: "email",
+							status: "SUCCESS",
+							recipient: to,
+							subject,
+							attempt,
+							messageId: info.messageId,
+						});
+					} catch (logErr) {}
 
 					return { success: true, messageId: info.messageId };
 				} else {
-					// Simulated dispatch for development
 					const mockMessageId = `mock-email-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 					console.log(
 						`[EmailService (Simulated)] Dispatched '${subject}' to <${to}> [ID: ${mockMessageId}]`,
 					);
 
-					await NotificationLog.create({
-						notification: notificationId,
-						user: userId,
-						channel: "email",
-						status: "SUCCESS",
-						recipient: to,
-						subject,
-						attempt,
-						messageId: mockMessageId,
-						metadata: { note: "Simulated email in development mode" },
-					});
+					try {
+						await NotificationLog.create({
+							notification: notificationId,
+							user: userId,
+							channel: "email",
+							status: "SUCCESS",
+							recipient: to,
+							subject,
+							attempt,
+							messageId: mockMessageId,
+							metadata: { note: "Simulated email in development mode" },
+						});
+					} catch (logErr) {}
 
 					return { success: true, messageId: mockMessageId };
 				}

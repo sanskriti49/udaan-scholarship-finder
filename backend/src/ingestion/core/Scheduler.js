@@ -1,4 +1,5 @@
 import { sourceRegistry } from "../SourceRegistry.js";
+import { withDistributedLock } from "../../utils/distributedLock.js";
 
 /**
  * Scheduler
@@ -39,25 +40,27 @@ export class Scheduler {
 	}
 
 	async triggerNow(triggerReason = "MANUAL_TRIGGER") {
-		console.log(`\n[Scheduler] Executing scheduled crawl (Reason: ${triggerReason})...`);
-		try {
-			this.executionCount++;
-			const summary = await sourceRegistry.runAll();
-			this.lastExecution = {
-				timestamp: new Date(),
-				triggerReason,
-				summary,
-			};
-			return summary;
-		} catch (err) {
-			console.error("[Scheduler] Execution failed:", err.message);
-			this.lastExecution = {
-				timestamp: new Date(),
-				triggerReason,
-				error: err.message,
-			};
-			throw err;
-		}
+		return await withDistributedLock("lock:crawler:run", 1800, async () => {
+			console.log(`\n[Scheduler] Executing scheduled crawl (Reason: ${triggerReason})...`);
+			try {
+				this.executionCount++;
+				const summary = await sourceRegistry.runAll();
+				this.lastExecution = {
+					timestamp: new Date(),
+					triggerReason,
+					summary,
+				};
+				return summary;
+			} catch (err) {
+				console.error("[Scheduler] Execution failed:", err.message);
+				this.lastExecution = {
+					timestamp: new Date(),
+					triggerReason,
+					error: err.message,
+				};
+				throw err;
+			}
+		});
 	}
 
 	getStatus() {

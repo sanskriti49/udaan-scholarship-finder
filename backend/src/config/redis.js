@@ -55,6 +55,10 @@ export const bullMqConnection = {
 	...getRedisConfig(),
 	maxRetriesPerRequest: null,
 	enableReadyCheck: false,
+	retryStrategy(times) {
+		if (times > 2) return null;
+		return 300;
+	},
 };
 
 /**
@@ -68,16 +72,12 @@ export function getRedisClient() {
 
 	const rawConfig = getRedisConfig();
 	const clientOptions = {
-		// retryStrategy(times) {
-		// 	const delay = Math.min(times * 100, 3000);
-		// 	return delay;
-		// },
 		retryStrategy(times) {
-			// Stop spamming retries after 10 attempts to keep logs clean
-			if (times > 10) {
+			// Stop spamming retries after 2 attempts when Redis is offline
+			if (times > 2) {
 				return null;
 			}
-			return Math.min(times * 200, 3000);
+			return 300;
 		},
 		reconnectOnError(err) {
 			const targetError = "READONLY";

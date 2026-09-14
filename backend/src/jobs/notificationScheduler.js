@@ -1,4 +1,5 @@
 import { notificationService } from "../services/notificationService.js";
+import { withDistributedLock } from "../utils/distributedLock.js";
 
 /**
  * NotificationScheduler
@@ -59,23 +60,29 @@ export class NotificationScheduler {
 		console.log(`[NotificationScheduler] Executing scheduled jobs (${triggerReason})...`);
 
 		try {
-			// 1. Deadline scan (7-day and 48-hour windows)
-			const deadlineResult = await notificationService.runDeadlineCheck();
-			this.lastDeadlineScan = {
-				timestamp: new Date(),
-				result: deadlineResult,
-			};
+			// 1. Deadline scan with distributed lock (10-min lease)
+			await withDistributedLock("lock:notification:deadline_scan", 600, async () => {
+				const deadlineResult = await notificationService.runDeadlineCheck();
+				this.lastDeadlineScan = {
+					timestamp: new Date(),
+					result: deadlineResult,
+				};
+				return deadlineResult;
+			});
 		} catch (err) {
 			console.error("[NotificationScheduler] Deadline check error:", err.message);
 		}
 
 		try {
-			// 2. Monday weekly digest check
-			const digestResult = await notificationService.runWeeklyDigest();
-			this.lastWeeklyDigestRun = {
-				timestamp: new Date(),
-				result: digestResult,
-			};
+			// 2. Monday weekly digest check with distributed lock (20-min lease)
+			await withDistributedLock("lock:notification:weekly_digest", 1200, async () => {
+				const digestResult = await notificationService.runWeeklyDigest();
+				this.lastWeeklyDigestRun = {
+					timestamp: new Date(),
+					result: digestResult,
+				};
+				return digestResult;
+			});
 		} catch (err) {
 			console.error("[NotificationScheduler] Weekly digest error:", err.message);
 		}
