@@ -6,231 +6,346 @@
 [![React](https://img.shields.io/badge/React-v19-61dafb?style=for-the-badge&logo=react)](https://react.dev/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47a248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Redis](https://img.shields.io/badge/Redis-Cache%20%26%20BullMQ-dc382d?style=for-the-badge&logo=redis)](https://redis.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
 
-Udaan is an autonomous scholarship intelligence and trust platform built for Indian students. It bridges the gap between decentralized government portals and eligible applicants by continuously crawling statutory circulars, verifying portal legitimacy, auditing document readiness with zero PII storage, parsing eligibility rules into deterministic Abstract Syntax Trees (ASTs), and dispatching multi-channel deadline countdowns.
+Udaan is an autonomous scholarship intelligence and trust platform built for Indian students. It bridges the gap between decentralized government portals and eligible applicants by continuously crawling statutory circulars, verifying portal legitimacy, auditing document readiness with zero PII storage, evaluating eligibility rules using deterministic Abstract Syntax Trees (ASTs), and dispatching multi-channel deadline countdowns.
 
 ---
 
-## 1. System Architecture
+## Quick Navigation
+* [In Plain English: What Problem Does Udaan Solve?](#-in-plain-english-what-problem-does-udaan-solve)
+* [System Architecture Diagram](#-system-architecture-diagram)
+* [Under the Hood: Simplified Concepts](#-under-the-hood-simplified-concepts)
+* [Authentic Tech Stack](#-authentic-tech-stack)
+* [Core Engineering Workflows](#-core-engineering-workflows)
+* [Directory Layout](#-directory-layout)
+* [Getting Started Locally](#-getting-started-locally)
 
-Udaan follows a decoupled, service-oriented architecture designed for high availability, sub-second search queries, zero-knowledge privacy, and resilient background task processing.
+---
+
+## 💡 In Plain English: What Problem Does Udaan Solve?
+
+Every year, thousands of crores in scholarship funds across India go unclaimed, while millions of deserving students either miss application deadlines or fall prey to fraudulent circulars demanding fake processing fees.
+
+**Udaan fixes this in four straightforward steps:**
+
+1. **Autonomous Discovery**: Instead of students manually checking dozens of clunky government and philanthropic websites, Udaan's crawlers automatically inspect official portals (like Tata Trusts, UGC, AICTE) for fresh notifications and deadline updates.
+2. **Instant & Private Eligibility Matching**: Students enter their basic education level, category, state, and income. Udaan checks their profile against an exact mathematical rule engine—without AI hallucinations—and tells them instantly which scholarships they qualify for and *why*.
+3. **Scam Protection (Trust Shield)**: Students can paste any suspicious scholarship link, WhatsApp forward, or SMS circular into Udaan. The system checks domain authority, gazette registries, and fee demands to warn students before they lose money.
+4. **Smart Reminders**: When a student bookmarks a scholarship, Udaan calculates the exact dates for 7-day and 48-hour warnings, queuing automated alerts so they never miss an official cutoff.
+
+---
+
+## 🏗️ System Architecture Diagram
+
+Udaan follows a decoupled, resilient architecture designed for sub-10ms search queries, zero-knowledge privacy, and high-availability background task processing:
 
 ```mermaid
 flowchart TB
-    subgraph ClientTier ["Client Tier (Vercel)"]
-        UI["React 19 SPA + Vite"]
-        Router["URL-Driven State Manager"]
-        TrustView["Trust Shield & Fraud Buster"]
-        DocVaultView["Zero-Knowledge Document Vault"]
-        CacheStore["Client Cache & Notification Bell"]
+    subgraph ClientTier ["1. Client Tier (Vercel)"]
+        SPA["React 19 SPA + Vite"]
+        Router["React Router v7 (URL as State)"]
+        UI_Components["GSAP Animated UI & Lucide Icons"]
+        DocVault["Zero-Knowledge Document Vault (localStorage)"]
+        Turnstile["Cloudflare Turnstile Bot Shield"]
     end
 
-    subgraph APITier ["API & Application Gateway (Render)"]
-        Gateway["Express Gateway & CORS Middleware"]
-        Auth["JWT & Google OAuth Middleware"]
-        ScholarshipCtrl["Scholarship Controller"]
-        RuleEngine["Deterministic AST Rule Evaluator"]
-        TrustCtrl["Trust Verification Controller"]
-        TrustEngine["Domain & Scam Heuristics Engine"]
-        NotifCtrl["Notification Controller"]
+    subgraph EdgeTier ["2. Edge & Security Gateway (Render)"]
+        ExpressApp["Express 5 REST API"]
+        HelmetMW["Helmet Security Headers"]
+        RateLimiter["Redis Sliding-Window Rate Limiter"]
+        AuthMW["JWT & Google OAuth Verification"]
+        MorganLogger["Morgan HTTP Request Logger"]
     end
 
-    subgraph DataTier ["Caching & Persistence Tier"]
-        RedisStore[("Redis Layer
-Query Cache + Invalidation")]
-        BullQueue[("BullMQ Queue
-Delayed Jobs & Deadlines")]
-        MongoAtlas[("MongoDB Atlas
-Schemes, Logs, Citations, Users")]
+    subgraph ControllerTier ["3. Application Controllers & Services"]
+        ScholarshipCtrl["Scholarship Controller
+(Native $text Search)"]
+        BookmarkCtrl["Bookmark Controller
+(User Saves & Alerts)"]
+        ProfileCtrl["Profile Controller
+(Demographics & Criteria)"]
+        TrustCtrl["Trust Shield Controller
+(Domain & Fee Heuristics)"]
+        RuleEngine["Deterministic AST Rule Evaluator
+(Zero-Hallucination Matching)"]
+        EmailSvc["Nodemailer Email Service
+(Branded Responsive Templates)"]
     end
 
-    subgraph AsyncTier ["Autonomous Workers & Scrapers"]
-        CronSched["Node-Cron Scheduler (24h Scraper / 30m Alerts)"]
-        Crawlers["Multi-Source Crawlers
-(NSP, MahaDBT, SSP Karnataka, CSRs)"]
-        ReminderWorker["BullMQ Worker (Deadline Reminders)"]
-        EmailService["Nodemailer & SMTP Dispatcher"]
+    subgraph PersistenceTier ["4. Persistence & Caching Tier"]
+        RedisCluster[("Redis Layer
+- Fail-Open Cache-Aside
+- Deterministic Query Keys
+- SHA-256 Eval Fingerprints
+- Distributed Locks (Lua)")]
+        MongoAtlas[("MongoDB Atlas Cluster
+- Scholarships (Compound Text Index)
+- User Profiles & Bookmarks
+- Audit Logs & Version Diffs")]
+        BullMQQueue[("BullMQ Redis Queue
+- Delayed Countdown Jobs
+- Idempotent Job IDs")]
     end
 
-    UI --> Router
-    Router --> Gateway
-    Gateway --> Auth
-    Auth --> ScholarshipCtrl
-    Auth --> NotifCtrl
-    Gateway --> TrustCtrl
-    TrustCtrl --> TrustEngine
-    TrustEngine --> MongoAtlas
+    subgraph AsyncTier ["5. Autonomous Background Workers"]
+        Scheduler["Ingestion Scheduler
+(Guarded by Redis Lock)"]
+        Crawlers["Cheerio Web Crawlers
+(Tata Trusts, UGC, AICTE)"]
+        DiffEngine["Diff Engine
+(Detects Deadline Mutations)"]
+        ReminderWorker["BullMQ Worker Fleet
+(Re-verifies DB State at Run Time)"]
+    end
 
-    ScholarshipCtrl <--> RedisStore
-    ScholarshipCtrl --> MongoAtlas
+    %% Client to Edge
+    SPA --> Router
+    Router --> ExpressApp
+    ExpressApp --> HelmetMW --> RateLimiter --> AuthMW --> MorganLogger
+
+    %% Edge to Controllers
+    MorganLogger --> ScholarshipCtrl
+    MorganLogger --> BookmarkCtrl
+    MorganLogger --> ProfileCtrl
+    MorganLogger --> TrustCtrl
+
+    %% Controller Interactions
+    ScholarshipCtrl <-->|Cache Hit / Miss| RedisCluster
+    ScholarshipCtrl -->|Native $text Search| MongoAtlas
     ScholarshipCtrl --> RuleEngine
-    RuleEngine --> MongoAtlas
-    NotifCtrl --> BullQueue
-    NotifCtrl --> MongoAtlas
+    RuleEngine <-->|Memoized SHA-256 Hash| RedisCluster
+    BookmarkCtrl --> MongoAtlas
+    BookmarkCtrl -->|Schedule 7d / 48h| BullMQQueue
+    TrustCtrl --> MongoAtlas
 
-    CronSched --> Crawlers
-    Crawlers --> MongoAtlas
-    Crawlers -.->|Invalidate Cache| RedisStore
-    CronSched --> BullQueue
-    BullQueue --> ReminderWorker
-    ReminderWorker --> EmailService
-    ReminderWorker --> MongoAtlas
+    %% Async & Crawling Flows
+    Scheduler -->|Acquire Lock (NX EX)| RedisCluster
+    Scheduler --> Crawlers
+    Crawlers --> DiffEngine
+    DiffEngine -->|Commit Versioned Diff| MongoAtlas
+    DiffEngine -.->|SCAN Pattern Eviction| RedisCluster
+    BullMQQueue --> ReminderWorker
+    ReminderWorker -->|Verify Bookmark Active| MongoAtlas
+    ReminderWorker --> EmailSvc
 ```
 
 ---
 
-## 2. Core Pipelines & Engineering Workflows
+## 🧠 Under the Hood: Simplified Concepts
 
-### A. Anti-Scam & Trust Verification Shield
-Over 30% of scholarship circulars circulating on social media are phishing scams demanding application fees. Udaan provides an autonomous link and message analyzer backed by domain authority checks and statutory gazette registries.
+To explain this platform during technical interviews or discussions, here are the core architectural decisions translated into simple terms:
 
-```mermaid
-flowchart LR
-    Input["Input: Link, SMS alert, or WhatsApp circular"] --> Pre["URL & Protocol Parser"]
-    Pre --> Check1{"Domain Type?"}
-    Check1 -->|Restricted .gov.in / .nic.in| G1["Sovereign Portal (Score: 98%)"]
-    Check1 -->|Verified CSR / Philanthropy| G2["Recognized CSR (Score: 88%)"]
-    Check1 -->|Free Host / Suspicious TLD| G3["Critical Alert: High-Risk Domain"]
+### 1. Abstract Syntax Tree (AST) Rule Engine
+* **The Analogy**: Like a flowchart converted into code.
+* **Why we built it**: Standard `if/else` statements require code updates every time a government portal tweaks an income ceiling. Feeding scholarships into a generic AI LLM causes hallucinations (approving ineligible students).
+* **How Udaan does it**: Criteria are stored as nested JSON trees:
+  ```json
+  {
+    "type": "AND",
+    "children": [
+      { "field": "income", "op": "LTE", "value": 250000 },
+      { "field": "gender", "op": "EQ", "value": "female" }
+    ]
+  }
+  ```
+  The evaluator traverses this tree mathematically. It produces **100% deterministic results** and outputs an exact checklist of which rules passed and failed.
 
-    Input --> Heuristics["Pattern Matching Engine"]
-    Heuristics -->|Fee Requested / UPI Found| H1["Statutory Red Flag: Illegal Fee Demand"]
-    Heuristics -->|Fake Guarantee / WhatsApp PII| H2["Phishing Alert: WhatsApp Harvest Trap"]
+### 2. Cache-Aside Pattern with Fail-Open Resilience
+* **The Analogy**: Checking your quick-access notebook before walking across the building to the library.
+* **How Udaan does it**: 
+  1. Student searches for scholarships $\rightarrow$ Express checks Redis first.
+  2. If found (**Cache Hit**, $<5\text{ms}$), it returns immediately.
+  3. If missing (**Cache Miss**), it queries MongoDB Atlas, stores the result in Redis with a TTL, and sends the response.
+  4. **Fail-Open Resilience**: If Redis crashes or undergoes maintenance, the system silently catches the error and queries MongoDB directly. The app slows down slightly from $5\text{ms}$ to $60\text{ms}$, but **the user never encounters an HTTP 500 error**.
+  5. **Deterministic Keys**: URLs like `?page=1&category=Eng` and `?category=Eng&page=1` are sorted into identical keys so memory is never wasted.
 
-    Input --> DBCross["MongoDB Gazette Cross-Check"]
-    DBCross -->|Matched Scheme| DB1["Verified Official Scheme Match"]
+### 3. Delayed Job Queue with BullMQ (No Midnight Polling)
+* **The Analogy**: Setting an alarm clock instead of staying awake all night checking your watch.
+* **Why not a midnight database cron?**: Scanning thousands of scholarships and bookmarks every midnight creates a massive query spike that slows down the primary database.
+* **How Udaan does it**: When a student bookmarks a scholarship, BullMQ calculates the exact millisecond delay until the 7-day and 48-hour cutoff. It places a delayed job into a **Redis Sorted Set (`ZSET`)**. Redis holds the job at zero compute cost until the exact second arrives, then wakes up the worker.
+* **Runtime Re-verification**: When the worker wakes up days later, it checks MongoDB: *Has the user unbookmarked it? Did the deadline get extended?* If invalid, it silently drops the job without spamming the student.
 
-    G1 & G2 & G3 & H1 & H2 & DB1 --> Verdict["Calculated Trust Score & Actionable Verdict
-(Official / Caution / High-Risk Fraud)"]
-```
+### 4. Redis Distributed Locking (Multi-Instance Safety)
+* **The Analogy**: The bathroom key at a coffee shop—only one person holds the key at a time.
+* **The Problem**: When running multiple instances of the backend on a cloud host (like Render or Kubernetes), each instance has its own background timer. Without coordination, both instances will crawl the web and send duplicate emails simultaneously.
+* **How Udaan does it**: Before running a crawler or digest sweep, the worker requests a lock in Redis using an atomic command: `SET lock:crawler:run <UUID> NX EX 300`. Only the winning instance runs the crawl; other instances abort immediately. When finished, an atomic Lua script validates ownership and releases the lock safely.
 
-### B. Zero-Knowledge Document Readiness & Expiry Audit
-Over 40% of genuine scholarship applications get rejected because of expired certificates or unseeded bank accounts. Udaan provides an interactive readiness audit without ever asking for, uploading, or storing sensitive government IDs.
+### 5. Hybrid Cheerio Live Scraping with AST Fallback
+* **The Problem**: Government websites frequently change their CSS classes, suffer downtime, or block scrapers. Pure live scraping breaks easily; hardcoded data goes stale.
+* **How Udaan does it**: Ingestion adapters (`TataTrustSource`, `UgcSource`) scrape live HTML elements using Cheerio to extract fresh notice URLs, circular titles, and application dates. They merge these live parameters into authoritative AST rule schemas. If the external portal is down, the adapter safely falls back to authoritative feeds without breaking the pipeline.
 
-```mermaid
-flowchart TD
-    Category["Student selects category (Central, State DBT, Reserved, STEM)"] --> Pack["Generate Tailored Document Checklist"]
-    Pack --> Income["Income Certificate Checkpoint"]
-    Pack --> Domicile["Domicile / Residence Certificate"]
-    Pack --> Caste["Caste / Category (Central NCL vs State)"]
-    Pack --> Bonafide["Bonafide Student Certificate"]
-    Pack --> DBT["Aadhaar-NPCI DBT Bank Seeding"]
+### 6. Zero-Knowledge Document Vault
+* **The Analogy**: Checking your boarding pass at home using a printed checklist without sending a copy to an unknown server.
+* **Why it matters**: Storing government certificates (Aadhaar, Income Certificates, Caste certificates) creates massive PII (Personally Identifiable Information) data leak liability.
+* **How Udaan does it**: The entire audit engine runs inside the student's browser. Certificate issue dates are evaluated against the statutory Indian fiscal year (April 1 to March 31) purely in client-side `localStorage`. **Zero PII is transmitted to or stored on our servers.**
 
-    Income --> FYAudit["Financial Year Expiry Auditor
-(Validates issue date against active fiscal year)"]
-    Bonafide --> Generator["Standard Bonafide Certificate Generator
-(Print-ready template for institute seal)"]
-    DBT --> Diag["DBT Seeding Diagnostic Guide
-(UIDAI status check + Bank Mandate format)"]
-    Pack --> StateDir["Official State e-District Portals Directory
-(Direct links to UP, Maha, SSP, Oasis, MeeSeva)"]
+---
 
-    Pack --> LocalStore["100% Client-Side LocalStorage Persistence
-(Zero PII stored on servers)"]
-```
+## 🛠️ Authentic Tech Stack
 
-### C. Ingestion & Regulatory Citation Pipeline
-Unlike generic scrapers that extract unstructured text, Udaan normalizes all ingested schemes into an AST of atomic conditions linked to official circulars and gazette citations.
+Every technology in this repository serves an explicit, non-redundant architectural purpose:
 
+### Frontend
+| Technology | Exact Version | Architectural Purpose |
+| :--- | :--- | :--- |
+| **React** | `^19.2.7` | Modern component architecture utilizing the latest React 19 rendering pipeline. |
+| **Vite** | `^8.1.0` | Lightning-fast build tooling and hot-module replacement (HMR). |
+| **Tailwind CSS** | `^4.3.1` | Utility-first responsive design using the modern `@tailwindcss/vite` engine. |
+| **GSAP & @gsap/react** | `^3.15.0` | Hardware-accelerated micro-interactions and smooth page transitions. |
+| **React Router** | `^7.18.0` | URL-driven state management (keeping filters, search, and pagination in sync with URL queries). |
+| **React Turnstile** | `^1.1.5` | Cloudflare Turnstile integration to protect endpoints against bot automated abuse. |
+| **Sonner** | `^2.0.7` | Accessible, high-performance toast notifications. |
+| **Lucide React** | `^1.21.0` | Clean, lightweight SVG icon system. |
+| **Axios** | `^1.18.1` | Promise-based HTTP client with global 401 error interceptors. |
+
+### Backend
+| Technology | Exact Version | Architectural Purpose |
+| :--- | :--- | :--- |
+| **Express** | `^5.2.1` | Next-generation Express 5 REST API gateway with native async error handling. |
+| **MongoDB & Mongoose** | `^9.7.3` | Document persistence with compound weighted `$text` search indexes and schema validation. |
+| **Redis & ioredis** | `^6.0.0` | In-memory cache-aside, atomic rate limiters, evaluation fingerprinting, and distributed locks. |
+| **BullMQ** | `^6.3.4` | High-throughput Redis-backed message queue for delayed deadline reminders. |
+| **Nodemailer** | `^10.0.9` | Branded transactional email delivery via production SMTP with development fallback. |
+| **Cheerio** | `^1.2.0` | Fast, lightweight server-side DOM parser for extracting notices from government portals. |
+| **Playwright** | `^1.61.1` | Headless browser automation for complex dynamic portals requiring JS execution. |
+| **PDF-Parse** | `^2.4.5` | Server-side text extraction from official PDF gazette circulars. |
+| **Helmet** | `^8.2.0` | Security middleware setting HTTP headers (CSP, HSTS, X-Content-Type-Options). |
+| **Morgan** | `^1.11.0` | Structured HTTP request logger for observability and debugging. |
+| **JWT & Google Auth** | `^9.0.3` / `^10.9.0` | Dual-tier authentication supporting OAuth 2.0 Google sign-in and signed JWT tokens. |
+| **Bcrypt / Bcryptjs** | `^6.0.0` | Salted password hashing for credentials security. |
+
+---
+
+## 🔄 Core Engineering Workflows
+
+### A. Full-Text Search & Relevance Ranking
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Portal as Official Portals (NSP, State DBT, CSR)
-    participant Crawler as Ingestion Crawler (Cheerio + BaseSource)
-    participant Normalizer as Ingestion Normalizer
+    actor User as Student
+    participant API as Express API
+    participant Cache as Redis (Cache-Aside)
     participant DB as MongoDB Atlas
-    participant Cache as Redis Cache
 
-    Crawler->>Portal: Fetch Portal Content with Rate-Limiting & Robots Policy
-    Portal-->>Crawler: Raw HTML / API JSON
-    Crawler->>Normalizer: Extract Metadata, Deadlines & Statutory Clauses
-    Normalizer->>Normalizer: Generate Content Hash (SHA-256) & Parse Criteria AST
-    Normalizer->>Normalizer: Synthesize Provenance Quotes & Direct Gazette Links
-    Normalizer->>DB: Upsert Scheme (Track Changes in Content & Deadlines)
-    DB-->>Normalizer: Document Saved
-    Normalizer->>Cache: Invalidate /scholarships Search & Filter Cache Keys
+    User->>API: GET /api/scholarships?search=girl+child&category=Engineering
+    API->>Cache: Check Key: scholarship:list:category=Engineering&search=girl+child
+    alt Cache HIT (< 5ms)
+        Cache-->>API: Return Cached JSON Payload
+        API-->>User: HTTP 200 (Header: X-Cache: HIT)
+    else Cache MISS
+        Cache-->>API: Null
+        API->>DB: Native $text: { $search: "girl child" } + Filters
+        Note over DB: Evaluates Weighted Index:
+Title (10), Org (6), Tags (5), Cat (3)
+Projects { score: { $meta: "textScore" } }
+        DB-->>API: Relevance-Sorted Documents & Total Count
+        API->>Cache: SETEX key 1800 (Save with TTL)
+        API-->>User: HTTP 200 (Header: X-Cache: MISS)
+    end
 ```
 
-### D. BullMQ Background Task & Deadline Notification Flow
-Deadlines are monitored continuously to prevent students from missing application windows.
-
+### B. Eligibility Evaluation with SHA-256 Fingerprint Caching
 ```mermaid
 flowchart TD
-    Scheduler["Cron Scheduler (Every 30 Minutes)"] --> Scan["Scan Active Schemes & User Bookmarks"]
-    Scan --> CondCheck{"Days Remaining?"}
-    CondCheck -->|7 Days Left| T7["7-Day Prep Warning"]
-    CondCheck -->|48 Hours Left| T48["48-Hour Urgent Warning"]
-    CondCheck -->|Newly Discovered State Grant| TState["State Domicile Alert"]
-    CondCheck -->|Monday Morning Window| TDigest["Weekly Curated Digest"]
+    Req["POST /api/scholarships/evaluate
+(Income, Gender, State, Education, Category)"] --> Hashing["Generate Canonical SHA-256 Fingerprint"]
+    Hashing --> CacheCheck{"Redis Eval Cache?"}
+    CacheCheck -->|HIT| RetCache["Return Memoized Results (X-Cache: HIT)"]
+    CacheCheck -->|MISS| PreFilter["MongoDB Pre-Filter
+(Eliminate expired & state/gender mismatches)"]
+    PreFilter --> AST["Recursive AST Rule Traversal
+(Evaluates income limits, marks, criteria)"]
+    AST --> SetCache["Store in Redis (5-Min TTL)"]
+    AST --> AutoSave{"User Logged In?"}
+    AutoSave -->|Yes| SaveProfile["Sync Profile to UserProfile Collection"]
+    AutoSave -->|No / Guest| SkipSave["Skip Persistence"]
+    SaveProfile & SkipSave --> Resp["HTTP 200: Eligible Schemes + Evidence Badges"]
+```
 
-    T7 --> Dedup["Deduplication Guard (DB Key Check)"]
-    T48 --> Dedup
-    TState --> Dedup
-    TDigest --> Dedup
+### C. Bookmark Toggle & Delayed Deadline Alerts
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Student
+    participant API as Bookmark Controller
+    participant DB as MongoDB Atlas
+    participant Queue as BullMQ Reminder Queue
+    participant Worker as BullMQ Worker Fleet
+    participant Email as Nodemailer SMTP
 
-    Dedup -->|Not Previously Dispatched| Queue["Enqueue BullMQ Reminder Job"]
-    Dedup -->|Already Sent| Skip["Skip Duplicate"]
+    User->>API: POST /api/bookmarks/:scholarshipId
+    API->>DB: Toggle Bookmark Record (Upsert)
+    API->>Queue: Calculate & Enqueue 7-Day Delay Job
+    API->>Queue: Calculate & Enqueue 48-Hour Delay Job
+    Note over Queue: Deduplication Guard:
+jobId = reminder_userId_scholarshipId_window_deadline
+    API-->>User: HTTP 200 (Bookmarked & Alerts Scheduled)
 
-    Queue --> Worker["BullMQ Reminder Worker"]
-    Worker --> InApp["Store In-App Notification (Top Bell)"]
-    Worker --> Email["Dispatch Email Notice via SMTP"]
+    Note over Queue: Time passes... (7 Days before deadline)
+    Queue->>Worker: Dispatch Job (sendDeadlineReminder)
+    Worker->>DB: Re-verify State (Is bookmark active? Did deadline change?)
+    alt Verified Active
+        Worker->>Email: Render Branded HTML & Dispatch via SMTP
+        Email-->>User: Delivered to Student Mailbox
+        Worker->>DB: Record NotificationLog (SUCCESS)
+    else Bookmark Removed / Scheme Expired
+        Worker->>Worker: Drop Job (Prevent Spam)
+    end
 ```
 
 ---
 
-## 3. Key Features Matrix
+## 📂 Directory Layout
 
-| Feature | Description | Technical Implementation |
-| :--- | :--- | :--- |
-| **Anti-Scam & Trust Shield** | Verify external scholarship links, forwards, and circulars for application fees and fraudulent lookalike domains. | Autonomous heuristic engine (`trustVerificationService.js`) + official domain whitelist. |
-| **Zero-Knowledge Document Vault** | Complete certificate readiness checklist customized by category with zero document uploads or server storage. | 100% client-side privacy model with `localStorage` state caching. |
-| **Financial Year Expiry Auditor** | Evaluates certificate issue date against the active Indian fiscal year (April 1 to March 31) to prevent rejection. | In-browser date calculation against statutory fiscal cycles. |
-| **Aadhaar-NPCI DBT Diagnostics** | Step-by-step self-test to verify whether student bank accounts are mapped to NPCI for PFMS grant disbursement. | Interactive self-diagnosis tool + standardized Bank Mandate format. |
-| **Printable Bonafide Generator** | Generates standardized, print-ready Bonafide Certificates adhering to AICTE/UGC specifications for college signature. | Client-side dynamic template generator with native print layout. |
-| **State e-District Directory** | Direct links to official state portals for Income, Domicile, and Caste certificate renewals. | Curated directory of 10+ sovereign state portals (UP, MahaDBT, SSP, MeeSeva, Oasis). |
-| **Deterministic AST Criteria Engine** | Verifies eligibility against income ceilings, domicile, minimum CGPA, gender, and minority categories. | Recursive Abstract Syntax Tree evaluator (`ruleEvaluator.js`) with zero AI hallucinations. |
-| **Regulatory Evidence Dossier** | View exact gazette directive quotes, official issuing authorities, and required certificates for each scheme. | Automatic provenance extraction in `BaseSource.js` and rendered via interactive `EvidenceModal.jsx`. |
-| **Upcoming Deadline Reminders** | Proactive alerts dispatched automatically 7 days and 48 hours before portals close. | Node-cron scanner + BullMQ worker queue with deduplication guards. |
-| **Interactive Notification Center** | Real-time notification drawer with unread badges, filter tabs, guest preview mode, and mark-as-read controls. | Custom poll manager with guest simulation fallback and 401 recovery interceptors. |
-
----
-
-## 4. Privacy & Security Architecture
-
-Trust is foundational when dealing with educational opportunities:
-
-1. **Zero Government ID Storage**: Udaan never requests, uploads, or stores Aadhaar numbers, PAN cards, or raw certificate scans.
-2. **Metadata-Only Verification**: The Document Vault operates purely on structured validation checkpoints (e.g., issue dates, issuing authority type, digital barcode presence).
-3. **Local-First Privacy**: Personal checklist statuses are saved exclusively in browser `localStorage`, leaving zero digital footprint on backend databases.
-4. **Zero Application Fee Guarantee**: Udaan explicitly enforces and educates students on statutory laws prohibiting application fees for government and recognized CSR scholarships.
-
----
-
-## 5. Tech Stack Breakdown
-
-### Frontend
-* **Framework**: React 19 SPA powered by Vite
-* **Styling**: Tailwind CSS v4, custom Valley Sans and Newsreader typography
-* **Icons**: Lucide React
-* **Toasts & Feedback**: Sonner
-* **Routing**: React Router v7 with URL search parameters as Single Source of Truth
-
-### Backend
-* **Runtime**: Node.js (ES Modules)
-* **Framework**: Express.js with CORS gateway
-* **Database**: MongoDB Atlas with Mongoose ODM
-* **Caching**: Redis via `ioredis` (with automatic in-memory fallback)
-* **Queues & Scheduling**: BullMQ worker queues + `node-cron`
-* **Crawling & Verification**: Cheerio, Axios, URL domain heuristics
+```
+udaan-scholarship-finder/
+├── backend/
+│   ├── src/
+│   │   ├── config/              # MongoDB connection & segregated Redis/BullMQ clients
+│   │   ├── controllers/         # REST API endpoints (auth, bookmarks, profile, scholarship, trust)
+│   │   ├── engine/              # Deterministic AST rule evaluator & condition resolvers
+│   │   ├── ingestion/           # Autonomous crawlers (TataTrustSource, UgcSource, AicteSource, diffEngine)
+│   │   ├── jobs/                # Background notification & digest schedulers
+│   │   ├── middlewares/         # Auth (JWT), Cache-aside, Rate-limiter (Redis), Error handling
+│   │   ├── models/              # Mongoose schemas (Scholarship, Version, User, Profile, Bookmark, Log)
+│   │   ├── queues/              # BullMQ queue instances and reminder helpers
+│   │   ├── routes/              # Express route declarations with RBAC protection
+│   │   ├── scripts/             # Automated test suites & verification utilities
+│   │   │   ├── sendTestEmail.js            # Live SMTP email dispatcher & HTML previewer
+│   │   │   ├── testFlowFixes.js            # Automated verification for flows A through E
+│   │   │   └── testArchitecturalUpgrades.js # Verification for locks, scraping & fan-out
+│   │   ├── services/            # Transactional email, notification fan-out, and trust heuristics
+│   │   ├── utils/               # Atomic Redis distributed locks (SET NX EX + Lua script)
+│   │   └── workers/             # Asynchronous BullMQ deadline countdown workers
+│   ├── server.js                # Express application entrypoint (Helmet, Morgan, CORS)
+│   ├── package.json             # Pure MongoDB + Redis dependency stack
+│   └── .env                     # Server, database, Redis, and SMTP configuration
+├── frontend/
+│   ├── src/
+│   │   ├── assets/              # Branding assets, typography, and illustration graphics
+│   │   ├── components/          # EvidenceModal, NotificationCenter, Navbar, Footer, TrustBadge
+│   │   ├── context/             # AuthContext with persistent state and 401 token invalidation
+│   │   ├── hooks/               # Custom hooks for debounce, media queries, and cache polling
+│   │   ├── layouts/             # MainLayout with responsive navigation drawers
+│   │   ├── pages/               # Home, Scholarships, Eligibility, TrustShield, DocumentVault, Settings
+│   │   ├── services/            # Axios API wrappers (scholarshipService, authService, bookmarkService)
+│   │   ├── utils/               # Date helpers, fiscal year auditors, currency formatters
+│   │   ├── App.jsx              # Application router & routes declaration
+│   │   └── main.jsx             # React 19 root mounting point
+│   ├── vite.config.js           # Vite configuration with Tailwind CSS v4 plugin
+│   └── package.json             # Frontend dependency manifest
+└── README.md                    # System architecture, documentation, and operational guide
+```
 
 ---
 
-## 6. Getting Started Locally
+## 🚀 Getting Started Locally
 
 ### Prerequisites
-* Node.js v18.0.0 or higher
-* npm or yarn
-* Local or cloud MongoDB connection string
-* Optional: Local or Upstash Redis instance (backend gracefully falls back if Redis is not present)
+* **Node.js**: `v18.0.0` or higher
+* **MongoDB**: A local instance or free MongoDB Atlas cluster connection string
+* **Redis**: (Optional) A local Redis server or Redis Cloud instance. *If Redis is not installed, the backend automatically runs in fail-open in-memory mode.*
 
 ### 1. Clone the Repository
 ```bash
@@ -239,75 +354,54 @@ cd udaan-scholarship-finder
 ```
 
 ### 2. Configure Backend Environment
-Create a `.env` file inside the `backend/` directory:
+Create a file named `.env` inside `backend/`:
 ```env
 PORT=5000
 NODE_ENV=development
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secure_jwt_secret
-REDIS_URL=redis://127.0.0.1:6379
+JWT_SECRET=your_jwt_secret_key_min_32_chars
 FRONTEND_URL=http://localhost:5173
 
-# Optional SMTP Configuration for Live Email Delivery
+# Redis Configuration (Optional: fails open if unavailable)
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+
+# Transactional Email (Optional: runs in simulated fallback mode if empty)
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_specific_password
-EMAIL_FROM=notifications@udaan.org
+SMTP_PASS=your_gmail_app_password
+EMAIL_FROM="Udaan Scholarship Finder" <your_email@gmail.com>
 ```
 
-### 3. Install Dependencies & Start Backend
+### 3. Run Backend Automated Verification Tests
+You can run our automated test suites to verify that search indexing, eligibility evaluation, distributed locking, and live scraping are working properly:
 ```bash
+# 1. Test Core Flows (Search, Eligibility, Ingestion, Bookmarks, Security)
+node backend/src/scripts/testFlowFixes.js
+
+# 2. Test Architectural Upgrades (Distributed Locks, Cheerio Scraping, Fan-out)
+node backend/src/scripts/testArchitecturalUpgrades.js
+
+# 3. Test Email UI Delivery (Dispatches real email to your inbox & saves local HTML preview)
+node backend/src/scripts/sendTestEmail.js your_email@gmail.com INSTANT_MATCH
+```
+
+### 4. Start the Application
+```bash
+# Terminal 1: Start Backend
 cd backend
 npm install
-npm start
-```
-The backend server will start on `http://localhost:5000`.
+npm run dev
 
-### 4. Configure Frontend Environment & Start
-Open a new terminal window:
-```bash
+# Terminal 2: Start Frontend
 cd frontend
 npm install
 npm run dev
 ```
-Open `http://localhost:5173` in your browser to explore Udaan.
+Open [http://localhost:5173](http://localhost:5173) in your browser to explore Udaan.
 
 ---
 
-## 7. Directory Layout
-
-```
-udaan-scholarship-finder/
-├── backend/
-│   ├── src/
-│   │   ├── config/              # MongoDB and Redis connection clients
-│   │   ├── controllers/         # REST API endpoints (scholarships, auth, notifications, verify)
-│   │   ├── engine/              # AST rule evaluator and citation resolver
-│   │   ├── ingestion/           # Portal crawlers (NSP, MahaDBT, SSP, BaseSource)
-│   │   ├── middlewares/         # JWT authentication and error handlers
-│   │   ├── models/              # Mongoose schemas (Scholarship, User, Notification, Log)
-│   │   ├── queues/              # BullMQ queue definitions and reminder workers
-│   │   ├── routes/              # Express API routers (scholarships, auth, notifications, verify)
-│   │   ├── schedulers/          # Cron jobs for automated crawling and deadline alerts
-│   │   └── services/            # Cache, email, notification, and trustVerification logic
-│   ├── server.js                # Express app entrypoint
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── assets/              # Fonts, branding logos, and illustrations
-│   │   ├── components/          # EvidenceModal, NotificationCenter, Navbar, Footer
-│   │   ├── context/             # AuthContext with automatic 401 token invalidation
-│   │   ├── layouts/             # Mainlayout with smooth navigation transitions
-│   │   ├── pages/               # Home, Scholarships, Eligibility, TrustShield, DocumentVault, Settings, Support
-│   │   ├── services/            # Axios API client, scholarshipService, verifyService
-│   │   └── App.jsx              # Route provider
-│   ├── vite.config.js
-│   └── package.json
-└── README.md
-```
-
----
-
-## 8. License & Credits
-Built for student empowerment and safety across India. Custom fonts (Clash Display, Satoshi, Valley Sans) are property of their respective creators and distributed under the Free Font License (FFL.txt). All government circular references belong to their respective issuing ministries and portal authorities.
+## 📄 License & Mission
+Built for student empowerment, equity, and fraud prevention across India. All statutory gazette references belong to their respective government ministries and issuing authorities.

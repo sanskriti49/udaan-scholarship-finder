@@ -39,7 +39,7 @@ function Mainlayout() {
       {loading && <FullScreenLoader />}
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <div ref={pageRef} className="grow flex flex-col will-change-[opacity,transform]">
+        <div ref={pageRef} className="grow flex flex-col will-change-opacity">
           <Outlet />
         </div>
         <Footer />

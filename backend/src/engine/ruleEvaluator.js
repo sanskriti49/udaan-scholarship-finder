@@ -176,29 +176,26 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				const field = String(rule.field || "").toLowerCase();
 				return (
 					text.includes(field) ||
-					(field === "familyincome" && text.includes("income")) ||
+					(field === "familyincome" && (text.includes("income") || text.includes("lakh"))) ||
 					(field === "castecategory" && (text.includes("caste") || text.includes("category"))) ||
-					(field === "educationlevel" && (text.includes("level") || text.includes("study") || text.includes("matric")))
+					(field === "educationlevel" && (text.includes("level") || text.includes("study") || text.includes("degree")))
 				);
-			});
-			if (!citation) {
-				citation = scholarship.provenanceQuotes[0];
-			}
+			}) || null;
 		}
-		if (!citation) {
-			citation = {
-				ruleId: rule.id || "rule_criteria",
-				sourceUrl:
-					scholarship.sourceUrl ||
-					scholarship.applicationLink ||
-					"https://scholarships.gov.in",
-				clause: `Official Directive: ${rule.field || "Eligibility Criteria"}`,
-				quote:
-					rule.description ||
-					`Candidates must satisfy the mandatory ${rule.field} eligibility conditions specified in the official circular.`,
-				page: 1,
-			};
-		}
+
+		// Ensure citation preserves strict schema fields without fabricating false anchors
+		const resolvedCitation = citation
+			? {
+					ruleId: citation.ruleId || rule.id,
+					clause: citation.clause,
+					quote: citation.quote,
+					sourceUrl: citation.sourceUrl,
+					page: citation.page ?? null,
+					textFragment: citation.textFragment ?? null,
+					confidenceScore: citation.confidenceScore ?? 0.85,
+			  }
+			: null;
+		const citationRef = resolvedCitation;
 		const reqText = formatRequirement(rule.field, rule.operator, rule.targetValue);
 		const actualText = formatActualValue(rule.field, actualValue);
 
@@ -209,7 +206,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				description: rule.description || reqText,
 				required: reqText,
 				actual: actualText,
-				citation,
+				citation: resolvedCitation,
 			});
 			continue;
 		}
@@ -227,7 +224,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				description: rule.description || reqText,
 				actual: actualText,
 				condition: reqText,
-				citation,
+				citation: resolvedCitation,
 			});
 		} else {
 			failedRules.push({
@@ -239,7 +236,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				failMessage:
 					rule.failMessage ||
 					`Your ${rule.field} (${actualText}) does not meet the requirement: ${reqText}`,
-				citation,
+				citation: resolvedCitation,
 			});
 		}
 	}

@@ -2,6 +2,7 @@ import Scholarship from "../models/Scholarship.js";
 import { detectAndApplyChanges } from "../engine/diffEngine.js";
 import { Validator } from "./core/Validator.js";
 import { Deduplicator } from "./core/Deduplicator.js";
+import { ProvenanceExtractor } from "./core/ProvenanceExtractor.js";
 import { notificationService } from "../services/notificationService.js";
 import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 
@@ -61,20 +62,10 @@ export class BaseScholarshipSource {
 			for (const rawItem of items) {
 				try {
 					const slug = rawItem.slug || Deduplicator.generateSlug(rawItem.organization, rawItem.title, rawItem.level);
-					// Ensure provenance quotes are always populated for regulatory audit
-					const provenanceQuotes =
-						Array.isArray(rawItem.provenanceQuotes) && rawItem.provenanceQuotes.length > 0
-							? rawItem.provenanceQuotes
-							: (rawItem.rules || []).map((rule, idx) => ({
-									ruleId: rule.id || `rule_${idx + 1}`,
-									sourceUrl: rawItem.sourceUrl || this.baseUrl,
-									clause: `Official Directive §${idx + 1}: ${rule.field || "Eligibility Criterion"}`,
-									quote:
-										rule.description ||
-										`Candidates must satisfy ${rule.field} requirements as specified in the official circular.`,
-									page: 1,
-									verifiedAt: new Date(),
-							  }));
+					// Ensure strict schema provenance quotes are validated and persisted
+					const provenanceQuotes = ProvenanceExtractor.sanitizeProvenanceQuotes(
+						rawItem.provenanceQuotes || []
+					);
 
 					const normalizedItem = {
 						...rawItem,

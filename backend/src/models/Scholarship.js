@@ -148,11 +148,13 @@ const scholarshipSchema = new mongoose.Schema(
 
 		provenanceQuotes: [
 			{
-				ruleId: String,
-				sourceUrl: String,
-				quote: String,
-				clause: String,
-				page: Number,
+				ruleId: { type: String, trim: true },
+				clause: { type: String, required: true, trim: true },
+				quote: { type: String, required: true, trim: true },
+				sourceUrl: { type: String, required: true, trim: true },
+				page: { type: Number, default: null },
+				textFragment: { type: String, default: null, trim: true },
+				confidenceScore: { type: Number, min: 0, max: 1, default: 0.9 },
 				verifiedAt: { type: Date, default: Date.now },
 			},
 		],

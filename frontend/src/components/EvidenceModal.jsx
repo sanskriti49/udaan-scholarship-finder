@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
 	X,
 	FileText,
@@ -14,7 +15,16 @@ import {
 	FolderCheck,
 	History as HistoryIcon,
 	Building2,
+	AlertCircle,
+	FileSearch,
+	Link2Off,
 } from "lucide-react";
+import {
+	sanitizeUrl,
+	isDeepLink,
+	buildDeepAnchorUrl,
+	evaluateCitationStatus,
+} from "../utils/provenanceUtils";
 
 export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 	const [activeSection, setActiveSection] = useState("gazette");
@@ -22,56 +32,46 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 	useEffect(() => {
 		if (!isOpen) return;
 		setActiveSection("gazette");
+
+		// Lock body scroll when modal is open
+		const originalOverflow = document.body.style.overflow;
+		document.body.style.overflow = "hidden";
+
 		const handleKeyDown = (e) => {
 			if (e.key === "Escape") {
 				onClose();
 			}
 		};
 		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
+		return () => {
+			document.body.style.overflow = originalOverflow;
+			window.removeEventListener("keydown", handleKeyDown);
+		};
 	}, [isOpen, onClose]);
 
 	if (!isOpen || !scholarship) return null;
 
-	const quotes = scholarship.provenanceQuotes || [];
+	// Use genuine provenance quotes without fabricating synthetic ones
+	const quotes = Array.isArray(scholarship.provenanceQuotes)
+		? scholarship.provenanceQuotes
+		: [];
 	const rules = scholarship.rules || [];
 	const docs = scholarship.requiredDocuments || [];
 	const history = scholarship.history || [];
-	const specificSchemeUrl =
-		scholarship.sourceUrl ||
-		quotes[0]?.sourceUrl ||
-		scholarship.applicationLink ||
-		"https://scholarships.gov.in";
 
-	// If provenanceQuotes is empty, synthesize rich clauses from rule ASTs and description
-	const effectiveQuotes =
-		quotes.length > 0
-			? quotes
-			: rules.length > 0
-				? rules.map((r, idx) => ({
-						clause: `Official Directive §${idx + 1}: ${r.field || "Eligibility Standard"}`,
-						quote:
-							r.description ||
-							`Applicants must satisfy all mandatory ${r.field} guidelines specified in the issuing circular.`,
-						page: 1,
-						sourceUrl: specificSchemeUrl,
-				  }))
-				: [
-						{
-							clause: "Gazette Notification §1: General Terms",
-							quote:
-								scholarship.description ||
-								"This opportunity is verified against official government circulars and issuing body notifications.",
-							page: 1,
-							sourceUrl: specificSchemeUrl,
-						},
-				  ];
+	// Determine specific scheme circular URL without falling back to generic portals
+	const rawDirectDocUrl =
+		scholarship.sourceUrl ||
+		quotes.find((q) => isDeepLink(q.sourceUrl))?.sourceUrl ||
+		null;
+	const safeDirectDocUrl = sanitizeUrl(rawDirectDocUrl);
+	const hasDeepDocLink = safeDirectDocUrl ? isDeepLink(safeDirectDocUrl) : false;
 
 	const navSections = [
 		{
 			id: "gazette",
 			label: "Gazette & Citations",
-			count: effectiveQuotes.length,
+			count: quotes.length,
 			icon: BookOpen,
 		},
 		{
@@ -103,7 +103,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 		});
 	}
 
-	return (
+	return createPortal(
 		<div
 			className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
 			onClick={(e) => {
@@ -127,7 +127,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 							</span>
 							<span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-slate-200 shadow-2xs">
 								<ShieldCheck size={13} className="text-emerald-700" />
-								<span>Official Gazette Dossier</span>
+								<span>Official Gazette Details</span>
 							</span>
 						</div>
 
@@ -192,80 +192,227 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					{activeSection === "gazette" && (
 						<div className="space-y-6">
 							{/* Official Gazette Source Banner */}
-							{specificSchemeUrl && (
-								<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-									<div>
-										<h4 className="font-bold text-slate-900 text-base flex items-center gap-2">
-											<FileText size={18} className="text-emerald-700" />
-											Official Gazette & Guidelines
-										</h4>
-										<p className="text-sm text-slate-600 mt-1 leading-relaxed">
-											Access the full statutory circular published by{" "}
-											<span className="font-semibold text-slate-800">
-												{scholarship.organization}
-											</span>
-											.
-										</p>
-									</div>
+							<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+								<div className="space-y-1">
+									<h4 className="font-bold text-slate-900 text-base flex items-center gap-2">
+										<FileText size={18} className="text-emerald-700" />
+										Official Gazette & Guidelines
+									</h4>
+									<p className="text-sm text-slate-600 leading-relaxed">
+										{hasDeepDocLink ? (
+											<>
+												Access the official statutory circular issued by{" "}
+												<span className="font-semibold text-slate-800">
+													{scholarship.organization}
+												</span>
+												.
+											</>
+										) : safeDirectDocUrl ? (
+											<>
+												Domain authority:{" "}
+												<code className="font-mono text-xs bg-white px-1.5 py-0.5 rounded border border-slate-200 text-slate-700">
+													{new URL(safeDirectDocUrl).hostname}
+												</code>
+												. Exact statutory document circular link is pending audit.
+											</>
+										) : (
+											<>
+												Issuing authority:{" "}
+												<span className="font-semibold text-slate-800">
+													{scholarship.organization}
+												</span>
+												. Statutory circular document is undergoing verification.
+											</>
+										)}
+									</p>
+								</div>
+
+								{hasDeepDocLink ? (
 									<a
-										href={specificSchemeUrl}
+										href={safeDirectDocUrl}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-slate-900 hover:bg-emerald-800 text-white text-xs font-semibold transition-colors shadow-2xs shrink-0 cursor-pointer"
+										title="Open official statutory circular document"
+										aria-label="Open official source circular"
 									>
 										<span>Open Source Circular</span>
 										<ArrowUpRight className="w-3.5 h-3.5" />
 									</a>
-								</div>
-							)}
+								) : safeDirectDocUrl ? (
+									<span
+										className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-50 text-amber-900 border border-amber-200 text-xs font-semibold shrink-0"
+										title="Root domain only. Deep document link has not been ingested yet."
+									>
+										<Link2Off size={13} className="text-amber-700" />
+										<span>Deep Link Pending Audit</span>
+									</span>
+								) : (
+									<span
+										className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-xs font-semibold shrink-0"
+										title="Circular document pending statutory verification"
+									>
+										<AlertCircle size={13} className="text-slate-400" />
+										<span>Unlinked Circular</span>
+									</span>
+								)}
+							</div>
 
 							<div>
 								<div className="flex items-center justify-between mb-3">
 									<h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
 										<Sparkles className="w-4 h-4 text-emerald-700" />
-										Audited Regulatory Quotes ({effectiveQuotes.length})
+										Audited Regulatory Quotes ({quotes.length})
 									</h4>
 									<span className="text-xs font-medium text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-										Verifiable Source
+										{quotes.length > 0 ? "Verifiable Provenance" : "Audit Pending"}
 									</span>
 								</div>
 
-								<div className="space-y-3.5">
-									{effectiveQuotes.map((q, idx) => (
-										<div
-											key={idx}
-											className="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-[#FAF9F6] space-y-2"
-										>
-											<div className="flex items-center justify-between text-xs text-slate-500">
-												<span className="font-bold text-slate-900 flex items-center gap-1.5">
-													<span className="w-2 h-2 rounded-full bg-emerald-600" />
-													{q.clause || `Clause Section ${idx + 1}`}
-												</span>
-												{q.page && (
-													<span className="bg-white border border-slate-200 px-2 py-0.5 rounded text-xs font-medium text-slate-600">
-														Page {q.page}
-													</span>
-												)}
-											</div>
-											<blockquote className="border-l-3 border-emerald-700 pl-3.5 italic text-slate-800 text-sm leading-relaxed bg-emerald-50/30 py-1.5 rounded-r-lg">
-												&ldquo;{q.quote}&rdquo;
-											</blockquote>
-											{q.sourceUrl && q.sourceUrl !== specificSchemeUrl && (
-												<div className="pt-1 flex justify-end">
-													<a
-														href={q.sourceUrl}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="text-xs text-emerald-800 hover:underline flex items-center gap-1 font-medium"
-													>
-														<span>Direct Reference Link</span>
-														<ExternalLink size={12} />
-													</a>
-												</div>
-											)}
+								{quotes.length === 0 ? (
+									<div className="p-8 text-center bg-[#FAF9F6] rounded-2xl border border-slate-200 text-slate-600 space-y-3">
+										<div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto text-emerald-800 shadow-2xs">
+											<FileSearch size={22} />
 										</div>
-									))}
-								</div>
+										<h4 className="font-bold text-slate-900 text-base">
+											No Statutory Quotes Ingested Yet
+										</h4>
+										<p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
+											This scheme is actively being audited by the Udaan scraper pipeline. Exact regulatory clauses and PDF page anchors will appear here once statutory verification is complete.
+										</p>
+										{rules.length > 0 && (
+											<button
+												type="button"
+												onClick={() => setActiveSection("rules")}
+												className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition cursor-pointer"
+											>
+												<ListChecks size={14} />
+												<span>Inspect {rules.length} Evaluated Rules</span>
+											</button>
+										)}
+									</div>
+								) : (
+									<div className="space-y-3.5">
+										{quotes.map((q, idx) => {
+											const citationStatus = evaluateCitationStatus(q);
+											const confidencePercent =
+												typeof q.confidenceScore === "number"
+													? Math.round(q.confidenceScore * 100)
+													: null;
+
+											return (
+												<div
+													key={idx}
+													className="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-[#FAF9F6] space-y-3 shadow-2xs"
+												>
+													<div className="flex items-center justify-between gap-2 flex-wrap text-xs">
+														<span className="font-bold text-slate-900 flex items-center gap-1.5">
+															<span className="w-2 h-2 rounded-full bg-emerald-600" />
+															{q.clause || `Clause Section ${idx + 1}`}
+														</span>
+
+														<div className="flex items-center gap-1.5 flex-wrap">
+															{q.page && (
+																<span className="bg-white border border-slate-200 px-2 py-0.5 rounded-md text-[11px] font-semibold text-slate-700 shadow-2xs">
+																	Page {q.page}
+																</span>
+															)}
+															{q.textFragment && (
+																<span
+																	className="bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md text-[11px] font-semibold text-emerald-800 shadow-2xs"
+																	title={`Text Fragment: ${q.textFragment}`}
+																>
+																	Text Anchor
+																</span>
+															)}
+															{confidencePercent !== null && (
+																<span
+																	className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border shadow-2xs ${
+																		confidencePercent >= 80
+																			? "bg-emerald-50 text-emerald-800 border-emerald-200"
+																			: "bg-amber-50 text-amber-800 border-amber-200"
+																	}`}
+																	title="Automated provenance extraction confidence"
+																>
+																	{confidencePercent}% match
+																</span>
+															)}
+														</div>
+													</div>
+
+													<blockquote className="border-l-3 border-emerald-700 pl-3.5 italic text-slate-800 text-sm leading-relaxed bg-emerald-50/30 py-2 rounded-r-lg">
+														&ldquo;{q.quote}&rdquo;
+													</blockquote>
+
+													{/* Citation Deep Link Actions & Indicators */}
+													<div className="pt-1 flex items-center justify-between gap-3 border-t border-slate-200/60 flex-wrap text-xs">
+														{citationStatus.badgeType === "deep_pdf" && citationStatus.anchorUrl && (
+															<>
+																<span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-800">
+																	<FileText size={13} className="text-emerald-700" />
+																	<span>{citationStatus.badgeLabel}</span>
+																</span>
+																<a
+																	href={citationStatus.anchorUrl}
+																	target="_blank"
+																	rel="noopener noreferrer"
+																	className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-950 hover:underline cursor-pointer"
+																	aria-label={`Open verified PDF citation for ${q.clause}`}
+																>
+																	<span>Inspect PDF Citation</span>
+																	<ExternalLink size={12} />
+																</a>
+															</>
+														)}
+
+														{citationStatus.badgeType === "deep_html" && citationStatus.anchorUrl && (
+															<>
+																<span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-800">
+																	<Sparkles size={13} className="text-emerald-700" />
+																	<span>Verified Web Citation</span>
+																</span>
+																<a
+																	href={citationStatus.anchorUrl}
+																	target="_blank"
+																	rel="noopener noreferrer"
+																	className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-950 hover:underline cursor-pointer"
+																	aria-label={`Inspect source circular text anchor for ${q.clause}`}
+																>
+																	<span>Inspect Source Citation</span>
+																	<ExternalLink size={12} />
+																</a>
+															</>
+														)}
+
+														{citationStatus.badgeType === "root_only" && (
+															<div className="w-full flex items-center justify-between text-slate-500">
+																<span className="inline-flex items-center gap-1.5 text-[11px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+																	<AlertCircle size={12} className="text-amber-600" />
+																	<span>Root domain only &mdash; deep link disabled</span>
+																</span>
+																<span className="text-[11px] text-slate-400">
+																	Deep link pending audit
+																</span>
+															</div>
+														)}
+
+														{citationStatus.badgeType === "unlinked" && (
+															<div className="w-full flex items-center justify-between text-slate-500">
+																<span className="inline-flex items-center gap-1.5 text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+																	<Link2Off size={12} className="text-slate-400" />
+																	<span>Direct Deep Link Unavailable</span>
+																</span>
+																<span className="text-[11px] text-slate-400">
+																	Statutory audit pending
+																</span>
+															</div>
+														)}
+													</div>
+												</div>
+											);
+										})}
+									</div>
+								)}
 							</div>
 						</div>
 					)}
@@ -369,10 +516,10 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 									{scholarship.description || "Official government scholarship administrator authorized under statutory circulars."}
 								</p>
 
-								{scholarship.officialPortal && (
+								{sanitizeUrl(scholarship.officialPortal) && (
 									<div className="pt-2">
 										<a
-											href={scholarship.officialPortal}
+											href={sanitizeUrl(scholarship.officialPortal)}
 											target="_blank"
 											rel="noopener noreferrer"
 											className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-1.5 rounded-xl transition"
@@ -433,9 +580,9 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					</span>
 
 					<div className="flex items-center gap-2">
-						{scholarship.applicationLink && (
+						{sanitizeUrl(scholarship.applicationLink) && (
 							<a
-								href={scholarship.applicationLink}
+								href={sanitizeUrl(scholarship.applicationLink)}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="flex-1 sm:flex-none px-4 py-2.5 rounded-full text-xs font-bold bg-emerald-800 hover:bg-emerald-900 text-white transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
@@ -453,7 +600,8 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					</div>
 				</div>
 			</div>
-		</div>
+		</div>,
+		document.body
 	);
 }
 

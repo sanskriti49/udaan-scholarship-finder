@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
 import { BaseScholarshipSource } from "../BaseSource.js";
 import { Fetcher } from "../core/Fetcher.js";
+import { ProvenanceExtractor } from "../core/ProvenanceExtractor.js";
 
 export class UgcSource extends BaseScholarshipSource {
 	constructor() {
@@ -253,7 +254,9 @@ export class UgcSource extends BaseScholarshipSource {
 						sourceUrl: entry.sourceUrl,
 						clause: entry.clause,
 						quote: entry.provenanceQuote,
-						page: 2,
+						page: entry.page || 2,
+						textFragment: ProvenanceExtractor.generateTextFragment(entry.provenanceQuote),
+						confidenceScore: ProvenanceExtractor.calculateConfidence(entry.provenanceQuote, entry.clause),
 					},
 				],
 			});

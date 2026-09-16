@@ -1,5 +1,6 @@
 import { BaseScholarshipSource } from "../BaseSource.js";
 import { Fetcher } from "../core/Fetcher.js";
+import { ProvenanceExtractor } from "../core/ProvenanceExtractor.js";
 
 export class NspSource extends BaseScholarshipSource {
 	constructor() {
@@ -308,7 +309,9 @@ export class NspSource extends BaseScholarshipSource {
 						sourceUrl: entry.sourceUrl,
 						clause: entry.clause,
 						quote: entry.provenanceQuote,
-						page: 1,
+						page: entry.page || 1,
+						textFragment: ProvenanceExtractor.generateTextFragment(entry.provenanceQuote),
+						confidenceScore: ProvenanceExtractor.calculateConfidence(entry.provenanceQuote, entry.clause),
 					},
 				],
 			});

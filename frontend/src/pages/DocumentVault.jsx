@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import {
   FileText,
@@ -493,161 +494,165 @@ export default function DocumentVault() {
       </div>
 
       {/* Bonafide Certificate Generator Modal */}
-      {bonafideModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Bonafide Certificate Template</h3>
-                <p className="text-xs text-slate-500">Generate a standardized format for college signature.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setBonafideModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Student Full Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Priya Sharma"
-                  value={bonafideForm.studentName}
-                  onChange={(e) => setBonafideForm({ ...bonafideForm, studentName: e.target.value })}
-                  className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">College / Institute Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Jadavpur University, Kolkata"
-                  value={bonafideForm.collegeName}
-                  onChange={(e) => setBonafideForm({ ...bonafideForm, collegeName: e.target.value })}
-                  className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+      {bonafideModalOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div>
-                  <label className="font-bold text-slate-700 block mb-1">Course & Branch</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. B.Tech Computer Science"
-                    value={bonafideForm.courseBranch}
-                    onChange={(e) => setBonafideForm({ ...bonafideForm, courseBranch: e.target.value })}
-                    className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
-                  />
+                  <h3 className="text-base font-bold text-slate-900">Bonafide Certificate Template</h3>
+                  <p className="text-xs text-slate-500">Generate a standardized format for college signature.</p>
                 </div>
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Roll / Enrollment No.</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. 2023-CS-042"
-                    value={bonafideForm.rollNumber}
-                    onChange={(e) => setBonafideForm({ ...bonafideForm, rollNumber: e.target.value })}
-                    className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Preview Box */}
-            <div className="border border-dashed border-slate-300 rounded-2xl p-5 bg-[#FAF9F6] text-xs font-serif leading-relaxed text-slate-800 space-y-3">
-              <div className="text-center font-bold font-sans uppercase tracking-widest text-[11px] text-slate-900 border-b border-slate-200 pb-2">
-                TO WHOMSOEVER IT MAY CONCERN
-              </div>
-              <p>
-                This is to certify that <strong>{bonafideForm.studentName || "[Student Name]"}</strong>, Roll Number <strong>{bonafideForm.rollNumber || "[Roll Number]"}</strong>, is a bonafide student of <strong>{bonafideForm.collegeName || "[College Name]"}</strong>, studying in <strong>{bonafideForm.courseBranch || "[Course & Branch]"}</strong> during the academic year <strong>{bonafideForm.academicYear}</strong>.
-              </p>
-              <p>
-                As per our institute records, the student possesses satisfactory conduct. This certificate is issued upon the student's request for official scholarship application verification.
-              </p>
-              <div className="pt-6 flex items-center justify-between font-sans text-[11px] text-slate-600">
-                <div>Date: {new Date().toLocaleDateString("en-IN")}</div>
-                <div className="text-right">
-                  <div>Signature & Stamp of Principal / Registrar</div>
-                  <div className="text-[10px] text-slate-400 font-mono">Institute Seal</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  window.print();
-                }}
-                className="cursor-pointer inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition"
-              >
-                <Printer size={13} />
-                <span>Print Certificate</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* DBT Bank Seeding Guide Modal */}
-      {dbtModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">Aadhaar-NPCI DBT Bank Seeding</h3>
-                <p className="text-xs text-slate-500">Crucial step to receive scholarship payments through PFMS.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setDbtModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer p-1"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs leading-relaxed text-slate-700">
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-950 font-normal">
-                <strong>Important Distinction: </strong> Linking Aadhaar to your bank account for KYC is NOT the same as NPCI Seeding. Your bank must map your account in the NPCI mapper for Direct Benefit Transfer (DBT).
-              </div>
-
-              <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
-                Three Ways to Verify Your Status:
-              </h4>
-              <ol className="list-decimal pl-4 space-y-2">
-                <li>
-                  <strong>Online via UIDAI Portal: </strong>
-                  Visit <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noreferrer" className="text-emerald-800 font-semibold underline">myaadhaar.uidai.gov.in</a> and select "Bank Seeding Status" using your Aadhaar OTP.
-                </li>
-                <li>
-                  <strong>Through Bank Netbanking: </strong>
-                  Log in to your mobile banking app and search for "Aadhaar Seeding Status" or "DBT Services".
-                </li>
-                <li>
-                  <strong>Bank Branch Submission: </strong>
-                  If unseeded, visit your home branch and submit the standardized "NPCI Aadhaar Seeding Mandate Form" along with an Aadhaar copy.
-                </li>
-              </ol>
-
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500">Government DBT queries: 1947 (UIDAI Toll-Free)</span>
                 <button
                   type="button"
-                  onClick={() => setDbtModalOpen(false)}
-                  className="cursor-pointer px-4 py-1.5 rounded-xl bg-slate-900 text-white font-semibold text-xs"
+                  onClick={() => setBonafideModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-700 cursor-pointer p-1"
                 >
-                  Close Guide
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">Student Full Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Priya Sharma"
+                    value={bonafideForm.studentName}
+                    onChange={(e) => setBonafideForm({ ...bonafideForm, studentName: e.target.value })}
+                    className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-slate-700 block mb-1">College / Institute Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Jadavpur University, Kolkata"
+                    value={bonafideForm.collegeName}
+                    onChange={(e) => setBonafideForm({ ...bonafideForm, collegeName: e.target.value })}
+                    className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">Course & Branch</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. B.Tech Computer Science"
+                      value={bonafideForm.courseBranch}
+                      onChange={(e) => setBonafideForm({ ...bonafideForm, courseBranch: e.target.value })}
+                      className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-slate-700 block mb-1">Roll / Enrollment No.</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 2023-CS-042"
+                      value={bonafideForm.rollNumber}
+                      onChange={(e) => setBonafideForm({ ...bonafideForm, rollNumber: e.target.value })}
+                      className="w-full bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-2 text-slate-900 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Preview Box */}
+              <div className="border border-dashed border-slate-300 rounded-2xl p-5 bg-[#FAF9F6] text-xs font-serif leading-relaxed text-slate-800 space-y-3">
+                <div className="text-center font-bold font-sans uppercase tracking-widest text-[11px] text-slate-900 border-b border-slate-200 pb-2">
+                  TO WHOMSOEVER IT MAY CONCERN
+                </div>
+                <p>
+                  This is to certify that <strong>{bonafideForm.studentName || "[Student Name]"}</strong>, Roll Number <strong>{bonafideForm.rollNumber || "[Roll Number]"}</strong>, is a bonafide student of <strong>{bonafideForm.collegeName || "[College Name]"}</strong>, studying in <strong>{bonafideForm.courseBranch || "[Course & Branch]"}</strong> during the academic year <strong>{bonafideForm.academicYear}</strong>.
+                </p>
+                <p>
+                  As per our institute records, the student possesses satisfactory conduct. This certificate is issued upon the student's request for official scholarship application verification.
+                </p>
+                <div className="pt-6 flex items-center justify-between font-sans text-[11px] text-slate-600">
+                  <div>Date: {new Date().toLocaleDateString("en-IN")}</div>
+                  <div className="text-right">
+                    <div>Signature & Stamp of Principal / Registrar</div>
+                    <div className="text-[10px] text-slate-400 font-mono">Institute Seal</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.print();
+                  }}
+                  className="cursor-pointer inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-xl transition"
+                >
+                  <Printer size={13} />
+                  <span>Print Certificate</span>
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
+
+      {/* DBT Bank Seeding Guide Modal */}
+      {dbtModalOpen &&
+        createPortal(
+          <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Aadhaar-NPCI DBT Bank Seeding</h3>
+                  <p className="text-xs text-slate-500">Crucial step to receive scholarship payments through PFMS.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDbtModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-700 cursor-pointer p-1"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs leading-relaxed text-slate-700">
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-950 font-normal">
+                  <strong>Important Distinction: </strong> Linking Aadhaar to your bank account for KYC is NOT the same as NPCI Seeding. Your bank must map your account in the NPCI mapper for Direct Benefit Transfer (DBT).
+                </div>
+
+                <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
+                  Three Ways to Verify Your Status:
+                </h4>
+                <ol className="list-decimal pl-4 space-y-2">
+                  <li>
+                    <strong>Online via UIDAI Portal: </strong>
+                    Visit <a href="https://myaadhaar.uidai.gov.in" target="_blank" rel="noreferrer" className="text-emerald-800 font-semibold underline">myaadhaar.uidai.gov.in</a> and select "Bank Seeding Status" using your Aadhaar OTP.
+                  </li>
+                  <li>
+                    <strong>Through Bank Netbanking: </strong>
+                    Log in to your mobile banking app and search for "Aadhaar Seeding Status" or "DBT Services".
+                  </li>
+                  <li>
+                    <strong>Bank Branch Submission: </strong>
+                    If unseeded, visit your home branch and submit the standardized "NPCI Aadhaar Seeding Mandate Form" along with an Aadhaar copy.
+                  </li>
+                </ol>
+
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[11px] text-slate-500">Government DBT queries: 1947 (UIDAI Toll-Free)</span>
+                  <button
+                    type="button"
+                    onClick={() => setDbtModalOpen(false)}
+                    className="cursor-pointer px-4 py-1.5 rounded-xl bg-slate-900 text-white font-semibold text-xs"
+                  >
+                    Close Guide
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

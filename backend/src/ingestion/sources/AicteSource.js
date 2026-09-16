@@ -1,5 +1,6 @@
 import { BaseScholarshipSource } from "../BaseSource.js";
 import { Fetcher } from "../core/Fetcher.js";
+import { ProvenanceExtractor } from "../core/ProvenanceExtractor.js";
 
 export class AicteSource extends BaseScholarshipSource {
 	constructor() {
@@ -265,7 +266,9 @@ export class AicteSource extends BaseScholarshipSource {
 						sourceUrl: entry.sourceUrl,
 						clause: entry.clause || "Official General Instructions",
 						quote: entry.provenanceQuote || entry.desc,
-						page: 1,
+						page: entry.page || 1,
+						textFragment: ProvenanceExtractor.generateTextFragment(entry.provenanceQuote || entry.desc),
+						confidenceScore: ProvenanceExtractor.calculateConfidence(entry.provenanceQuote || entry.desc, entry.clause),
 					},
 				],
 			});

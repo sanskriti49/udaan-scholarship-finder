@@ -94,6 +94,31 @@ export class Validator {
 			errors.push("Scholarship must specify at least one required document");
 		}
 
+		// Validate Provenance Quotes if present
+		if (item.provenanceQuotes && Array.isArray(item.provenanceQuotes)) {
+			item.provenanceQuotes.forEach((quote, qIdx) => {
+				if (!quote.clause || typeof quote.clause !== "string" || quote.clause.trim().length === 0) {
+					errors.push(`Provenance quote #${qIdx + 1} missing or invalid 'clause'`);
+				}
+				if (!quote.quote || typeof quote.quote !== "string" || quote.quote.trim().length < 5) {
+					errors.push(`Provenance quote #${qIdx + 1} missing or too short 'quote'`);
+				}
+				if (!quote.sourceUrl || typeof quote.sourceUrl !== "string" || !quote.sourceUrl.startsWith("http")) {
+					errors.push(`Provenance quote #${qIdx + 1} has invalid or non-HTTP 'sourceUrl'`);
+				}
+				if (quote.page !== null && quote.page !== undefined) {
+					if (typeof quote.page !== "number" || quote.page <= 0) {
+						errors.push(`Provenance quote #${qIdx + 1} 'page' must be a positive number or null`);
+					}
+				}
+				if (quote.confidenceScore !== null && quote.confidenceScore !== undefined) {
+					if (typeof quote.confidenceScore !== "number" || quote.confidenceScore < 0 || quote.confidenceScore > 1) {
+						errors.push(`Provenance quote #${qIdx + 1} 'confidenceScore' must be between 0 and 1`);
+					}
+				}
+			});
+		}
+
 		return {
 			isValid: errors.length === 0,
 			errors,
