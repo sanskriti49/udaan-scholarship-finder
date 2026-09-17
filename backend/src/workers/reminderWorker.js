@@ -46,6 +46,10 @@ export function createReminderWorker() {
 				return { status: "SKIPPED", reason: "Scholarship not found" };
 			}
 
+			if (scholarship.publication?.state !== "published" || !scholarship.deadline) {
+				return { status: "SKIPPED", reason: "Scholarship is not published with an official deadline" };
+			}
+
 			const now = new Date();
 			if (new Date(scholarship.deadline).getTime() <= now.getTime()) {
 				console.warn(

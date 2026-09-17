@@ -26,10 +26,10 @@ function Hero() {
 
 	const quickTags = [
 		{ label: "AICTE Pragati", query: "Pragati" },
-		{ label: "Post-Matric (SC/ST/OBC)", query: "Post-Matric" },
-		{ label: "Tata Trust STEM", query: "STEM" },
-		{ label: "Single Girl Child", query: "Single Girl Child" },
-		{ label: "Corporate CSR", query: "Corporate" },
+		{ label: "Central Sector CSSS", query: "CSSS" },
+		{ label: "Post-Matric Schemes", query: "Post-Matric" },
+		{ label: "Specially Abled (Saksham)", query: "Saksham" },
+		{ label: "Girl Students", query: "Girl" },
 	];
 
 	const metrics = [

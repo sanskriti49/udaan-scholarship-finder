@@ -1,0 +1,64 @@
+{
+  "academicYear": "2026-27",
+  "source": "National Autonomous Councils (AICTE & UGC)",
+  "schemes": [
+    {
+      "title": "AICTE Post Graduate (PG) Scholarship for GATE / GPAT / CEED Qualified Students",
+      "department": "All India Council for Technical Education",
+      "academicYear": "2026-27",
+      "opensAt": "01-07-2026",
+      "closesAt": "31-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://www.aicte-india.org/",
+      "category": "Merit based",
+      "level": "PG",
+      "state": "All India",
+      "tags": [
+        "STEM",
+        "Engineering",
+        "GATE",
+        "PG Scholarship"
+      ],
+      "familyIncomeMax": 1200000,
+      "amountValue": 148800,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "EWS"
+      ],
+      "description": "Financial assistance of ₹12,400 per month (total ₹1,48,800/year) to full-time GATE, GPAT or CEED qualified students admitted to AICTE-approved postgraduate engineering and architecture programs."
+    },
+    {
+      "title": "UGC Junior Research Fellowship (JRF) in Sciences and Humanities",
+      "department": "University Grants Commission (UGC)",
+      "academicYear": "2026-27",
+      "opensAt": "01-06-2026",
+      "closesAt": "30-11-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://www.aicte-india.org/",
+      "category": "Merit based",
+      "level": "PhD",
+      "state": "All India",
+      "tags": [
+        "PhD",
+        "Research",
+        "NET",
+        "Fellowship"
+      ],
+      "familyIncomeMax": 1200000,
+      "amountValue": 444000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "EWS"
+      ],
+      "description": "Premier national doctoral research fellowship granting ₹37,000 per month (plus HRA) for UGC-NET and CSIR-UGC NET qualified scholars undertaking Ph.D. research in Indian universities."
+    }
+  ]
+}

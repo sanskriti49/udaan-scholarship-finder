@@ -307,7 +307,9 @@ class NotificationService {
 
 		// Pull active scholarships closing within the next 8 days
 		const eightDaysFromNow = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000);
+		// Only published records with an official closing date are eligible for alerts.
 		const closingScholarships = await Scholarship.find({
+			"publication.state": "published",
 			deadline: { $gt: now, $lte: eightDaysFromNow },
 		}).lean();
 
@@ -440,6 +442,7 @@ class NotificationService {
 		const weekIdentifier = `${tempDate.getUTCFullYear()}_W${weekNum}`;
 
 		const activeScholarships = await Scholarship.find({
+			"publication.state": "published",
 			deadline: { $gt: now },
 		}).lean();
 		const students = await User.find({ role: "student" }).lean();

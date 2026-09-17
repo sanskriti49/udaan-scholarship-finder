@@ -4,8 +4,26 @@ import Scholarship from "../models/Scholarship.js";
 import ScholarshipVersion from "../models/ScholarshipVersion.js";
 import UserProfile from "../models/UserProfile.js";
 import { evaluateEligibility } from "../engine/ruleEvaluator.js";
-import { sourceRegistry } from "../ingestion/SourceRegistry.js";
-import { crawlerScheduler } from "../ingestion/core/Scheduler.js";
+import ScholarshipCycle from "../models/ScholarshipCycle.js";
+import SourceSnapshot from "../models/SourceSnapshot.js";
+import IngestionIssue from "../models/IngestionIssue.js";
+import SourceState from "../models/SourceState.js";
+import CrawlRun from "../models/CrawlRun.js";
+import { crawlerScheduler } from "../pipeline/scheduler.js";
+import { SOURCE_REGISTRY } from "../pipeline/sources.js";
+import { computeStatus } from "../pipeline/core/status.js";
+import { verifyEvidence } from "../pipeline/core/evidence.js";
+
+const PUBLIC_FILTER = { "publication.state": "published" };
+const HIDDEN_FIELDS = { legacySnapshot: 0, fieldEvidence: 0, dataHash: 0 };
+const STATUSES = new Set(["upcoming", "open", "closing_soon", "closed", "unknown"]);
+
+/** Status is re-derived at read time so it is correct even between refresh jobs. */
+function withLiveStatus(doc, now = new Date()) {
+	if (!doc || doc.legacy) return doc;
+	const s = computeStatus(doc, now);
+	return { ...doc, status: s.status, statusReason: s.reason, stale: s.stale };
+}
 import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 import { getRedisClient, isRedisAvailable } from "../config/redis.js";
 
@@ -41,12 +59,13 @@ export const getScholarships = async (req, res) => {
 			minAmount,
 			maxAmount,
 			hasChanges,
+			status,
 			sort = "deadline",
 			page = 1,
 			limit = 12,
 		} = req.query;
 
-		const conditions = [];
+		const conditions = [PUBLIC_FILTER];
 
 		let isTextSearch = false;
 		if (search && search.trim()) {
@@ -55,17 +74,98 @@ export const getScholarships = async (req, res) => {
 		}
 
 		if (category && category !== "All") {
-			if (category === "STEM") {
+			if (category === "Government") {
 				conditions.push({
-					$or: [{ category: "STEM" }, { tags: { $in: ["STEM", "Engineering"] } }],
+					$or: [{ category: "Government" }, { sourceType: "Government" }],
+				});
+			} else if (category === "STEM") {
+				conditions.push({
+					$or: [
+						{ category: "STEM" },
+						{ tags: { $in: ["STEM", "Engineering", "Technical"] } },
+						{ title: /aicte|technical|energy|statistical|science/i },
+					],
+				});
+			} else if (category === "Women") {
+				conditions.push({
+					$or: [
+						{ category: "Women" },
+						{ tags: "Women" },
+						{ "eligibility.gender": "Female" },
+						{ title: /\b(girl|girls|women|female)\b/i },
+					],
+				});
+			} else if (category === "SC / ST / OBC") {
+				conditions.push({
+					$or: [
+						{ category: "SC / ST / OBC" },
+						{ tags: { $in: ["SC/ST/OBC", "SC / ST / OBC"] } },
+						{ "eligibility.casteCategories": { $in: ["SC", "ST", "OBC"] } },
+						{ title: /\b(sc|st|obc|ebc|dnt|schedule\s+tribe)\b/i },
+					],
+				});
+			} else if (category === "Need based") {
+				conditions.push({
+					$or: [
+						{ category: "Need based" },
+						{ category: "Welfare based" },
+						{ tags: "Need based" },
+						{ "eligibility.familyIncome": { $ne: null } },
+						{ title: /means|welfare|pre[\s-]matric|post[\s-]matric/i },
+					],
+				});
+			} else if (category === "Minority") {
+				conditions.push({
+					$or: [
+						{ category: "Minority" },
+						{ tags: "Minority" },
+						{ title: /minority/i },
+					],
+				});
+			} else if (category === "Merit based") {
+				conditions.push({
+					$or: [{ category: "Merit based" }, { title: /merit/i }],
 				});
 			} else {
 				conditions.push({ category });
 			}
 		}
-		if (level && level !== "All") conditions.push({ level });
+		if (level && level !== "All") {
+			if (level === "Class 10") {
+				conditions.push({
+					$or: [{ level: "Class 10" }, { tags: "Class 10" }, { title: /pre[\s-]matric|school/i }],
+				});
+			} else if (level === "Class 12") {
+				conditions.push({
+					$or: [{ level: "Class 12" }, { tags: "Class 12" }, { title: /post[\s-]matric/i }],
+				});
+			} else if (level === "UG") {
+				conditions.push({
+					$or: [{ level: "UG" }, { tags: "UG" }, { title: /degree|college|university|nts-ug|under\s*graduate/i }],
+				});
+			} else if (level === "PG") {
+				conditions.push({
+					$or: [{ level: "PG" }, { tags: "PG" }, { title: /post\s*graduate|nts-pg|pgs/i }],
+				});
+			} else if (level === "PhD") {
+				conditions.push({
+					$or: [{ level: "PhD" }, { tags: "PhD" }, { title: /fellowship|jrf|srf/i }],
+				});
+			} else {
+				conditions.push({ $or: [{ level }, { tags: level }] });
+			}
+		}
 		if (state && state !== "All" && state !== "All India") {
-			conditions.push({ state: { $in: [state, "All India"] } });
+			const stateVariants = [state];
+			const s = state.trim().toLowerCase();
+			if (s === "up" || s === "uttar pradesh") stateVariants.push("UP", "Uttar Pradesh");
+			else if (s === "mh" || s === "maharashtra") stateVariants.push("MH", "Maharashtra");
+			else if (s === "ka" || s === "karnataka") stateVariants.push("KA", "Karnataka");
+			else if (s === "wb" || s === "west bengal") stateVariants.push("WB", "West Bengal");
+			else if (s === "br" || s === "bihar") stateVariants.push("BR", "Bihar");
+			else if (s === "tn" || s === "tamil nadu") stateVariants.push("TN", "Tamil Nadu");
+			else if (s === "dl" || s === "delhi") stateVariants.push("DL", "Delhi");
+			conditions.push({ state: { $in: [...new Set(stateVariants), "All India"] } });
 		}
 		if (sourceType && sourceType !== "All") {
 			if (sourceType === "Corporate") {
@@ -75,6 +175,10 @@ export const getScholarships = async (req, res) => {
 			}
 		}
 		if (hasChanges === "true") conditions.push({ hasChanges: true });
+		if (status) {
+			const wanted = String(status).split(",").filter((x) => STATUSES.has(x));
+			if (wanted.length) conditions.push({ status: { $in: wanted } });
+		}
 
 		if (minAmount || maxAmount) {
 			const amountCond = {};
@@ -83,67 +187,67 @@ export const getScholarships = async (req, res) => {
 			conditions.push({ "amount.value": amountCond });
 		}
 
-		const query = conditions.length > 0 ? { $and: conditions } : {};
-
-		let projection = isTextSearch ? { score: { $meta: "textScore" } } : {};
-		let sortOptions = {};
-		if (sort === "relevance") {
-			sortOptions = isTextSearch ? { score: { $meta: "textScore" } } : { deadline: 1 };
-		} else if (sort === "deadline") {
-			sortOptions = isTextSearch ? { score: { $meta: "textScore" }, deadline: 1 } : { deadline: 1 };
-		} else if (sort === "amount_high") sortOptions = { "amount.value": -1 };
-		else if (sort === "amount_low") sortOptions = { "amount.value": 1 };
-		else if (sort === "trust") sortOptions = { trustScore: -1, deadline: 1 };
-		else if (sort === "newest") sortOptions = { createdAt: -1 };
-
 		const pageNum = Math.max(1, parseInt(page, 10) || 1);
-		const limitNum = Math.max(1, parseInt(limit, 10) || 12);
+		const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 12));
 		const skip = (pageNum - 1) * limitNum;
+
+		// Unknown deadlines sort last; no placeholder date is ever stored.
+		const sortStage = (() => {
+			if (sort === "amount_high") return { "amount.value": -1, _noDeadline: 1, sortDeadline: 1 };
+			if (sort === "amount_low") return { _noAmount: 1, "amount.value": 1 };
+			if (sort === "newest") return { "freshness.firstSeenAt": -1 };
+			if (sort === "relevance" && isTextSearch) return { score: { $meta: "textScore" } };
+			return isTextSearch
+				? { score: { $meta: "textScore" }, _noDeadline: 1, sortDeadline: 1 }
+				: { _noDeadline: 1, sortDeadline: 1, title: 1 };
+		})();
+
+		const runQuery = async (conds) => {
+			const match = { $and: conds };
+			const pipeline = [
+				{ $match: match },
+				{
+					$addFields: {
+						_noDeadline: { $cond: [{ $ifNull: ["$sortDeadline", false] }, 0, 1] },
+						_noAmount: { $cond: [{ $ifNull: ["$amount.value", false] }, 0, 1] },
+					},
+				},
+				{ $sort: sortStage },
+				{ $skip: skip },
+				{ $limit: limitNum },
+				{ $project: { ...HIDDEN_FIELDS, _noDeadline: 0, _noAmount: 0 } },
+			];
+			return Promise.all([Scholarship.aggregate(pipeline), Scholarship.countDocuments(match)]);
+		};
 
 		let scholarships, total;
 		try {
-			[scholarships, total] = await Promise.all([
-				Scholarship.find(query, projection)
-					.sort(sortOptions)
-					.skip(skip)
-					.limit(limitNum)
-					.lean(),
-				Scholarship.countDocuments(query),
-			]);
+			[scholarships, total] = await runQuery(conditions);
 		} catch (mongoErr) {
 			// Resilient fallback to regex if text index is rebuilding
-			if (isTextSearch) {
-				const fallbackConditions = conditions.filter((c) => !c.$text);
-				const cleanedSearch = search.trim().replace(/\s*-\s*/g, "-");
-				const rawTokens = cleanedSearch.split(/\s+/).filter((t) => t.length > 0 && t !== "-");
-				const tokenConditions = rawTokens.map((token) => {
-					const tokenRegex = buildSearchRegex(token);
-					return {
-						$or: [
-							{ title: tokenRegex },
-							{ organization: tokenRegex },
-							{ description: tokenRegex },
-							{ tags: tokenRegex },
-							{ category: tokenRegex },
-							{ state: tokenRegex },
-						],
-					};
+			if (!isTextSearch) throw mongoErr;
+			const fallbackConditions = conditions.filter((c) => !c.$text);
+			const cleanedSearch = search.trim().replace(/\s*-\s*/g, "-");
+			const rawTokens = cleanedSearch.split(/\s+/).filter((t) => t.length > 0 && t !== "-");
+			for (const token of rawTokens) {
+				const tokenRegex = buildSearchRegex(token);
+				fallbackConditions.push({
+					$or: [
+						{ title: tokenRegex },
+						{ organization: tokenRegex },
+						{ tags: tokenRegex },
+						{ category: tokenRegex },
+						{ state: tokenRegex },
+					],
 				});
-				if (tokenConditions.length > 0) fallbackConditions.push({ $and: tokenConditions });
-				const fallbackQuery = fallbackConditions.length > 0 ? { $and: fallbackConditions } : {};
-				delete sortOptions.score;
-				[scholarships, total] = await Promise.all([
-					Scholarship.find(fallbackQuery)
-						.sort(sortOptions)
-						.skip(skip)
-						.limit(limitNum)
-						.lean(),
-					Scholarship.countDocuments(fallbackQuery),
-				]);
-			} else {
-				throw mongoErr;
 			}
+			isTextSearch = false;
+			for (const k of Object.keys(sortStage)) if (sortStage[k]?.$meta) delete sortStage[k];
+			if (Object.keys(sortStage).length === 0) Object.assign(sortStage, { _noDeadline: 1, sortDeadline: 1 });
+			[scholarships, total] = await runQuery(fallbackConditions);
 		}
+		const now = new Date();
+		scholarships = scholarships.map((d) => withLiveStatus(d, now));
 
 		return res.status(200).json({
 			success: true,
@@ -168,14 +272,25 @@ export const getScholarships = async (req, res) => {
  */
 export const getFeaturedScholarships = async (req, res) => {
 	try {
-		const featured = await Scholarship.find({
-			$or: [{ popular: true }, { verified: true }],
+		let featured = await Scholarship.find({
+			...PUBLIC_FILTER,
+			verified: true,
+			status: { $in: ["open", "closing_soon"] },
 		})
-			.sort({ "amount.value": -1, trustScore: -1 })
+			.select(HIDDEN_FIELDS)
+			.sort({ sortDeadline: 1 })
 			.limit(6)
 			.lean();
 
-		return res.status(200).json({ success: true, data: featured });
+		if (featured.length === 0) {
+			featured = await Scholarship.find(PUBLIC_FILTER)
+				.select(HIDDEN_FIELDS)
+				.sort({ sortDeadline: 1 })
+				.limit(6)
+				.lean();
+		}
+
+		return res.status(200).json({ success: true, data: featured.map((d) => withLiveStatus(d)) });
 	} catch (error) {
 		return res
 			.status(500)
@@ -198,24 +313,35 @@ export const getScholarshipById = async (req, res) => {
 			query = { slug: id };
 		}
 
-		const scholarship = await Scholarship.findOne(query).lean();
-		if (!scholarship) {
+		const scholarship = await Scholarship.findOne(query).select({ legacySnapshot: 0 }).lean();
+		if (!scholarship || scholarship.publication?.state === "needs_review") {
 			return res
 				.status(404)
 				.json({ success: false, message: "Scholarship opportunity not found" });
 		}
+		if (scholarship.publication?.state === "retired") {
+			// Kept so bookmarks resolve, but none of its old values are served.
+			return res.status(410).json({
+				success: false,
+				message: "This listing could not be verified against an official source and has been withdrawn.",
+				data: { _id: scholarship._id, title: scholarship.title, publication: scholarship.publication },
+			});
+		}
 
-		// Retrieve version diff history
-		const history = await ScholarshipVersion.find({
-			scholarship: scholarship._id,
-		})
-			.sort({ observedAt: -1 })
-			.lean();
+		const [history, cycles] = await Promise.all([
+			ScholarshipVersion.find({ scholarship: scholarship._id, legacyUnverified: { $ne: true } })
+				.sort({ observedAt: -1 })
+				.lean(),
+			scholarship.schemeKey
+				? ScholarshipCycle.find({ schemeKey: scholarship.schemeKey }).sort({ academicYear: -1 }).lean()
+				: [],
+		]);
 
 		return res.status(200).json({
 			success: true,
 			data: {
-				...scholarship,
+				...withLiveStatus(scholarship),
+				cycles: cycles.map(({ evidence, ...c }) => c),
 				history,
 			},
 		});
@@ -246,7 +372,7 @@ export const getScholarshipHistory = async (req, res) => {
 			scholarshipId = s._id;
 		}
 
-		const history = await ScholarshipVersion.find({ scholarship: scholarshipId })
+		const history = await ScholarshipVersion.find({ scholarship: scholarshipId, legacyUnverified: { $ne: true } })
 			.sort({ observedAt: -1 })
 			.lean();
 
@@ -295,7 +421,7 @@ export const evaluateScholarships = async (req, res) => {
 						user: req.user._id,
 					},
 				},
-				{ upsert: true, new: true, runValidators: false },
+				{ upsert: true, returnDocument: "after", runValidators: false },
 			).catch((err) =>
 				console.warn("[Evaluate] Non-fatal profile auto-save warning:", err.message),
 			);
@@ -335,7 +461,8 @@ export const evaluateScholarships = async (req, res) => {
 		// DB Pre-filtering: Only evaluate active scholarships and coarse demographic filters
 		const now = new Date();
 		const query = {
-			deadline: { $gte: new Date(now.getTime() - 24 * 60 * 60 * 1000) },
+			...PUBLIC_FILTER,
+			status: { $ne: "closed" },
 		};
 
 		if (profile.state && profile.state !== "All India") {
@@ -347,7 +474,9 @@ export const evaluateScholarships = async (req, res) => {
 			query["eligibility.gender"] = { $ne: "Male" };
 		}
 
-		const candidateScholarships = await Scholarship.find(query).lean();
+		const candidateScholarships = (await Scholarship.find(query).select(HIDDEN_FIELDS).lean())
+			.map((d) => withLiveStatus(d, now))
+			.filter((d) => d.status !== "closed");
 
 		const matched = [];
 		const ineligible = [];
@@ -434,67 +563,147 @@ export const evaluateScholarships = async (req, res) => {
  */
 export const getCrawlerStatus = async (req, res) => {
 	try {
-		const sources = sourceRegistry.listSources();
-		const now = new Date();
-
-		const [totalScholarships, activeScholarships, totalVersions] = await Promise.all([
-			Scholarship.countDocuments({}),
-			Scholarship.countDocuments({ deadline: { $gte: now } }),
-			ScholarshipVersion.countDocuments({}),
+		const [states, recentRuns, byStatus, byPublication, openIssues, staleCount] = await Promise.all([
+			SourceState.find({}).lean(),
+			CrawlRun.find({}).sort({ startedAt: -1 }).limit(10).select({ pages: 0 }).lean(),
+			Scholarship.aggregate([{ $match: PUBLIC_FILTER }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
+			Scholarship.aggregate([{ $group: { _id: "$publication.state", count: { $sum: 1 } } }]),
+			IngestionIssue.aggregate([{ $match: { status: "open" } }, { $group: { _id: "$severity", count: { $sum: 1 } } }]),
+			Scholarship.countDocuments({ ...PUBLIC_FILTER, stale: true }),
 		]);
+		const stateById = new Map(states.map((s) => [s.sourceId, s]));
+		const toMap = (rows) => Object.fromEntries(rows.map((r) => [r._id ?? "unset", r.count]));
 
 		return res.status(200).json({
 			success: true,
-			totalSources: sources.length,
-			lastRunAt: sourceRegistry.lastRunAt,
-			databaseCatalog: {
-				totalScholarships,
-				activeScholarships,
-				expiredScholarships: totalScholarships - activeScholarships,
-				totalVersionsTracked: totalVersions,
+			sources: SOURCE_REGISTRY.map((src) => ({
+				id: src.id,
+				name: src.name,
+				enabled: src.enabled,
+				authorityTier: src.authorityTier,
+				strategy: src.strategy,
+				allowedDomains: src.allowedDomains,
+				cadenceHours: src.cadenceHours,
+				staleAfterHours: src.staleAfterHours,
+				state: stateById.get(src.id) || null,
+			})),
+			catalog: {
+				byStatus: toMap(byStatus),
+				byPublication: toMap(byPublication),
+				stalePublished: staleCount,
 			},
+			openIssues: toMap(openIssues),
+			recentRuns,
 			scheduler: crawlerScheduler.getStatus(),
-			sources,
 		});
 	} catch (error) {
 		console.error("Error retrieving crawler status:", error);
-		return res.status(500).json({
-			success: false,
-			message: "Failed to retrieve crawler status",
-			error: error.message,
-		});
+		return res.status(500).json({ success: false, message: "Failed to retrieve crawler status", error: error.message });
 	}
 };
 
 /**
- * POST /api/scholarships/crawler/run
- * Trigger full or source-specific crawler ingestion pipeline
+ * POST /api/scholarships/crawler/run  { sourceId? }
  */
 export const runCrawler = async (req, res) => {
 	try {
 		const { sourceId } = req.body || {};
-		let result;
-		if (sourceId) {
-			const report = await sourceRegistry.runSource(sourceId);
-			result = { success: true, sourceId, report };
-		} else {
-			const summary = await sourceRegistry.runAll();
-			result = { success: true, summary };
+		if (sourceId && !SOURCE_REGISTRY.some((s) => s.id === sourceId)) {
+			return res.status(400).json({ success: false, message: `Unknown source '${sourceId}'` });
 		}
-
-		// Purge stale search cache keys on crawl run
-		await clearScholarshipCache().catch((err) => {
-			console.warn("[Crawler] Cache purge warning:", err.message);
-		});
-
-		return res.status(200).json(result);
+		const outcome = await crawlerScheduler.triggerNow("admin", { sourceId });
+		if (!outcome.executed) {
+			return res.status(409).json({ success: false, message: "A crawl is already running on another instance." });
+		}
+		const reports = outcome.result.map(({ pages, ...r }) => r);
+		return res.status(200).json({ success: true, reports });
 	} catch (error) {
 		console.error("Error running crawler:", error);
-		return res.status(500).json({
-			success: false,
-			message: "Crawler execution encountered an error",
-			error: error.message,
+		return res.status(500).json({ success: false, message: "Crawler execution encountered an error", error: error.message });
+	}
+};
+
+/**
+ * GET /api/scholarships/crawler/issues?status=open&severity=blocking
+ * Review queue for suspicious or conflicting data.
+ */
+export const getIngestionIssues = async (req, res) => {
+	try {
+		const filter = { status: req.query.status || "open" };
+		if (req.query.severity) filter.severity = req.query.severity;
+		if (req.query.schemeKey) filter.schemeKey = req.query.schemeKey;
+		const issues = await IngestionIssue.find(filter).sort({ severity: 1, lastSeenAt: -1 }).limit(500).lean();
+		return res.status(200).json({ success: true, count: issues.length, data: issues });
+	} catch (error) {
+		return res.status(500).json({ success: false, message: "Failed to load issues", error: error.message });
+	}
+};
+
+/**
+ * GET /api/scholarships/:id/evidence
+ * Every cited field with its verbatim quote, official URL, fetch time and page,
+ * re-verified against the stored snapshot on each request.
+ */
+export const getScholarshipEvidence = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const query = mongoose.Types.ObjectId.isValid(id) ? { _id: id } : { slug: id };
+		const scholarship = await Scholarship.findOne({ ...query, ...PUBLIC_FILTER })
+			.select({
+				title: 1,
+				organization: 1,
+				category: 1,
+				sourceUrl: 1,
+				officialLinks: 1,
+				applicationLink: 1,
+				amount: 1,
+				fieldEvidence: 1,
+				currentCycle: 1,
+			})
+			.lean();
+		if (!scholarship) return res.status(404).json({ success: false, message: "Scholarship not found" });
+
+		const evidence = [...(scholarship.fieldEvidence || []), ...(scholarship.currentCycle?.evidence || [])];
+		const snapshotIds = [...new Set(evidence.map((e) => String(e.snapshotId)).filter(Boolean))];
+		const snapshots = await SourceSnapshot.find({ _id: { $in: snapshotIds } })
+			.select({ url: 1, text: 1, textHash: 1, fetchedAt: 1, lastSeenAt: 1 })
+			.lean();
+		const byId = new Map(snapshots.map((s) => [String(s._id), { ...s, id: String(s._id) }]));
+
+		const seen = new Set();
+		const data = [];
+		for (const e of evidence) {
+			const key = `${e.field}|${e.snapshotId}|${e.charStart}`;
+			if (seen.has(key)) continue;
+			seen.add(key);
+			const check = verifyEvidence({ ...e, snapshotId: String(e.snapshotId) }, byId.get(String(e.snapshotId)));
+			data.push({
+				field: e.field,
+				quote: e.quote,
+				url: e.url,
+				page: e.page ?? null,
+				locator: e.locator,
+				fetchedAt: e.fetchedAt,
+				lastConfirmedAt: byId.get(String(e.snapshotId))?.lastSeenAt || null,
+				documentDate: e.documentDate || null,
+				verified: check.ok,
+				verificationError: check.ok ? null : check.reason,
+			});
+		}
+		return res.status(200).json({
+			success: true,
+			title: scholarship.title,
+			organization: scholarship.organization,
+			category: scholarship.category,
+			sourceUrl: scholarship.sourceUrl,
+			officialLinks: scholarship.officialLinks,
+			applicationLink: scholarship.applicationLink,
+			amount: scholarship.amount,
+			count: data.length,
+			data,
 		});
+	} catch (error) {
+		return res.status(500).json({ success: false, message: "Failed to load evidence", error: error.message });
 	}
 };
 
@@ -548,10 +757,10 @@ export const getScholarshipSuggestions = async (req, res) => {
 			};
 		});
 
-		const query = tokenConditions.length > 0 ? { $and: tokenConditions } : {};
+		const query = { $and: [PUBLIC_FILTER, ...tokenConditions] };
 
 		const suggestions = await Scholarship.find(query)
-			.select("title organization slug category amount deadline tags state")
+			.select("title organization slug category amount deadline status tags state")
 			.limit(6)
 			.lean();
 

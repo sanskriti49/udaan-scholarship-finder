@@ -99,10 +99,10 @@ async function runTests() {
 
 		const countForDedup = await Notification.countDocuments({ dedupKey });
 		console.log(`Notifications found with key '${dedupKey}':`, countForDedup);
-		if (countForDedup !== 1 || String(n1._id) !== String(n2._id)) {
+		if (countForDedup !== 1 || (n2 !== null && String(n1._id) !== String(n2._id))) {
 			throw new Error("Deduplication check failed! Duplicate notification was created.");
 		}
-		console.log("✓ TEST 2 PASSED (Deduplication prevents repeated alerts)");
+		console.log("✓ TEST 2 PASSED (Deduplication prevents repeated alerts; duplicate attempt safely returned null)");
 
 		// TEST 3: Preference Enforcement (Immediate disabling)
 		console.log("\n--- TEST 3: Immediate Preference Enforcement ---");

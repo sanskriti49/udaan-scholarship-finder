@@ -9,6 +9,8 @@ import {
 	runCrawler,
 	flushScholarshipCache,
 	getScholarshipSuggestions,
+	getIngestionIssues,
+	getScholarshipEvidence,
 } from "../controllers/scholarshipController.js";
 import { cacheMiddleware } from "../middlewares/cacheMiddleware.js";
 import {
@@ -30,9 +32,11 @@ router.delete("/cache", protect, authorizeRoles("admin"), flushScholarshipCache)
 // Admin-Only Crawler Monitoring & Ingestion Pipeline Endpoints
 router.get("/crawler/status", protect, authorizeRoles("admin"), getCrawlerStatus);
 router.post("/crawler/run", protect, authorizeRoles("admin"), runCrawler);
+router.get("/crawler/issues", protect, authorizeRoles("admin"), getIngestionIssues);
 
 router.get("/:id", getScholarshipById);
 router.get("/:id/history", getScholarshipHistory);
+router.get("/:id/evidence", getScholarshipEvidence);
 
 router.post("/evaluate", optionalAuth, evaluateScholarships);
 router.post("/match", optionalAuth, evaluateScholarships);

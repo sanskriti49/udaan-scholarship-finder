@@ -18,6 +18,7 @@ import {
 	RotateCcw,
 	ArrowUpRight,
 	Tag,
+	CheckCircle2,
 } from "lucide-react";
 import {
 	getScholarships,
@@ -26,7 +27,17 @@ import {
 	toggleBookmark as apiToggleBookmark,
 } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
-import { sanitizeUrl, evaluateCitationStatus } from "../utils/provenanceUtils";
+import { formatGrant } from "../utils/formatGrant";
+import {
+	formatClauseTitle,
+	formatEvidenceText,
+	formatSourceLabel,
+	formatChangeNotice,
+	formatFieldLabel,
+	formatRuleRequirement,
+	cleanOfficialUrl,
+	isGenuinePdf,
+} from "../utils/formatEvidence";
 
 const CATEGORIES = [
 	"All",
@@ -46,8 +57,9 @@ const STATES = [
 	"UP",
 	"Bihar",
 	"Maharashtra",
-	"Delhi",
 	"Karnataka",
+	"West Bengal",
+	"Delhi",
 	"Tamil Nadu",
 ];
 
@@ -122,52 +134,33 @@ function DeadlineTag({ deadline }) {
 }
 
 function ScholarshipCard({ s, saved, onSave, onClick, onOpenEvidence }) {
-	// Determine concrete provenance rather than a generic "Safe" label
+	// Determine concrete scheme type
 	const provenanceLabel = s.sourceType
-		? `${s.sourceType} Gazette`
-		: "Audited Circular";
+		? `${s.sourceType} Scheme`
+		: "Official Scheme";
 
-	// Format financial grant value cleanly without redundant suffix (e.g. avoiding "₹50,000 / yr / yearly")
-	const formatGrantDisplay = () => {
-		const raw =
-			s.amount?.displayString ||
-			(s.amount?.value
-				? `₹${s.amount.value.toLocaleString("en-IN")}`
-				: "Variable Grant");
-		// If the string already contains a period slash suffix like '/ yr', '/year', '/ mo', use it directly
-		if (
-			raw.includes("/") ||
-			raw.includes("per") ||
-			raw.toLowerCase().includes("annum")
-		) {
-			return { main: raw, period: null };
-		}
-		const periodText = s.amount?.period || "year";
-		return { main: raw, period: `/${periodText}` };
-	};
-
-	const grantInfo = formatGrantDisplay();
+	const grantInfo = formatGrant(s.amount);
 
 	return (
 		<div className="group bg-white border border-slate-200/90 rounded-2xl p-6 flex flex-col justify-between transition-all duration-200 hover:border-slate-300 hover:shadow-sm">
 			<div>
-				{/* Top Row: Crisp Ledger Header */}
+				{/* Top Row: Scheme category and type */}
 				<div className="flex items-center justify-between gap-2 mb-3.5">
 					<div className="flex items-center gap-2 flex-wrap">
-						{/* Understated Category Label */}
+						{/* Category Label */}
 						<span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-medium">
 							{s.category}
 						</span>
 
 						<span className="text-slate-200 select-none">/</span>
 
-						{/* Concrete Provenance Tag */}
+						{/* Verified Scheme Tag */}
 						<span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-700 bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded-md tracking-tight">
 							<span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
 							{provenanceLabel}
 						</span>
 
-						{/* Revision Pip */}
+						{/* Update Pip */}
 						{s.hasChanges && (
 							<span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-800 bg-amber-50/80 border border-amber-200/70 px-2 py-0.5 rounded-md">
 								<History size={10} className="text-amber-600" />
@@ -200,47 +193,44 @@ function ScholarshipCard({ s, saved, onSave, onClick, onOpenEvidence }) {
 					{s.title}
 				</h3>
 
-				{/* Integrated Authority & Verification Line */}
-				<div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1 mb-4 flex-wrap">
-					<span className="text-slate-800 font-semibold">{s.organization}</span>
-					<span className="text-slate-300">•</span>
-					<span className="inline-flex items-center gap-1 text-slate-500 text-[11px]">
-						<ShieldCheck
-							size={12}
-							className="text-slate-400 group-hover:text-emerald-700 transition-colors"
-						/>
-						Verified Source
-					</span>
-				</div>
-
 				{/* Change Notice */}
-				{s.latestChangeSummary && (
+				{s.latestChangeSummary && formatChangeNotice(s.latestChangeSummary) && (
 					<div className="mb-4 p-3 rounded-xl bg-amber-50/60 border border-amber-200/70 text-xs text-amber-900 flex items-start gap-2">
 						<History size={13} className="shrink-0 mt-0.5 text-amber-700" />
-						<span className="leading-relaxed">{s.latestChangeSummary}</span>
+						<span className="leading-relaxed">
+							{formatChangeNotice(s.latestChangeSummary)}
+						</span>
 					</div>
 				)}
 
-				<p className="text-sm text-slate-600 line-clamp-2 mb-6 leading-relaxed">
+				<p className="text-sm text-slate-600 line-clamp-2 mt-2 mb-3.5 leading-relaxed">
 					{s.summary || s.description}
 				</p>
 			</div>
 
 			<div>
-				{/* Financial Ledger & Deadline */}
+				{/* Financial Grant & Deadline */}
 				<div className="pt-4 border-t border-slate-100 flex items-baseline justify-between gap-2 flex-wrap">
-					<div>
+					<div className="max-w-[65%]">
 						<span className="text-[10px] font-mono font-semibold tracking-wider text-slate-400 uppercase block mb-0.5">
 							Grant Value
 						</span>
 						<div className="flex items-baseline gap-1">
-							<span className="text-xl font-serif font-bold text-slate-900">
-								{grantInfo.main}
-							</span>
-							{grantInfo.period && (
-								<span className="text-xs text-slate-500 font-normal">
-									{grantInfo.period}
+							{grantInfo.isUnpublished ? (
+								<span className="text-xs sm:text-sm font-sans font-medium text-slate-600 italic leading-snug">
+									{grantInfo.main}
 								</span>
+							) : (
+								<>
+									<span className="text-xl font-serif font-bold text-slate-900 leading-snug">
+										{grantInfo.main}
+									</span>
+									{grantInfo.period && (
+										<span className="text-xs text-slate-500 font-normal">
+											{grantInfo.period}
+										</span>
+									)}
+								</>
 							)}
 						</div>
 					</div>
@@ -256,19 +246,19 @@ function ScholarshipCard({ s, saved, onSave, onClick, onOpenEvidence }) {
 							else onClick();
 						}}
 						className="flex-1 text-center py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-emerald-200/80"
-						title="Open interactive Rules & Gazette details popup"
+						title="View official scheme rules and details"
 					>
 						<FileText size={13} className="text-emerald-700" />
-						<span>Rules & Gazette</span>
+						<span>Rules & Details</span>
 					</button>
 					<a
-						href={s.applicationLink || s.sourceUrl}
+						href={cleanOfficialUrl(s.applicationLink || s.sourceUrl)}
 						target="_blank"
 						rel="noopener noreferrer"
 						onClick={(e) => e.stopPropagation()}
-						className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+						className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
 					>
-						<span>Official Portal</span>
+						<span>Apply on Official Site</span>
 						<ArrowUpRight size={13} />
 					</a>
 				</div>
@@ -433,6 +423,17 @@ export default function Scholarships() {
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isModalOpen]);
+
+	// Lock background body scroll when either drawer or evidence modal is open
+	useEffect(() => {
+		if (isModalOpen || isEvidenceModalOpen) {
+			const originalOverflow = document.body.style.overflow;
+			document.body.style.overflow = "hidden";
+			return () => {
+				document.body.style.overflow = originalOverflow;
+			};
+		}
+	}, [isModalOpen, isEvidenceModalOpen]);
 
 	// Fetch saved bookmarks from server if logged in
 	useEffect(() => {
@@ -860,281 +861,437 @@ export default function Scholarships() {
 				selectedScholarship &&
 				createPortal(
 					<div
-						className="fixed inset-0 z-50 flex justify-end bg-slate-950/50 backdrop-blur-xs"
-						onClick={(e) => {
-							if (e.target === e.currentTarget) {
+						className="fixed inset-0 z-50 overflow-hidden"
+						role="dialog"
+						aria-modal="true"
+						aria-labelledby="scholarship-drawer-title"
+					>
+						{/* Backdrop */}
+						<div
+							className="fixed inset-0 bg-slate-950/40 backdrop-blur-[2px] transition-opacity duration-200 animate-fade-in"
+							onClick={() => {
 								setIsModalOpen(false);
 								setSelectedScholarship(null);
-							}
-						}}
-					>
-						<div className="bg-white w-full max-w-xl h-full overflow-y-auto p-6 md:p-8 flex flex-col justify-between shadow-2xl animate-in slide-in-from-right duration-200">
-							<div>
-								{/* Drawer Header */}
-								<div className="flex items-start justify-between gap-4 pb-5 border-b border-slate-100">
-									<div>
-										<span className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-											{selectedScholarship.category}
+							}}
+							aria-hidden="true"
+						/>
+
+						{/* Side Drawer Panel - Strictly constrained to viewport */}
+						<div
+							className="fixed inset-y-0 right-0 h-screen max-h-screen z-50 bg-white shadow-2xl flex flex-col border-l border-slate-200 animate-slide-in-right"
+							style={{ width: "min(560px, 100vw)" }}
+						>
+							{/* Drawer Header - Sticky Top */}
+							<div className="bg-[#FAF9F6] border-b border-slate-200 px-6 py-4 flex items-start justify-between gap-4 shrink-0">
+								<div className="space-y-1 min-w-0 flex-1">
+									<div className="flex items-center gap-2 flex-wrap">
+										<span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+											{selectedScholarship.category || "Scholarship"}
 										</span>
-										<h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mt-1 leading-snug">
-											{selectedScholarship.title}
-										</h2>
-										<p className="text-sm text-slate-600 font-medium mt-1">
-											{selectedScholarship.organization}
-										</p>
+										<span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/80">
+											<ShieldCheck size={12} className="text-emerald-700" />
+											Verified Scholarship
+										</span>
+										{isGenuinePdf(
+											selectedScholarship.officialLinks?.guidelinesUrl,
+										) && (
+											<span className="inline-flex items-center text-[10px] font-mono text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+												Official PDF Available
+											</span>
+										)}
 									</div>
+									<h2
+										id="scholarship-drawer-title"
+										className="text-xl sm:text-2xl font-serif font-bold text-slate-900 mt-1 leading-snug"
+									>
+										{selectedScholarship.title}
+									</h2>
+									<p className="text-xs sm:text-sm text-slate-600 font-medium truncate">
+										Offered by:{" "}
+										<span className="font-semibold text-slate-900">
+											{selectedScholarship.organization}
+										</span>
+									</p>
+								</div>
+								<button
+									onClick={() => {
+										setIsModalOpen(false);
+										setSelectedScholarship(null);
+									}}
+									className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-200/60 cursor-pointer transition-colors shrink-0"
+									aria-label="Close"
+								>
+									<X size={20} />
+								</button>
+							</div>
+
+							{/* Top Quick Actions - Immediately visible without scrolling */}
+							<div className="bg-emerald-50/50 border-b border-emerald-100 px-6 py-2.5 flex items-center justify-between gap-2 shrink-0 flex-wrap">
+								<span className="text-xs font-semibold text-emerald-900">
+									Quick Actions:
+								</span>
+								<div className="flex items-center gap-2 flex-wrap">
+									{selectedScholarship.applicationLink && (
+										<a
+											href={cleanOfficialUrl(
+												selectedScholarship.applicationLink,
+											)}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="px-3.5 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold inline-flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
+										>
+											<span>Apply on Official Site</span>
+											<ArrowUpRight size={13} />
+										</a>
+									)}
 									<button
 										onClick={() => {
 											setIsModalOpen(false);
-											setSelectedScholarship(null);
+											setIsEvidenceModalOpen(true);
 										}}
-										className="p-2 text-slate-400 hover:text-slate-700 rounded-2xl hover:bg-slate-100 cursor-pointer transition-colors"
-										aria-label="Close"
+										className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
 									>
-										<X size={20} />
+										<FileText size={13} className="text-emerald-700" />
+										<span>View Rules & Quotes</span>
 									</button>
-								</div>
-
-								<div className="py-6 space-y-6 text-sm text-slate-700">
-									{/* Change notice if present */}
-									{selectedScholarship.latestChangeSummary && (
-										<div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-1">
-											<span className="font-bold text-amber-950 text-xs uppercase tracking-wider flex items-center gap-1.5">
-												<History size={13} /> Policy Update Notice
-											</span>
-											<p className="text-amber-900 leading-relaxed">
-												{selectedScholarship.latestChangeSummary}
-											</p>
-										</div>
-									)}
-
-									{/* Scholarship Meta Attributes */}
-									<div className="grid grid-cols-2 gap-3">
-										<div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-											<span className="text-xs font-semibold uppercase tracking-wider text-slate-600">
-												Award Amount
-											</span>
-											<p className="text-lg font-bold text-slate-900 mt-0.5">
-												{selectedScholarship.awardAmount
-													? `₹${Number(
-															selectedScholarship.awardAmount
-													  ).toLocaleString("en-IN")}`
-													: "Full Coverage"}
-											</p>
-											<span className="text-xs text-slate-600">
-												{selectedScholarship.awardFrequency ||
-													"Per Academic Session"}
-											</span>
-										</div>
-										<div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-											<span className="text-xs font-semibold uppercase tracking-wider text-slate-600">
-												Application Target
-											</span>
-											<p className="text-lg font-bold text-slate-900 mt-0.5">
-												{selectedScholarship.educationLevel ||
-													"Higher Education"}
-											</p>
-											<span className="text-xs text-slate-600">
-												{selectedScholarship.gender || "All Genders"}
-											</span>
-										</div>
-									</div>
-
-									{/* Overview Description */}
-									{selectedScholarship.description && (
-										<div className="space-y-2">
-											<h3 className="font-bold text-slate-900 text-sm">
-												Scheme Overview
-											</h3>
-											<p className="text-slate-600 leading-relaxed">
-												{selectedScholarship.description}
-											</p>
-										</div>
-									)}
-
-									{/* Mandatory Rules */}
-									{selectedScholarship.rules &&
-										selectedScholarship.rules.length > 0 && (
-											<div className="space-y-3">
-												<div className="flex items-center justify-between">
-													<h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-														<Sparkles size={16} className="text-emerald-700" />
-														Mandatory Eligibility Standards
-													</h3>
-													<span className="text-xs font-medium text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-														{selectedScholarship.rules.length} Criteria
-													</span>
-												</div>
-												<div className="space-y-2.5">
-													{selectedScholarship.rules.map((rule, idx) => (
-														<div
-															key={idx}
-															className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs space-y-1"
-														>
-															<div className="font-bold text-slate-800 flex items-center gap-1.5">
-																<span className="w-1.5 h-1.5 rounded-full bg-emerald-700" />
-																{rule.description || rule.field}
-															</div>
-															<div className="flex items-center gap-2 text-slate-600 pl-3">
-																<span>
-																	Condition: <code>{rule.operator}</code>
-																</span>
-																<span>•</span>
-																<span>
-																	Target:{" "}
-																	<strong className="text-slate-700">
-																		{Array.isArray(rule.targetValue)
-																			? rule.targetValue.join(", ")
-																			: String(rule.targetValue)}
-																	</strong>
-																</span>
-															</div>
-														</div>
-													))}
-												</div>
-											</div>
-										)}
-
-									{/* Regulatory Citations & Gazette Clauses */}
-									{selectedScholarship.provenanceQuotes &&
-										selectedScholarship.provenanceQuotes.length > 0 && (
-											<div className="space-y-3">
-												<h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-													<FileText size={16} className="text-emerald-700" />
-													Audited Gazette Evidence
-												</h3>
-												<div className="space-y-3">
-													{selectedScholarship.provenanceQuotes.map(
-														(quote, idx) => {
-															const status = evaluateCitationStatus(quote);
-															return (
-																<div
-																	key={idx}
-																	className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 text-xs space-y-2"
-																>
-																	<div className="flex items-center justify-between text-emerald-950 font-bold gap-2">
-																		<span>{quote.clause}</span>
-																		<div className="flex items-center gap-1.5 shrink-0">
-																			{quote.page && (
-																				<span className="text-[11px] font-semibold text-emerald-900 bg-white/80 px-2 py-0.5 rounded border border-emerald-200">
-																					Page {quote.page}
-																				</span>
-																			)}
-																			{status.isDeep && (
-																				<span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-full border border-emerald-300">
-																					Deep Citation
-																				</span>
-																			)}
-																		</div>
-																	</div>
-																	<p className="italic text-slate-800 leading-relaxed">
-																		&ldquo;{quote.quote}&rdquo;
-																	</p>
-																	{status.isDeep && status.anchorUrl && (
-																		<div className="pt-1 flex justify-end">
-																			<a
-																				href={status.anchorUrl}
-																				target="_blank"
-																				rel="noopener noreferrer"
-																				className="text-xs text-emerald-800 hover:text-emerald-950 hover:underline inline-flex items-center gap-1 font-semibold"
-																			>
-																				<span>Open Source Citation</span>
-																				<ExternalLink size={12} />
-																			</a>
-																		</div>
-																	)}
-																</div>
-															);
-														}
-													)}
-												</div>
-											</div>
-										)}
-
-									{/* Required Documents */}
-									{selectedScholarship.requiredDocuments &&
-										selectedScholarship.requiredDocuments.length > 0 && (
-											<div className="space-y-3">
-												<h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-													<ShieldCheck size={16} className="text-emerald-700" />
-													Required Certificates & Enrolments
-												</h3>
-												<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-													{selectedScholarship.requiredDocuments.map(
-														(doc, idx) => (
-															<div
-																key={idx}
-																className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-xs font-semibold text-slate-800 flex items-center gap-2"
-															>
-																<span className="w-1.5 h-1.5 rounded-full bg-emerald-700" />
-																<span>{doc.name}</span>
-															</div>
-														)
-													)}
-												</div>
-											</div>
-										)}
-
-									{/* Issuing Authority Details */}
-									<div className="p-4 sm:p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200/80 text-sm text-slate-700 space-y-1">
-										<span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
-											Issuing Authority
-										</span>
-										<p className="font-semibold text-slate-900">
-											{selectedScholarship.organization}
-										</p>
-									</div>
+									{(() => {
+										const rawGl =
+											selectedScholarship.officialLinks?.guidelinesUrl ||
+											(selectedScholarship.sourceUrl
+												?.toLowerCase()
+												.includes(".pdf")
+												? selectedScholarship.sourceUrl
+												: null);
+										if (isGenuinePdf(rawGl)) {
+											return (
+												<a
+													href={cleanOfficialUrl(rawGl)}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
+												>
+													<FileText size={13} />
+													<span>Official PDF</span>
+													<ArrowUpRight size={12} />
+												</a>
+											);
+										}
+										return null;
+									})()}
 								</div>
 							</div>
 
-							{/* Drawer Footer Actions */}
-							<div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-								<button
-									onClick={() => setIsEvidenceModalOpen(true)}
-									className="flex-1 py-3 px-4 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-									title="Open official statutory citation details"
-								>
-									<ShieldCheck size={15} className="text-emerald-700" />
-									<span>Audit Details</span>
-								</button>
+							{/* Scrollable Content Body - min-h-0 prevents flex expansion beyond screen */}
+							<div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-6 text-sm text-slate-700 bg-white">
+								{/* Update notice if present */}
+								{selectedScholarship.latestChangeSummary &&
+									formatChangeNotice(
+										selectedScholarship.latestChangeSummary,
+									) && (
+										<div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-1">
+											<span className="font-bold text-amber-950 text-xs uppercase tracking-wider flex items-center gap-1.5">
+												<History size={13} /> Recent Scheme Update
+											</span>
+											<p className="text-xs text-amber-900 leading-relaxed">
+												{formatChangeNotice(
+													selectedScholarship.latestChangeSummary,
+												)}
+											</p>
+										</div>
+									)}
 
-								<Link
-									to="/documents"
-									className="flex-1 py-3 px-4 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors"
-									title="Audit document readiness for this scholarship"
-								>
-									<FileText size={15} className="text-emerald-700" />
-									<span>Doc Vault</span>
-								</Link>
+								{/* Scholarship Amount & Benefits Card */}
+								{(() => {
+									const drawerGrant = formatGrant(selectedScholarship.amount);
+									return (
+										<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 space-y-2">
+											<span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+												Scholarship Amount & Benefits
+											</span>
+											{drawerGrant.isUnpublished ? (
+												<div className="space-y-1.5">
+													<p className="text-lg sm:text-xl font-serif font-bold text-slate-800 italic">
+														{drawerGrant.main}
+													</p>
+													<p className="text-xs text-slate-500 leading-relaxed">
+														{drawerGrant.details ||
+															"The scholarship amount is provided as per official government rules. Check the guidelines PDF or official site for exact details."}
+													</p>
+												</div>
+											) : (
+												<div className="space-y-2">
+													<div className="flex items-baseline gap-1">
+														<span className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
+															{drawerGrant.main}
+														</span>
+														{drawerGrant.period && (
+															<span className="text-sm font-sans font-normal text-slate-500 ml-1">
+																{drawerGrant.period}
+															</span>
+														)}
+													</div>
+													{drawerGrant.options &&
+														drawerGrant.options.length > 1 && (
+															<div className="pt-2.5 border-t border-slate-200/70 space-y-1.5">
+																<span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
+																	Official Award Tiers:
+																</span>
+																<div className="flex flex-wrap gap-2">
+																	{drawerGrant.options.map((opt, i) => (
+																		<span
+																			key={i}
+																			className="inline-flex items-center text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg"
+																		>
+																			₹{opt.value?.toLocaleString("en-IN")} /{" "}
+																			{opt.period}
+																		</span>
+																	))}
+																</div>
+															</div>
+														)}
+												</div>
+											)}
+										</div>
+									);
+								})()}
 
-								{selectedScholarship.sourceUrl && (
-									<a
-										href={selectedScholarship.sourceUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="flex-1 py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors text-center"
-									>
-										<span>Official Scheme</span>
-										<ExternalLink size={14} />
-									</a>
+								{/* Overview */}
+								<div>
+									<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+										About This Scholarship
+									</h4>
+									<p className="text-sm leading-relaxed text-slate-600 font-normal">
+										{selectedScholarship.description ||
+											selectedScholarship.summary ||
+											"Official government scholarship opportunity verified against published notifications."}
+									</p>
+								</div>
+
+								{/* Who Can Apply (Eligibility Criteria) */}
+								{selectedScholarship.rules &&
+									selectedScholarship.rules.length > 0 && (
+										<div>
+											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+												Who Can Apply (Eligibility Criteria) (
+												{selectedScholarship.rules.length})
+											</h4>
+											<div className="space-y-2.5">
+												{selectedScholarship.rules.map((r, idx) => (
+													<div
+														key={idx}
+														className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs sm:text-sm flex items-center justify-between gap-3"
+													>
+														<div className="space-y-0.5">
+															<span className="text-slate-800 font-medium block">
+																{r.description || formatFieldLabel(r.field)}
+															</span>
+															<span className="text-[11px] text-slate-500">
+																Eligibility:{" "}
+																<strong className="text-emerald-800 font-semibold">
+																	{formatRuleRequirement(r)}
+																</strong>
+															</span>
+														</div>
+														<span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
+															Required
+														</span>
+													</div>
+												))}
+											</div>
+										</div>
+									)}
+
+								{/* Rules from Official Notice */}
+								{((selectedScholarship.provenanceQuotes &&
+									selectedScholarship.provenanceQuotes.length > 0) ||
+									(selectedScholarship.rules &&
+										selectedScholarship.rules.length > 0)) && (
+									<div>
+										<div className="flex items-center justify-between mb-2.5">
+											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+												<Sparkles size={13} className="text-emerald-700" />
+												Rules from Official Notice (
+												{selectedScholarship.provenanceQuotes?.length ||
+													selectedScholarship.rules?.length ||
+													0}
+												)
+											</h4>
+											<span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+												Verified Source
+											</span>
+										</div>
+
+										<div className="space-y-2.5">
+											{(selectedScholarship.provenanceQuotes &&
+											selectedScholarship.provenanceQuotes.length > 0
+												? selectedScholarship.provenanceQuotes
+												: selectedScholarship.rules.map((r, i) => ({
+														clause: `Official Rule ${i + 1}: ${r.field}`,
+														quote:
+															r.description ||
+															`Satisfies eligibility criteria as specified in the official scheme circular.`,
+														page: 1,
+														sourceUrl:
+															selectedScholarship.officialLinks
+																?.guidelinesUrl ||
+															selectedScholarship.sourceUrl,
+													}))
+											).map((q, idx) => {
+												const rawQuoteLink =
+													q.sourceUrl ||
+													selectedScholarship.officialLinks?.guidelinesUrl ||
+													selectedScholarship.sourceUrl;
+												const quoteLink = cleanOfficialUrl(rawQuoteLink);
+												const isPdf = isGenuinePdf(quoteLink);
+												const sourceLabel = formatSourceLabel(quoteLink);
+												const clauseTitle = formatClauseTitle(
+													q.clause,
+													q.field,
+													idx + 1,
+												);
+												const cleanQuote = formatEvidenceText(q.quote, q.field);
+
+												return (
+													<div
+														key={idx}
+														className="p-3.5 rounded-2xl bg-[#FAF9F6] border border-slate-200/90 text-xs space-y-1.5"
+													>
+														<div className="flex items-center justify-between text-slate-500 flex-wrap gap-1">
+															<span className="font-bold text-slate-800 flex items-center gap-1">
+																<span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+																{clauseTitle}
+															</span>
+															{q.page && (
+																<span className="text-[10px] bg-white border border-slate-200 px-1.5 py-0.5 rounded font-mono">
+																	Page {q.page}
+																</span>
+															)}
+														</div>
+														<blockquote className="border-l-2 border-emerald-700 pl-3 italic text-slate-700 leading-relaxed bg-emerald-50/20 py-1 rounded-r">
+															&ldquo;{cleanQuote}&rdquo;
+														</blockquote>
+														{quoteLink && (
+															<div className="pt-1 flex items-center justify-between text-[11px] text-slate-500 gap-2 flex-wrap">
+																<span
+																	className="truncate max-w-[260px] text-slate-500 font-medium"
+																	title={quoteLink}
+																>
+																	Source: {sourceLabel}
+																</span>
+																{isPdf ? (
+																	<a
+																		href={quoteLink}
+																		target="_blank"
+																		rel="noopener noreferrer"
+																		className="font-medium text-emerald-800 hover:text-emerald-950 flex items-center gap-1 shrink-0 hover:underline"
+																	>
+																		<span>Open Cited PDF</span>
+																		<ExternalLink size={11} />
+																	</a>
+																) : (
+																	<span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+																		Verified Notification
+																	</span>
+																)}
+															</div>
+														)}
+													</div>
+												);
+											})}
+										</div>
+									</div>
 								)}
+
+								{/* Required Documents */}
+								{selectedScholarship.requiredDocuments &&
+									selectedScholarship.requiredDocuments.length > 0 && (
+										<div>
+											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+												Required Documents (
+												{selectedScholarship.requiredDocuments.length})
+											</h4>
+											<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+												{selectedScholarship.requiredDocuments.map(
+													(doc, idx) => (
+														<div
+															key={idx}
+															className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700 flex items-center gap-2"
+														>
+															<span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+															<span className="truncate">{doc.name}</span>
+														</div>
+													),
+												)}
+											</div>
+										</div>
+									)}
+
+								{/* Organizing Ministry or Department */}
+								<div className="p-4 sm:p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200/80 text-sm text-slate-700 space-y-1">
+									<span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
+										Offered by
+									</span>
+									<p className="font-semibold text-slate-900">
+										{selectedScholarship.organization}
+									</p>
+								</div>
+							</div>
+
+							{/* Drawer Footer Actions - Sticky Bottom */}
+							<div className="p-4 sm:p-5 border-t border-slate-200 bg-[#FAF9F6] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shrink-0">
+								<div className="flex items-center gap-2 flex-1 flex-wrap">
+									{selectedScholarship.applicationLink && (
+										<a
+											href={cleanOfficialUrl(
+												selectedScholarship.applicationLink,
+											)}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex-1 min-w-[130px] py-2.5 px-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+										>
+											<span>Apply on Official Site</span>
+											<ArrowUpRight size={14} />
+										</a>
+									)}
+
+									<button
+										onClick={() => {
+											setIsModalOpen(false);
+											setIsEvidenceModalOpen(true);
+										}}
+										className="flex-1 min-w-[120px] py-2.5 px-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+										title="View official scheme guidelines and quotes"
+									>
+										<ShieldCheck size={15} className="text-emerald-700" />
+										<span>View Rules</span>
+									</button>
+
+									<Link
+										to="/documents"
+										className="py-2.5 px-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs shrink-0"
+										title="Check required documents"
+									>
+										<FileText size={15} className="text-emerald-700" />
+										<span>Documents</span>
+									</Link>
+								</div>
 
 								<button
 									onClick={() => {
 										setIsModalOpen(false);
 										setSelectedScholarship(null);
 									}}
-									className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+									className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-semibold transition-colors cursor-pointer shrink-0"
 								>
 									Close
 								</button>
 							</div>
 						</div>
 					</div>,
-					document.body
+					document.body,
 				)}
 
-			{/* Full Evidence & Citation Details Modal */}
+			{/* Full Evidence & Citation Dossier Modal */}
 			<EvidenceModal
 				isOpen={isEvidenceModalOpen}
 				onClose={() => setIsEvidenceModalOpen(false)}

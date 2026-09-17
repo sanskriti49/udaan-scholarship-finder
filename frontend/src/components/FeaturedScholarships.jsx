@@ -14,6 +14,7 @@ function FeaturedScholarships() {
 			deadline: "31 Oct 2026",
 			category: "Women in STEM",
 			accentColor: "border-emerald-200 hover:border-emerald-400",
+			query: "Pragati",
 		},
 		{
 			id: "nsp-csss",
@@ -21,23 +22,25 @@ function FeaturedScholarships() {
 			organization: "Ministry of Education (Govt of India)",
 			description:
 				"Merit-cum-means financial assistance for college and university students scoring above the 80th percentile in Class 12 board examinations.",
-			amount: "₹20,000",
+			amount: "₹12,000 - ₹20,000",
 			period: "per year",
-			deadline: "31 Dec 2026",
+			deadline: "30 Sep 2026",
 			category: "Merit-cum-Means",
 			accentColor: "border-blue-200 hover:border-blue-400",
+			query: "CSSS",
 		},
 		{
-			id: "reliance-ug",
-			title: "Reliance Foundation Undergraduate Scholarship",
-			organization: "Reliance Foundation (CSR)",
+			id: "ugc-ishan-uday",
+			title: "Ishan Uday Special Scholarship for NER",
+			organization: "University Grants Commission (UGC)",
 			description:
-				"Need-cum-merit grant awarded to 5,000 undergraduate scholars across India pursuing any degree program with holistic leadership support.",
-			amount: "Up to ₹2,00,000",
-			period: "full degree",
-			deadline: "15 Oct 2026",
-			category: "Corporate CSR",
+				"Special scholarship scheme providing ₹8,000/month for students from North Eastern Region pursuing general and technical degree courses.",
+			amount: "₹8,000",
+			period: "per month",
+			deadline: "31 Oct 2026",
+			category: "Higher Education",
 			accentColor: "border-amber-200 hover:border-amber-400",
+			query: "Ishan Uday",
 		},
 	];
 
@@ -128,7 +131,7 @@ function FeaturedScholarships() {
 									</div>
 
 									<Link
-										to="/scholarships"
+										to={s.query ? `/scholarships?search=${encodeURIComponent(s.query)}` : "/scholarships"}
 										className="px-4 py-2 bg-slate-900 hover:bg-emerald-800 text-white text-xs font-semibold rounded-full transition-colors shadow-2xs shrink-0 flex items-center gap-1"
 									>
 										<span>View Rules</span>

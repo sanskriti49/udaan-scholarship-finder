@@ -13,7 +13,7 @@ import verifyRoutes from "./src/routes/verifyRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
 import bookmarkRoutes from "./src/routes/bookmarkRoutes.js";
 import { apiLimiter } from "./src/middlewares/rateLimiterMiddleware.js";
-import { crawlerScheduler } from "./src/ingestion/core/Scheduler.js";
+import { crawlerScheduler } from "./src/pipeline/scheduler.js";
 import { notificationScheduler } from "./src/jobs/notificationScheduler.js";
 import {
 	startReminderWorker,
@@ -33,71 +33,40 @@ const configuredFrontends = (process.env.FRONTEND_URL || "")
 
 const defaultAllowed = [
 	"http://localhost:5173",
-	"http://localhost:5174",
-	"http://localhost:5175",
 	"http://localhost:3000",
-	"http://127.0.0.1:5173",
-	"http://127.0.0.1:5174",
-	"http://127.0.0.1:5175",
-	"http://127.0.0.1:3000",
 	"https://udaan-scholarships.vercel.app",
 ];
 
 const allowedOrigins = Array.from(new Set([...configuredFrontends, ...defaultAllowed]));
 
-/**
- * Validates incoming origin against allowed frontends, local dev ports, and deployment domains
- */
-export const isOriginAllowed = (origin) => {
-	// Allow requests with no origin (curl, mobile apps, server-to-server)
-	if (!origin) {
-		return true;
-	}
-
-	const cleanOrigin = origin.trim().replace(/\/+$/, "");
-
-	// Check explicit whitelist
-	if (allowedOrigins.includes(cleanOrigin)) {
-		return true;
-	}
-
-	// Allow localhost, 127.0.0.1, or IPv6 loopback [::1] on any port
-	if (/^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(cleanOrigin)) {
-		return true;
-	}
-
-	// Allow private LAN IP networks (192.168.x.x, 10.x.x.x, 172.16-31.x.x) on any port
-	if (/^https?:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$/i.test(cleanOrigin)) {
-		return true;
-	}
-
-	// Allow all Vercel production and preview deployments (*.vercel.app)
-	if (/^https:\/\/([a-zA-Z0-9_-]+\.)*vercel\.app$/i.test(cleanOrigin)) {
-		return true;
-	}
-
-	// Allow all Render deployments (*.onrender.com)
-	if (/^https:\/\/([a-zA-Z0-9_-]+\.)*onrender\.com$/i.test(cleanOrigin)) {
-		return true;
-	}
-
-	// In non-production environments, allow all origins to eliminate local dev blockers
-	if (process.env.NODE_ENV !== "production") {
-		return true;
-	}
-
-	return false;
-};
-
 const corsOptions = {
 	origin: (origin, callback) => {
-		if (isOriginAllowed(origin)) {
+		// Allow requests with no origin (curl, mobile, server-to-server)
+		if (!origin) {
 			return callback(null, true);
 		}
+
+		const cleanOrigin = origin.replace(/\/+$/, "");
+
+		// Check explicit whitelist
+		if (allowedOrigins.includes(cleanOrigin)) {
+			return callback(null, true);
+		}
+
+		// Allow all Vercel production and preview deployments
+		if (/^https:\/\/.*\.vercel\.app$/.test(cleanOrigin)) {
+			return callback(null, true);
+		}
+
+		// Allow Render services
+		if (/^https:\/\/.*\.onrender\.com$/.test(cleanOrigin)) {
+			return callback(null, true);
+		}
+
 		return callback(null, false);
 	},
 	credentials: true,
-	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+	methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 	allowedHeaders: [
 		"Origin",
 		"X-Requested-With",
@@ -105,17 +74,8 @@ const corsOptions = {
 		"Accept",
 		"Authorization",
 		"X-Cache",
-		"Access-Control-Request-Method",
-		"Access-Control-Request-Headers",
 	],
-	exposedHeaders: [
-		"X-Cache",
-		"X-RateLimit-Limit",
-		"X-RateLimit-Remaining",
-		"X-RateLimit-Reset",
-		"Retry-After",
-	],
-	optionsSuccessStatus: 204,
+	exposedHeaders: ["X-Cache"],
 };
 
 // Security HTTP headers

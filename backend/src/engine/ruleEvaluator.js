@@ -47,7 +47,7 @@ export function formatRequirement(field, operator, target) {
 
 	switch (field) {
 		case "familyIncome":
-			return `Annual family income ≤ ₹${Number(target).toLocaleString("en-IN")}`;
+			return `Annual family income ${operator === "LT" ? "below" : "≤"} ₹${Number(target).toLocaleString("en-IN")}`;
 		case "cgpa":
 			return `Minimum ${target} CGPA`;
 		case "percentage":
@@ -109,13 +109,27 @@ function evaluateCondition(actual, operator, target) {
 		return { result: true };
 	}
 
+	const STATE_ALIASES = {
+		up: "uttar pradesh",
+		mh: "maharashtra",
+		ka: "karnataka",
+		wb: "west bengal",
+		br: "bihar",
+		tn: "tamil nadu",
+		dl: "delhi",
+	};
+	const normActual = STATE_ALIASES[actualStr] || actualStr;
+	const normTarget = STATE_ALIASES[targetStr] || targetStr;
+
 	switch (operator) {
+		case "LT":
+			return { result: Number(actual) < Number(target) };
 		case "LTE":
 			return { result: Number(actual) <= Number(target) };
 		case "GTE":
 			return { result: Number(actual) >= Number(target) };
 		case "EQ":
-			return { result: actualStr === targetStr };
+			return { result: normActual === normTarget };
 		case "IN": {
 			const targetArr = Array.isArray(target) ? target : [target];
 			const hasWildcard = targetArr.some((t) => {
@@ -124,9 +138,11 @@ function evaluateCondition(actual, operator, target) {
 			});
 			if (hasWildcard) return { result: true };
 			return {
-				result: targetArr.some(
-					(t) => String(t).trim().toLowerCase() === actualStr,
-				),
+				result: targetArr.some((t) => {
+					const s = String(t).trim().toLowerCase();
+					const normT = STATE_ALIASES[s] || s;
+					return normT === normActual;
+				}),
 			};
 		}
 		case "BOOLEAN_MATCH":
@@ -168,34 +184,9 @@ export function evaluateEligibility(rawProfile, scholarship) {
 			actualValue === "" ||
 			Number.isNaN(actualValue);
 
-		let citation = provenanceMap.get(rule.id) || null;
-		if (!citation && Array.isArray(scholarship.provenanceQuotes) && scholarship.provenanceQuotes.length > 0) {
-			// Match quote by field or context keywords
-			citation = scholarship.provenanceQuotes.find((q) => {
-				const text = `${q.clause || ""} ${q.quote || ""} ${q.ruleId || ""}`.toLowerCase();
-				const field = String(rule.field || "").toLowerCase();
-				return (
-					text.includes(field) ||
-					(field === "familyincome" && (text.includes("income") || text.includes("lakh"))) ||
-					(field === "castecategory" && (text.includes("caste") || text.includes("category"))) ||
-					(field === "educationlevel" && (text.includes("level") || text.includes("study") || text.includes("degree")))
-				);
-			}) || null;
-		}
-
-		// Ensure citation preserves strict schema fields without fabricating false anchors
-		const resolvedCitation = citation
-			? {
-					ruleId: citation.ruleId || rule.id,
-					clause: citation.clause,
-					quote: citation.quote,
-					sourceUrl: citation.sourceUrl,
-					page: citation.page ?? null,
-					textFragment: citation.textFragment ?? null,
-					confidenceScore: citation.confidenceScore ?? 0.85,
-			  }
-			: null;
-		const citationRef = resolvedCitation;
+		// Only a citation recorded for this exact rule is shown. No guessing by keyword
+		// and no generated placeholder text: an uncited rule has citation = null.
+		const citation = provenanceMap.get(rule.id) || null;
 		const reqText = formatRequirement(rule.field, rule.operator, rule.targetValue);
 		const actualText = formatActualValue(rule.field, actualValue);
 
@@ -206,7 +197,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				description: rule.description || reqText,
 				required: reqText,
 				actual: actualText,
-				citation: resolvedCitation,
+				citation,
 			});
 			continue;
 		}
@@ -224,7 +215,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				description: rule.description || reqText,
 				actual: actualText,
 				condition: reqText,
-				citation: resolvedCitation,
+				citation,
 			});
 		} else {
 			failedRules.push({
@@ -236,7 +227,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				failMessage:
 					rule.failMessage ||
 					`Your ${rule.field} (${actualText}) does not meet the requirement: ${reqText}`,
-				citation: resolvedCitation,
+				citation,
 			});
 		}
 	}

@@ -1,0 +1,110 @@
+{
+  "academicYear": "2026-27",
+  "source": "MahaDBT Aaple Sarkar State Scholarship Portal",
+  "schemes": [
+    {
+      "title": "Rajarshi Chhatrapati Shahu Maharaj Shikshan Shulkh Shishyavrutti Yojna (EBC)",
+      "department": "Directorate of Higher Education, Government of Maharashtra",
+      "academicYear": "2026-27",
+      "opensAt": "01-06-2026",
+      "closesAt": "30-09-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://mahadbt.maharashtra.gov.in/",
+      "category": "Need based",
+      "level": "UG",
+      "state": "Maharashtra",
+      "tags": [
+        "Maharashtra",
+        "MahaDBT",
+        "EBC",
+        "Fee Reimbursement"
+      ],
+      "familyIncomeMax": 800000,
+      "amountValue": 50000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SEBC"
+      ],
+      "description": "50 percent tuition and examination fee reimbursement for economically backward class students enrolled in professional and non-professional degree courses."
+    },
+    {
+      "title": "Government of India Post-Matric Scholarship for SC Students (Maharashtra)",
+      "department": "Social Justice and Special Assistance Department, Government of Maharashtra",
+      "academicYear": "2026-27",
+      "opensAt": "01-06-2026",
+      "closesAt": "30-09-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://mahadbt.maharashtra.gov.in/",
+      "category": "SC / ST / OBC",
+      "level": "UG",
+      "state": "Maharashtra",
+      "tags": [
+        "Maharashtra",
+        "SC / ST",
+        "Social Justice",
+        "Post-Matric"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 35000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "SC"
+      ],
+      "description": "Full tuition and examination fee concession with maintenance allowance for Scheduled Caste students pursuing post-matric courses in Maharashtra."
+    },
+    {
+      "title": "Post-Matric Tuition Fee and Examination Fee Freeship for OBC / VJNT / SBC Students",
+      "department": "Other Backward Bahujan Welfare Department, Government of Maharashtra",
+      "academicYear": "2026-27",
+      "opensAt": "01-06-2026",
+      "closesAt": "30-09-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://mahadbt.maharashtra.gov.in/",
+      "category": "SC / ST / OBC",
+      "level": "UG",
+      "state": "Maharashtra",
+      "tags": [
+        "Maharashtra",
+        "OBC",
+        "VJNT",
+        "Freeship"
+      ],
+      "familyIncomeMax": 800000,
+      "amountValue": 25000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "OBC"
+      ],
+      "description": "Reimbursement of tuition and exam fees to meritorious and eligible students belonging to OBC, VJNT and SBC categories across colleges in Maharashtra."
+    },
+    {
+      "title": "Dr. Panjabrao Deshmukh Vasatigruh Nirvah Bhatta Yojna (Hostel Allowance)",
+      "department": "Directorate of Higher Education, Government of Maharashtra",
+      "academicYear": "2026-27",
+      "opensAt": "01-06-2026",
+      "closesAt": "30-09-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://mahadbt.maharashtra.gov.in/",
+      "category": "Need based",
+      "level": "UG",
+      "state": "Maharashtra",
+      "tags": [
+        "Maharashtra",
+        "Hostel Allowance",
+        "Rural Students",
+        "Higher Education"
+      ],
+      "familyIncomeMax": 800000,
+      "amountValue": 30000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SEBC"
+      ],
+      "description": "Annual hostel maintenance stipend for children of registered agricultural laborers and marginal farmers pursuing technical and professional education."
+    }
+  ]
+}

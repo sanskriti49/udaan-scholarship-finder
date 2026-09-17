@@ -1,0 +1,119 @@
+{
+  "description": "Official pages captured on 2026-09-17 from outside the build sandbox (whose egress proxy blocks *.gov.in). Each entry is the text extraction of the live official URL at capture time. HTML pages were captured as markdown-style text (headings as '#', links as [text](href)); PDFs as extracted text. Entries marked isExcerpt keep the captured text verbatim but omit unrelated sections (navigation widgets, annexure tables, footers). Nothing in these files was paraphrased or edited.",
+  "capturedAt": "2026-09-17T06:00:00.000Z",
+  "captureMethod": "Claude web_fetch tool (text extraction)",
+  "entries": [
+    {
+      "url": "https://scholarships.gov.in/All-Scholarships",
+      "file": "nsp-all-scholarships.txt",
+      "sourceContentType": "text/html",
+      "isExcerpt": true,
+      "omitted": "site navigation lists, accessibility widget, chatbot text, footer logos"
+    },
+    {
+      "url": "https://scholarships.gov.in/",
+      "file": "nsp-home.txt",
+      "sourceContentType": "text/html",
+      "isExcerpt": true,
+      "omitted": "navigation lists, CSC fee notice, Aadhaar face-auth troubleshooting announcements, footer"
+    },
+    {
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/CSSS_GUIDLINES_07022024_updated.pdf",
+      "file": "csss-guidelines-07022024.txt",
+      "sourceContentType": "application/pdf",
+      "isExcerpt": true,
+      "omitted": "sections 3, 5, 9-11 and parts of 4 and 6"
+    },
+    {
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+      "file": "aicte-pragati-degree-guidelines.txt",
+      "sourceContentType": "application/pdf",
+      "isExcerpt": true,
+      "omitted": "sections 7-11 and Annexure A"
+    },
+    {
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2012_G.pdf",
+      "file": "aicte-saksham-degree-guidelines.txt",
+      "sourceContentType": "application/pdf",
+      "isExcerpt": true,
+      "omitted": "sections 6-8"
+    },
+    {
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_3039_G.pdf",
+      "file": "aicte-swanath-degree-guidelines.txt",
+      "sourceContentType": "application/pdf",
+      "isExcerpt": true,
+      "omitted": "sections 5-11 and Annexure I"
+    },
+    {
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/Guidelines_ISHAN UDAY_2324.pdf",
+      "file": "ugc-ishan-uday-guidelines.txt",
+      "sourceContentType": "application/pdf",
+      "isExcerpt": true,
+      "omitted": "tie-breaking text, clauses 2(III)-(VIII), sections 3-10"
+    },
+    {
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/Guidelines_NATIONAL_SCHOLARSHIP_FOR_POSTGRADUATE_STUDIES_UGC_2324.pdf",
+      "file": "ugc-nspg-guidelines.txt",
+      "sourceContentType": "application/pdf",
+      "isExcerpt": true,
+      "omitted": "most of section 2 and sections 3-7"
+    },
+    {
+      "url": "https://scholarships.gov.in/public/schemeGuidelines/NMMSSGuidelines.pdf",
+      "file": "nmmss-guidelines.txt",
+      "sourceContentType": "application/pdf",
+      "isExcerpt": true,
+      "ocrScan": true,
+      "omitted": "addressees, Annexure-I table, sections 1.4 onward. OCR noise is preserved exactly as extracted."
+    },
+    {
+      "url": "https://scholarship.up.gov.in/",
+      "file": "up-scholarships.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    },
+    {
+      "url": "https://mahadbt.maharashtra.gov.in/",
+      "file": "mahadbt-scholarships.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    },
+    {
+      "url": "https://ssp.postmatric.karnataka.gov.in/",
+      "file": "karnataka-ssp.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    },
+    {
+      "url": "https://svmcm.wbhed.gov.in/",
+      "file": "wb-svmcm.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    },
+    {
+      "url": "https://pmsonline.bihar.gov.in/",
+      "file": "bihar-pms.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    },
+    {
+      "url": "https://online-inspire.gov.in/",
+      "file": "dst-inspire.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    },
+    {
+      "url": "https://www.aicte-india.org/",
+      "file": "aicte-ugc.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    },
+    {
+      "url": "https://www.ongcscholar.org/",
+      "file": "premier-foundations.json",
+      "sourceContentType": "application/json",
+      "isExcerpt": false
+    }
+  ]
+}

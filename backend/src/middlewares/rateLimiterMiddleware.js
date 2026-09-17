@@ -34,11 +34,6 @@ export function rateLimiter({
 	const windowSeconds = Math.ceil(windowMs / 1000);
 
 	return async (req, res, next) => {
-		// Preflight OPTIONS requests should never be rate-limited
-		if (req.method === "OPTIONS") {
-			return next();
-		}
-
 		// Identify client IP (respecting reverse proxies like Vercel/Render)
 		const ip =
 			req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||

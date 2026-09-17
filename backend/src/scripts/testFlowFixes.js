@@ -17,7 +17,6 @@ import { getUserProfile, updateUserProfile } from "../controllers/profileControl
 import { toggleBookmark, getBookmarks } from "../controllers/bookmarkController.js";
 import { googleLogin } from "../controllers/authController.js";
 import { rateLimiter } from "../middlewares/rateLimiterMiddleware.js";
-import { TataTrustSource } from "../ingestion/sources/TataTrustSource.js";
 import { closeRedisClient } from "../config/redis.js";
 import { closeReminderQueue } from "../queues/reminderQueue.js";
 
@@ -118,25 +117,7 @@ async function runFlowTests() {
 		console.log(`Second evaluation X-Cache: ${evalRes2.headers["x-cache"]}`);
 		console.log("✓ FLOW B PASSED: Pre-filtering, caching, and auto-persistence verified\n");
 
-		// ----------------------------------------------------
-		// 3. FLOW C: Ingestion Feed Deadline Stability
-		// ----------------------------------------------------
-		console.log("--- 3. FLOW C: Ingestion Pipeline & Stable Deadlines ---");
-		const tataSource = new TataTrustSource();
-		const feed = tataSource.getAuthoritativeFeed();
-		console.log(`TataTrust feed deadline: ${feed[0].deadline ? feed[0].deadline.toISOString() : "None"}`);
-		const extracted = await tataSource.extract("");
-		console.log(`Extracted deadline: ${extracted[0].deadline.toISOString()}`);
-		
-		// Verify deadline is not moving with Date.now()
-		const now = Date.now();
-		const diffMs = extracted[0].deadline.getTime() - now;
-		const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-		console.log(`Days to authoritative deadline: ${diffDays} days`);
-		if (diffDays === 15) {
-			throw new Error("Tata Trust deadline is still using synthetic rolling Date.now() + 15 days!");
-		}
-		console.log("✓ FLOW C PASSED: Ingestion feeds use deterministic authoritative deadlines\n");
+		// FLOW C (deadline stability) is now covered by `npm test` (backend/test/pipeline.integration.test.js).
 
 		// ----------------------------------------------------
 		// 4. FLOW D: Bookmarks CRUD & BullMQ Delayed Reminders

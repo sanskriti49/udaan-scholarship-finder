@@ -9,11 +9,9 @@ dotenv.config(); // fallback
 import mongoose from "mongoose";
 import connectDB from "../config/db.js";
 import { acquireLock, releaseLock, withDistributedLock } from "../utils/distributedLock.js";
-import { crawlerScheduler } from "../ingestion/core/Scheduler.js";
+import { crawlerScheduler } from "../pipeline/scheduler.js";
 import { notificationScheduler } from "../jobs/notificationScheduler.js";
 import { notificationService } from "../services/notificationService.js";
-import { TataTrustSource } from "../ingestion/sources/TataTrustSource.js";
-import { UgcSource } from "../ingestion/sources/UgcSource.js";
 import { closeRedisClient } from "../config/redis.js";
 import { closeReminderQueue } from "../queues/reminderQueue.js";
 
@@ -66,61 +64,7 @@ async function runTests() {
 		console.log("✓ withDistributedLock executed task and automatically cleaned up lease");
 		console.log("✓ DISTRIBUTED LOCK TESTS PASSED!\n");
 
-		// ----------------------------------------------------
-		// 2. TEST LIVE HTML CHEERIO EXTRACTION
-		// ----------------------------------------------------
-		console.log("--- 2. Testing Live HTML Cheerio Extraction ---");
-		
-		// Test Tata Trust live Cheerio parsing
-		const tataSource = new TataTrustSource();
-		const sampleTataHtml = `
-			<!DOCTYPE html>
-			<html>
-			<head><title>Individual Grants - Education | Tata Trusts</title></head>
-			<body>
-				<h1 class="page-title">Tata Trusts Individual Education Grants 2026</h1>
-				<div class="content-block">
-					<h2>Undergraduate Medical and Engineering Study Assistance</h2>
-					<p>Need-based grant applications for engineering and medical degrees are accepted through the official portal.</p>
-					<a href="https://www.tatatrusts.org/apply-grant">Apply for Education Grant</a>
-				</div>
-			</body>
-			</html>
-		`;
-		const tataItems = await tataSource.extract(sampleTataHtml);
-		console.log(`TataTrust extracted ${tataItems.length} items from HTML.`);
-		console.log(`Extracted applicationLink: ${tataItems[0].applicationLink}`);
-		if (!tataItems[0].applicationLink.includes("apply-grant")) {
-			throw new Error("TataTrust Cheerio extractor failed to extract live anchor link!");
-		}
-		console.log("✓ TataTrust Cheerio live DOM parsing validated");
-
-		// Test UGC live Cheerio parsing
-		const ugcSource = new UgcSource();
-		const sampleUgcHtml = `
-			<!DOCTYPE html>
-			<html>
-			<head><title>UGC Notices & Guidelines</title></head>
-			<body>
-				<table class="table">
-					<tr><th>Date</th><th>Subject</th></tr>
-					<tr>
-						<td>15/09/2026</td>
-						<td><a href="/notices/Single_Girl_Child_2026_Guidelines.pdf">UGC Guidelines for Post-Graduate Indira Gandhi Scholarship for Single Girl Child</a></td>
-					</tr>
-				</table>
-			</body>
-			</html>
-		`;
-		const ugcItems = await ugcSource.extract(sampleUgcHtml);
-		console.log(`UGC extracted ${ugcItems.length} schemes.`);
-		const girlChildScheme = ugcItems.find((s) => s.slug.includes("girl-child"));
-		console.log(`Girl child scheme notice link: ${girlChildScheme?.sourceUrl}`);
-		if (!girlChildScheme?.sourceUrl.includes("Single_Girl_Child_2026_Guidelines.pdf")) {
-			throw new Error("UGC Cheerio extractor failed to link live notice PDF from HTML table!");
-		}
-		console.log("✓ UGC Cheerio live table notice parsing validated");
-		console.log("✓ LIVE HTML CHEERIO EXTRACTION TESTS PASSED!\n");
+		// Crawler extraction is now covered by the automated suite: `npm test` (backend/test).
 
 		// ----------------------------------------------------
 		// 3. TEST FAN-OUT OPTIMIZATION IN NOTIFICATION SERVICE

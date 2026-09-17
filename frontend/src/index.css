@@ -144,3 +144,30 @@ button {
 		radial-gradient(at 85% 20%, rgba(183, 228, 199, 0.35) 0px, transparent 45%),
 		radial-gradient(at 50% 85%, rgba(237, 247, 240, 0.7) 0px, transparent 50%);
 }
+
+@keyframes slide-in-right {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+.animate-slide-in-right {
+	animation: slide-in-right 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.animate-fade-in {
+	animation: fade-in 0.2s ease-out forwards;
+}
+

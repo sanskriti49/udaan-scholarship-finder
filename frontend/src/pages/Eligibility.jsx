@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { evaluateProfile, getUserProfile } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
+import { formatGrant } from "../utils/formatGrant";
 import peekingGuy from "../assets/images/peeking-guy.jpg";
 
 const COMMON_DOCUMENTS = [
@@ -322,6 +323,7 @@ export default function EligibilityPage() {
 									<option value="UP">Uttar Pradesh</option>
 									<option value="Maharashtra">Maharashtra</option>
 									<option value="Karnataka">Karnataka</option>
+									<option value="West Bengal">West Bengal</option>
 									<option value="Bihar">Bihar</option>
 									<option value="Delhi">Delhi NCR</option>
 									<option value="Tamil Nadu">Tamil Nadu</option>
@@ -491,12 +493,17 @@ export default function EligibilityPage() {
 																{item.organization}
 															</span>
 														</p>
-														<p className="text-sm sm:text-base font-bold text-slate-900 pt-2 font-serif">
-															Financial Benefit:{" "}
-															<span className="text-emerald-800">
-																{item.amount?.displayString}
-															</span>
-														</p>
+														{(() => {
+															const grant = formatGrant(item.amount);
+															return (
+																<p className="text-sm sm:text-base font-bold text-slate-900 pt-2 font-serif">
+																	Financial Benefit:{" "}
+																	<span className={`text-emerald-800 ${grant.isUnpublished ? "italic font-sans text-xs sm:text-sm font-medium text-slate-600" : ""}`}>
+																		{grant.main} {grant.period || ""}
+																	</span>
+																</p>
+															);
+														})()}
 													</div>
 
 													{/* Readiness Score Gauge */}
@@ -572,10 +579,10 @@ export default function EligibilityPage() {
 																setIsEvidenceOpen(true);
 															}}
 															className="flex-1 sm:flex-initial py-2 px-4 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-1.5"
-															title="Inspect official gazette clauses and eligibility citations"
+															title="View official scheme guidelines and criteria"
 														>
 															<FileText size={13} className="text-emerald-800" />
-															<span>View Citations</span>
+															<span>Rules & Details</span>
 														</button>
 														<a
 															href={item.applicationLink || item.sourceUrl}
@@ -583,7 +590,7 @@ export default function EligibilityPage() {
 															rel="noopener noreferrer"
 															className="flex-1 sm:flex-initial py-2 px-4 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs"
 														>
-															<span>Apply on Portal</span>
+															<span>Apply on Official Site</span>
 															<ArrowUpRight size={13} />
 														</a>
 													</div>
@@ -675,8 +682,8 @@ export default function EligibilityPage() {
 																{f.citation && (
 																	<div className="mt-2 p-3 rounded-xl bg-white border border-rose-200/70 text-xs text-slate-600 space-y-0.5">
 																		<span className="font-bold text-slate-800 block">
-																			Official Rule Clause (
-																			{f.citation.clause || "Gazette Guideline"}
+																			Official Guideline (
+																			{f.citation.clause || "Eligibility Rule"}
 																			):
 																		</span>
 																		<p className="italic text-slate-500 leading-relaxed">
