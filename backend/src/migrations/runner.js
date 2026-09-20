@@ -7,8 +7,10 @@ import SourceState from "../models/SourceState.js";
 import CrawlRun from "../models/CrawlRun.js";
 import IngestionIssue from "../models/IngestionIssue.js";
 import * as m001 from "./001-provenance-pipeline.js";
+import * as m002 from "./002-populate-required-documents.js";
+import * as m003 from "./003-seed-recent-updates.js";
 
-export const MIGRATIONS = [m001];
+export const MIGRATIONS = [m001, m002, m003];
 export const PIPELINE_MODELS = [Scholarship, ScholarshipCycle, ScholarshipVersion, SourceSnapshot, SourceState, CrawlRun, IngestionIssue];
 
 /** Applies pending migrations in order and records them in `migrations`. */

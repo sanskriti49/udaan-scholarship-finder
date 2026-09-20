@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import gsap from "gsap";
 import { useAuth } from "../hooks/useAuth";
 import FullScreenLoader from "../components/FullScreenLoader";
+import { forceUnlockBodyScroll } from "../hooks/useBodyScrollLock";
 
 function Mainlayout() {
   const location = useLocation();
@@ -12,10 +13,10 @@ function Mainlayout() {
   const { loading } = useAuth();
 
   useEffect(() => {
-    // Smooth scroll to top on pathname change so transitions feel calm and fluid
+    forceUnlockBodyScroll();
+
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 
-    // Soft, natural GSAP route fade without aggressive vertical shifts
     const ctx = gsap.context(() => {
       gsap.fromTo(
         pageRef.current,

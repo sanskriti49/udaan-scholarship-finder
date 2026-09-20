@@ -291,7 +291,6 @@ const ApplicationGuide = () => {
 
 	return (
 		<div className="min-h-screen bg-[#FAF9F6] text-slate-900 flex flex-col font-sans">
-			{/* Top Reading Progress Bar */}
 			<div className="fixed top-0 left-0 right-0 z-50 h-1 bg-slate-200/60">
 				<div
 					className="h-full bg-emerald-800 transition-all duration-150 ease-out"
@@ -299,12 +298,10 @@ const ApplicationGuide = () => {
 				/>
 			</div>
 
-			{/* Hero Header */}
 			<section className="relative overflow-hidden bg-white border-b border-slate-200/80 py-12 sm:py-16 px-4 sm:px-6">
 				<div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-900/5 rounded-full blur-3xl pointer-events-none" />
 				<div className="absolute -bottom-20 -left-20 w-64 h-64 bg-teal-800/5 rounded-full blur-3xl pointer-events-none" />
 
-				{/* Confetti Celebration */}
 				{particles.map((p) => (
 					<div
 						key={p.id}
@@ -331,7 +328,6 @@ const ApplicationGuide = () => {
 						pitfalls to ensure your story resonates with review committees.
 					</p>
 
-					{/* Metadata Ticker */}
 					<div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-6">
 						<div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
 							<Clock className="w-4 h-4 text-emerald-800" />
@@ -347,7 +343,6 @@ const ApplicationGuide = () => {
 						</div>
 					</div>
 
-					{/* Toolbar Actions */}
 					<div className="flex flex-wrap justify-center gap-3 mt-6">
 						<button
 							onClick={() => setBookmarked(!bookmarked)}
@@ -390,7 +385,6 @@ const ApplicationGuide = () => {
 				</div>
 			</section>
 
-			{/* Main Content Area */}
 			<div
 				className={`flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 ${
 					isFullscreen ? "max-w-4xl" : ""
@@ -401,7 +395,6 @@ const ApplicationGuide = () => {
 						isFullscreen ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-4"
 					}`}
 				>
-					{/* Left Sidebar Navigation */}
 					{!isFullscreen && (
 						<div className="lg:col-span-1">
 							<div className="sticky top-24 bg-white rounded-3xl border border-slate-200/80 p-4 space-y-2 shadow-2xs">
@@ -414,7 +407,6 @@ const ApplicationGuide = () => {
 									</span>
 								</div>
 
-								{/* Mini Progress */}
 								<div className="h-1.5 bg-slate-100 rounded-full mx-2 mb-3 overflow-hidden">
 									<div
 										className="h-full bg-emerald-800 rounded-full transition-all duration-300"
@@ -422,7 +414,6 @@ const ApplicationGuide = () => {
 									/>
 								</div>
 
-								{/* Section List */}
 								{sections.map((section) => {
 									const Icon = section.icon;
 									const isActive = activeSection === section.id;
@@ -457,7 +448,6 @@ const ApplicationGuide = () => {
 									);
 								})}
 
-								{/* Pro Tip Box */}
 								<div className="pt-3 border-t border-slate-100">
 									<div className="p-3 bg-[#FAF9F6] rounded-2xl border border-slate-200/80">
 										<div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900">
@@ -474,14 +464,12 @@ const ApplicationGuide = () => {
 						</div>
 					)}
 
-					{/* Right Content Panel */}
 					<div
 						ref={contentRef}
 						className={`${
 							isFullscreen ? "w-full" : "lg:col-span-3"
 						} space-y-8 pb-16`}
 					>
-						{/* Overview Section */}
 						{activeSection === "overview" && (
 							<div className="space-y-6">
 								<div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-2xs">
@@ -523,7 +511,6 @@ const ApplicationGuide = () => {
 										lasting social impact.
 									</p>
 
-									{/* Key Stats */}
 									<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
 										<div className="bg-[#FAF9F6] border border-slate-200/80 rounded-2xl p-4 text-center">
 											<Eye className="w-5 h-5 text-emerald-800 mx-auto mb-2" />
@@ -563,7 +550,6 @@ const ApplicationGuide = () => {
 										</div>
 									</div>
 
-									{/* Success Formula */}
 									<div className="mt-6 bg-[#FAF9F6] rounded-2xl p-5 border border-slate-200/80">
 										<div className="flex items-center gap-2 mb-3">
 											<BarChart3 className="w-4 h-4 text-emerald-800" />
@@ -598,7 +584,6 @@ const ApplicationGuide = () => {
 									</div>
 								</div>
 
-								{/* Tips Grid */}
 								<div>
 									<h3 className="text-lg font-serif font-bold text-slate-900 mb-4 flex items-center gap-2">
 										<Sparkles className="w-5 h-5 text-emerald-800" />
@@ -678,7 +663,6 @@ const ApplicationGuide = () => {
 									</div>
 								</div>
 
-								{/* Editorial Quote */}
 								<div className="bg-emerald-950 text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-sm">
 									<div className="relative z-10">
 										<Quote className="w-8 h-8 text-emerald-400/50 mb-3" />
@@ -697,7 +681,6 @@ const ApplicationGuide = () => {
 							</div>
 						)}
 
-						{/* Structure Section */}
 						{activeSection === "structure" && (
 							<div className="space-y-6">
 								<div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-2xs">
@@ -784,7 +767,6 @@ const ApplicationGuide = () => {
 							</div>
 						)}
 
-						{/* Achievements Section */}
 						{activeSection === "achievements" && (
 							<div className="space-y-6">
 								<div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-2xs">
@@ -824,7 +806,6 @@ const ApplicationGuide = () => {
 										Action, Result) model.
 									</p>
 
-									{/* STAR Breakdown */}
 									<div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
 										{[
 											{
@@ -898,7 +879,6 @@ const ApplicationGuide = () => {
 							</div>
 						)}
 
-						{/* Common Mistakes */}
 						{activeSection === "common" && (
 							<div className="space-y-6">
 								<div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-2xs">
@@ -967,7 +947,6 @@ const ApplicationGuide = () => {
 							</div>
 						)}
 
-						{/* Final Polish */}
 						{activeSection === "final" && (
 							<div className="space-y-6">
 								<div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-2xs">
@@ -1024,7 +1003,6 @@ const ApplicationGuide = () => {
 										))}
 									</div>
 
-									{/* CTA Box */}
 									<div className="mt-8 bg-emerald-950 text-white rounded-3xl p-6 sm:p-8 text-center space-y-3">
 										<h3 className="text-xl font-serif font-bold text-white">
 											Ready to Find Your Eligible Scholarships?
@@ -1047,7 +1025,6 @@ const ApplicationGuide = () => {
 							</div>
 						)}
 
-						{/* Bottom Navigation */}
 						<div className="flex items-center justify-between pt-6 border-t border-slate-200/80">
 							<button
 								onClick={() => {

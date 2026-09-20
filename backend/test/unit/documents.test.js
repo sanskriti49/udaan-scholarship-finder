@@ -108,3 +108,68 @@ test("whitespace-tolerant quote location stores the exact matched text", () => {
 	assert.equal(ev.quote, "should not be more than\nRs. 8 lakh");
 	assert.ok(verifyEvidence(ev, snap).ok);
 });
+
+test("buildRequiredDocuments generates statutory baseline and criteria-derived documents", async () => {
+	const { buildRequiredDocuments } = await import("../../src/pipeline/core/requiredDocuments.js");
+
+	// Baseline scheme
+	const baseline = buildRequiredDocuments({}, { fields: { title: "National Merit Scholarship" } });
+	const baselineCodes = baseline.map((d) => d.code);
+	assert.ok(baselineCodes.includes("AADHAAR"));
+	assert.ok(baselineCodes.includes("MARKSHEET"));
+	assert.ok(baselineCodes.includes("BONAFIDE_CERT"));
+	assert.ok(baselineCodes.includes("ADMISSION_PROOF"));
+	assert.ok(baselineCodes.includes("BANK_PASSBOOK"));
+	assert.ok(!baselineCodes.includes("INCOME_CERT"));
+	assert.ok(!baselineCodes.includes("CASTE_CERT"));
+
+	// Means-tested, SC/ST, girl student scheme in UP
+	const specialized = buildRequiredDocuments(
+		{
+			familyIncome: { max: 250000 },
+			casteGroups: ["SC", "ST"],
+			gender: "Female",
+			disabilityRequired: true,
+			minDisabilityPercent: { value: 40 },
+		},
+		{ fields: { title: "UP Post-Matric Scholarship for Girls with Disabilities", tags: ["SC/ST", "Need based"] } },
+		{},
+		"Uttar Pradesh",
+	);
+	const specializedCodes = specialized.map((d) => d.code);
+	assert.ok(specializedCodes.includes("INCOME_CERT"));
+	assert.ok(specializedCodes.includes("CASTE_CERT"));
+	assert.ok(specializedCodes.includes("DISABILITY_CERT"));
+	assert.ok(specializedCodes.includes("DOMICILE_CERT"));
+	assert.ok(specializedCodes.includes("AFFIDAVIT_FEMALE"));
+});
+
+test("ruleEvaluator matches student held documents using code aliases", async () => {
+	const { evaluateEligibility } = await import("../../src/engine/ruleEvaluator.js");
+
+	const scholarship = {
+		schemeKey: "test:scheme:1",
+		rules: [],
+		requiredDocuments: [
+			{ code: "AADHAAR", name: "Aadhaar Card" },
+			{ code: "ADMISSION_PROOF", name: "Admission Proof" },
+			{ code: "INCOME_CERT", name: "Income Certificate" },
+		],
+	};
+
+	// Student holds COLLEGE_ID (alias for ADMISSION_PROOF) and AADHAAR
+	const studentProfile = {
+		familyIncome: 200000,
+		gender: "Any",
+		documentsHeld: ["COLLEGE_ID", "AADHAAR"],
+	};
+
+	const result = evaluateEligibility(studentProfile, scholarship);
+	assert.ok(result);
+	assert.equal(result.documentAudit.total, 3);
+	assert.equal(result.documentAudit.heldCount, 2);
+	assert.equal(result.documentAudit.missingCount, 1);
+	assert.equal(result.documentAudit.missing[0].code, "INCOME_CERT");
+	assert.equal(result.documentAudit.percentage, 67);
+});
+

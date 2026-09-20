@@ -1,7 +1,3 @@
-/**
- * Format raw evidence quotes and clause locators into student-friendly plain English.
- * Eliminates raw developer JSON snippets, "JSON field" tags, and technical locators.
- */
 
 const CLAUSE_MAP = {
 	familyIncomeMax: "Family Income Requirement",
@@ -34,20 +30,17 @@ export function formatClauseTitle(clause, field, fallbackIdx = 1) {
 	if (!clause && !field) return `Guideline ${fallbackIdx}`;
 	let clean = String(clause || "").trim();
 
-	// 1. If it has "JSON field xyz" or "json field xyz"
 	if (/^json\s*field\s*/i.test(clean)) {
 		const key = clean.replace(/^json\s*field\s*/i, "").trim();
 		return CLAUSE_MAP[key] || `${key.replace(/([A-Z])/g, " $1").trim()} Requirement`;
 	}
 
-	// 2. If it is already a known key from field
 	if (field && CLAUSE_MAP[field]) {
 		if (/^Official Directive/i.test(clean) || /^Directive Clause/i.test(clean) || /^Official Statutory Clause/i.test(clean)) {
 			return CLAUSE_MAP[field];
 		}
 	}
 
-	// 3. Clean up technical directive/statutory prefixes
 	clean = clean.replace(/Official Directive §\d+:\s*/i, "");
 	clean = clean.replace(/Directive Clause §\d+:\s*/i, "");
 	clean = clean.replace(/Official Statutory Clause §\d+:\s*/i, "");
@@ -62,18 +55,12 @@ export function formatEvidenceText(rawQuote, field) {
 	if (!rawQuote || typeof rawQuote !== "string") return "";
 	let text = rawQuote.trim();
 
-	// Strip surrounding double quotes if present (e.g. ""..."" from quotes)
 	if (text.startsWith('""') && text.endsWith('""')) {
 		text = text.slice(2, -2).trim();
 	} else if (text.startsWith('"') && text.endsWith('"') && text.indexOf('":') === -1) {
 		text = text.slice(1, -1).trim();
 	}
 
-	// Check if this quote is a JSON key-value snippet, e.g.:
-	// "familyIncomeMax": 300000
-	// "amountValue": 80000
-	// "level": "UG"
-	// "category": "Merit based"
 	const jsonMatch = text.match(/^"([^"]+)"\s*:\s*(.+)$/);
 	if (jsonMatch) {
 		const key = jsonMatch[1];
@@ -132,11 +119,9 @@ export function cleanOfficialUrl(raw) {
 	if (!raw || typeof raw !== "string") return "https://scholarships.gov.in/";
 	try {
 		const parsed = new URL(raw);
-		// Strip /api/schemes or other synthetic mock paths
 		if (parsed.pathname.toLowerCase().startsWith("/api/schemes")) {
 			return parsed.origin + "/";
 		}
-		// Strip known non-existent guessed PDF paths from legacy mock fixtures
 		if (
 			parsed.pathname.includes("2026.pdf") ||
 			parsed.pathname.includes("Guidelines.pdf") ||
@@ -179,7 +164,6 @@ export function formatChangeNotice(summary) {
 	const trimmed = summary.trim();
 	if (!trimmed) return null;
 
-	// Handle developer string "Updated: level" or "Updated: amount, level"
 	if (/^Updated:\s*(.+)$/i.test(trimmed)) {
 		const fields = trimmed.replace(/^Updated:\s*/i, "").split(",").map((f) => f.trim());
 		const friendlyMap = {
@@ -229,7 +213,6 @@ export function formatRuleRequirement(rule) {
 	const isIncome = field === "familyIncome" || field === "familyIncomeMax";
 	const isAcademic = field === "marks" || field === "percentage";
 
-	// 1. Currency/Income Formatting
 	if (isIncome) {
 		const num = typeof targetValue === "number" ? targetValue : Number(targetValue);
 		if (!isNaN(num)) {
@@ -242,7 +225,6 @@ export function formatRuleRequirement(rule) {
 		}
 	}
 
-	// 2. Academic score formatting
 	if (isAcademic) {
 		const num = typeof targetValue === "number" ? targetValue : Number(targetValue);
 		if (!isNaN(num)) {
@@ -252,7 +234,6 @@ export function formatRuleRequirement(rule) {
 		}
 	}
 
-	// 3. Gender formatting
 	if (field === "gender") {
 		if (targetValue === "Female") return "Female students";
 		if (targetValue === "Male") return "Male students";
@@ -260,7 +241,6 @@ export function formatRuleRequirement(rule) {
 		return `${targetValue}`;
 	}
 
-	// 4. Education level formatting
 	if (field === "educationLevel" || field === "level") {
 		const levelMap = {
 			UG: "Undergraduate (UG)",
@@ -276,12 +256,10 @@ export function formatRuleRequirement(rule) {
 		return levelMap[targetValue] || String(targetValue);
 	}
 
-	// 5. Streams or Categories array
 	if (Array.isArray(targetValue)) {
 		return targetValue.join(", ");
 	}
 
-	// 6. Generic operators mapping
 	if (operator === "EQ") return String(targetValue);
 	if (operator === "LTE" || operator === "LE") return `Up to ${targetValue}`;
 	if (operator === "GTE" || operator === "GE") return `Minimum ${targetValue}`;

@@ -134,7 +134,7 @@ export function mergeRecordFields(stored, incoming, { reconfirmedFields = new Se
 	const keptQuotes = (stored.provenanceQuotes || []).filter((q) => !incomingRuleIds.has(q.ruleId));
 	merged.provenanceQuotes = [...keptQuotes, ...incoming.provenanceQuotes];
 
-	for (const k of ["officialTitle", "summary", "description", "tags", "sourceUrl", "sourceSite", "primarySourceId", "authorityTier", "sourceType", "officialLinks", "applicationLink"]) {
+	for (const k of ["officialTitle", "summary", "description", "tags", "sourceUrl", "sourceSite", "primarySourceId", "authorityTier", "sourceType", "officialLinks", "applicationLink", "requiredDocuments"]) {
 		if (!isEmpty(incoming[k])) merged[k] = incoming[k];
 	}
 	return { merged, deltas, issues };

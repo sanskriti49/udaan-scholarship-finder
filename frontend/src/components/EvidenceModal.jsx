@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
 import {
 	X,
 	FileText,
@@ -27,6 +28,7 @@ import {
 	cleanOfficialUrl,
 	isGenuinePdf,
 } from "../utils/formatEvidence";
+import useBodyScrollLock from "../hooks/useBodyScrollLock";
 
 export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 	const [activeSection, setActiveSection] = useState("gazette");
@@ -34,18 +36,8 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 	const [isLoadingEvidence, setIsLoadingEvidence] = useState(false);
 	const [evidenceError, setEvidenceError] = useState(null);
 
-	// Lock background body scroll while modal is open
-	useEffect(() => {
-		if (isOpen) {
-			const originalOverflow = document.body.style.overflow;
-			document.body.style.overflow = "hidden";
-			return () => {
-				document.body.style.overflow = originalOverflow;
-			};
-		}
-	}, [isOpen]);
+	useBodyScrollLock(isOpen);
 
-	// Fetch live verified evidence on modal open
 	useEffect(() => {
 		if (!isOpen || !scholarship) return;
 		setActiveSection("gazette");
@@ -95,7 +87,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 	const docs = scholarship.requiredDocuments || [];
 	const history = scholarship.history || [];
 
-	// Only treat as PDF if it is a genuine, verified PDF link (not mock /docs/ or /api/schemes)
 	const rawGuideline =
 		liveEvidence?.officialLinks?.guidelinesUrl ||
 		scholarship.officialLinks?.guidelinesUrl ||
@@ -116,7 +107,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 				"https://scholarships.gov.in/All-Scholarships",
 		);
 
-	// Gather quotes from live verified evidence or fallback to scholarship facts
 	const rawQuotes =
 		liveEvidence?.data && liveEvidence.data.length > 0
 			? liveEvidence.data.map((e, idx) => ({
@@ -208,19 +198,16 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 			aria-modal="true"
 			aria-labelledby="evidence-modal-title"
 		>
-			{/* Backdrop */}
 			<div
 				className="fixed inset-0 bg-slate-950/40 backdrop-blur-[2px] transition-opacity duration-200 animate-fade-in"
 				onClick={onClose}
 				aria-hidden="true"
 			/>
 
-			{/* Right-Hand Rules & Evidence Drawer - Viewport Anchored */}
 			<div
 				className="fixed inset-y-0 right-0 h-screen max-h-screen z-50 bg-white shadow-2xl flex flex-col border-l border-slate-200 animate-slide-in-right"
 				style={{ width: "min(680px, 100vw)" }}
 			>
-				{/* Top Header - Fixed/Sticky */}
 				<div className="bg-[#FAF9F6] border-b border-slate-200 px-6 py-4 flex items-start justify-between gap-4 shrink-0">
 					<div className="space-y-1.5 min-w-0 flex-1">
 						<div className="flex items-center gap-2 flex-wrap">
@@ -262,7 +249,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					</button>
 				</div>
 
-				{/* Quick Action Strip - Immediately accessible without scrolling */}
 				<div className="bg-emerald-50/50 border-b border-emerald-100/80 px-6 py-2.5 flex items-center justify-between gap-2 shrink-0 flex-wrap">
 					<span className="text-xs font-semibold text-emerald-900">
 						Official Links:
@@ -294,7 +280,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					</div>
 				</div>
 
-				{/* Segmented Tab Navigation - Clean wrap so all tabs remain visible */}
 				<div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-2.5 flex flex-wrap items-center gap-1.5 shrink-0">
 					{navSections.map((sec) => {
 						const Icon = sec.icon;
@@ -331,12 +316,9 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					})}
 				</div>
 
-				{/* Scrollable Modal Content Body (CRITICAL: min-h-0 prevents overflow bugs) */}
 				<div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 flex-1 min-h-0 bg-white">
-					{/* SECTION 1: RULES & CITATIONS */}
 					{activeSection === "gazette" && (
 						<div className="space-y-6">
-							{/* Official Guidelines Circular Banner */}
 							{exactGuidelinePdf ? (
 								<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 flex flex-col gap-3.5">
 									<div className="space-y-1.5 min-w-0">
@@ -418,7 +400,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 												key={idx}
 												className="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-[#FAF9F6] space-y-2.5 transition-all hover:border-slate-300"
 											>
-												{/* Quote Header */}
 												<div className="flex items-center justify-between text-xs text-slate-500 flex-wrap gap-1.5">
 													<span className="font-bold text-slate-900 flex items-center gap-1.5">
 														<span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
@@ -433,12 +414,10 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 													</div>
 												</div>
 
-												{/* Formatted Verbatim Text */}
 												<blockquote className="border-l-3 border-emerald-700 pl-3.5 text-slate-800 text-xs sm:text-sm leading-relaxed bg-emerald-50/25 py-2 rounded-r-lg">
 													&ldquo;{formatEvidenceText(q.quote, q.field)}&rdquo;
 												</blockquote>
 
-												{/* Direct Source Reference Link */}
 												{quoteDocUrl && (
 													<div className="pt-1.5 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500 gap-2 flex-wrap">
 														<span
@@ -472,7 +451,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 						</div>
 					)}
 
-					{/* SECTION 2: WHO CAN APPLY / ELIGIBILITY */}
 					{activeSection === "rules" && (
 						<div className="space-y-4">
 							<div>
@@ -529,17 +507,26 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 						</div>
 					)}
 
-					{/* SECTION 3: REQUIRED DOCUMENTS */}
 					{activeSection === "documents" && (
 						<div className="space-y-4">
-							<div>
-								<h4 className="text-base font-bold text-slate-900 mb-1">
-									Required Documents
-								</h4>
-								<p className="text-xs sm:text-sm text-slate-600">
-									Keep these documents ready for verification when submitting
-									your application.
-								</p>
+							<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+								<div>
+									<h4 className="text-base font-bold text-slate-900 mb-0.5">
+										Required Documents ({docs.length > 0 ? docs.length : "Standard"})
+									</h4>
+									<p className="text-xs sm:text-sm text-slate-600">
+										Keep these documents ready for verification when submitting your application.
+									</p>
+								</div>
+								<Link
+									to="/documents"
+									onClick={onClose}
+									className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100/80 px-3 py-1.5 rounded-xl border border-emerald-200/80 transition-colors shrink-0 self-start sm:self-auto"
+								>
+									<FolderCheck size={14} className="text-emerald-700" />
+									<span>Open Document Vault</span>
+									<ArrowUpRight size={12} />
+								</Link>
 							</div>
 
 							{docs.length > 0 ? (
@@ -547,28 +534,48 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 									{docs.map((doc, idx) => (
 										<div
 											key={idx}
-											className="p-4 rounded-2xl bg-[#FAF9F6] border border-slate-200 text-sm text-slate-800 flex items-center gap-3"
+											className="p-4 rounded-2xl bg-[#FAF9F6] border border-slate-200 text-sm text-slate-800 flex items-start gap-3 hover:border-emerald-200 transition-colors"
 										>
-											<div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-emerald-700 shrink-0 shadow-2xs">
+											<div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-emerald-700 shrink-0 shadow-2xs mt-0.5">
 												<Files size={16} />
 											</div>
-											<span className="font-semibold">{doc.name}</span>
+											<div className="min-w-0 flex-1">
+												<span className="font-semibold block text-slate-900 leading-snug">
+													{doc.name}
+												</span>
+												<div className="flex items-center gap-1.5 mt-1.5">
+													<span
+														className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
+															doc.mandatory !== false
+																? "bg-emerald-50 text-emerald-800 border-emerald-200/80"
+																: "bg-slate-100 text-slate-600 border-slate-200"
+														}`}
+													>
+														{doc.mandatory !== false ? "Mandatory" : "Conditional / As applicable"}
+													</span>
+													{doc.code && (
+														<span className="text-[10px] font-mono text-slate-400">
+															{doc.code}
+														</span>
+													)}
+												</div>
+											</div>
 										</div>
 									))}
 								</div>
 							) : (
-								<div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-500">
-									<p className="text-sm">
-										Standard documents (Aadhaar, student ID/bonafide
-										certificate, previous marksheets, and income certificate)
-										are typically required.
+								<div className="p-6 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-600 space-y-2">
+									<p className="text-sm font-medium">
+										Standard verification documents are required:
+									</p>
+									<p className="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">
+										Aadhaar Card, institutional Bonafide / ID card, qualifying semester/board marksheets, bank account passbook (DBT enabled), and family income certificate (if applicable).
 									</p>
 								</div>
 							)}
 						</div>
 					)}
 
-					{/* SECTION 4: OFFERED BY */}
 					{activeSection === "authority" && (
 						<div className="space-y-5">
 							<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 space-y-3">
@@ -611,7 +618,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 						</div>
 					)}
 
-					{/* SECTION 5: UPDATE HISTORY */}
 					{activeSection === "history" && history.length > 0 && (
 						<div className="space-y-4">
 							<div>
@@ -651,7 +657,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					)}
 				</div>
 
-				{/* Drawer Footer Strip - Sticky Bottom */}
 				<div className="p-4 sm:p-5 border-t border-slate-200 bg-[#FAF9F6] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
 					<span className="text-xs text-slate-500 hidden sm:inline-block">
 						Press{" "}

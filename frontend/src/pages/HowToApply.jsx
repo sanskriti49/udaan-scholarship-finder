@@ -87,7 +87,6 @@ const TIPS = [
 export default function HowToApply() {
 	return (
 		<div className="min-h-screen bg-[#FAF9F6] text-slate-900">
-			{/* Hero Section */}
 			<section className="bg-white border-b border-slate-200/80 px-5 pt-12 pb-10 sm:pt-16 sm:pb-14 text-center">
 				<div className="max-w-3xl mx-auto">
 					<div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-3">
@@ -106,7 +105,6 @@ export default function HowToApply() {
 						From finding the right match to hitting submit, follow these five clear steps to build a verified, winning application.
 					</p>
 
-					{/* Quick stats strip */}
 					<div className="flex justify-center gap-8 sm:gap-12 mt-8 pt-7 border-t border-slate-100 max-w-lg mx-auto">
 						{[
 							{ num: "5 Steps", label: "Clear roadmap" },
@@ -126,7 +124,6 @@ export default function HowToApply() {
 				</div>
 			</section>
 
-			{/* Step by Step Timeline */}
 			<section className="max-w-3xl mx-auto px-5 py-12 sm:py-16">
 				<div className="space-y-6">
 					{STEPS.map((step, idx) => {
@@ -136,7 +133,6 @@ export default function HowToApply() {
 								key={idx}
 								className="bg-white border border-slate-200/90 hover:border-emerald-300 rounded-3xl p-6 sm:p-7 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col gap-4"
 							>
-								{/* Step Header */}
 								<div className="flex items-center justify-between">
 									<div className="flex items-center gap-3">
 										<div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center justify-center shrink-0 shadow-2xs">
@@ -157,7 +153,6 @@ export default function HowToApply() {
 									</p>
 								</div>
 
-								{/* Checklist details */}
 								<div className="pt-3 border-t border-slate-100">
 									<ul className="space-y-2">
 										{step.details.map((d, i) => (
@@ -179,7 +174,6 @@ export default function HowToApply() {
 				</div>
 			</section>
 
-			{/* Pro Tips Grid */}
 			<section className="bg-white border-y border-slate-200/80 px-5 py-14">
 				<div className="max-w-4xl mx-auto">
 					<div className="text-center mb-10">
@@ -212,7 +206,6 @@ export default function HowToApply() {
 				</div>
 			</section>
 
-			{/* CTA Section */}
 			<section className="px-5 py-16">
 				<div className="max-w-2xl mx-auto bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 text-center shadow-2xs">
 					<div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center mx-auto mb-4 text-emerald-800 shadow-2xs">

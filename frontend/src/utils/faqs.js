@@ -25,11 +25,6 @@ export const faqs = [
 			"After the eligibility engine filters your options, our Machine Learning recommendation system ranks them. The match percentage indicates structural fit based on criteria strength, maximum award amount, popularity, and profile similarity.",
 	},
 	{
-		question: "Are the GenAI responses reliable?",
-		answer:
-			"Our GenAI assistant utilizes a Retrieval-Augmented Generation (RAG) architecture. It only formulates responses using verified, structured data directly from our vetted PostgreSQL database, ensuring it doesn't invent hallucinated internet details.",
-	},
-	{
 		question: "Does Udaan charge any processing or application fees?",
 		answer:
 			"No. Finding, matching, and exploring official application sources through Udaan is completely free. We never charge students to access intelligence metrics or scholarship information.",
@@ -41,6 +36,5 @@ export const faqs = [
 	},
 ];
 
-// Helper splits for balanced two-column UI rendering
 export const faqLeft = faqs.filter((_, i) => i % 2 === 0);
 export const faqRight = faqs.filter((_, i) => i % 2 !== 0);

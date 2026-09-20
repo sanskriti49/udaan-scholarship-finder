@@ -44,6 +44,84 @@ function buildSearchRegex(token) {
 	return new RegExp(flexible, "i");
 }
 
+function parseMultiParam(param) {
+	if (!param) return [];
+	if (Array.isArray(param)) {
+		return param.flatMap((p) => String(p).split(",")).map((s) => s.trim()).filter(Boolean);
+	}
+	return String(param).split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+function getCategoryCondition(cat) {
+	if (cat === "Government") {
+		return { $or: [{ category: "Government" }, { sourceType: "Government" }] };
+	} else if (cat === "STEM") {
+		return {
+			$or: [
+				{ category: "STEM" },
+				{ tags: { $in: ["STEM", "Engineering", "Technical"] } },
+				{ title: /aicte|technical|energy|statistical|science/i },
+			],
+		};
+	} else if (cat === "Women") {
+		return {
+			$or: [
+				{ category: "Women" },
+				{ tags: "Women" },
+				{ "eligibility.gender": "Female" },
+				{ title: /\b(girl|girls|women|female)\b/i },
+			],
+		};
+	} else if (cat === "SC / ST / OBC") {
+		return {
+			$or: [
+				{ category: "SC / ST / OBC" },
+				{ tags: { $in: ["SC/ST/OBC", "SC / ST / OBC"] } },
+				{ "eligibility.casteCategories": { $in: ["SC", "ST", "OBC"] } },
+				{ title: /\b(sc|st|obc|ebc|dnt|schedule\s+tribe)\b/i },
+			],
+		};
+	} else if (cat === "Need based") {
+		return {
+			$or: [
+				{ category: "Need based" },
+				{ category: "Welfare based" },
+				{ tags: "Need based" },
+				{ "eligibility.familyIncome": { $ne: null } },
+				{ title: /means|welfare|pre[\s-]matric|post[\s-]matric/i },
+			],
+		};
+	} else if (cat === "Minority") {
+		return {
+			$or: [
+				{ category: "Minority" },
+				{ tags: "Minority" },
+				{ title: /minority/i },
+			],
+		};
+	} else if (cat === "Merit based") {
+		return {
+			$or: [{ category: "Merit based" }, { title: /merit/i }],
+		};
+	}
+	return { category: cat };
+}
+
+function getLevelCondition(level) {
+	if (level === "Class 10") {
+		return { $or: [{ level: "Class 10" }, { tags: "Class 10" }, { title: /pre[\s-]matric|school/i }] };
+	} else if (level === "Class 12") {
+		return { $or: [{ level: "Class 12" }, { tags: "Class 12" }, { title: /post[\s-]matric/i }] };
+	} else if (level === "UG") {
+		return { $or: [{ level: "UG" }, { tags: "UG" }, { title: /degree|college|university|nts-ug|under\s*graduate/i }] };
+	} else if (level === "PG") {
+		return { $or: [{ level: "PG" }, { tags: "PG" }, { title: /post\s*graduate|nts-pg|pgs/i }] };
+	} else if (level === "PhD") {
+		return { $or: [{ level: "PhD" }, { tags: "PhD" }, { title: /fellowship|jrf|srf/i }] };
+	}
+	return { $or: [{ level }, { tags: level }] };
+}
+
 /**
  * GET /api/scholarships
  * List & search scholarships with filtering and sorting
@@ -73,108 +151,77 @@ export const getScholarships = async (req, res) => {
 			isTextSearch = true;
 		}
 
-		if (category && category !== "All") {
-			if (category === "Government") {
-				conditions.push({
-					$or: [{ category: "Government" }, { sourceType: "Government" }],
-				});
-			} else if (category === "STEM") {
-				conditions.push({
-					$or: [
-						{ category: "STEM" },
-						{ tags: { $in: ["STEM", "Engineering", "Technical"] } },
-						{ title: /aicte|technical|energy|statistical|science/i },
-					],
-				});
-			} else if (category === "Women") {
-				conditions.push({
-					$or: [
-						{ category: "Women" },
-						{ tags: "Women" },
-						{ "eligibility.gender": "Female" },
-						{ title: /\b(girl|girls|women|female)\b/i },
-					],
-				});
-			} else if (category === "SC / ST / OBC") {
-				conditions.push({
-					$or: [
-						{ category: "SC / ST / OBC" },
-						{ tags: { $in: ["SC/ST/OBC", "SC / ST / OBC"] } },
-						{ "eligibility.casteCategories": { $in: ["SC", "ST", "OBC"] } },
-						{ title: /\b(sc|st|obc|ebc|dnt|schedule\s+tribe)\b/i },
-					],
-				});
-			} else if (category === "Need based") {
-				conditions.push({
-					$or: [
-						{ category: "Need based" },
-						{ category: "Welfare based" },
-						{ tags: "Need based" },
-						{ "eligibility.familyIncome": { $ne: null } },
-						{ title: /means|welfare|pre[\s-]matric|post[\s-]matric/i },
-					],
-				});
-			} else if (category === "Minority") {
-				conditions.push({
-					$or: [
-						{ category: "Minority" },
-						{ tags: "Minority" },
-						{ title: /minority/i },
-					],
-				});
-			} else if (category === "Merit based") {
-				conditions.push({
-					$or: [{ category: "Merit based" }, { title: /merit/i }],
-				});
+		// Multi-select Category Filter (Matches any selected category)
+		const categories = parseMultiParam(category).filter((c) => c !== "All");
+		if (categories.length > 0) {
+			const catConditions = categories.map(getCategoryCondition);
+			if (catConditions.length === 1) {
+				conditions.push(catConditions[0]);
 			} else {
-				conditions.push({ category });
+				conditions.push({ $or: catConditions });
 			}
 		}
-		if (level && level !== "All") {
-			if (level === "Class 10") {
-				conditions.push({
-					$or: [{ level: "Class 10" }, { tags: "Class 10" }, { title: /pre[\s-]matric|school/i }],
-				});
-			} else if (level === "Class 12") {
-				conditions.push({
-					$or: [{ level: "Class 12" }, { tags: "Class 12" }, { title: /post[\s-]matric/i }],
-				});
-			} else if (level === "UG") {
-				conditions.push({
-					$or: [{ level: "UG" }, { tags: "UG" }, { title: /degree|college|university|nts-ug|under\s*graduate/i }],
-				});
-			} else if (level === "PG") {
-				conditions.push({
-					$or: [{ level: "PG" }, { tags: "PG" }, { title: /post\s*graduate|nts-pg|pgs/i }],
-				});
-			} else if (level === "PhD") {
-				conditions.push({
-					$or: [{ level: "PhD" }, { tags: "PhD" }, { title: /fellowship|jrf|srf/i }],
-				});
+
+		// Multi-select Level Filter (Matches any selected education level)
+		const levels = parseMultiParam(level).filter((l) => l !== "All");
+		if (levels.length > 0) {
+			const lvlConditions = levels.map(getLevelCondition);
+			if (lvlConditions.length === 1) {
+				conditions.push(lvlConditions[0]);
 			} else {
-				conditions.push({ $or: [{ level }, { tags: level }] });
+				conditions.push({ $or: lvlConditions });
 			}
 		}
-		if (state && state !== "All" && state !== "All India") {
-			const stateVariants = [state];
-			const s = state.trim().toLowerCase();
-			if (s === "up" || s === "uttar pradesh") stateVariants.push("UP", "Uttar Pradesh");
-			else if (s === "mh" || s === "maharashtra") stateVariants.push("MH", "Maharashtra");
-			else if (s === "ka" || s === "karnataka") stateVariants.push("KA", "Karnataka");
-			else if (s === "wb" || s === "west bengal") stateVariants.push("WB", "West Bengal");
-			else if (s === "br" || s === "bihar") stateVariants.push("BR", "Bihar");
-			else if (s === "tn" || s === "tamil nadu") stateVariants.push("TN", "Tamil Nadu");
-			else if (s === "dl" || s === "delhi") stateVariants.push("DL", "Delhi");
-			conditions.push({ state: { $in: [...new Set(stateVariants), "All India"] } });
-		}
-		if (sourceType && sourceType !== "All") {
-			if (sourceType === "Corporate") {
-				conditions.push({ sourceType: { $in: ["Corporate", "Corporate CSR"] } });
-			} else {
-				conditions.push({ sourceType });
+
+		// Multi-select State Filter (Matches any selected state plus All India)
+		const rawStates = parseMultiParam(state).filter((s) => s !== "All" && s !== "All India");
+		if (rawStates.length > 0) {
+			const allVariants = new Set(["All India"]);
+			for (const st of rawStates) {
+				allVariants.add(st);
+				const s = st.trim().toLowerCase();
+				if (s === "up" || s === "uttar pradesh") {
+					allVariants.add("UP");
+					allVariants.add("Uttar Pradesh");
+				} else if (s === "mh" || s === "maharashtra") {
+					allVariants.add("MH");
+					allVariants.add("Maharashtra");
+				} else if (s === "ka" || s === "karnataka") {
+					allVariants.add("KA");
+					allVariants.add("Karnataka");
+				} else if (s === "wb" || s === "west bengal") {
+					allVariants.add("WB");
+					allVariants.add("West Bengal");
+				} else if (s === "br" || s === "bihar") {
+					allVariants.add("BR");
+					allVariants.add("Bihar");
+				} else if (s === "tn" || s === "tamil nadu") {
+					allVariants.add("TN");
+					allVariants.add("Tamil Nadu");
+				} else if (s === "dl" || s === "delhi") {
+					allVariants.add("DL");
+					allVariants.add("Delhi");
+				}
 			}
+			conditions.push({ state: { $in: Array.from(allVariants) } });
 		}
-		if (hasChanges === "true") conditions.push({ hasChanges: true });
+
+		// Multi-select Source Type Filter
+		const rawSources = parseMultiParam(sourceType).filter((s) => s !== "All");
+		if (rawSources.length > 0) {
+			const resolvedSources = new Set();
+			for (const src of rawSources) {
+				if (src === "Corporate") {
+					resolvedSources.add("Corporate");
+					resolvedSources.add("Corporate CSR");
+				} else {
+					resolvedSources.add(src);
+				}
+			}
+			conditions.push({ sourceType: { $in: Array.from(resolvedSources) } });
+		}
+
+		if (hasChanges === "true" || hasChanges === true) conditions.push({ hasChanges: true });
 		if (status) {
 			const wanted = String(status).split(",").filter((x) => STATUSES.has(x));
 			if (wanted.length) conditions.push({ status: { $in: wanted } });
@@ -249,12 +296,18 @@ export const getScholarships = async (req, res) => {
 		const now = new Date();
 		scholarships = scholarships.map((d) => withLiveStatus(d, now));
 
+		const recentUpdatesCount = await Scholarship.countDocuments({
+			...PUBLIC_FILTER,
+			hasChanges: true,
+		});
+
 		return res.status(200).json({
 			success: true,
 			count: scholarships.length,
 			total,
 			totalPages: Math.ceil(total / limitNum),
 			currentPage: pageNum,
+			recentUpdatesCount,
 			data: scholarships,
 		});
 	} catch (error) {

@@ -40,13 +40,11 @@ function Hero() {
 
 	return (
 		<div className="relative overflow-hidden bg-[#FAF9F6] border-b border-slate-200/80 pt-8 pb-16 sm:pt-10 sm:pb-20 md:pt-14 md:pb-28">
-			{/* Ambient glow */}
 			<div className="absolute top-0 right-0 w-64 h-64 sm:w-96 sm:h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
 			<div className="absolute bottom-0 left-0 w-48 h-48 sm:w-80 sm:h-80 bg-teal-100/35 rounded-full blur-3xl pointer-events-none -z-10" />
 
 			<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 				<div className="grid grid-cols-1 gap-12 items-center lg:grid-cols-12 lg:gap-8 xl:gap-14">
-					{/* Left Column: Typography & Search */}
 					<div
 						className={`lg:col-span-7 flex flex-col gap-5 sm:gap-6 transition-all duration-700 ease-out ${
 							mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
@@ -57,9 +55,8 @@ function Hero() {
 							<span>From eligibility to opportunity</span>
 						</div>
 
-						{/* Editorial Headline */}
 						<h1
-							className="font-serif text-slate-900 leading-[1.1] tracking-tight font-normal"
+							className="font-serif text-slate-900 leading-[1.1] tracking-tight font-medium"
 							style={{ fontSize: "clamp(2.25rem, 5.5vw, 3.75rem)" }}
 						>
 							Find scholarships
@@ -89,7 +86,6 @@ function Hero() {
 							course, category, academics, and family income.
 						</p>
 
-						{/* Interactive Search Bar */}
 						<form
 							onSubmit={handleSearch}
 							className="flex flex-col sm:flex-row gap-2.5 max-w-xl pt-1 w-full"
@@ -116,7 +112,6 @@ function Hero() {
 							</button>
 						</form>
 
-						{/* Quick Tag Recommendations */}
 						<div className="flex items-center gap-2 pt-0.5 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto sm:flex-wrap sm:overflow-visible no-scrollbar">
 							<span className="text-xs text-slate-500 font-medium shrink-0">
 								Popular:
@@ -137,19 +132,15 @@ function Hero() {
 						</div>
 					</div>
 
-					{/* Right Column: Layered Image + Floating Stats Dock */}
 					<div
 						className={`lg:col-span-5 flex justify-center transition-all duration-700 ease-out delay-150 ${
 							mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
 						}`}
 					>
 						<div className="relative w-full max-w-sm sm:max-w-md pb-8 sm:pb-10">
-							{/* Decorative framing element for subtle depth */}
 							<div className="absolute -inset-2 bg-gradient-to-br from-emerald-100/60 via-teal-50/40 to-amber-50/40 rounded-[2.25rem] transform -rotate-1 pointer-events-none -z-10" />
 
-							{/* Main Card Container */}
 							<div className="relative rounded-[2rem] p-2 bg-white/90 backdrop-blur-sm border border-slate-200/90 shadow-xl shadow-slate-900/5">
-								{/* Image Box */}
 								<div className="relative w-full aspect-[4/3.8] rounded-[1.5rem] overflow-hidden bg-slate-100">
 									<img
 										src={heroPhoto}

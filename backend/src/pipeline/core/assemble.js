@@ -1,6 +1,7 @@
 import { formatIstDate, isWithinAcademicYearWindow } from "./time.js";
 import { canonicalTitle } from "./dedupe.js";
 import { cleanPortalUrl } from "./urls.js";
+import { buildRequiredDocuments } from "./requiredDocuments.js";
 
 /**
  * Assemble a normalised scholarship record from:
@@ -277,6 +278,8 @@ export function assembleRecord(candidate, { source, guideline, assertions = [] }
 			if (titleEv) evidence.push({ ...titleEv, field: "state", locator: "official scheme title" });
 		}
 	}
+
+	record.requiredDocuments = buildRequiredDocuments(facts, candidate, guideline, record.state);
 
 	issues.push(...applyAssertions(record, assertions));
 	const { rules, provenanceQuotes } = buildRules(record.schemeKey, facts, evidence);

@@ -240,6 +240,19 @@ export function evaluateEligibility(rawProfile, scholarship) {
 			: 100;
 
 	// Document Readiness Audit
+	const DOC_CODE_ALIASES = {
+		ADMISSION_PROOF: ["COLLEGE_ID", "ADMISSION_PROOF", "BONAFIDE_CERT", "FEE_RECEIPT"],
+		BONAFIDE_CERT: ["COLLEGE_ID", "BONAFIDE_CERT", "ADMISSION_PROOF"],
+		COLLEGE_ID: ["COLLEGE_ID", "ADMISSION_PROOF", "BONAFIDE_CERT"],
+		AADHAAR: ["AADHAAR", "AADHAAR_CARD", "ID_PROOF"],
+		INCOME_CERT: ["INCOME_CERT", "INCOME_CERTIFICATE"],
+		MARKSHEET: ["MARKSHEET", "PREV_MARKSHEET", "10TH_MARKSHEET", "12TH_MARKSHEET"],
+		BANK_PASSBOOK: ["BANK_PASSBOOK", "BANK_ACCOUNT", "BANK_STATEMENT"],
+		CASTE_CERT: ["CASTE_CERT", "CASTE_CERTIFICATE", "COMMUNITY_CERT"],
+		DOMICILE_CERT: ["DOMICILE_CERT", "DOMICILE_CERTIFICATE", "RESIDENCE_CERT"],
+		DISABILITY_CERT: ["DISABILITY_CERT", "DISABILITY_CERTIFICATE", "UDID_CARD"],
+	};
+
 	const requiredDocs = Array.isArray(scholarship.requiredDocuments)
 		? scholarship.requiredDocuments
 		: [];
@@ -257,7 +270,9 @@ export function evaluateEligibility(rawProfile, scholarship) {
 	};
 
 	for (const doc of requiredDocs) {
-		const isHeld = studentDocs.has(doc.code.toUpperCase());
+		const targetCode = doc.code ? doc.code.toUpperCase() : "";
+		const aliases = DOC_CODE_ALIASES[targetCode] || [targetCode];
+		const isHeld = aliases.some((c) => studentDocs.has(c));
 		if (isHeld) {
 			documentAudit.heldCount++;
 			documentAudit.held.push(doc);

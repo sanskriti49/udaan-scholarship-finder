@@ -6,7 +6,7 @@
 @import "tailwindcss";
 
 @theme {
-	/* Udaan Sophisticated Multi-Shade Green Spectrum */
+	
 	--color-forest-950: #081c10;
 	--color-forest-900: #0d2818;
 	--color-forest-850: #143621;
@@ -69,7 +69,6 @@
 	}
 }
 
-/* Subtle modern scrollbar */
 html {
 	scrollbar-width: thin;
 	scrollbar-color: #74c69d #f4f6f0;
@@ -98,7 +97,6 @@ button {
 	cursor: pointer;
 }
 
-/* Subtle animations & Glass utilities */
 @keyframes subtle-float {
 	0%,
 	100% {

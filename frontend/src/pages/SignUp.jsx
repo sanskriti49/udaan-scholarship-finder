@@ -176,7 +176,6 @@ export default function SignUp() {
 			ref={containerRef}
 			className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-cream-canvas flex flex-col lg:flex-row will-change-[opacity,transform]"
 		>
-			{/* Left Illustration Panel */}
 			<div className="hidden lg:flex lg:w-[45%] xl:w-[42%] relative overflow-hidden bg-forest-950 flex-col justify-between p-6 xl:p-10 h-full">
 				<div
 					className="absolute inset-0"
@@ -219,7 +218,6 @@ export default function SignUp() {
 				</div>
 			</div>
 
-			{/* Right Form Panel */}
 			<div className="flex-1 flex flex-col justify-center px-6 py-5 sm:px-10 lg:px-12 xl:px-16 overflow-y-auto">
 				<div className="max-w-md mx-auto w-full my-auto py-1 sm:py-2">
 					<div className="mb-3.5 sm:mb-4">

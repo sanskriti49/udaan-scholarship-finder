@@ -55,7 +55,6 @@ function FeaturedScholarships() {
 	return (
 		<section className="py-16 md:py-20 px-5 sm:px-8 bg-[#FAF9F6] border-b border-slate-200/70">
 			<div className="max-w-7xl mx-auto">
-				{/* Section Header */}
 				<div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
 					<div>
 						<span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
@@ -81,7 +80,6 @@ function FeaturedScholarships() {
 					</Link>
 				</div>
 
-				{/* Cards Grid */}
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 					{scholarships.map((s) => {
 						const daysLeft = getDaysLeft(s.deadline);
@@ -91,7 +89,6 @@ function FeaturedScholarships() {
 								className={`bg-white border ${s.accentColor} rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all duration-200 group`}
 							>
 								<div>
-									{/* Card Header: Category & Deadline */}
 									<div className="flex items-center justify-between gap-2 mb-4">
 										<span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
 											{s.category}
@@ -102,7 +99,6 @@ function FeaturedScholarships() {
 										</span>
 									</div>
 
-									{/* Title & Organization */}
 									<h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug group-hover:text-emerald-800 transition-colors font-sans">
 										{s.title}
 									</h3>
@@ -110,13 +106,11 @@ function FeaturedScholarships() {
 										{s.organization}
 									</p>
 
-									{/* Description */}
 									<p className="text-sm text-slate-600 leading-relaxed font-normal">
 										{s.description}
 									</p>
 								</div>
 
-								{/* Card Footer: Grant Amount & CTA */}
 								<div className="pt-5 mt-6 border-t border-slate-100 flex items-center justify-between gap-3">
 									<div>
 										<span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase block">

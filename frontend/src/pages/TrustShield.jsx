@@ -24,7 +24,7 @@ import {
 import { toast } from "sonner";
 
 export default function TrustShield() {
-	const [activeTab, setActiveTab] = useState("url"); // "url" | "text"
+	const [activeTab, setActiveTab] = useState("url"); 
 	const [urlInput, setUrlInput] = useState("");
 	const [textInput, setTextInput] = useState("");
 	const [analyzing, setAnalyzing] = useState(false);
@@ -32,7 +32,6 @@ export default function TrustShield() {
 	const [registry, setRegistry] = useState([]);
 	const [registryLoading, setRegistryLoading] = useState(true);
 
-	// Sample presets for quick testing
 	const presets = [
 		{
 			label: "Official NSP Portal",
@@ -125,7 +124,6 @@ export default function TrustShield() {
 			setTextInput(preset.val);
 			setUrlInput("");
 		}
-		// Auto-trigger analysis for instant demonstration
 		setTimeout(() => {
 			setAnalyzing(true);
 			scanLinkOrContent({
@@ -226,7 +224,6 @@ export default function TrustShield() {
 	return (
 		<div className="min-h-screen bg-[#FAF9F6] text-slate-900 py-10 px-4 sm:px-6 lg:px-8">
 			<div className="max-w-5xl mx-auto space-y-10">
-				{/* Header */}
 				<div className="text-center max-w-3xl mx-auto">
 					<div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-3 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full">
 						<ShieldCheck size={14} className="text-emerald-700" />
@@ -245,7 +242,6 @@ export default function TrustShield() {
 					</p>
 				</div>
 
-				{/* Zero-Storage Privacy Guarantee */}
 				<div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 					<div className="flex items-start sm:items-center gap-3">
 						<div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200/70 flex items-center justify-center shrink-0 text-emerald-800">
@@ -267,7 +263,6 @@ export default function TrustShield() {
 					</span>
 				</div>
 
-				{/* Scanner Card */}
 				<div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-2xs space-y-6">
 					<div className="flex items-center justify-between border-b border-slate-100 pb-4 flex-wrap gap-3">
 						<div>
@@ -279,7 +274,6 @@ export default function TrustShield() {
 							</p>
 						</div>
 
-						{/* Mode Switcher */}
 						<div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
 							<button
 								type="button"
@@ -306,7 +300,6 @@ export default function TrustShield() {
 						</div>
 					</div>
 
-					{/* Quick Presets */}
 					<div className="space-y-2">
 						<span className="text-xs font-bold text-emerald-950/65 uppercase tracking-wider">
 							Quick Demonstration Presets:
@@ -326,7 +319,6 @@ export default function TrustShield() {
 						</div>
 					</div>
 
-					{/* Input Form */}
 					<form onSubmit={handleAnalyze} className="space-y-4">
 						{activeTab === "url" ? (
 							<div className="relative">
@@ -382,7 +374,6 @@ export default function TrustShield() {
 						</div>
 					</form>
 
-					{/* Analysis Result Card */}
 					{result &&
 						(() => {
 							const details = getVerdictDetails(result.verdict, result.score);
@@ -424,7 +415,6 @@ export default function TrustShield() {
 										{details.summary}
 									</p>
 
-									{/* Findings Checklist */}
 									{result.findings && result.findings.length > 0 && (
 										<div className="space-y-2.5 pt-2">
 											<h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
@@ -472,7 +462,6 @@ export default function TrustShield() {
 										</div>
 									)}
 
-									{/* Verified Cross-Reference */}
 									{result.crossReferencedScheme && (
 										<div className="bg-white border border-emerald-300/80 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 											<div>
@@ -500,7 +489,6 @@ export default function TrustShield() {
 										</div>
 									)}
 
-									{/* Actionable Recommendations */}
 									{result.verdict === "HIGH_RISK_SUSPICIOUS" && (
 										<div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-rose-200/80">
 											<span className="text-sm text-rose-800 font-semibold">
@@ -523,7 +511,6 @@ export default function TrustShield() {
 						})()}
 				</div>
 
-				{/* Directory of Verified Government & CSR Portals */}
 				<div className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div>
@@ -599,7 +586,6 @@ export default function TrustShield() {
 					</div>
 				</div>
 
-				{/* Safety Education Section */}
 				<div className="bg-[#FAF9F6] border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4">
 					<h3 className="text-base font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
 						<HelpCircle size={18} className="text-emerald-800" /> Three Golden

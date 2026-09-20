@@ -55,7 +55,6 @@ export default function Settings() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
 
-  // Profile Form State
   const [profile, setProfile] = useState({
     name: user?.name || "Priya Sharma",
     email: user?.email || "priya.sharma@example.com",
@@ -82,7 +81,6 @@ export default function Settings() {
     }
   }, [user]);
 
-  // Notification Preferences State (Database-backed)
   const [notifications, setNotifications] = useState({
     instantMatch: true,
     deadlineAlerts: true,
@@ -101,14 +99,12 @@ export default function Settings() {
   const [notifSaving, setNotifSaving] = useState(false);
   const [testingAlert, setTestingAlert] = useState(false);
 
-  // Security Form State
   const [security, setSecurity] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
-  // Target preferences
   const [targetCategories, setTargetCategories] = useState([
     "Merit-Based",
     "Means-Based / Financial Need",
@@ -193,7 +189,6 @@ export default function Settings() {
     setTestingAlert(true);
     const token = localStorage.getItem("token");
 
-    // Guest or unauthenticated simulation: dispatch local preview alert to NotificationCenter
     if (!user || !token) {
       setTimeout(() => {
         const previewAlert = {
@@ -291,7 +286,6 @@ export default function Settings() {
   return (
     <div className="min-h-screen bg-[#FAF9F6] py-10 px-5 sm:px-8 text-slate-900">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="mb-6">
           <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>
@@ -305,7 +299,6 @@ export default function Settings() {
           </p>
         </div>
 
-        {/* Guest Mode Banner */}
         {!user && (
           <div className="mb-8 p-4 rounded-2xl bg-amber-50/80 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-950 shadow-2xs">
             <div className="flex items-start sm:items-center gap-2.5">
@@ -331,9 +324,7 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Layout: Sidebar Tabs + Content Area */}
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 items-start">
-          {/* Tabs Navigation */}
           <nav className="bg-white border border-slate-200/90 rounded-3xl p-3 shadow-2xs space-y-1 sticky top-24">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -367,9 +358,7 @@ export default function Settings() {
             </div>
           </nav>
 
-          {/* Tab Content Panes */}
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-2xs">
-            {/* 1. PROFILE & DEMOGRAPHICS */}
             {activeTab === "profile" && (
               <form onSubmit={handleProfileSave} className="space-y-6">
                 <div>
@@ -518,7 +507,6 @@ export default function Settings() {
               </form>
             )}
 
-            {/* 2. ACADEMIC PREFERENCES */}
             {activeTab === "academics" && (
               <form onSubmit={handleProfileSave} className="space-y-6">
                 <div>
@@ -628,7 +616,6 @@ export default function Settings() {
               </form>
             )}
 
-            {/* 3. NOTIFICATIONS & ALERTS */}
             {activeTab === "notifications" && (
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -661,9 +648,7 @@ export default function Settings() {
                   </div>
                 ) : (
                   <>
-                    {/* Primary Alert Triggers */}
                     <div className="space-y-3">
-                      {/* Instant Match */}
                       <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
@@ -687,7 +672,6 @@ export default function Settings() {
                         </div>
                       </div>
 
-                      {/* Deadline Alerts & Sub-options */}
                       <div className="p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors space-y-3">
                         <div className="flex items-start justify-between gap-4">
                           <div className="space-y-0.5">
@@ -747,7 +731,6 @@ export default function Settings() {
                         )}
                       </div>
 
-                      {/* State Grants */}
                       <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
@@ -771,7 +754,6 @@ export default function Settings() {
                         </div>
                       </div>
 
-                      {/* Weekly Digest */}
                       <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
@@ -796,7 +778,6 @@ export default function Settings() {
                       </div>
                     </div>
 
-                    {/* Delivery Channels & Timezone */}
                     <div className="pt-4 border-t border-slate-100 space-y-4">
                       <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
                         Delivery Channels & Timezone
@@ -883,7 +864,6 @@ export default function Settings() {
               </div>
             )}
 
-            {/* 4. SECURITY & ACCOUNT */}
             {activeTab === "security" && (
               <div className="space-y-8">
                 <div>
@@ -895,7 +875,6 @@ export default function Settings() {
                   </p>
                 </div>
 
-                {/* Password Change */}
                 <form onSubmit={handleSecuritySave} className="space-y-4">
                   <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
                     <Key size={15} className="text-emerald-800" /> Update Password
@@ -954,7 +933,6 @@ export default function Settings() {
                   </div>
                 </form>
 
-                {/* Connected Identity */}
                 <div className="pt-6 border-t border-slate-100 space-y-3">
                   <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                     Connected Accounts
@@ -982,7 +960,6 @@ export default function Settings() {
                   </div>
                 </div>
 
-                {/* Data Privacy & Danger Zone */}
                 <div className="pt-6 border-t border-slate-100 space-y-3">
                   <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                     Data Privacy & Account Controls

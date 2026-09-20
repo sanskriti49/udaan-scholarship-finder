@@ -106,14 +106,12 @@ const Navbar = () => {
 				}`}
 			>
 				<div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-					{/* Brand Logo & Identity */}
 					<Logo
 						size="md"
 						tagline="Scholarship Intelligence"
 						taglineClassName="hidden sm:inline-block"
 					/>
 
-					{/* Center Navigation Links (Desktop Floating Segmented Pill) */}
 					<nav className="hidden lg:flex items-center bg-white/95 backdrop-blur-xs border border-slate-200/80 rounded-full p-1 shadow-2xs">
 						{activeNavLinks.map((link) => (
 							<NavLink
@@ -132,9 +130,7 @@ const Navbar = () => {
 						))}
 					</nav>
 
-					{/* Right Action / Auth Buttons */}
 					<div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-						{/* Quick Global Search Bar */}
 						<form onSubmit={handleNavSearch} className="relative hidden md:flex items-center">
 							<div
 								className={`flex items-center transition-all duration-200 ${
@@ -197,7 +193,6 @@ const Navbar = () => {
 									/>
 								</button>
 
-								{/* Profile Dropdown */}
 								<div
 									className={`absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden transition-all duration-150 origin-top-right z-50 ${
 										isProfileOpen
@@ -287,7 +282,6 @@ const Navbar = () => {
 							</div>
 						)}
 
-						{/* Mobile Menu Trigger */}
 						<div className="lg:hidden">
 							<Hamburger
 								toggled={isOpen}
@@ -301,7 +295,6 @@ const Navbar = () => {
 					</div>
 				</div>
 
-				{/* Mobile Navigation Drawer */}
 				<div
 					className={`fixed top-[58px] left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xl transition-all duration-200 lg:hidden ${
 						isOpen
@@ -326,7 +319,6 @@ const Navbar = () => {
 							</div>
 						)}
 
-						{/* Mobile Search Input */}
 						<form onSubmit={handleNavSearch} className="relative mb-2.5">
 							<Search
 								size={15}
@@ -404,7 +396,6 @@ const Navbar = () => {
 				</div>
 			</header>
 
-			{/* Spacer to prevent page content jump */}
 			<div className="h-16 sm:h-18" />
 		</>
 	);

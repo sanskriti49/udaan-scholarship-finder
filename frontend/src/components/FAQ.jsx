@@ -61,7 +61,6 @@ function FAQ() {
 	return (
 		<section className="py-16 md:py-24 px-5 sm:px-8 bg-[#FAF9F6]">
 			<div className="max-w-7xl mx-auto">
-				{/* Section Header */}
 				<div className="max-w-2xl mb-12">
 					<span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
 						Got Questions?
@@ -78,12 +77,9 @@ function FAQ() {
 					</p>
 				</div>
 
-				{/* Two Column Layout: Left Sticky Authentic Illustration + Right Accordion */}
 				<div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-					{/* Left Sticky Illustration & Support Card */}
 					<div className="lg:col-span-5 lg:sticky lg:top-24">
 						<div className="border border-slate-200/90 rounded-3xl p-6 shadow-2xs space-y-6">
-							{/* Authentic Image Container */}
 							<div className="relative rounded-2xl overflow-hidden bg-gradient-to-br p-4 border border-emerald-100/60 flex items-center justify-center">
 								<img
 									src={faqIllustration}
@@ -107,7 +103,6 @@ function FAQ() {
 						</div>
 					</div>
 
-					{/* Right Accordion List */}
 					<div className="lg:col-span-7 flex flex-col gap-3.5">
 						{faqs.map((faq, i) => (
 							<FaqItem

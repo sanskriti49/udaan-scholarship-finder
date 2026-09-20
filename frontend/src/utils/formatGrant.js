@@ -1,8 +1,3 @@
-/**
- * Pure, robust grant display formatter.
- * Guarantees zero `undefined`, `₹undefined`, or duplicate `/year` artifacts.
- * Only displays a grant/period when the source explicitly supports it.
- */
 export function formatGrant(amount) {
 	if (!amount) {
 		return {
@@ -13,7 +8,6 @@ export function formatGrant(amount) {
 		};
 	}
 
-	// 1. If displayString is provided from pipeline (e.g. multi-option or descriptive)
 	if (amount.displayString && typeof amount.displayString === "string") {
 		const str = amount.displayString.trim();
 		return {
@@ -24,7 +18,6 @@ export function formatGrant(amount) {
 		};
 	}
 
-	// 2. If exact numeric value is present and valid
 	if (typeof amount.value === "number" && !isNaN(amount.value) && amount.value > 0) {
 		const formatted = `₹${amount.value.toLocaleString("en-IN")}`;
 		let period = null;
@@ -41,7 +34,6 @@ export function formatGrant(amount) {
 		};
 	}
 
-	// 3. Fallback for unquantified / variable / null values
 	return {
 		main: "Variable Grant",
 		period: null,

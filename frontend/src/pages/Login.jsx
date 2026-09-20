@@ -155,10 +155,8 @@ export default function Login() {
 			ref={containerRef}
 			className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-cream-canvas flex flex-col lg:flex-row will-change-[opacity,transform]"
 		>
-			{/* Form Panel (Left) */}
 			<div className="flex-1 flex flex-col justify-center px-6 py-6 sm:px-10 lg:px-12 xl:px-16 overflow-y-auto">
 				<div className="max-w-md mx-auto w-full my-auto py-2 sm:py-4">
-					{/* Logo */}
 					<div className="mb-4 sm:mb-5">
 						<Logo size="md" tagline="find your scholarship" />
 					</div>
@@ -271,9 +269,7 @@ export default function Login() {
 				</div>
 			</div>
 
-			{/* Illustration Panel (Right) */}
 			<div className="hidden lg:flex lg:w-[45%] xl:w-[42%] relative overflow-hidden bg-forest-950 flex-col justify-between p-6 xl:p-10 h-full">
-				{/* layered mesh glows on dark ground */}
 				<div
 					className="absolute inset-0"
 					style={{

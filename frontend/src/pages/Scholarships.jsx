@@ -5,20 +5,17 @@ import {
 	Search,
 	Bookmark,
 	BookmarkCheck,
-	Clock,
 	X,
-	Filter,
 	ShieldCheck,
 	History,
 	FileText,
 	ExternalLink,
-	Sparkles,
 	AlertCircle,
-	ChevronRight,
 	RotateCcw,
 	ArrowUpRight,
-	Tag,
-	CheckCircle2,
+	Check,
+	ChevronDown,
+	SlidersHorizontal,
 } from "lucide-react";
 import {
 	getScholarships,
@@ -28,6 +25,7 @@ import {
 } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
 import { formatGrant } from "../utils/formatGrant";
+import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import {
 	formatClauseTitle,
 	formatEvidenceText,
@@ -38,6 +36,8 @@ import {
 	cleanOfficialUrl,
 	isGenuinePdf,
 } from "../utils/formatEvidence";
+import { PageStyles } from "../components/PageKit";
+import headerImg from "../assets/images/head.jpg";
 
 const CATEGORIES = [
 	"All",
@@ -72,31 +72,72 @@ const SOURCES = [
 ];
 
 const SORTS = [
-	{ label: "Deadline (closing soon)", value: "deadline" },
-	{ label: "Grant Amount (highest)", value: "amount_high" },
-	{ label: "Source Trust (highest)", value: "trust" },
-	{ label: "Recently Added", value: "newest" },
+	{ label: "Closing soonest", value: "deadline" },
+	{ label: "Highest grant", value: "amount_high" },
+	{ label: "Most trusted source", value: "trust" },
+	{ label: "Recently added", value: "newest" },
 ];
 
-function FilterChips({ label, options, active, onChange }) {
+// Quick entry points under the search field. Keep these to real, common queries.
+const QUICK_SEARCHES = ["Post matric", "Girls UG", "Merit", "PhD fellowship"];
+
+const CATALOG_ID = "catalog";
+
+// Height of your fixed site header. Sticky sidebar + scroll anchors read from this.
+const HEADER_OFFSET = "lg:top-24";
+
+function daysUntil(deadline) {
+	if (!deadline) return null;
+	return Math.max(
+		0,
+		Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)),
+	);
+}
+
+function deadlineMeta(deadline) {
+	const days = daysUntil(deadline);
+	if (days === null) return { text: "No fixed date", tone: "quiet" };
+	if (days === 0) return { text: "Closes today", tone: "urgent" };
+	if (days <= 10)
+		return { text: `${days} day${days === 1 ? "" : "s"} left`, tone: "urgent" };
+	if (days <= 30) return { text: `${days} days left`, tone: "soon" };
+	return { text: `${days} days left`, tone: "quiet" };
+}
+
+const focusRing =
+	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
+
+function FilterGroup({
+	label,
+	options,
+	selected = [],
+	defaultOption = "All",
+	onChange,
+}) {
+	const isDefaultActive = selected.length === 0;
+
 	return (
-		<div className="mb-6">
-			<p className="text-xs font-bold tracking-wider text-slate-700 uppercase mb-2.5">
-				{label}
-			</p>
+		<div>
+			<p className="mb-2.5 text-sm font-bold text-emerald-950">{label}</p>
 			<div className="flex flex-wrap gap-1.5">
 				{options.map((o) => {
-					const isSelected = active === o;
+					const isSelected =
+						o === defaultOption ? isDefaultActive : selected.includes(o);
 					return (
 						<button
 							key={o}
+							type="button"
 							onClick={() => onChange(o)}
-							className={`cursor-pointer text-xs font-medium px-3.5 py-1.5 rounded-full border transition-all duration-150 ${
+							aria-pressed={isSelected}
+							className={`inline-flex cursor-pointer items-center gap-1 rounded-full border-[1.5px] px-3 py-1 text-[13px] font-semibold transition-colors ${focusRing} ${
 								isSelected
-									? "bg-emerald-800 border-emerald-800 text-white font-semibold shadow-2xs"
-									: "bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+									? "border-emerald-950 bg-emerald-950 text-white"
+									: "border-emerald-950/20 bg-white text-emerald-950/80 hover:border-emerald-950 hover:text-emerald-950"
 							}`}
 						>
+							{isSelected && o !== defaultOption && (
+								<Check size={11} strokeWidth={3.5} />
+							)}
 							{o}
 						</button>
 					);
@@ -106,181 +147,195 @@ function FilterChips({ label, options, active, onChange }) {
 	);
 }
 
-function DeadlineTag({ deadline }) {
-	if (!deadline) return null;
-	const days = Math.max(
-		0,
-		Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)),
-	);
-
-	if (days <= 10)
-		return (
-			<span className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/80">
-				<Clock size={12} className="text-rose-600" /> {days} days left (closing
-				soon)
-			</span>
-		);
-	if (days <= 30)
-		return (
-			<span className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200/80">
-				<Clock size={12} className="text-amber-600" /> {days} days left
-			</span>
-		);
+function DeadlineChip({ deadline }) {
+	const { text, tone } = deadlineMeta(deadline);
+	const tones = {
+		urgent: "border-rose-300 bg-rose-50 text-rose-800",
+		soon: "border-emerald-950/20 bg-yellow-200 text-emerald-950",
+		quiet: "border-emerald-950/15 bg-emerald-50 text-emerald-950/70",
+	};
 	return (
-		<span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-50 px-2.5 py-1 rounded-full border border-slate-200/80">
-			<Clock size={12} className="text-slate-400" /> {days} days left
+		<span
+			className={`inline-flex shrink-0 items-center rounded-full border-[1.5px] px-2.5 py-1 text-xs font-bold ${tones[tone]}`}
+		>
+			{text}
 		</span>
 	);
 }
 
-function ScholarshipCard({ s, saved, onSave, onClick, onOpenEvidence }) {
-	// Determine concrete scheme type
-	const provenanceLabel = s.sourceType
-		? `${s.sourceType} Scheme`
-		: "Official Scheme";
-
+function ScholarshipCard({ s, saved, onSave, onOpenDetails }) {
 	const grantInfo = formatGrant(s.amount);
+	const docCount = Array.isArray(s.requiredDocuments)
+		? s.requiredDocuments.length
+		: 0;
+	const changeNotice = s.latestChangeSummary
+		? formatChangeNotice(s.latestChangeSummary)
+		: null;
 
 	return (
-		<div className="group bg-white border border-slate-200/90 rounded-2xl p-6 flex flex-col justify-between transition-all duration-200 hover:border-slate-300 hover:shadow-sm">
-			<div>
-				{/* Top Row: Scheme category and type */}
-				<div className="flex items-center justify-between gap-2 mb-3.5">
-					<div className="flex items-center gap-2 flex-wrap">
-						{/* Category Label */}
-						<span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-medium">
-							{s.category}
-						</span>
-
-						<span className="text-slate-200 select-none">/</span>
-
-						{/* Verified Scheme Tag */}
-						<span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-700 bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded-md tracking-tight">
-							<span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-							{provenanceLabel}
-						</span>
-
-						{/* Update Pip */}
+		<article className="group flex h-full flex-col rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-5 transition-colors hover:border-emerald-950 focus-within:border-emerald-950 sm:p-6">
+			<div className="flex items-start justify-between gap-3">
+				<div className="min-w-0">
+					<p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-emerald-950/55">
+						<span>{s.category}</span>
+						<span aria-hidden>·</span>
+						<span>{s.sourceType || "Official"}</span>
 						{s.hasChanges && (
-							<span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-800 bg-amber-50/80 border border-amber-200/70 px-2 py-0.5 rounded-md">
-								<History size={10} className="text-amber-600" />
+							<span className="inline-flex items-center gap-1 rounded-full bg-yellow-200 px-2 py-0.5 text-xs font-bold text-emerald-950">
+								<History size={11} />
 								Updated
 							</span>
 						)}
-					</div>
-
-					<button
-						onClick={(e) => {
-							e.stopPropagation();
-							onSave(s._id || s.id);
-						}}
-						className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-colors"
-						title={saved ? "Remove bookmark" : "Save scholarship"}
-					>
-						{saved ? (
-							<BookmarkCheck size={17} className="text-slate-900" />
-						) : (
-							<Bookmark size={17} />
-						)}
-					</button>
+					</p>
 				</div>
 
-				{/* Title */}
-				<h3
-					onClick={onClick}
-					className="text-lg font-bold text-slate-900 group-hover:text-emerald-900 transition-colors leading-snug cursor-pointer"
+				<button
+					type="button"
+					onClick={() => onSave(s._id || s.id)}
+					aria-label={saved ? "Remove from saved" : "Save this scholarship"}
+					aria-pressed={saved}
+					className={`-mr-1.5 -mt-1.5 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors ${focusRing} ${
+						saved
+							? "text-emerald-800"
+							: "text-emerald-950/40 hover:bg-emerald-50 hover:text-emerald-950"
+					}`}
 				>
-					{s.title}
-				</h3>
-
-				{/* Change Notice */}
-				{s.latestChangeSummary && formatChangeNotice(s.latestChangeSummary) && (
-					<div className="mb-4 p-3 rounded-xl bg-amber-50/60 border border-amber-200/70 text-xs text-amber-900 flex items-start gap-2">
-						<History size={13} className="shrink-0 mt-0.5 text-amber-700" />
-						<span className="leading-relaxed">
-							{formatChangeNotice(s.latestChangeSummary)}
-						</span>
-					</div>
-				)}
-
-				<p className="text-sm text-slate-600 line-clamp-2 mt-2 mb-3.5 leading-relaxed">
-					{s.summary || s.description}
-				</p>
+					{saved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+				</button>
 			</div>
 
-			<div>
-				{/* Financial Grant & Deadline */}
-				<div className="pt-4 border-t border-slate-100 flex items-baseline justify-between gap-2 flex-wrap">
-					<div className="max-w-[65%]">
-						<span className="text-[10px] font-mono font-semibold tracking-wider text-slate-400 uppercase block mb-0.5">
-							Grant Value
-						</span>
-						<div className="flex items-baseline gap-1">
-							{grantInfo.isUnpublished ? (
-								<span className="text-xs sm:text-sm font-sans font-medium text-slate-600 italic leading-snug">
+			<h3 className="mt-2.5">
+				<button
+					type="button"
+					onClick={onOpenDetails}
+					className={`ud-display cursor-pointer text-left text-xl font-bold leading-tight text-emerald-950 decoration-yellow-300 decoration-2 underline-offset-4 group-hover:underline ${focusRing} rounded-sm`}
+				>
+					{s.title}
+				</button>
+			</h3>
+			<p className="mt-1 text-sm text-emerald-950/55">{s.organization}</p>
+
+			<p className="mt-3 line-clamp-2 text-[15px] leading-relaxed text-emerald-950/75">
+				{s.summary || s.description}
+			</p>
+
+			{changeNotice && (
+				<p className="mt-3 line-clamp-2 border-l-2 border-yellow-400 pl-3 text-sm leading-snug text-emerald-950/70">
+					{changeNotice}
+				</p>
+			)}
+
+			{/* mt-auto pins the money + actions block to the bottom of every card,
+			    so all cards in a row line up no matter how long the summary is. */}
+			<div className="mt-auto pt-5">
+				<div className="flex items-center justify-between gap-3 border-t-[1.5px] border-dashed border-emerald-950/20 pt-4">
+					<div className="min-w-0">
+						{grantInfo.isUnpublished ? (
+							<p className="text-[15px] font-medium italic leading-snug text-emerald-950/60">
+								{grantInfo.main}
+							</p>
+						) : (
+							<p className="flex items-baseline gap-1.5">
+								<span className="ud-display text-2xl font-extrabold leading-none">
 									{grantInfo.main}
 								</span>
-							) : (
-								<>
-									<span className="text-xl font-serif font-bold text-slate-900 leading-snug">
-										{grantInfo.main}
+								{grantInfo.period && (
+									<span className="text-sm text-emerald-950/55">
+										{grantInfo.period}
 									</span>
-									{grantInfo.period && (
-										<span className="text-xs text-slate-500 font-normal">
-											{grantInfo.period}
-										</span>
-									)}
-								</>
-							)}
-						</div>
+								)}
+							</p>
+						)}
 					</div>
-					<DeadlineTag deadline={s.deadline} />
+					<DeadlineChip deadline={s.deadline} />
 				</div>
 
-				{/* Actions */}
-				<div className="mt-5 flex items-center gap-2">
-					<button
-						onClick={(e) => {
-							e.stopPropagation();
-							if (onOpenEvidence) onOpenEvidence();
-							else onClick();
-						}}
-						className="flex-1 text-center py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-emerald-200/80"
-						title="View official scheme rules and details"
-					>
-						<FileText size={13} className="text-emerald-700" />
-						<span>Rules & Details</span>
-					</button>
+				<div className="mt-4 flex items-center gap-4">
 					<a
 						href={cleanOfficialUrl(s.applicationLink || s.sourceUrl)}
 						target="_blank"
 						rel="noopener noreferrer"
-						onClick={(e) => e.stopPropagation()}
-						className="flex-1 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+						className={`group/apply inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
 					>
-						<span>Apply on Official Site</span>
-						<ArrowUpRight size={13} />
+						Apply
+						<ArrowUpRight
+							size={15}
+							className="transition-transform group-hover/apply:-translate-y-0.5 group-hover/apply:translate-x-0.5"
+						/>
 					</a>
+					<button
+						type="button"
+						onClick={onOpenDetails}
+						className={`cursor-pointer rounded-sm text-sm font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
+					>
+						Rules and documents
+					</button>
+					{docCount > 0 && (
+						<span className="ml-auto hidden shrink-0 text-xs font-semibold text-emerald-950/45 sm:inline">
+							{docCount} docs
+						</span>
+					)}
 				</div>
 			</div>
-		</div>
+		</article>
 	);
 }
+
+function ActiveFilter({ children, onRemove, label }) {
+	return (
+		<span className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950/25 bg-white py-1 pl-3 pr-1 text-[13px] font-semibold">
+			{children}
+			<button
+				type="button"
+				onClick={onRemove}
+				aria-label={label}
+				className={`flex h-5 w-5 cursor-pointer items-center justify-center rounded-full hover:bg-emerald-100 ${focusRing}`}
+			>
+				<X size={12} strokeWidth={3} />
+			</button>
+		</span>
+	);
+}
+
+function DrawerSection({ title, aside, children }) {
+	return (
+		<section className="border-t-[1.5px] border-dashed border-emerald-950/20 pt-6 first:border-t-0 first:pt-0">
+			<div className="mb-3 flex items-baseline justify-between gap-3">
+				<h4 className="ud-display text-lg font-bold text-emerald-950">
+					{title}
+				</h4>
+				{aside}
+			</div>
+			{children}
+		</section>
+	);
+}
+
 export default function Scholarships() {
 	const [searchParams, setSearchParams] = useSearchParams();
 
-	// Read current filter parameters directly from URL (Single Source of Truth)
-	const cat = searchParams.get("category") || "All";
-	const level = searchParams.get("level") || "All";
-	const state = searchParams.get("state") || "All India";
-	const source = searchParams.get("sourceType") || "All";
+	const parseList = (key) => {
+		const raw = searchParams.get(key);
+		return raw
+			? raw
+					.split(",")
+					.map((s) => s.trim())
+					.filter(Boolean)
+			: [];
+	};
+
+	const selectedCats = parseList("category");
+	const selectedLevels = parseList("level");
+	const selectedStates = parseList("state");
+	const selectedSources = parseList("sourceType");
+
 	const sort = searchParams.get("sort") || "deadline";
 	const hasChangesOnly = searchParams.get("hasChanges") === "true";
 
-	// Local text state for responsive, zero-latency typing in the search bar
 	const [search, setSearch] = useState(() => searchParams.get("search") || "");
 
 	const [scholarships, setScholarships] = useState([]);
+	const [recentUpdatesCount, setRecentUpdatesCount] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
@@ -292,54 +347,65 @@ export default function Scholarships() {
 	const [selectedScholarship, setSelectedScholarship] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
+	const [filtersOpen, setFiltersOpen] = useState(false);
 
-	// Sync local search input if URL changes externally (e.g. from Hero, Navbar, or Footer)
 	useEffect(() => {
 		const qSearch = searchParams.get("search") || "";
-		if (qSearch !== search) {
-			setSearch(qSearch);
-		}
+		if (qSearch !== search) setSearch(qSearch);
 	}, [searchParams]);
 
-	// Clean parameter updater that modifies the URL without side-effect ping-pong loops
-	const updateParam = (key, value, defaultValue) => {
+	const updateMultiParam = (key, option, defaultOption) => {
+		const currentParam = searchParams.get(key);
+		const currentList = currentParam
+			? currentParam
+					.split(",")
+					.map((s) => s.trim())
+					.filter(Boolean)
+			: [];
 		const next = new URLSearchParams(searchParams);
-		if (!value || value === defaultValue) {
+
+		if (option === defaultOption) {
 			next.delete(key);
 		} else {
-			next.set(key, value);
+			const updatedList = currentList.includes(option)
+				? currentList.filter((item) => item !== option)
+				: [...currentList, option];
+
+			if (updatedList.length === 0) next.delete(key);
+			else next.set(key, updatedList.join(","));
 		}
 		setSearchParams(next, { replace: true });
 	};
 
-	// Clean, non-competing setters for filter controls
-	const setCat = (val) => updateParam("category", val, "All");
-	const setLevel = (val) => updateParam("level", val, "All");
-	const setState = (val) => updateParam("state", val, "All India");
-	const setSource = (val) => updateParam("sourceType", val, "All");
+	const updateParam = (key, value, defaultValue) => {
+		const next = new URLSearchParams(searchParams);
+		if (!value || value === defaultValue) next.delete(key);
+		else next.set(key, value);
+		setSearchParams(next, { replace: true });
+	};
+
+	const toggleCat = (val) => updateMultiParam("category", val, "All");
+	const toggleLevel = (val) => updateMultiParam("level", val, "All");
+	const toggleState = (val) => updateMultiParam("state", val, "All India");
+	const toggleSource = (val) => updateMultiParam("sourceType", val, "All");
 	const setSort = (val) => updateParam("sort", val, "deadline");
 	const setHasChangesOnly = (val) =>
 		updateParam("hasChanges", val ? "true" : "", "");
 
-	// Debounce sync for search text input to URL query
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			const currentSearchInUrl = searchParams.get("search") || "";
 			const trimmed = search.trim();
 			if (trimmed !== currentSearchInUrl) {
 				const next = new URLSearchParams(searchParams);
-				if (trimmed) {
-					next.set("search", trimmed);
-				} else {
-					next.delete("search");
-				}
+				if (trimmed) next.set("search", trimmed);
+				else next.delete("search");
 				setSearchParams(next, { replace: true });
 			}
 		}, 300);
 		return () => clearTimeout(timer);
 	}, [search]);
 
-	// Autocomplete suggestions debounce
 	useEffect(() => {
 		if (!search || search.trim().length < 2) {
 			setSuggestions([]);
@@ -362,7 +428,6 @@ export default function Scholarships() {
 		return () => clearTimeout(timer);
 	}, [search]);
 
-	// Close suggestions on outside click
 	useEffect(() => {
 		const handleClickOutside = (e) => {
 			if (
@@ -376,35 +441,45 @@ export default function Scholarships() {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
+	const scrollToCatalog = () => {
+		setIsSuggestionsOpen(false);
+		document
+			.getElementById(CATALOG_ID)
+			?.scrollIntoView({ behavior: "smooth", block: "start" });
+	};
+
 	const fetchLiveScholarships = async () => {
 		try {
 			setLoading(true);
 			setError(null);
 			const params = {
 				search: (searchParams.get("search") || "").trim() || undefined,
-				category: cat !== "All" ? cat : undefined,
-				level: level !== "All" ? level : undefined,
-				state: state !== "All India" ? state : undefined,
-				sourceType: source !== "All" ? source : undefined,
+				category: selectedCats.length > 0 ? selectedCats.join(",") : undefined,
+				level: selectedLevels.length > 0 ? selectedLevels.join(",") : undefined,
+				state: selectedStates.length > 0 ? selectedStates.join(",") : undefined,
+				sourceType:
+					selectedSources.length > 0 ? selectedSources.join(",") : undefined,
 				hasChanges: hasChangesOnly ? "true" : undefined,
 				sort,
-				limit: 36,
+				limit: 50,
 			};
 			const res = await getScholarships(params);
 			if (res.success) {
 				setScholarships(res.data || []);
+				if (typeof res.recentUpdatesCount === "number") {
+					setRecentUpdatesCount(res.recentUpdatesCount);
+				}
 			} else {
-				setError("Unable to load scholarships.");
+				setError("We could not load scholarships just now.");
 			}
 		} catch (err) {
 			console.error("API error:", err);
-			setError("Failed to fetch opportunities from the backend.");
+			setError("The scholarship service did not respond.");
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	// Trigger fetch whenever searchParams changes
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			fetchLiveScholarships();
@@ -412,45 +487,41 @@ export default function Scholarships() {
 		return () => clearTimeout(timer);
 	}, [searchParams]);
 
+	const openDetails = (s) => {
+		setSelectedScholarship(s);
+		setIsModalOpen(true);
+	};
+
+	const closeDrawer = () => {
+		setIsModalOpen(false);
+		setSelectedScholarship(null);
+	};
+
 	useEffect(() => {
 		if (!isModalOpen) return;
 		const handleKeyDown = (e) => {
-			if (e.key === "Escape") {
-				setIsModalOpen(false);
-				setSelectedScholarship(null);
-			}
+			if (e.key === "Escape") closeDrawer();
 		};
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [isModalOpen]);
 
-	// Lock background body scroll when either drawer or evidence modal is open
-	useEffect(() => {
-		if (isModalOpen || isEvidenceModalOpen) {
-			const originalOverflow = document.body.style.overflow;
-			document.body.style.overflow = "hidden";
-			return () => {
-				document.body.style.overflow = originalOverflow;
-			};
-		}
-	}, [isModalOpen, isEvidenceModalOpen]);
+	// Lock for both surfaces, otherwise the page scrolls behind the evidence modal.
+	useBodyScrollLock(isModalOpen || isEvidenceModalOpen);
 
-	// Fetch saved bookmarks from server if logged in
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) return;
 		getBookmarks()
 			.then((res) => {
 				if (res.success && Array.isArray(res.data)) {
-					const ids = new Set(res.data.map((s) => s._id || s.id));
-					setSaved(ids);
+					setSaved(new Set(res.data.map((s) => s._id || s.id)));
 				}
 			})
 			.catch(() => {});
 	}, []);
 
 	const toggleSave = async (id) => {
-		// Optimistic UI state toggle
 		setSaved((prev) => {
 			const next = new Set(prev);
 			next.has(id) ? next.delete(id) : next.add(id);
@@ -468,395 +539,452 @@ export default function Scholarships() {
 	};
 
 	const clearAll = () => {
-		setCat("All");
-		setLevel("All");
-		setState("All India");
-		setSource("All");
+		const next = new URLSearchParams(searchParams);
+		[
+			"category",
+			"level",
+			"state",
+			"sourceType",
+			"search",
+			"hasChanges",
+			"sort",
+		].forEach((k) => next.delete(k));
 		setSearch("");
-		setHasChangesOnly(false);
-		setSort("deadline");
 		setIsSuggestionsOpen(false);
+		setSearchParams(next, { replace: true });
 	};
 
+	const activeCount =
+		selectedCats.length +
+		selectedLevels.length +
+		selectedStates.length +
+		selectedSources.length +
+		(hasChangesOnly ? 1 : 0);
+	const hasAnyFilter = activeCount > 0 || !!search;
+
 	return (
-		<div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-20 font-sans">
-			{/* Page Header */}
-			<section className="bg-white border-b border-slate-200/80 py-12 md:py-16 px-5 sm:px-8">
-				<div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+		<div className="ud-root min-h-screen bg-[#E9F0EA] pb-24 font-sans text-emerald-950">
+			<PageStyles />
+
+			{/* ---------- Hero ---------- */}
+			<section className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 md:pb-16 md:pt-16">
+				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16">
 					<div>
-						<div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2">
-							<ShieldCheck size={14} className="text-emerald-700" />
-							<span>Verified Opportunities Catalog</span>
-						</div>
-						<h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-slate-900 tracking-tight">
-							Scholarship{" "}
-							<span className="italic text-emerald-800 font-normal">
-								Catalog
-							</span>
+						<h1 className="font-serif max-w-[16ch] text-[2.75rem] font-medium leading-[1.02] tracking-tight sm:text-6xl">
+							Real scholarships, with the rules that decide them.
 						</h1>
-						<p className="text-sm sm:text-base text-slate-600 mt-2 max-w-xl leading-relaxed font-sans">
-							Browse genuine government, state, university, and trust schemes
-							with verified deadlines and official rules.
+						<p className="mt-5 max-w-[52ch] text-base leading-relaxed text-emerald-950/70 sm:text-lg">
+							Government, state, university and trust schemes. Every deadline is
+							checked against the official notice, and the clauses that decide
+							who qualifies sit right on the card.
 						</p>
-					</div>
 
-					{/* Interactive Search Input with Live Suggestions */}
-					<div ref={searchContainerRef} className="w-full md:w-96 relative">
-						<Search
-							className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-							size={18}
-						/>
-						<input
-							type="text"
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-							onFocus={() => {
-								if (suggestions.length > 0) setIsSuggestionsOpen(true);
-							}}
-							placeholder="Search by degree, scheme, or authority..."
-							className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl pl-10 pr-10 py-3 text-sm outline-none focus:bg-white focus:border-emerald-700 focus:ring-2 focus:ring-emerald-700/20 shadow-2xs text-slate-800 transition"
-						/>
-						{search && (
-							<button
-								onClick={() => {
-									setSearch("");
-									setIsSuggestionsOpen(false);
-								}}
-								className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
-								title="Clear search"
-							>
-								<X size={16} />
-							</button>
-						)}
-
-						{/* Live Autocomplete Suggestions Dropdown */}
-						{isSuggestionsOpen && suggestions.length > 0 && (
-							<div className="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200/90 rounded-2xl shadow-xl z-40 overflow-hidden divide-y divide-slate-100 animate-in fade-in-50 duration-150">
-								<div className="px-4 py-2 bg-slate-50/80 flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-									<span>Live Matches</span>
-									<span>{suggestions.length} suggestions</span>
-								</div>
-								<div className="max-h-64 overflow-y-auto py-1">
-									{suggestions.map((item) => (
+						<div className="mt-8" ref={searchContainerRef}>
+							<div className="relative">
+								<form
+									onSubmit={(e) => {
+										e.preventDefault();
+										scrollToCatalog();
+									}}
+									className="flex items-center gap-2 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-2 pl-4 focus-within:ring-4 focus-within:ring-yellow-200"
+								>
+									<Search size={20} className="shrink-0 text-emerald-950/50" />
+									<input
+										type="text"
+										value={search}
+										onChange={(e) => setSearch(e.target.value)}
+										onFocus={() => {
+											if (suggestions.length > 0) setIsSuggestionsOpen(true);
+										}}
+										placeholder="Search a scheme, degree or authority"
+										aria-label="Search scholarships"
+										className="min-w-0 flex-1 bg-transparent py-2 text-base placeholder:text-emerald-950/35 focus:outline-none"
+									/>
+									{search && (
 										<button
-											key={item.slug || item._id}
 											type="button"
 											onClick={() => {
-												setSearch(item.title);
+												setSearch("");
 												setIsSuggestionsOpen(false);
 											}}
-											className="w-full px-4 py-2.5 text-left hover:bg-emerald-50/60 transition-colors flex items-start gap-3 group cursor-pointer"
+											aria-label="Clear search"
+											className={`cursor-pointer rounded-full p-2 text-emerald-950/50 hover:bg-emerald-50 ${focusRing}`}
 										>
-											<Search
-												size={14}
-												className="mt-1 text-slate-400 group-hover:text-emerald-700 shrink-0"
-											/>
-											<div className="min-w-0 flex-1">
-												<p className="text-xs font-bold text-slate-900 truncate group-hover:text-emerald-800">
-													{item.title}
-												</p>
-												<p className="text-[11px] text-slate-500 truncate mt-0.5">
-													{item.organization} &bull;{" "}
-													<span className="text-emerald-700 font-medium">
-														{item.category}
-													</span>
-												</p>
-											</div>
+											<X size={16} />
 										</button>
-									))}
-								</div>
-								<button
-									type="button"
-									onClick={() => setIsSuggestionsOpen(false)}
-									className="w-full py-2.5 text-center text-xs font-bold text-emerald-800 bg-emerald-50/40 hover:bg-emerald-50 transition-colors block cursor-pointer"
-								>
-									Search all results for &ldquo;{search}&rdquo; &rarr;
-								</button>
+									)}
+									<button
+										type="submit"
+										className={`hidden shrink-0 cursor-pointer rounded-xl bg-emerald-800 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px sm:block ${focusRing}`}
+									>
+										Search
+									</button>
+								</form>
+
+								{isSuggestionsOpen && suggestions.length > 0 && (
+									<div className="ud-fade-in absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white">
+										<div className="max-h-72 overflow-y-auto">
+											{suggestions.map((item) => (
+												<button
+													key={item.slug || item._id}
+													type="button"
+													onClick={() => {
+														setSearch(item.title);
+														setIsSuggestionsOpen(false);
+													}}
+													className="block w-full cursor-pointer border-b border-dashed border-emerald-950/20 px-5 py-3 text-left last:border-b-0 hover:bg-emerald-50"
+												>
+													<p className="truncate text-sm font-bold">
+														{item.title}
+													</p>
+													<p className="mt-0.5 truncate text-xs text-emerald-950/55">
+														{item.organization} · {item.category}
+													</p>
+												</button>
+											))}
+										</div>
+										<button
+											type="button"
+											onClick={scrollToCatalog}
+											className="block w-full cursor-pointer bg-emerald-50 px-5 py-2.5 text-left text-sm font-bold text-emerald-800 hover:bg-emerald-100"
+										>
+											See all results for “{search}”
+										</button>
+									</div>
+								)}
 							</div>
-						)}
+
+							<div className="mt-3 flex flex-wrap items-center gap-2">
+								<span className="text-sm text-emerald-950/55">Try</span>
+								{QUICK_SEARCHES.map((q) => (
+									<button
+										key={q}
+										type="button"
+										onClick={() => {
+											setSearch(q);
+											scrollToCatalog();
+										}}
+										className={`cursor-pointer rounded-full border-[1.5px] border-emerald-950/20 bg-white/70 px-3 py-1 text-[13px] font-semibold text-emerald-950/80 transition-colors hover:border-emerald-950 hover:text-emerald-950 ${focusRing}`}
+									>
+										{q}
+									</button>
+								))}
+							</div>
+						</div>
+					</div>
+
+					<div className="order-first lg:order-none">
+						<figure className="overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white p-2">
+							<img
+								src={headerImg}
+								alt=""
+								aria-hidden="true"
+								className="aspect-[4/3] w-full rounded-xl object-cover lg:aspect-[4/4]"
+							/>
+						</figure>
 					</div>
 				</div>
 			</section>
 
-			{/* Main Catalog Section */}
-			<div className="max-w-7xl mx-auto px-5 sm:px-8 pt-8 md:pt-10">
-				<div className="flex flex-col lg:flex-row gap-8 items-start">
-					{/* Sidebar Filter Panel */}
-					<aside className="w-full lg:w-72 shrink-0 bg-white border border-slate-200/90 rounded-3xl p-6 shadow-2xs">
-						<div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
-							<span className="text-sm font-bold text-slate-900 flex items-center gap-2">
-								<Filter size={15} className="text-emerald-800" /> Filters
-							</span>
-							<button
-								onClick={clearAll}
-								className="text-xs font-semibold text-slate-500 hover:text-emerald-800 flex items-center gap-1 cursor-pointer transition-colors"
-							>
-								<RotateCcw size={12} /> Reset
-							</button>
-						</div>
-
-						{/* Recent Updates Toggle */}
-						<div
-							onClick={() => setHasChangesOnly(!hasChangesOnly)}
-							className={`mb-6 p-3.5 rounded-2xl border transition-all cursor-pointer select-none ${
-								hasChangesOnly
-									? "bg-amber-50/90 border-amber-300 shadow-2xs"
-									: "bg-slate-50/70 border-slate-200/80 hover:border-slate-300"
-							}`}
+			{/* ---------- Catalog ---------- */}
+			<div
+				id={CATALOG_ID}
+				className="mx-auto max-w-7xl scroll-mt-24 border-t-[1.5px] border-emerald-950/15 px-5 pt-10 sm:px-8"
+			>
+				<div className="flex flex-col items-start gap-8 lg:flex-row lg:gap-10">
+					<aside
+						className={`w-full shrink-0 lg:sticky lg:w-72 lg:self-start ${HEADER_OFFSET}`}
+					>
+						<button
+							type="button"
+							onClick={() => setFiltersOpen((v) => !v)}
+							aria-expanded={filtersOpen}
+							aria-controls="filter-panel"
+							className={`flex w-full cursor-pointer items-center justify-between rounded-xl border-[1.5px] border-emerald-950 bg-white px-4 py-3 text-sm font-bold lg:hidden ${focusRing}`}
 						>
-							<div className="flex items-center justify-between">
-								<span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-									<History
-										size={14}
-										className={
-											hasChangesOnly ? "text-amber-700" : "text-slate-400"
-										}
-									/>
-									Recently Updated Only
-								</span>
+							<span className="inline-flex items-center gap-2">
+								<SlidersHorizontal size={16} />
+								Filters
+								{activeCount > 0 && (
+									<span className="rounded-full bg-emerald-950 px-2 py-0.5 text-xs text-white">
+										{activeCount}
+									</span>
+								)}
+							</span>
+							<ChevronDown
+								size={16}
+								className={`text-emerald-950/60 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+							/>
+						</button>
+
+						<div
+							id="filter-panel"
+							className={`${filtersOpen ? "mt-3 block" : "hidden"} rounded-2xl border-[1.5px] border-emerald-950 bg-white lg:mt-0 lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto`}
+						>
+							<div className="sticky top-0 z-10 flex items-center justify-between border-b-[1.5px] border-emerald-950 bg-emerald-50 px-5 py-3.5">
+								<span className="ud-display text-lg font-bold">Filters</span>
+								{activeCount > 0 && (
+									<button
+										type="button"
+										onClick={clearAll}
+										className={`inline-flex cursor-pointer items-center gap-1 rounded-sm text-sm font-bold text-emerald-950/70 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:text-emerald-950 ${focusRing}`}
+									>
+										<RotateCcw size={12} />
+										Reset
+									</button>
+								)}
+							</div>
+
+							<div className="space-y-6 p-5">
 								<button
 									type="button"
 									role="switch"
 									aria-checked={hasChangesOnly}
-									onClick={(e) => {
-										e.stopPropagation();
-										setHasChangesOnly(!hasChangesOnly);
-									}}
-									className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-										hasChangesOnly ? "bg-amber-600" : "bg-slate-300"
+									onClick={() => setHasChangesOnly(!hasChangesOnly)}
+									className={`flex w-full cursor-pointer items-center gap-3 rounded-xl border-[1.5px] p-3.5 text-left transition-colors ${focusRing} ${
+										hasChangesOnly
+											? "border-emerald-950 bg-yellow-200"
+											: "border-emerald-950/20 bg-white hover:border-emerald-950"
 									}`}
 								>
+									<span className="min-w-0 flex-1">
+										<span className="block text-sm font-bold">
+											Recently updated
+											{recentUpdatesCount > 0 && (
+												<span className="ml-1.5 font-semibold text-emerald-950/55">
+													{recentUpdatesCount}
+												</span>
+											)}
+										</span>
+										<span className="mt-0.5 block text-xs leading-snug text-emerald-950/65">
+											Rules, dates or amounts changed lately
+										</span>
+									</span>
 									<span
-										aria-hidden="true"
-										className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-											hasChangesOnly ? "translate-x-4" : "translate-x-0"
+										aria-hidden
+										className={`relative h-6 w-10 shrink-0 rounded-full border-[1.5px] border-emerald-950 transition-colors ${
+											hasChangesOnly ? "bg-emerald-950" : "bg-white"
 										}`}
-									/>
+									>
+										<span
+											className={`absolute top-[3px] h-4 w-4 rounded-full border-[1.5px] border-emerald-950 transition-all ${
+												hasChangesOnly
+													? "left-[19px] bg-yellow-200"
+													: "left-[3px] bg-emerald-100"
+											}`}
+										/>
+									</span>
 								</button>
+
+								<FilterGroup
+									label="Category"
+									options={CATEGORIES}
+									selected={selectedCats}
+									defaultOption="All"
+									onChange={toggleCat}
+								/>
+								<FilterGroup
+									label="Education level"
+									options={LEVELS}
+									selected={selectedLevels}
+									defaultOption="All"
+									onChange={toggleLevel}
+								/>
+								<FilterGroup
+									label="Home state"
+									options={STATES}
+									selected={selectedStates}
+									defaultOption="All India"
+									onChange={toggleState}
+								/>
+								<FilterGroup
+									label="Source"
+									options={SOURCES}
+									selected={selectedSources}
+									defaultOption="All"
+									onChange={toggleSource}
+								/>
 							</div>
-							<p className="text-[11px] text-slate-500 mt-1.5 leading-relaxed">
-								Filter opportunities with recently modified dates, rules, or
-								amounts.
-							</p>
 						</div>
-
-						<FilterChips
-							label="Category"
-							options={CATEGORIES}
-							active={cat}
-							onChange={setCat}
-						/>
-
-						<FilterChips
-							label="Education Level"
-							options={LEVELS}
-							active={level}
-							onChange={setLevel}
-						/>
-
-						<FilterChips
-							label="Domicile / State"
-							options={STATES}
-							active={state}
-							onChange={setState}
-						/>
-
-						<FilterChips
-							label="Source Type"
-							options={SOURCES}
-							active={source}
-							onChange={setSource}
-						/>
 					</aside>
 
-					{/* Cards Catalog Grid */}
-					<main className="flex-1 w-full">
-						{/* Sorting & Result Count Bar */}
-						<div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-							<p className="text-sm font-medium text-slate-500">
-								Showing{" "}
-								<span className="text-slate-900 font-bold">
-									{scholarships.length}
-								</span>{" "}
-								verified schemes
+					<main className="w-full min-w-0 flex-1">
+						<div className="flex flex-wrap items-center justify-between gap-4">
+							<p className="text-base font-bold" aria-live="polite">
+								{loading
+									? "Loading schemes"
+									: `${scholarships.length} ${scholarships.length === 1 ? "scheme" : "schemes"}`}
+								<span className="ml-2 font-medium text-emerald-950/55">
+									{hasAnyFilter
+										? "matching your filters"
+										: "we currently track"}
+								</span>
 							</p>
 
-							<div className="flex items-center gap-2">
-								<span className="text-xs text-slate-500 font-medium">
-									Sort by:
+							<label className="flex items-center gap-2 text-sm font-semibold">
+								<span className="text-emerald-950/55">Sort</span>
+								<span className="relative">
+									<select
+										value={sort}
+										onChange={(e) => setSort(e.target.value)}
+										className={`cursor-pointer appearance-none rounded-lg border-[1.5px] border-emerald-950/25 bg-white py-2 pl-3 pr-9 text-sm font-semibold text-emerald-950 transition-colors hover:border-emerald-950 focus:border-emerald-950 ${focusRing}`}
+									>
+										{SORTS.map((s) => (
+											<option key={s.value} value={s.value}>
+												{s.label}
+											</option>
+										))}
+									</select>
+									<ChevronDown
+										size={15}
+										aria-hidden
+										className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-emerald-950/60"
+									/>
 								</span>
-								<select
-									value={sort}
-									onChange={(e) => setSort(e.target.value)}
-									className="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-emerald-700 cursor-pointer shadow-2xs"
-								>
-									{SORTS.map((s) => (
-										<option key={s.value} value={s.value}>
-											{s.label}
-										</option>
-									))}
-								</select>
-							</div>
+							</label>
 						</div>
 
-						{/* Active Search & Filters Strip */}
-						{(search ||
-							cat !== "All" ||
-							level !== "All" ||
-							state !== "All India" ||
-							source !== "All" ||
-							hasChangesOnly) && (
-							<div className="flex items-center gap-2 flex-wrap mb-6 pb-4 border-b border-slate-100 text-xs">
-								<span className="text-slate-400 font-medium">
-									Active filters:
-								</span>
+						{hasAnyFilter && (
+							<div className="mt-4 flex flex-wrap items-center gap-2 border-t-[1.5px] border-dashed border-emerald-950/20 pt-4">
 								{search && (
-									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 border border-emerald-200 font-medium">
-										<Search size={11} className="text-emerald-700" />
-										<span>&ldquo;{search}&rdquo;</span>
-										<button
-											onClick={() => setSearch("")}
-											className="hover:text-emerald-950 cursor-pointer ml-0.5"
-											title="Remove search filter"
-										>
-											<X size={12} />
-										</button>
-									</span>
+									<ActiveFilter
+										onRemove={() => setSearch("")}
+										label="Remove search"
+									>
+										“{search}”
+									</ActiveFilter>
 								)}
-								{cat !== "All" && (
-									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
-										<span>{cat}</span>
-										<button
-											onClick={() => setCat("All")}
-											className="hover:text-slate-950 cursor-pointer"
-										>
-											<X size={12} />
-										</button>
-									</span>
-								)}
-								{level !== "All" && (
-									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
-										<span>{level}</span>
-										<button
-											onClick={() => setLevel("All")}
-											className="hover:text-slate-950 cursor-pointer"
-										>
-											<X size={12} />
-										</button>
-									</span>
-								)}
-								{state !== "All India" && (
-									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
-										<span>{state}</span>
-										<button
-											onClick={() => setState("All India")}
-											className="hover:text-slate-950 cursor-pointer"
-										>
-											<X size={12} />
-										</button>
-									</span>
-								)}
-								{source !== "All" && (
-									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-medium">
-										<span>{source}</span>
-										<button
-											onClick={() => setSource("All")}
-											className="hover:text-slate-950 cursor-pointer"
-										>
-											<X size={12} />
-										</button>
-									</span>
-								)}
+								{selectedCats.map((c) => (
+									<ActiveFilter
+										key={`c-${c}`}
+										onRemove={() => toggleCat(c)}
+										label={`Remove ${c}`}
+									>
+										{c}
+									</ActiveFilter>
+								))}
+								{selectedLevels.map((l) => (
+									<ActiveFilter
+										key={`l-${l}`}
+										onRemove={() => toggleLevel(l)}
+										label={`Remove ${l}`}
+									>
+										{l}
+									</ActiveFilter>
+								))}
+								{selectedStates.map((st) => (
+									<ActiveFilter
+										key={`s-${st}`}
+										onRemove={() => toggleState(st)}
+										label={`Remove ${st}`}
+									>
+										{st}
+									</ActiveFilter>
+								))}
+								{selectedSources.map((src) => (
+									<ActiveFilter
+										key={`o-${src}`}
+										onRemove={() => toggleSource(src)}
+										label={`Remove ${src}`}
+									>
+										{src}
+									</ActiveFilter>
+								))}
 								{hasChangesOnly && (
-									<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-900 border border-amber-200 font-medium">
-										<span>Recently Updated</span>
-										<button
-											onClick={() => setHasChangesOnly(false)}
-											className="hover:text-amber-950 cursor-pointer"
-										>
-											<X size={12} />
-										</button>
-									</span>
+									<ActiveFilter
+										onRemove={() => setHasChangesOnly(false)}
+										label="Remove recently updated"
+									>
+										Recently updated
+									</ActiveFilter>
 								)}
 								<button
+									type="button"
 									onClick={clearAll}
-									className="text-xs font-semibold text-emerald-800 hover:underline cursor-pointer ml-1"
+									className={`ml-1 cursor-pointer rounded-sm text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
 								>
 									Clear all
 								</button>
 							</div>
 						)}
 
-						{/* Loading State */}
-						{loading ? (
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								{[1, 2, 3, 4].map((i) => (
-									<div
-										key={i}
-										className="h-72 rounded-3xl bg-white border border-slate-200 p-6 flex flex-col justify-between animate-pulse"
-									>
-										<div className="space-y-3">
-											<div className="h-4 bg-slate-200 rounded w-1/4" />
-											<div className="h-6 bg-slate-200 rounded w-3/4" />
-											<div className="h-3 bg-slate-200 rounded w-full" />
+						<div className="mt-6">
+							{loading ? (
+								<div
+									className="grid grid-cols-1 gap-5 md:grid-cols-2"
+									role="status"
+									aria-label="Loading scholarships"
+								>
+									{[1, 2, 3, 4].map((i) => (
+										<div
+											key={i}
+											className="flex h-72 animate-pulse flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/10 bg-white p-6"
+										>
+											<div className="space-y-3">
+												<div className="h-3.5 w-1/3 rounded bg-emerald-950/10" />
+												<div className="h-6 w-4/5 rounded bg-emerald-950/10" />
+												<div className="h-3.5 w-full rounded bg-emerald-950/10" />
+												<div className="h-3.5 w-3/4 rounded bg-emerald-950/10" />
+											</div>
+											<div className="h-10 w-28 rounded-full bg-emerald-950/10" />
 										</div>
-										<div className="h-10 bg-slate-200 rounded-full w-full" />
+									))}
+								</div>
+							) : error ? (
+								<div className="flex flex-col items-start gap-4 rounded-2xl border-[1.5px] border-rose-300 bg-white p-8">
+									<span className="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-rose-700 bg-rose-50">
+										<AlertCircle size={20} className="text-rose-700" />
+									</span>
+									<div>
+										<h3 className="ud-display text-2xl font-bold">{error}</h3>
+										<p className="mt-1.5 text-[15px] text-emerald-950/70">
+											Your filters are still saved. Try loading again.
+										</p>
 									</div>
-								))}
-							</div>
-						) : error ? (
-							<div className="p-10 rounded-3xl bg-white border border-rose-200 text-center space-y-3 shadow-2xs">
-								<AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
-								<p className="text-sm font-semibold text-rose-800">{error}</p>
-								<button
-									onClick={fetchLiveScholarships}
-									className="px-4 py-2 rounded-full bg-rose-700 text-white text-xs font-semibold"
-								>
-									Retry
-								</button>
-							</div>
-						) : scholarships.length === 0 ? (
-							<div className="p-12 rounded-3xl bg-white border border-slate-200 text-center space-y-3 shadow-2xs">
-								<Sparkles className="w-10 h-10 text-slate-400 mx-auto" />
-								<h4 className="text-lg font-sans font-bold text-slate-900">
-									No matching scholarships found
-								</h4>
-								<p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-									Try resetting your filters or changing your search terms to
-									discover more opportunities.
-								</p>
-								<button
-									onClick={clearAll}
-									className="px-5 py-2.5 rounded-full bg-slate-900 text-white text-xs font-bold hover:bg-emerald-800 transition-colors cursor-pointer"
-								>
-									Reset All Filters
-								</button>
-							</div>
-						) : (
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								{scholarships.map((s) => (
-									<ScholarshipCard
-										key={s._id || s.slug}
-										s={s}
-										saved={saved.has(s._id || s.id)}
-										onSave={toggleSave}
-										onClick={() => {
-											setSelectedScholarship(s);
-											setIsModalOpen(true);
-										}}
-										onOpenEvidence={() => {
-											setSelectedScholarship(s);
-											setIsEvidenceModalOpen(true);
-										}}
-									/>
-								))}
-							</div>
-						)}
+									<button
+										type="button"
+										onClick={fetchLiveScholarships}
+										className={`cursor-pointer rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-900 ${focusRing}`}
+									>
+										Try again
+									</button>
+								</div>
+							) : scholarships.length === 0 ? (
+								<div className="flex flex-col items-start gap-4 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-8">
+									<h3 className="ud-display text-2xl font-bold">
+										No scheme matches that combination.
+									</h3>
+									<p className="max-w-[52ch] text-[15px] leading-relaxed text-emerald-950/75">
+										Drop a filter, or search one word instead of a phrase.
+										“Merit” finds more than “merit based girls”.
+									</p>
+									<button
+										type="button"
+										onClick={clearAll}
+										className={`cursor-pointer rounded-full border-[1.5px] border-emerald-950 px-5 py-2.5 text-sm font-bold hover:bg-emerald-50 ${focusRing}`}
+									>
+										Reset filters
+									</button>
+								</div>
+							) : (
+								<div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+									{scholarships.map((s) => (
+										<ScholarshipCard
+											key={s._id || s.slug}
+											s={s}
+											saved={saved.has(s._id || s.id)}
+											onSave={toggleSave}
+											onOpenDetails={() => openDetails(s)}
+										/>
+									))}
+								</div>
+							)}
+						</div>
 					</main>
 				</div>
 			</div>
 
-			{/* Slide-out Drawer: Detailed Rules & Verification */}
+			{/* ---------- Detail drawer ---------- */}
 			{isModalOpen &&
 				selectedScholarship &&
 				createPortal(
@@ -866,133 +994,68 @@ export default function Scholarships() {
 						aria-modal="true"
 						aria-labelledby="scholarship-drawer-title"
 					>
-						{/* Backdrop */}
 						<div
-							className="fixed inset-0 bg-slate-950/40 backdrop-blur-[2px] transition-opacity duration-200 animate-fade-in"
-							onClick={() => {
-								setIsModalOpen(false);
-								setSelectedScholarship(null);
-							}}
+							className="animate-fade-in fixed inset-0 bg-emerald-950/45 backdrop-blur-[2px]"
+							onClick={closeDrawer}
 							aria-hidden="true"
 						/>
 
-						{/* Side Drawer Panel - Strictly constrained to viewport */}
 						<div
-							className="fixed inset-y-0 right-0 h-screen max-h-screen z-50 bg-white shadow-2xl flex flex-col border-l border-slate-200 animate-slide-in-right"
-							style={{ width: "min(560px, 100vw)" }}
+							className="animate-slide-in-right fixed inset-y-0 right-0 z-50 flex h-screen max-h-screen flex-col border-l-[1.5px] border-emerald-950 bg-white text-emerald-950"
+							style={{ width: "min(580px, 100vw)" }}
 						>
-							{/* Drawer Header - Sticky Top */}
-							<div className="bg-[#FAF9F6] border-b border-slate-200 px-6 py-4 flex items-start justify-between gap-4 shrink-0">
-								<div className="space-y-1 min-w-0 flex-1">
-									<div className="flex items-center gap-2 flex-wrap">
-										<span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-											{selectedScholarship.category || "Scholarship"}
-										</span>
-										<span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/80">
-											<ShieldCheck size={12} className="text-emerald-700" />
-											Verified Scholarship
+							<div className="flex shrink-0 items-start justify-between gap-4 border-b-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-5">
+								<div className="min-w-0 flex-1">
+									<p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-emerald-950/55">
+										<span>{selectedScholarship.category || "Scholarship"}</span>
+										<span aria-hidden>·</span>
+										<span className="inline-flex items-center gap-1 text-emerald-800">
+											<ShieldCheck size={13} />
+											Verified
 										</span>
 										{isGenuinePdf(
 											selectedScholarship.officialLinks?.guidelinesUrl,
 										) && (
-											<span className="inline-flex items-center text-[10px] font-mono text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-												Official PDF Available
-											</span>
+											<>
+												<span aria-hidden>·</span>
+												<span>Official PDF</span>
+											</>
 										)}
-									</div>
+									</p>
 									<h2
 										id="scholarship-drawer-title"
-										className="text-xl sm:text-2xl font-serif font-bold text-slate-900 mt-1 leading-snug"
+										className="ud-display mt-2 text-2xl font-extrabold leading-tight sm:text-3xl"
 									>
 										{selectedScholarship.title}
 									</h2>
-									<p className="text-xs sm:text-sm text-slate-600 font-medium truncate">
-										Offered by:{" "}
-										<span className="font-semibold text-slate-900">
+									<div className="mt-2 flex flex-wrap items-center gap-3">
+										<p className="text-sm text-emerald-950/65">
 											{selectedScholarship.organization}
-										</span>
-									</p>
+										</p>
+										<DeadlineChip deadline={selectedScholarship.deadline} />
+									</div>
 								</div>
 								<button
-									onClick={() => {
-										setIsModalOpen(false);
-										setSelectedScholarship(null);
-									}}
-									className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-200/60 cursor-pointer transition-colors shrink-0"
-									aria-label="Close"
+									type="button"
+									onClick={closeDrawer}
+									aria-label="Close details"
+									className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 ${focusRing}`}
 								>
-									<X size={20} />
+									<X size={17} />
 								</button>
 							</div>
 
-							{/* Top Quick Actions - Immediately visible without scrolling */}
-							<div className="bg-emerald-50/50 border-b border-emerald-100 px-6 py-2.5 flex items-center justify-between gap-2 shrink-0 flex-wrap">
-								<span className="text-xs font-semibold text-emerald-900">
-									Quick Actions:
-								</span>
-								<div className="flex items-center gap-2 flex-wrap">
-									{selectedScholarship.applicationLink && (
-										<a
-											href={cleanOfficialUrl(
-												selectedScholarship.applicationLink,
-											)}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="px-3.5 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold inline-flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
-										>
-											<span>Apply on Official Site</span>
-											<ArrowUpRight size={13} />
-										</a>
-									)}
-									<button
-										onClick={() => {
-											setIsModalOpen(false);
-											setIsEvidenceModalOpen(true);
-										}}
-										className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
-									>
-										<FileText size={13} className="text-emerald-700" />
-										<span>View Rules & Quotes</span>
-									</button>
-									{(() => {
-										const rawGl =
-											selectedScholarship.officialLinks?.guidelinesUrl ||
-											(selectedScholarship.sourceUrl
-												?.toLowerCase()
-												.includes(".pdf")
-												? selectedScholarship.sourceUrl
-												: null);
-										if (isGenuinePdf(rawGl)) {
-											return (
-												<a
-													href={cleanOfficialUrl(rawGl)}
-													target="_blank"
-													rel="noopener noreferrer"
-													className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-semibold inline-flex items-center gap-1 transition-colors shadow-2xs cursor-pointer"
-												>
-													<FileText size={13} />
-													<span>Official PDF</span>
-													<ArrowUpRight size={12} />
-												</a>
-											);
-										}
-										return null;
-									})()}
-								</div>
-							</div>
-
-							{/* Scrollable Content Body - min-h-0 prevents flex expansion beyond screen */}
-							<div className="flex-1 min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-6 text-sm text-slate-700 bg-white">
-								{/* Update notice if present */}
+							<div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-6 text-sm sm:px-8">
 								{selectedScholarship.latestChangeSummary &&
 									formatChangeNotice(
 										selectedScholarship.latestChangeSummary,
 									) && (
-										<div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-1">
-											<span className="font-bold text-amber-950 text-xs uppercase tracking-wider flex items-center gap-1.5">
-												<History size={13} /> Recent Scheme Update
-											</span>
-											<p className="text-xs text-amber-900 leading-relaxed">
+										<div className="rounded-xl border-[1.5px] border-emerald-950/15 bg-yellow-200 p-4">
+											<p className="flex items-center gap-1.5 text-xs font-bold">
+												<History size={13} />
+												Recently changed
+											</p>
+											<p className="mt-1.5 text-sm leading-snug">
 												{formatChangeNotice(
 													selectedScholarship.latestChangeSummary,
 												)}
@@ -1000,128 +1063,108 @@ export default function Scholarships() {
 										</div>
 									)}
 
-								{/* Scholarship Amount & Benefits Card */}
 								{(() => {
-									const drawerGrant = formatGrant(selectedScholarship.amount);
+									const g = formatGrant(selectedScholarship.amount);
 									return (
-										<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 space-y-2">
-											<span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
-												Scholarship Amount & Benefits
-											</span>
-											{drawerGrant.isUnpublished ? (
-												<div className="space-y-1.5">
-													<p className="text-lg sm:text-xl font-serif font-bold text-slate-800 italic">
-														{drawerGrant.main}
+										<DrawerSection title="What you receive">
+											{g.isUnpublished ? (
+												<>
+													<p className="text-lg font-semibold italic text-emerald-950/70">
+														{g.main}
 													</p>
-													<p className="text-xs text-slate-500 leading-relaxed">
-														{drawerGrant.details ||
-															"The scholarship amount is provided as per official government rules. Check the guidelines PDF or official site for exact details."}
+													<p className="mt-1.5 text-sm leading-relaxed text-emerald-950/70">
+														{g.details ||
+															"The amount follows official rules. Check the guidelines or the official site for exact figures."}
 													</p>
-												</div>
+												</>
 											) : (
-												<div className="space-y-2">
-													<div className="flex items-baseline gap-1">
-														<span className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
-															{drawerGrant.main}
+												<>
+													<p className="flex items-baseline gap-2">
+														<span className="ud-display text-4xl font-extrabold">
+															{g.main}
 														</span>
-														{drawerGrant.period && (
-															<span className="text-sm font-sans font-normal text-slate-500 ml-1">
-																{drawerGrant.period}
+														{g.period && (
+															<span className="text-base text-emerald-950/55">
+																{g.period}
 															</span>
 														)}
-													</div>
-													{drawerGrant.options &&
-														drawerGrant.options.length > 1 && (
-															<div className="pt-2.5 border-t border-slate-200/70 space-y-1.5">
-																<span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-																	Official Award Tiers:
-																</span>
-																<div className="flex flex-wrap gap-2">
-																	{drawerGrant.options.map((opt, i) => (
-																		<span
-																			key={i}
-																			className="inline-flex items-center text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg"
-																		>
-																			₹{opt.value?.toLocaleString("en-IN")} /{" "}
-																			{opt.period}
-																		</span>
-																	))}
-																</div>
+													</p>
+													{g.options && g.options.length > 1 && (
+														<div className="mt-4">
+															<p className="mb-2 text-xs font-bold text-emerald-950/55">
+																Award tiers
+															</p>
+															<div className="flex flex-wrap gap-2">
+																{g.options.map((opt, i) => (
+																	<span
+																		key={i}
+																		className="rounded-full border-[1.5px] border-emerald-950/25 bg-white px-3 py-1 text-[13px] font-semibold"
+																	>
+																		₹{opt.value?.toLocaleString("en-IN")} /{" "}
+																		{opt.period}
+																	</span>
+																))}
 															</div>
-														)}
-												</div>
+														</div>
+													)}
+												</>
 											)}
-										</div>
+										</DrawerSection>
 									);
 								})()}
 
-								{/* Overview */}
-								<div>
-									<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-										About This Scholarship
-									</h4>
-									<p className="text-sm leading-relaxed text-slate-600 font-normal">
+								<DrawerSection title="About">
+									<p className="text-[15px] leading-relaxed text-emerald-950/80">
 										{selectedScholarship.description ||
 											selectedScholarship.summary ||
-											"Official government scholarship opportunity verified against published notifications."}
+											"Official scholarship verified against its published notification."}
 									</p>
-								</div>
+								</DrawerSection>
 
-								{/* Who Can Apply (Eligibility Criteria) */}
 								{selectedScholarship.rules &&
 									selectedScholarship.rules.length > 0 && (
-										<div>
-											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-												Who Can Apply (Eligibility Criteria) (
-												{selectedScholarship.rules.length})
-											</h4>
-											<div className="space-y-2.5">
+										<DrawerSection
+											title="Who can apply"
+											aside={
+												<span className="text-xs font-bold text-emerald-950/55">
+													{selectedScholarship.rules.length} criteria
+												</span>
+											}
+										>
+											<ul className="divide-y divide-dashed divide-emerald-950/20 rounded-xl border-[1.5px] border-emerald-950/20">
 												{selectedScholarship.rules.map((r, idx) => (
-													<div
+													<li
 														key={idx}
-														className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs sm:text-sm flex items-center justify-between gap-3"
+														className="flex items-start justify-between gap-4 px-4 py-3"
 													>
-														<div className="space-y-0.5">
-															<span className="text-slate-800 font-medium block">
-																{r.description || formatFieldLabel(r.field)}
-															</span>
-															<span className="text-[11px] text-slate-500">
-																Eligibility:{" "}
-																<strong className="text-emerald-800 font-semibold">
-																	{formatRuleRequirement(r)}
-																</strong>
-															</span>
-														</div>
-														<span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
-															Required
+														<span className="text-[15px] font-semibold leading-snug">
+															{r.description || formatFieldLabel(r.field)}
 														</span>
-													</div>
+														<span className="shrink-0 rounded-sm bg-yellow-200 px-1.5 py-0.5 text-[13px] font-bold">
+															{formatRuleRequirement(r)}
+														</span>
+													</li>
 												))}
-											</div>
-										</div>
+											</ul>
+										</DrawerSection>
 									)}
 
-								{/* Rules from Official Notice */}
 								{((selectedScholarship.provenanceQuotes &&
 									selectedScholarship.provenanceQuotes.length > 0) ||
 									(selectedScholarship.rules &&
 										selectedScholarship.rules.length > 0)) && (
-									<div>
-										<div className="flex items-center justify-between mb-2.5">
-											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-												<Sparkles size={13} className="text-emerald-700" />
-												Rules from Official Notice (
+									<DrawerSection
+										title="From the official notice"
+										aside={
+											<span className="text-xs font-bold text-emerald-950/55">
 												{selectedScholarship.provenanceQuotes?.length ||
 													selectedScholarship.rules?.length ||
-													0}
-												)
-											</h4>
-											<span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
-												Verified Source
+													0}{" "}
+												clauses
 											</span>
-										</div>
-
-										<div className="space-y-2.5">
+										}
+									>
+										<div className="space-y-3">
 											{(selectedScholarship.provenanceQuotes &&
 											selectedScholarship.provenanceQuotes.length > 0
 												? selectedScholarship.provenanceQuotes
@@ -1154,44 +1197,37 @@ export default function Scholarships() {
 												return (
 													<div
 														key={idx}
-														className="p-3.5 rounded-2xl bg-[#FAF9F6] border border-slate-200/90 text-xs space-y-1.5"
+														className="rounded-xl border-[1.5px] border-emerald-950/20 bg-white p-4"
 													>
-														<div className="flex items-center justify-between text-slate-500 flex-wrap gap-1">
-															<span className="font-bold text-slate-800 flex items-center gap-1">
-																<span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-																{clauseTitle}
-															</span>
+														<div className="flex flex-wrap items-baseline justify-between gap-2">
+															<p className="text-sm font-bold">{clauseTitle}</p>
 															{q.page && (
-																<span className="text-[10px] bg-white border border-slate-200 px-1.5 py-0.5 rounded font-mono">
+																<span className="text-xs font-semibold text-emerald-950/55">
 																	Page {q.page}
 																</span>
 															)}
 														</div>
-														<blockquote className="border-l-2 border-emerald-700 pl-3 italic text-slate-700 leading-relaxed bg-emerald-50/20 py-1 rounded-r">
-															&ldquo;{cleanQuote}&rdquo;
+														<blockquote className="mt-2 border-l-2 border-yellow-400 pl-3 text-[15px] italic leading-relaxed text-emerald-950/80">
+															“{cleanQuote}”
 														</blockquote>
 														{quoteLink && (
-															<div className="pt-1 flex items-center justify-between text-[11px] text-slate-500 gap-2 flex-wrap">
+															<div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
 																<span
-																	className="truncate max-w-[260px] text-slate-500 font-medium"
+																	className="max-w-[260px] truncate font-medium text-emerald-950/55"
 																	title={quoteLink}
 																>
-																	Source: {sourceLabel}
+																	{sourceLabel}
 																</span>
-																{isPdf ? (
+																{isPdf && (
 																	<a
 																		href={quoteLink}
 																		target="_blank"
 																		rel="noopener noreferrer"
-																		className="font-medium text-emerald-800 hover:text-emerald-950 flex items-center gap-1 shrink-0 hover:underline"
+																		className="inline-flex shrink-0 items-center gap-1 font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950"
 																	>
-																		<span>Open Cited PDF</span>
+																		Open cited PDF
 																		<ExternalLink size={11} />
 																	</a>
-																) : (
-																	<span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
-																		Verified Notification
-																	</span>
 																)}
 															</div>
 														)}
@@ -1199,99 +1235,106 @@ export default function Scholarships() {
 												);
 											})}
 										</div>
-									</div>
+									</DrawerSection>
 								)}
 
-								{/* Required Documents */}
-								{selectedScholarship.requiredDocuments &&
-									selectedScholarship.requiredDocuments.length > 0 && (
-										<div>
-											<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">
-												Required Documents (
-												{selectedScholarship.requiredDocuments.length})
-											</h4>
-											<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-												{selectedScholarship.requiredDocuments.map(
-													(doc, idx) => (
-														<div
-															key={idx}
-															className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 text-xs text-slate-700 flex items-center gap-2"
-														>
-															<span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-															<span className="truncate">{doc.name}</span>
-														</div>
-													),
-												)}
-											</div>
-										</div>
+								<DrawerSection
+									title="Documents to keep ready"
+									aside={
+										<Link
+											to="/documents"
+											className="text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950"
+										>
+											Open checklist
+										</Link>
+									}
+								>
+									{Array.isArray(selectedScholarship.requiredDocuments) &&
+									selectedScholarship.requiredDocuments.length > 0 ? (
+										<ul className="grid gap-2 sm:grid-cols-2">
+											{selectedScholarship.requiredDocuments.map((doc, idx) => (
+												<li
+													key={idx}
+													className="flex items-start gap-2.5 rounded-xl border-[1.5px] border-emerald-950/20 p-3"
+												>
+													<span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md border-[1.5px] border-emerald-950 bg-white">
+														{doc.mandatory !== false && (
+															<Check size={11} strokeWidth={3.5} />
+														)}
+													</span>
+													<span className="min-w-0">
+														<span className="block text-sm font-semibold leading-snug">
+															{doc.name}
+														</span>
+														<span className="mt-0.5 block text-xs text-emerald-950/55">
+															{doc.mandatory !== false
+																? "Required"
+																: "If applicable"}
+														</span>
+													</span>
+												</li>
+											))}
+										</ul>
+									) : (
+										<p className="text-[15px] leading-relaxed text-emerald-950/75">
+											Usually: identity card, bonafide college certificate,
+											latest marksheet, and a bank passbook with DBT active.
+										</p>
 									)}
-
-								{/* Organizing Ministry or Department */}
-								<div className="p-4 sm:p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200/80 text-sm text-slate-700 space-y-1">
-									<span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
-										Offered by
-									</span>
-									<p className="font-semibold text-slate-900">
-										{selectedScholarship.organization}
-									</p>
-								</div>
+								</DrawerSection>
 							</div>
 
-							{/* Drawer Footer Actions - Sticky Bottom */}
-							<div className="p-4 sm:p-5 border-t border-slate-200 bg-[#FAF9F6] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shrink-0">
-								<div className="flex items-center gap-2 flex-1 flex-wrap">
-									{selectedScholarship.applicationLink && (
-										<a
-											href={cleanOfficialUrl(
-												selectedScholarship.applicationLink,
-											)}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="flex-1 min-w-[130px] py-2.5 px-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer"
-										>
-											<span>Apply on Official Site</span>
-											<ArrowUpRight size={14} />
-										</a>
-									)}
-
-									<button
-										onClick={() => {
-											setIsModalOpen(false);
-											setIsEvidenceModalOpen(true);
-										}}
-										className="flex-1 min-w-[120px] py-2.5 px-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-										title="View official scheme guidelines and quotes"
+							<div className="flex shrink-0 items-center gap-3 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-4">
+								{selectedScholarship.applicationLink && (
+									<a
+										href={cleanOfficialUrl(selectedScholarship.applicationLink)}
+										target="_blank"
+										rel="noopener noreferrer"
+										className={`group inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
 									>
-										<ShieldCheck size={15} className="text-emerald-700" />
-										<span>View Rules</span>
-									</button>
-
-									<Link
-										to="/documents"
-										className="py-2.5 px-3 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-2xs shrink-0"
-										title="Check required documents"
-									>
-										<FileText size={15} className="text-emerald-700" />
-										<span>Documents</span>
-									</Link>
-								</div>
-
+										Apply on official site
+										<ArrowUpRight
+											size={15}
+											className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+										/>
+									</a>
+								)}
 								<button
+									type="button"
 									onClick={() => {
 										setIsModalOpen(false);
-										setSelectedScholarship(null);
+										setIsEvidenceModalOpen(true);
 									}}
-									className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs sm:text-sm font-semibold transition-colors cursor-pointer shrink-0"
+									className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-5 py-2.5 text-sm font-bold hover:bg-emerald-100 ${focusRing}`}
 								>
-									Close
+									<FileText size={15} />
+									Full rules
 								</button>
+								{(() => {
+									const rawGl =
+										selectedScholarship.officialLinks?.guidelinesUrl ||
+										(selectedScholarship.sourceUrl
+											?.toLowerCase()
+											.includes(".pdf")
+											? selectedScholarship.sourceUrl
+											: null);
+									return isGenuinePdf(rawGl) ? (
+										<a
+											href={cleanOfficialUrl(rawGl)}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="ml-auto text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950"
+										>
+											Official PDF
+										</a>
+									) : null;
+								})()}
 							</div>
 						</div>
 					</div>,
 					document.body,
 				)}
 
-			{/* Full Evidence & Citation Dossier Modal */}
 			<EvidenceModal
 				isOpen={isEvidenceModalOpen}
 				onClose={() => setIsEvidenceModalOpen(false)}

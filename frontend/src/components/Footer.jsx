@@ -7,7 +7,6 @@ function Footer() {
 		<footer className="bg-white border-t border-slate-200/80">
 			<div className="mx-auto max-w-7xl px-5 sm:px-8 py-12 md:py-16">
 				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 pb-12 border-b border-slate-100">
-					{/* Brand Column */}
 					<div className="col-span-2 flex flex-col gap-3.5">
 						<Logo size="md" tagline="find your scholarship" />
 
@@ -22,7 +21,6 @@ function Footer() {
 						</div>
 					</div>
 
-					{/* Navigation Column: Scholarships */}
 					<div className="flex flex-col gap-3">
 						<h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
 							Scholarships
@@ -80,7 +78,6 @@ function Footer() {
 						</ul>
 					</div>
 
-					{/* Navigation Column: Guides & Tools */}
 					<div className="flex flex-col gap-3">
 						<h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
 							Tools & Guides
@@ -138,7 +135,6 @@ function Footer() {
 						</ul>
 					</div>
 
-					{/* Navigation Column: Official Portals */}
 					<div className="flex flex-col gap-3">
 						<h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
 							Official Portals
@@ -213,7 +209,6 @@ function Footer() {
 						</ul>
 					</div>
 
-					{/* Navigation Column: Support & Info */}
 					<div className="flex flex-col gap-3">
 						<h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
 							Help & Info
@@ -258,7 +253,6 @@ function Footer() {
 					</div>
 				</div>
 
-				{/* Bottom Strip */}
 				<div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 text-xs text-slate-500">
 					<p>
 						&copy; {new Date().getFullYear()} Udaan Scholarship Finder.

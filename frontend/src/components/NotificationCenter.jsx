@@ -94,12 +94,11 @@ export default function NotificationCenter() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [notifications, setNotifications] = useState([]);
 	const [unreadCount, setUnreadCount] = useState(0);
-	const [activeTab, setActiveTab] = useState("all"); // "all" | "unread"
+	const [activeTab, setActiveTab] = useState("all"); 
 	const [loading, setLoading] = useState(false);
 	const dropdownRef = useRef(null);
 	const navigate = useNavigate();
 
-	// Fetch unread count periodically if user is logged in
 	const fetchUnread = async () => {
 		const token = localStorage.getItem("token");
 		if (!user || !token) {
@@ -117,7 +116,6 @@ export default function NotificationCenter() {
 		}
 	};
 
-	// Fetch full notifications list when opened
 	const fetchList = async () => {
 		const token = localStorage.getItem("token");
 		if (!user || !token) {
@@ -146,7 +144,6 @@ export default function NotificationCenter() {
 		}
 	};
 
-	// Listen to local preview events (for instant test feedback even in guest mode)
 	useEffect(() => {
 		const handlePreview = (e) => {
 			if (e.detail) {
@@ -174,7 +171,6 @@ export default function NotificationCenter() {
 		}
 	}, [isOpen, activeTab, user]);
 
-	// Close on click outside or escape key
 	useEffect(() => {
 		const handleClickOutside = (e) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -255,7 +251,6 @@ export default function NotificationCenter() {
 
 	return (
 		<div className="relative" ref={dropdownRef}>
-			{/* Notification Bell Button */}
 			<button
 				type="button"
 				onClick={() => setIsOpen((prev) => !prev)}
@@ -271,10 +266,8 @@ export default function NotificationCenter() {
 				)}
 			</button>
 
-			{/* Dropdown Popover */}
 			{isOpen && (
 				<div className="absolute right-0 mt-2 w-80 sm:w-96 max-h-[32rem] bg-white border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden flex flex-col z-50 origin-top-right transition-all duration-200">
-					{/* Header */}
 					<div className="px-4 py-3 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
 						<div className="flex items-center gap-2">
 							<h3 className="text-sm font-bold text-slate-900">Notifications</h3>
@@ -296,7 +289,6 @@ export default function NotificationCenter() {
 						)}
 					</div>
 
-					{/* Filter Tabs */}
 					<div className="px-3 pt-2 pb-1 border-b border-slate-100 flex items-center gap-1.5 bg-white">
 						<button
 							type="button"
@@ -325,7 +317,6 @@ export default function NotificationCenter() {
 						</button>
 					</div>
 
-					{/* Notification Items List */}
 					<div className="overflow-y-auto flex-1 divide-y divide-slate-100">
 						{loading ? (
 							<div className="py-10 text-center text-xs text-slate-400">
@@ -398,14 +389,12 @@ export default function NotificationCenter() {
 												: "bg-emerald-50/35 hover:bg-emerald-50/60"
 										}`}
 									>
-										{/* Icon */}
 										<div
 											className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center border ${meta.iconBg}`}
 										>
 											<IconComponent size={15} />
 										</div>
 
-										{/* Content */}
 										<div className="flex-1 min-w-0">
 											<div className="flex items-center gap-1.5 mb-1 flex-wrap">
 												<span
@@ -425,7 +414,6 @@ export default function NotificationCenter() {
 												{notif.message}
 											</p>
 
-											{/* Evidence reason pill */}
 											{notif.evidence?.eligibilityReason && (
 												<div className="mt-1.5 inline-block text-[10px] font-medium text-emerald-850 bg-emerald-100/50 border border-emerald-200/60 rounded px-1.5 py-0.5">
 													Reason: {notif.evidence.eligibilityReason}
@@ -433,7 +421,6 @@ export default function NotificationCenter() {
 											)}
 										</div>
 
-										{/* Actions */}
 										<div className="shrink-0 flex items-center gap-1 opacity-80 group-hover:opacity-100">
 											{!notif.isRead && (
 												<button
@@ -460,7 +447,6 @@ export default function NotificationCenter() {
 						)}
 					</div>
 
-					{/* Footer */}
 					<div className="px-4 py-2 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-[11px] text-slate-500">
 						<span>Proactive alerts enabled</span>
 						<button
