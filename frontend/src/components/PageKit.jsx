@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 
-
 const CSS = `
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap");
-
 .ud-display {
-  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.025em;
+  font-family: "ClashDisplay-Variable", "ClashDisplay-Bold", "Geist", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .ud-root :is(a, button, summary):focus-visible {

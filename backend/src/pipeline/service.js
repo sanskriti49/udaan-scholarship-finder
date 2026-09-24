@@ -55,5 +55,12 @@ export async function runPipeline({ sourceId, replay = false } = {}) {
 }
 
 export async function refreshStatuses() {
-	return createPipeline({ notify: false }).refreshStatuses();
+	const result = await createPipeline({ notify: false }).refreshStatuses();
+	try {
+		const { clearScholarshipCache } = await import("../middlewares/cacheMiddleware.js");
+		await clearScholarshipCache();
+	} catch (error) {
+		rootLogger.warn("cache invalidation failed after refreshStatuses", { error: error.message });
+	}
+	return result;
 }

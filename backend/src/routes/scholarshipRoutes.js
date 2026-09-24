@@ -21,8 +21,8 @@ import {
 
 const router = express.Router();
 
-router.get("/", cacheMiddleware({ ttl: 1800 }), getScholarships);
-router.get("/featured", cacheMiddleware({ ttl: 1800 }), getFeaturedScholarships);
+router.get("/", cacheMiddleware({ ttl: 300 }), getScholarships);
+router.get("/featured", cacheMiddleware({ ttl: 300 }), getFeaturedScholarships);
 router.get("/suggestions", cacheMiddleware({ ttl: 300 }), getScholarshipSuggestions);
 
 // Admin-Only Cache Control Endpoints
@@ -34,9 +34,9 @@ router.get("/crawler/status", protect, authorizeRoles("admin"), getCrawlerStatus
 router.post("/crawler/run", protect, authorizeRoles("admin"), runCrawler);
 router.get("/crawler/issues", protect, authorizeRoles("admin"), getIngestionIssues);
 
-router.get("/:id", getScholarshipById);
-router.get("/:id/history", getScholarshipHistory);
-router.get("/:id/evidence", getScholarshipEvidence);
+router.get("/:id", cacheMiddleware({ ttl: 300 }), getScholarshipById);
+router.get("/:id/history", cacheMiddleware({ ttl: 300 }), getScholarshipHistory);
+router.get("/:id/evidence", cacheMiddleware({ ttl: 300 }), getScholarshipEvidence);
 
 router.post("/evaluate", optionalAuth, evaluateScholarships);
 router.post("/match", optionalAuth, evaluateScholarships);

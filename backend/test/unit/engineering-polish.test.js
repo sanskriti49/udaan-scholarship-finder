@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import { evaluateEligibility, normalizeProfile } from "../../src/engine/ruleEvaluator.js";
 import { trustVerificationService } from "../../src/services/trustVerificationService.js";
@@ -309,4 +309,74 @@ test("trustVerificationService: analyzeLinkOrText defends against ReDoS and hand
 		scamResult.findings.some((f) => f.type === "FEE_EXTORTION_DETECTED"),
 		true,
 	);
+});
+
+import { buildDeterministicCacheKey, cacheMiddleware } from "../../src/middlewares/cacheMiddleware.js";
+
+test("buildDeterministicCacheKey: sorts query parameters alphabetically and normalizes casing", () => {
+	const reqA = {
+		baseUrl: "/api/scholarships",
+		path: "/",
+		query: { state: "Delhi", category: "STEM", page: "1" },
+	};
+	const reqB = {
+		baseUrl: "/api/scholarships",
+		path: "",
+		query: { page: "1", category: "stem", state: "DELHI" },
+	};
+
+	const keyA = buildDeterministicCacheKey("udaan:cache:scholarships", reqA);
+	const keyB = buildDeterministicCacheKey("udaan:cache:scholarships", reqB);
+
+	assert.equal(keyA, keyB, "Different query param ordering and casing must yield the same cache key");
+	assert.ok(keyA.includes("category=stem&page=1&state=delhi"));
+});
+
+test("buildDeterministicCacheKey: strips marketing/tracking and cache-busting params", () => {
+	const reqClean = {
+		baseUrl: "/api/scholarships",
+		path: "",
+		query: { category: "Women" },
+	};
+	const reqTracked = {
+		baseUrl: "/api/scholarships",
+		path: "/",
+		query: {
+			category: "women",
+			utm_source: "whatsapp",
+			utm_medium: "chat",
+			utm_campaign: "admission_2026",
+			fbclid: "IwAR123",
+			_: "1720000000",
+		},
+	};
+
+	const keyClean = buildDeterministicCacheKey("udaan:cache:scholarships", reqClean);
+	const keyTracked = buildDeterministicCacheKey("udaan:cache:scholarships", reqTracked);
+
+	assert.equal(keyClean, keyTracked, "Tracking and cache-busting params must be stripped from cache key");
+});
+
+test("buildDeterministicCacheKey: normalizes trailing slashes on paths", () => {
+	const reqSlash = {
+		baseUrl: "/api/scholarships",
+		path: "/",
+		query: {},
+	};
+	const reqNoSlash = {
+		baseUrl: "/api/scholarships",
+		path: "",
+		query: {},
+	};
+
+	const keySlash = buildDeterministicCacheKey("udaan:cache:scholarships", reqSlash);
+	const keyNoSlash = buildDeterministicCacheKey("udaan:cache:scholarships", reqNoSlash);
+
+	assert.equal(keySlash, keyNoSlash, "Paths with and without trailing slash must yield identical keys");
+});
+
+import { closeRedisClient } from "../../src/config/redis.js";
+
+after(async () => {
+	await closeRedisClient();
 });

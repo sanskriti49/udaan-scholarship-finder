@@ -6,11 +6,11 @@ import { redisClient, isRedisAvailable } from "../config/redis.js";
  * Implements a fail-open, deterministic response caching layer for high-read endpoints.
  *
  * @param {Object} [options]
- * @param {number} [options.ttl=1800] - Cache time-to-live in seconds (default: 30 minutes)
+ * @param {number} [options.ttl=300] - Cache time-to-live in seconds (default: 5 minutes / 300 seconds)
  * @param {string} [options.prefix="udaan:cache:scholarships"] - Key namespace prefix
  */
 export function cacheMiddleware(options = {}) {
-	const ttl = options.ttl || parseInt(process.env.CACHE_TTL_SECONDS, 10) || 1800;
+	const ttl = options.ttl || parseInt(process.env.CACHE_TTL_SECONDS, 10) || 300;
 	const prefix = options.prefix || "udaan:cache:scholarships";
 
 	return async (req, res, next) => {
@@ -41,23 +41,24 @@ export function cacheMiddleware(options = {}) {
 			const originalJson = res.json.bind(res);
 
 			res.json = (body) => {
-				// Only cache successful 200 responses that contain actual records
+				// Only cache successful 200 responses
 				if (res.statusCode === 200 && body && body.success !== false) {
-					// Guard against caching empty result sets for long TTLs
+					// Guard: empty results get a short negative-cache TTL (60s) to protect MongoDB
+					// against repeated non-existent queries while refreshing quickly for newly scraped items
 					const isEmptyResult =
 						body.count === 0 ||
 						body.total === 0 ||
 						(Array.isArray(body.data) && body.data.length === 0);
 
-					if (!isEmptyResult) {
-						try {
-							const serialized = JSON.stringify(body);
-							redisClient.set(cacheKey, serialized, "EX", ttl).catch((err) => {
-								console.warn(`[Cache] Failed writing key '${cacheKey}':`, err.message);
-							});
-						} catch (serializeErr) {
-							console.warn("[Cache] Serialization error on write:", serializeErr.message);
-						}
+					const effectiveTtl = isEmptyResult ? Math.min(ttl, 60) : ttl;
+
+					try {
+						const serialized = JSON.stringify(body);
+						redisClient.set(cacheKey, serialized, "EX", effectiveTtl).catch((err) => {
+							console.warn(`[Cache] Failed writing key '${cacheKey}':`, err.message);
+						});
+					} catch (serializeErr) {
+						console.warn("[Cache] Serialization error on write:", serializeErr.message);
 					}
 				}
 				return originalJson(body);
@@ -76,14 +77,30 @@ export function cacheMiddleware(options = {}) {
 /**
  * Build deterministic cache key with sorted query parameters
  * Ensures '?state=Delhi&category=STEM' and '?category=STEM&state=Delhi' share one cache entry.
+ * Strips tracking parameters (e.g. utm_*, fbclid) and normalizes trailing slashes.
  */
 export function buildDeterministicCacheKey(prefix, req) {
-	const path = `${req.baseUrl || ""}${req.path || ""}`.replace(/\/+/g, "/");
-	const queryKeys = Object.keys(req.query || {}).sort();
+	const rawPath = `${req.baseUrl || ""}${req.path || ""}`.replace(/\/+/g, "/");
+	const path = rawPath.length > 1 ? rawPath.replace(/\/+$/, "") : rawPath;
+
+	const query = { ...(req.query || {}) };
+	// Remove tracking and cache-busting parameters
+	delete query._;
+	delete query.t;
+	delete query.timestamp;
+	delete query.utm_source;
+	delete query.utm_medium;
+	delete query.utm_campaign;
+	delete query.utm_term;
+	delete query.utm_content;
+	delete query.fbclid;
+	delete query.gclid;
+
+	const queryKeys = Object.keys(query).sort();
 
 	const queryString = queryKeys
 		.map((key) => {
-			const val = req.query[key];
+			const val = query[key];
 			return `${encodeURIComponent(key)}=${encodeURIComponent(String(val).trim().toLowerCase())}`;
 		})
 		.join("&");
@@ -99,7 +116,24 @@ export function buildDeterministicCacheKey(prefix, req) {
  */
 export async function clearScholarshipCache(pattern = "udaan:cache:scholarships:*") {
 	if (!isRedisAvailable()) {
-		return 0;
+		if (redisClient && (redisClient.status === "connecting" || redisClient.status === "connect")) {
+			try {
+				await new Promise((resolve) => {
+					const timer = setTimeout(resolve, 2000);
+					redisClient.once("ready", () => {
+						clearTimeout(timer);
+						resolve();
+					});
+					redisClient.once("error", () => {
+						clearTimeout(timer);
+						resolve();
+					});
+				});
+			} catch (_) {}
+		}
+		if (!isRedisAvailable()) {
+			return 0;
+		}
 	}
 
 	try {
