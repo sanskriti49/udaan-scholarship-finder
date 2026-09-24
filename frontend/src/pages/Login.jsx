@@ -107,7 +107,11 @@ export default function Login() {
 				setGoogleLoading(true);
 				await loginWithGoogle(tokenResponse.access_token);
 				toast.success("Signed in with Google successfully!");
-				await fulfillPendingBookmarkAndRedirect(navigate, toggleBookmark, toast);
+				await fulfillPendingBookmarkAndRedirect(
+					navigate,
+					toggleBookmark,
+					toast,
+				);
 			} catch (err) {
 				toast.error(
 					err.response?.data?.message ||
@@ -134,7 +138,11 @@ export default function Login() {
 					setGoogleLoading(true);
 					await loginWithGoogle("dev-bypass");
 					toast.success("Signed in with Demo Google Account (Dev Mode)");
-					await fulfillPendingBookmarkAndRedirect(navigate, toggleBookmark, toast);
+					await fulfillPendingBookmarkAndRedirect(
+						navigate,
+						toggleBookmark,
+						toast,
+					);
 				} catch (err) {
 					toast.error(err.response?.data?.message || "Google sign-in failed.");
 				} finally {
@@ -163,7 +171,7 @@ export default function Login() {
 						<Logo size="md" tagline="find your scholarship" />
 					</div>
 
-					<h1 className="font-serif text-3xl sm:text-4xl leading-tight text-emerald-950 mb-1">
+					<h1 className="font-georgia text-3xl sm:text-4xl leading-tight text-emerald-950 mb-1">
 						Welcome back
 					</h1>
 					<p className="text-xs sm:text-sm text-emerald-950/90 mb-4 sm:mb-5 leading-relaxed">
@@ -297,7 +305,7 @@ export default function Login() {
 					</div>
 
 					<div className="mt-4 text-center space-y-1">
-						<h2 className="font-serif text-2xl xl:text-[1.75rem] leading-snug text-white">
+						<h2 className="font-georgia text-2xl xl:text-[1.75rem] leading-snug text-white">
 							Every scholarship, verified at the source.
 						</h2>
 						<p className="text-xs xl:text-sm text-mint-100/70 leading-relaxed max-w-xs mx-auto">

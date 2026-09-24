@@ -2,23 +2,23 @@ import { useEffect, useMemo, useState } from "react";
 
 const CSS = `
 .ud-display {
-  font-family: "ClashDisplay-Variable", "ClashDisplay-Bold", "Geist", ui-sans-serif, system-ui, sans-serif;
+  font-family: "Bricolage Grotesque", sans-serif;
   letter-spacing: -0.02em;
 }
 
 .ud-root :is(a, button, summary):focus-visible {
-  outline: 3px solid #4338ca;
+  outline: 3px solid #143621;
   outline-offset: 2px;
   border-radius: 8px;
 }
 
 .ud-stamp {
   display: inline-block;
-  color: #4338ca;
-  border: 3px double #4338ca;
+  color: #1b432a;
+  border: 3px double #1b432a;
   border-radius: 8px;
   padding: 0.2rem 0.65rem;
-  font-family: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  font-family: "ClashDisplay-Bold", "Geist", sans-serif;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;

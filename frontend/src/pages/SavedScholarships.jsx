@@ -46,6 +46,12 @@ import {
 	onBookmarkChanged,
 } from "../utils/bookmarkSync";
 import { PageStyles } from "../components/PageKit";
+import {
+	CategoryCardHeader,
+	CategoryMotifIcon,
+	EmptyBoardIllustration,
+	getCategoryTheme,
+} from "../components/CategoryMotif";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -518,27 +524,53 @@ export default function SavedScholarships() {
 
 						{/* Empty State: No bookmarks at all */}
 						{!loading && !error && savedItems.length === 0 && (
-							<div className="my-10 rounded-3xl border-[1.5px] border-emerald-950 bg-white p-8 sm:p-14 text-center max-w-lg mx-auto shadow-xs">
-								<div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border-[1.5px] border-emerald-950 bg-emerald-50 text-emerald-800 mb-4">
-									<Bookmark size={26} strokeWidth={2.5} />
+							<div className="my-10 rounded-3xl border-[2px] border-emerald-950 bg-white p-8 sm:p-12 text-center max-w-xl mx-auto shadow-[4px_4px_0px_0px_rgba(2,44,34,1)]">
+								<div className="mx-auto flex justify-center mb-5">
+									<EmptyBoardIllustration size={110} />
+								</div>
+
+								<div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-950/20 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-900 uppercase tracking-wide mb-3">
+									<span>Your Scholarship Pinboard</span>
 								</div>
 
 								<h3 className="ud-display text-2xl sm:text-3xl font-bold text-emerald-950">
-									No saved scholarships yet
+									Your personal board is waiting
 								</h3>
 
-								<p className="mt-2.5 text-sm text-emerald-950/70 leading-relaxed font-medium">
-									When browsing the scholarship catalog, click the bookmark icon on
-									any scheme to track its application deadline and keep it saved here.
+								<p className="mt-3 text-[15px] text-emerald-950/75 leading-relaxed font-medium max-w-md mx-auto">
+									Save schemes you qualify for to track official deadlines, document requirements, and policy notices all in one place.
 								</p>
 
-								<div className="mt-6">
+								{/* Quick suggestions */}
+								<div className="mt-6 pt-5 border-t border-dashed border-emerald-950/20">
+									<p className="text-xs font-bold text-emerald-950/55 uppercase tracking-wider mb-2.5">
+										Popular starting searches
+									</p>
+									<div className="flex flex-wrap justify-center gap-2">
+										{[
+											{ label: "AICTE Pragati", query: "Pragati" },
+											{ label: "Central Sector CSSS", query: "CSSS" },
+											{ label: "Post-Matric", query: "Post-Matric" },
+											{ label: "STEM Grants", query: "STEM" },
+										].map((item) => (
+											<Link
+												key={item.label}
+												to={`/scholarships?search=${encodeURIComponent(item.query)}`}
+												className="rounded-full border-[1.5px] border-emerald-950/20 bg-[#FAF9F6] hover:border-emerald-950 px-3 py-1 text-xs font-semibold text-emerald-950 transition hover:bg-emerald-50"
+											>
+												{item.label}
+											</Link>
+										))}
+									</div>
+								</div>
+
+								<div className="mt-6 pt-2">
 									<Link
 										to="/scholarships"
-										className={`inline-flex items-center gap-2 rounded-full bg-emerald-800 px-6 py-3 text-sm font-bold text-white transition hover:bg-emerald-900 shadow-2xs ${focusRing}`}
+										className={`inline-flex items-center gap-2 rounded-full bg-emerald-800 px-7 py-3 text-sm font-bold text-white transition hover:bg-emerald-900 shadow-2xs ${focusRing}`}
 									>
-										<Compass size={16} />
-										<span>Explore Scholarships Catalog</span>
+										<Compass size={17} />
+										<span>Explore Verified Scholarships</span>
 									</Link>
 								</div>
 							</div>
@@ -583,52 +615,37 @@ export default function SavedScholarships() {
 									return (
 										<article
 											key={id}
-											className="group flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-5 transition-colors hover:border-emerald-950 focus-within:border-emerald-950 sm:p-6"
+											className="group flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/20 bg-white overflow-hidden transition-all duration-200 hover:border-emerald-950 hover:shadow-[4px_4px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,0.08)]"
 										>
-											<div>
-												{/* Top row: tags + remove bookmark button */}
-												<div className="flex items-start justify-between gap-3">
-													<p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-emerald-950/55">
-														<span>{s.category || "Scholarship"}</span>
-														<span aria-hidden>·</span>
-														<span>{s.sourceType || "Official"}</span>
-														{s.state && s.state !== "All India" && (
-															<>
-																<span aria-hidden>·</span>
-																<span>{s.state}</span>
-															</>
-														)}
-														{s.hasChanges && (
-															<span className="inline-flex items-center gap-1 rounded-full bg-yellow-200 px-2 py-0.5 text-xs font-bold text-emerald-950">
-																<History size={11} />
-																Updated
-															</span>
-														)}
-													</p>
-
+											<CategoryCardHeader
+												category={s.category}
+												sourceType={s.sourceType || "Official"}
+												hasChanges={s.hasChanges}
+												rightSlot={
 													<button
 														type="button"
 														onClick={() => handleRemoveBookmark(s)}
 														disabled={isRemoving}
 														title="Remove from saved"
 														aria-label={`Remove ${s.title} from saved`}
-														className={`-mr-1.5 -mt-1.5 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-emerald-800 transition-colors hover:bg-rose-50 hover:text-rose-700 ${focusRing} ${
+														className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950/20 bg-white/90 text-emerald-800 transition hover:bg-rose-50 hover:text-rose-700 hover:border-rose-400 active:scale-95 ${focusRing} ${
 															isRemoving ? "opacity-50 cursor-not-allowed" : ""
 														}`}
 													>
 														{isRemoving ? (
 															<Loader2
-																size={16}
+																size={15}
 																className="animate-spin text-emerald-800"
 															/>
 														) : (
-															<BookmarkCheck size={19} />
+															<BookmarkCheck size={16} />
 														)}
 													</button>
-												</div>
+												}
+											/>
 
-												{/* Title */}
-												<h3 className="mt-2.5">
+											<div className="p-5 sm:p-6 flex flex-col flex-1">
+												<h3>
 													<button
 														type="button"
 														onClick={() => openDetails(s)}
@@ -642,55 +659,60 @@ export default function SavedScholarships() {
 													{s.organization}
 												</p>
 
-												{/* Benefits summary row */}
-												<div className="mt-4 flex flex-wrap items-center gap-2">
-													{grantInfo?.isStipend ? (
-														<span className="inline-flex items-center rounded-full bg-emerald-100/70 border border-emerald-950/15 px-2.5 py-0.5 text-xs font-bold text-emerald-900">
-															{grantInfo.main}
-														</span>
-													) : grantInfo ? (
-														<span className="inline-flex items-center rounded-full bg-emerald-100/70 border border-emerald-950/15 px-2.5 py-0.5 text-xs font-bold text-emerald-900">
-															₹{grantInfo.main}{" "}
-															{grantInfo.period ? `(${grantInfo.period})` : ""}
-														</span>
-													) : null}
+												<div className="mt-auto pt-4">
+													{/* Benefits & Deadline summary row */}
+													<div className="flex items-center justify-between gap-3 border-t-[1.5px] border-dashed border-emerald-950/20 pt-4">
+														<div className="min-w-0">
+															{grantInfo?.isUnpublished ? (
+																<p className="text-sm font-medium italic text-emerald-950/60">
+																	{grantInfo.main}
+																</p>
+															) : grantInfo ? (
+																<p className="flex items-baseline gap-1.5">
+																	<span className="ud-display text-2xl font-extrabold text-emerald-950">
+																		{grantInfo.isStipend ? grantInfo.main : `₹${grantInfo.main}`}
+																	</span>
+																	{grantInfo.period && (
+																		<span className="text-xs font-semibold text-emerald-950/55">
+																			{grantInfo.period}
+																		</span>
+																	)}
+																</p>
+															) : null}
+														</div>
+														<DeadlineChip deadline={s.deadline} />
+													</div>
 
-													<DeadlineChip deadline={s.deadline} />
+													{/* Bottom Action Footer */}
+													<div className="mt-4 flex items-center justify-between gap-3">
+														<button
+															type="button"
+															onClick={() => openDetails(s)}
+															className={`cursor-pointer rounded-sm text-sm font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
+														>
+															Rules & documents
+														</button>
 
-													{docCount > 0 && (
-														<span className="inline-flex items-center gap-1 text-xs text-emerald-950/60 font-semibold">
-															<FileText size={12} />
-															{docCount} {docCount === 1 ? "doc" : "docs"}
-														</span>
-													)}
+														{s.applicationLink ? (
+															<a
+																href={cleanOfficialUrl(s.applicationLink)}
+																target="_blank"
+																rel="noopener noreferrer"
+																className={`group/apply inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
+															>
+																<span>Apply Direct</span>
+																<ArrowUpRight
+																	size={13}
+																	className="transition-transform group-hover/apply:-translate-y-0.5 group-hover/apply:translate-x-0.5"
+																/>
+															</a>
+														) : (
+															<span className="text-xs text-emerald-950/40 font-medium">
+																Official portal link inside
+															</span>
+														)}
+													</div>
 												</div>
-											</div>
-
-											{/* Bottom Action Footer */}
-											<div className="mt-5 flex items-center justify-between border-t-[1.5px] border-emerald-950/10 pt-3.5">
-												<button
-													type="button"
-													onClick={() => openDetails(s)}
-													className="text-xs font-bold text-emerald-950 hover:underline cursor-pointer"
-												>
-													View Details & Evidence
-												</button>
-
-												{s.applicationLink ? (
-													<a
-														href={cleanOfficialUrl(s.applicationLink)}
-														target="_blank"
-														rel="noopener noreferrer"
-														className={`inline-flex items-center gap-1 text-xs font-bold text-emerald-800 hover:text-emerald-950 hover:underline ${focusRing}`}
-													>
-														<span>Official Portal</span>
-														<ExternalLink size={12} />
-													</a>
-												) : (
-													<span className="text-xs text-emerald-950/40 font-medium">
-														Official portal link inside
-													</span>
-												)}
 											</div>
 										</article>
 									);
@@ -721,51 +743,76 @@ export default function SavedScholarships() {
 							className="animate-slide-in-right fixed inset-y-0 right-0 z-50 flex h-screen max-h-screen flex-col border-l-[1.5px] border-emerald-950 bg-white text-emerald-950"
 							style={{ width: "min(580px, 100vw)" }}
 						>
-							<div className="flex shrink-0 items-start justify-between gap-4 border-b-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-5">
-								<div className="min-w-0 flex-1">
-									<p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-emerald-950/55">
-										<span>
-											{selectedScholarship.category || "Scholarship"}
-										</span>
-										<span aria-hidden>·</span>
-										<span className="inline-flex items-center gap-1 text-emerald-800">
-											<ShieldCheck size={13} />
-											Verified Scheme
-										</span>
-									</p>
-									<h2
-										id="saved-drawer-title"
-										className="ud-display mt-2 text-2xl font-extrabold leading-tight sm:text-3xl"
+							{(() => {
+								const drawerTheme = getCategoryTheme(selectedScholarship.category);
+								return (
+									<div
+										className="relative overflow-hidden shrink-0 border-b-[1.5px] border-emerald-950 px-6 py-5"
+										style={{ background: drawerTheme.colors.headerBg }}
 									>
-										{selectedScholarship.title}
-									</h2>
-									<div className="mt-2 flex flex-wrap items-center gap-3">
-										<p className="text-sm text-emerald-950/65 font-medium">
-											{selectedScholarship.organization}
-										</p>
-										<DeadlineChip deadline={selectedScholarship.deadline} />
-									</div>
-								</div>
+										{/* Watermark in background */}
+										<div className="absolute -right-4 -bottom-4 opacity-15 pointer-events-none transform rotate-12 scale-150">
+											<CategoryMotifIcon category={selectedScholarship.category} size={96} />
+										</div>
 
-								<div className="flex items-center gap-2 shrink-0">
-									<button
-										type="button"
-										onClick={() => handleRemoveBookmark(selectedScholarship)}
-										title="Remove bookmark"
-										className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-rose-50 text-emerald-800 hover:text-rose-700 transition ${focusRing}`}
-									>
-										<BookmarkCheck size={17} />
-									</button>
-									<button
-										type="button"
-										onClick={closeDrawer}
-										aria-label="Close details"
-										className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 ${focusRing}`}
-									>
-										<X size={17} />
-									</button>
-								</div>
-							</div>
+										<div className="relative z-10 flex items-start justify-between gap-4">
+											<div className="min-w-0 flex-1">
+												<div className="flex flex-wrap items-center gap-2 mb-2">
+													<span
+														className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] px-2.5 py-0.5 text-xs font-bold"
+														style={{
+															borderColor: drawerTheme.colors.border,
+															backgroundColor: "white",
+															color: drawerTheme.colors.text,
+														}}
+													>
+														<CategoryMotifIcon category={selectedScholarship.category} size={15} />
+														<span>{selectedScholarship.category || "Scholarship"}</span>
+													</span>
+
+													<span className="inline-flex items-center gap-1 rounded-full border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-800">
+														<ShieldCheck size={13} />
+														Verified Scheme
+													</span>
+												</div>
+
+												<h2
+													id="saved-drawer-title"
+													className="ud-display text-2xl sm:text-3xl font-extrabold leading-tight text-emerald-950"
+												>
+													{selectedScholarship.title}
+												</h2>
+
+												<div className="mt-2.5 flex flex-wrap items-center gap-3">
+													<p className="text-sm font-medium text-emerald-950/65">
+														{selectedScholarship.organization}
+													</p>
+													<DeadlineChip deadline={selectedScholarship.deadline} />
+												</div>
+											</div>
+
+											<div className="flex items-center gap-2 shrink-0">
+												<button
+													type="button"
+													onClick={() => handleRemoveBookmark(selectedScholarship)}
+													title="Remove bookmark"
+													className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-rose-50 text-emerald-800 hover:text-rose-700 transition ${focusRing}`}
+												>
+													<BookmarkCheck size={17} />
+												</button>
+												<button
+													type="button"
+													onClick={closeDrawer}
+													aria-label="Close details"
+													className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 transition ${focusRing}`}
+												>
+													<X size={17} />
+												</button>
+											</div>
+										</div>
+									</div>
+								);
+							})()}
 
 							<div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-6 text-sm sm:px-8">
 								{selectedScholarship.latestChangeSummary && (
@@ -779,18 +826,32 @@ export default function SavedScholarships() {
 
 								{/* Award summary */}
 								{selectedScholarship.amount && (
-									<DrawerSection title="Financial Grant">
-										<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/50 p-4">
-											<span className="block text-2xl font-extrabold text-emerald-950">
+									<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-[#FAF9F6] p-5 shadow-xs">
+										<div className="flex items-center justify-between border-b border-dashed border-emerald-950/15 pb-2.5 mb-3">
+											<span className="text-xs font-extrabold uppercase tracking-wider text-emerald-950/60">
+												Financial Award Grant
+											</span>
+											<span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800">
+												✓ Direct Bank Transfer (DBT)
+											</span>
+										</div>
+
+										<div className="flex items-baseline gap-2">
+											<span className="ud-display text-3xl sm:text-4xl font-extrabold text-emerald-950">
 												{formatGrant(selectedScholarship.amount)?.main
 													? `₹${formatGrant(selectedScholarship.amount).main}`
 													: "Benefit Specified in Circular"}
 											</span>
-											<span className="mt-1 block text-xs text-emerald-950/60 font-semibold">
-												Disbursed directly via DBT to Aadhaar-seeded account
-											</span>
+											{formatGrant(selectedScholarship.amount)?.period && (
+												<span className="text-sm font-semibold text-emerald-950/60 font-sans">
+													{formatGrant(selectedScholarship.amount).period}
+												</span>
+											)}
 										</div>
-									</DrawerSection>
+										<span className="mt-2 block text-xs text-emerald-950/60 font-medium">
+											Disbursed directly via DBT to Aadhaar-seeded student bank account.
+										</span>
+									</div>
 								)}
 
 								{/* Summary */}

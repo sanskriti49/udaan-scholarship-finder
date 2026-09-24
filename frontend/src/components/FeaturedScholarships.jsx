@@ -1,5 +1,6 @@
 import { ArrowRight, Clock, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { CategoryCardHeader } from "./CategoryMotif";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -61,9 +62,12 @@ function FeaturedScholarships() {
 							Verified Opportunities
 						</span>
 						<h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-emerald-950 mt-1 leading-tight">
-							Featured <span className="ud-display font-extrabold underline decoration-yellow-300 decoration-4 underline-offset-4">Schemes</span>
+							Featured{" "}
+							<span className="ud-display font-extrabold underline decoration-yellow-300 decoration-4 underline-offset-4">
+								Schemes
+							</span>
 						</h2>
-						<p className="mt-2 text-base text-emerald-950/70 font-sans max-w-xl font-medium">
+						<p className="mt-2 text-base text-emerald-950/70 font-serif max-w-xl font-medium">
 							Hand-verified flagship scholarships with active funding pools.
 						</p>
 					</div>
@@ -86,13 +90,16 @@ function FeaturedScholarships() {
 						return (
 							<article
 								key={s.id}
-								className="rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-6 sm:p-7 flex flex-col justify-between hover:border-emerald-950 transition-colors group shadow-2xs"
+								className="rounded-2xl font-serif border-[1.5px] border-emerald-950/20 bg-white overflow-hidden flex flex-col justify-between hover:border-emerald-950 hover:-translate-y-1 transition-all duration-200 group shadow-[3px_3px_0px_0px_rgba(2,44,34,0.12)] hover:shadow-[5px_5px_0px_0px_rgba(2,44,34,1)]"
 							>
-								<div>
+								{/* Category Illustrated Header */}
+								<CategoryCardHeader
+									category={s.category}
+									sourceType="Flagship Scheme"
+								/>
+
+								<div className="p-6 sm:p-7 flex flex-col flex-1">
 									<div className="flex items-center justify-between gap-2 mb-3">
-										<span className="text-xs font-bold text-emerald-950/55 uppercase tracking-wider">
-											{s.category}
-										</span>
 										<span className="inline-flex shrink-0 items-center gap-1 rounded-full border-[1.5px] border-emerald-950/20 bg-yellow-200 px-2.5 py-0.5 text-xs font-bold text-emerald-950">
 											<Clock size={11} />
 											{daysLeft} days left
@@ -103,32 +110,34 @@ function FeaturedScholarships() {
 										{s.title}
 									</h3>
 
-									<p className="text-sm font-medium text-emerald-950/55 mt-1">
+									<p className="text-sm font-medium text-emerald-950/55 mt-1 font-sans">
 										{s.organization}
 									</p>
 
-									<p className="mt-3 text-sm text-emerald-950/75 leading-relaxed line-clamp-3 font-medium">
+									<p className="mt-3 text-sm text-emerald-950/75 leading-relaxed line-clamp-3 font-serif font-medium">
 										{s.description}
 									</p>
-								</div>
 
-								<div className="mt-6 pt-5 border-t-[1.5px] border-dashed border-emerald-950/20 flex items-center justify-between gap-3">
-									<div>
-										<span className="ud-display text-2xl font-extrabold text-emerald-950">
-											{s.amount}
-										</span>
-										<span className="text-xs font-semibold text-emerald-950/55 ml-1">
-											{s.period}
-										</span>
+									<div className="mt-auto pt-6">
+										<div className="pt-4 border-t-[1.5px] border-dashed border-emerald-950/20 flex items-center justify-between gap-3">
+											<div>
+												<span className="ud-display text-2xl font-extrabold text-emerald-950">
+													{s.amount}
+												</span>
+												<span className="text-xs font-semibold text-emerald-950/55 ml-1 font-sans">
+													{s.period}
+												</span>
+											</div>
+
+											<Link
+												to={`/scholarships?search=${encodeURIComponent(s.query)}`}
+												className={`inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 group-hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
+											>
+												<span>View scheme</span>
+												<ArrowUpRight size={14} />
+											</Link>
+										</div>
 									</div>
-
-									<Link
-										to={`/scholarships?search=${encodeURIComponent(s.query)}`}
-										className={`inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 group-hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
-									>
-										<span>View scheme</span>
-										<ArrowUpRight size={14} />
-									</Link>
 								</div>
 							</article>
 						);

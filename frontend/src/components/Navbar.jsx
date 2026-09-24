@@ -132,7 +132,10 @@ const Navbar = () => {
 					</nav>
 
 					<div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-						<form onSubmit={handleNavSearch} className="relative hidden md:flex items-center">
+						<form
+							onSubmit={handleNavSearch}
+							className="relative hidden md:flex items-center"
+						>
 							<div
 								className={`flex items-center transition-all duration-200 ${
 									isSearchOpen
@@ -176,105 +179,105 @@ const Navbar = () => {
 							<>
 								<NotificationCenter />
 								<div className="relative" ref={profileRef}>
-								<button
-									onClick={() => setIsProfileOpen((prev) => !prev)}
-									className="cursor-pointer flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 bg-white hover:border-slate-300 transition-all shadow-2xs"
-								>
-									<div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-800 to-emerald-950 text-white text-xs font-bold flex items-center justify-center shrink-0 shadow-2xs">
-										{initials}
-									</div>
-									<span className="text-xs font-semibold text-slate-800 max-w-24 truncate hidden sm:inline-block">
-										{user.name?.split(" ")[0] || "Account"}
-									</span>
-									<ChevronDown
-										size={13}
-										className={`text-slate-400 transition-transform ${
-											isProfileOpen ? "rotate-180" : ""
+									<button
+										onClick={() => setIsProfileOpen((prev) => !prev)}
+										className="cursor-pointer flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 bg-white hover:border-slate-300 transition-all shadow-2xs"
+									>
+										<div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-800 to-emerald-950 text-white text-xs font-bold flex items-center justify-center shrink-0 shadow-2xs">
+											{initials}
+										</div>
+										<span className="text-xs font-semibold text-slate-800 max-w-24 truncate hidden sm:inline-block">
+											{user.name?.split(" ")[0] || "Account"}
+										</span>
+										<ChevronDown
+											size={13}
+											className={`text-slate-400 transition-transform ${
+												isProfileOpen ? "rotate-180" : ""
+											}`}
+										/>
+									</button>
+
+									<div
+										className={`absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden transition-all duration-150 origin-top-right z-50 ${
+											isProfileOpen
+												? "opacity-100 scale-100 pointer-events-auto"
+												: "opacity-0 scale-95 pointer-events-none"
 										}`}
-									/>
-								</button>
+									>
+										<div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60">
+											<p className="text-xs font-bold text-slate-900 truncate">
+												{user.name}
+											</p>
+											<p className="text-[11px] text-slate-500 truncate mt-0.5">
+												{user.email}
+											</p>
+										</div>
 
-								<div
-									className={`absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden transition-all duration-150 origin-top-right z-50 ${
-										isProfileOpen
-											? "opacity-100 scale-100 pointer-events-auto"
-											: "opacity-0 scale-95 pointer-events-none"
-									}`}
-								>
-									<div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60">
-										<p className="text-xs font-bold text-slate-900 truncate">
-											{user.name}
-										</p>
-										<p className="text-[11px] text-slate-500 truncate mt-0.5">
-											{user.email}
-										</p>
-									</div>
+										<div className="py-1">
+											<NavLink
+												to="/eligibility"
+												onClick={() => setIsProfileOpen(false)}
+												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+											>
+												<CheckCircle2 size={14} className="text-emerald-600" />
+												Check Eligibility
+											</NavLink>
+											<NavLink
+												to="/saved"
+												onClick={() => setIsProfileOpen(false)}
+												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+											>
+												<BookmarkCheck size={14} className="text-emerald-700" />
+												Saved Scholarships
+											</NavLink>
+											<NavLink
+												to="/scholarships"
+												onClick={() => setIsProfileOpen(false)}
+												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+											>
+												<Compass size={14} className="text-slate-400" />
+												Explore Catalog
+											</NavLink>
+											<NavLink
+												to="/documents"
+												onClick={() => setIsProfileOpen(false)}
+												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+											>
+												<FileText size={14} className="text-slate-400" />
+												Document Vault
+											</NavLink>
+											<NavLink
+												to="/trust-shield"
+												onClick={() => setIsProfileOpen(false)}
+												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+											>
+												<ShieldCheck size={14} className="text-slate-400" />
+												Trust Shield
+											</NavLink>
+											<NavLink
+												to="/settings"
+												onClick={() => setIsProfileOpen(false)}
+												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+											>
+												<SettingsIcon size={14} className="text-slate-400" />
+												Account Settings
+											</NavLink>
+										</div>
 
-									<div className="py-1">
-										<NavLink
-											to="/eligibility"
-											onClick={() => setIsProfileOpen(false)}
-											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-										>
-											<CheckCircle2 size={14} className="text-emerald-600" />
-											Check Eligibility
-										</NavLink>
-										<NavLink
-											to="/saved"
-											onClick={() => setIsProfileOpen(false)}
-											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-										>
-											<BookmarkCheck size={14} className="text-emerald-700" />
-											Saved Scholarships
-										</NavLink>
-										<NavLink
-											to="/scholarships"
-											onClick={() => setIsProfileOpen(false)}
-											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-										>
-											<Compass size={14} className="text-slate-400" />
-											Explore Catalog
-										</NavLink>
-										<NavLink
-											to="/documents"
-											onClick={() => setIsProfileOpen(false)}
-											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-										>
-											<FileText size={14} className="text-slate-400" />
-											Document Vault
-										</NavLink>
-										<NavLink
-											to="/trust-shield"
-											onClick={() => setIsProfileOpen(false)}
-											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-										>
-											<ShieldCheck size={14} className="text-slate-400" />
-											Trust Shield
-										</NavLink>
-										<NavLink
-											to="/settings"
-											onClick={() => setIsProfileOpen(false)}
-											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-										>
-											<SettingsIcon size={14} className="text-slate-400" />
-											Account Settings
-										</NavLink>
-									</div>
-
-									<div className="border-t border-slate-100 py-1 bg-slate-50/30">
-										<button
-											onClick={handleLogout}
-											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50/60 transition-colors text-left"
-										>
-											<LogOut size={14} />
-											Log Out
-										</button>
+										<div className="border-t border-slate-100 py-1 bg-slate-50/30">
+											<button
+												onClick={handleLogout}
+												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50/60 transition-colors text-left"
+											>
+												<LogOut size={14} />
+												Log Out
+											</button>
+										</div>
 									</div>
 								</div>
-							</div>
-						</>
+							</>
 						) : (
-							<div className="hidden sm:flex items-center gap-2 font-heading">
+							<div className="hidden sm:flex items-center gap-2 font-serif">
 								<NavLink
 									to="/login"
 									className="px-3.5 py-1.5 text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors"
@@ -395,7 +398,7 @@ const Navbar = () => {
 									</button>
 								</>
 							) : (
-								<div className="grid grid-cols-2 gap-2 pt-1">
+								<div className="grid grid-cols-2 gap-2 pt-1 font-serif">
 									<NavLink
 										to="/login"
 										className="text-center py-2.5 text-sm font-semibold rounded-xl border border-slate-200 text-slate-800 bg-white"
