@@ -6,11 +6,25 @@ import { trustVerificationService } from "../services/trustVerificationService.j
  */
 export const scanLinkOrText = async (req, res) => {
   try {
-    const { url, text } = req.body;
+    const { url, text } = req.body || {};
     if (!url && !text) {
       return res.status(400).json({
         success: false,
         message: "Please provide a URL or scholarship text snippet to analyze.",
+      });
+    }
+
+    if (url && (typeof url !== "string" || url.length > 2048)) {
+      return res.status(400).json({
+        success: false,
+        message: "URL exceeds maximum permitted length of 2048 characters.",
+      });
+    }
+
+    if (text && (typeof text !== "string" || text.length > 10000)) {
+      return res.status(400).json({
+        success: false,
+        message: "Text snippet exceeds maximum permitted length of 10,000 characters.",
       });
     }
 

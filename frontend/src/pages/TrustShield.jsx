@@ -9,12 +9,10 @@ import {
 	Search,
 	Lock,
 	Globe,
-	FileText,
 	HelpCircle,
 	ArrowRight,
 	Sparkles,
 	RefreshCw,
-	Building2,
 	Info,
 } from "lucide-react";
 import {
@@ -22,15 +20,18 @@ import {
 	getOfficialRegistry,
 } from "../services/verifyService";
 import { toast } from "sonner";
+import { PageStyles } from "../components/PageKit";
+
+const focusRing =
+	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
 
 export default function TrustShield() {
-	const [activeTab, setActiveTab] = useState("url"); 
+	const [activeTab, setActiveTab] = useState("url");
 	const [urlInput, setUrlInput] = useState("");
 	const [textInput, setTextInput] = useState("");
 	const [analyzing, setAnalyzing] = useState(false);
 	const [result, setResult] = useState(null);
 	const [registry, setRegistry] = useState([]);
-	const [registryLoading, setRegistryLoading] = useState(true);
 
 	const presets = [
 		{
@@ -71,8 +72,7 @@ export default function TrustShield() {
 					"Could not load remote registry, using local fallback:",
 					err?.message,
 				);
-			})
-			.finally(() => setRegistryLoading(false));
+			});
 	}, []);
 
 	const handleAnalyze = async (e) => {
@@ -144,9 +144,8 @@ export default function TrustShield() {
 				return {
 					title: "Official Government Portal",
 					badge: "Statutory & Safe (100%)",
-					color: "bg-emerald-800 text-white",
-					border: "border-emerald-700",
-					cardBg: "bg-emerald-50/70 border-emerald-200",
+					badgeBg: "bg-emerald-800 text-white",
+					cardBg: "bg-emerald-50/80 border-emerald-950",
 					icon: ShieldCheck,
 					summary:
 						"This domain is an official Indian sovereign portal (.gov.in or .nic.in). It is statutory, safe, and backed by government gazette circulars.",
@@ -155,9 +154,8 @@ export default function TrustShield() {
 				return {
 					title: "Recognized Philanthropic CSR",
 					badge: "Verified Entity (" + score + "%)",
-					color: "bg-teal-800 text-white",
-					border: "border-teal-700",
-					cardBg: "bg-teal-50/70 border-teal-200",
+					badgeBg: "bg-emerald-950 text-white",
+					cardBg: "bg-emerald-50/70 border-emerald-950",
 					icon: ShieldCheck,
 					summary:
 						"This domain belongs to an established Indian corporate CSR or registered philanthropic foundation. No fraudulent patterns detected.",
@@ -166,9 +164,8 @@ export default function TrustShield() {
 				return {
 					title: "High-Risk Fraud / Scam Warning",
 					badge: "Critical Alert (" + score + "%)",
-					color: "bg-rose-700 text-white",
-					border: "border-rose-600",
-					cardBg: "bg-rose-50/80 border-rose-200",
+					badgeBg: "bg-rose-700 text-white",
+					cardBg: "bg-rose-50/90 border-rose-700",
 					icon: ShieldAlert,
 					summary:
 						"Severe red flags detected! Official government and CSR scholarships NEVER charge registration fees, ask for UPI transfers, or promise guaranteed cash without verification.",
@@ -177,26 +174,25 @@ export default function TrustShield() {
 				return {
 					title: "Unverified Third-Party Source",
 					badge: "Caution (" + score + "%)",
-					color: "bg-amber-700 text-white",
-					border: "border-amber-600",
-					cardBg: "bg-amber-50/70 border-amber-200",
+					badgeBg: "bg-yellow-200 text-emerald-950 border border-emerald-950/20",
+					cardBg: "bg-yellow-50/80 border-emerald-950/30",
 					icon: AlertTriangle,
 					summary:
 						"This source is not recognized as a direct sovereign portal. It may be an aggregator, blog, or private listing. Verify on official ministry websites before submitting documents.",
 				};
 		}
 	};
+
 	const getRegistryTypeBadge = (type = "") => {
 		const normalized = type.toLowerCase();
-
 		if (
 			normalized.includes("central") ||
 			normalized.includes("sovereign") ||
 			normalized.includes("gov")
 		) {
 			return {
-				classes: "bg-slate-900 text-slate-100 border-slate-800 shadow-2xs",
-				dot: "bg-emerald-400",
+				classes: "bg-emerald-950 text-white border-emerald-950",
+				dot: "bg-yellow-200",
 			};
 		}
 		if (
@@ -205,103 +201,115 @@ export default function TrustShield() {
 			normalized.includes("tata")
 		) {
 			return {
-				classes: "bg-amber-500/10 text-amber-900 border-amber-300/60",
-				dot: "bg-amber-600",
+				classes: "bg-yellow-200 text-emerald-950 border-emerald-950/30",
+				dot: "bg-emerald-900",
 			};
 		}
 		if (normalized.includes("state")) {
 			return {
-				classes: "bg-indigo-50 text-indigo-900 border-indigo-200",
-				dot: "bg-indigo-600",
+				classes: "bg-emerald-100 text-emerald-950 border-emerald-950/20",
+				dot: "bg-emerald-700",
 			};
 		}
 		return {
-			classes: "bg-stone-100 text-stone-700 border-stone-200",
-			dot: "bg-stone-400",
+			classes: "bg-white text-emerald-950 border-emerald-950/20",
+			dot: "bg-emerald-950/40",
 		};
 	};
 
 	return (
-		<div className="min-h-screen bg-[#FAF9F6] text-slate-900 py-10 px-4 sm:px-6 lg:px-8">
-			<div className="max-w-5xl mx-auto space-y-10">
-				<div className="text-center max-w-3xl mx-auto">
-					<div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-3 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full">
-						<ShieldCheck size={14} className="text-emerald-700" />
+		<div className="ud-root min-h-screen bg-[#E9F0EA] pb-24 font-sans text-emerald-950">
+			<PageStyles />
+
+			{/* Hero Section */}
+			<section className="mx-auto max-w-7xl px-5 pt-12 pb-10 sm:px-8 md:pt-16">
+				<div className="max-w-3xl">
+					<div className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-emerald-950/20 bg-white/70 px-3.5 py-1 text-xs font-bold text-emerald-950">
+						<ShieldCheck size={14} className="text-emerald-800" />
 						<span>Autonomous Fraud Prevention & Verification</span>
 					</div>
-					<h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-slate-900 leading-tight">
-						Anti-Scam &{" "}
-						<span className="italic text-emerald-800 font-normal">
+
+					<h1 className="font-serif mt-4 text-[2.75rem] font-medium leading-[1.04] tracking-tight sm:text-6xl text-emerald-950">
+						Anti-Scam &amp;{" "}
+						<span className="ud-display font-extrabold underline decoration-yellow-300 decoration-4 underline-offset-4 text-emerald-950">
 							Trust Shield
 						</span>
 					</h1>
-					<p className="text-sm sm:text-base text-slate-600 mt-3 font-normal leading-relaxed">
+
+					<p className="mt-4 max-w-[56ch] text-base leading-relaxed text-emerald-950/70 sm:text-lg">
 						Verify external scholarship links, WhatsApp forwards, and SMS
 						circulars before sharing personal details. Official government
 						scholarships are legally 100% free to apply.
 					</p>
 				</div>
+			</section>
 
-				<div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-					<div className="flex items-start sm:items-center gap-3">
-						<div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200/70 flex items-center justify-center shrink-0 text-emerald-800">
-							<Lock size={18} />
+			{/* Main Content Area */}
+			<div className="mx-auto max-w-7xl px-5 sm:px-8 space-y-8">
+				{/* Zero PII Guarantee Banner */}
+				<div className="rounded-2xl border-[1.5px] border-emerald-950 bg-white p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:border-emerald-950">
+					<div className="flex items-start sm:items-center gap-3.5">
+						<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-[1.5px] border-emerald-950 bg-emerald-50 text-emerald-800">
+							<Lock size={19} />
 						</div>
 						<div>
-							<h3 className="text-base font-bold text-slate-900">
+							<h3 className="ud-display text-lg font-bold text-emerald-950">
 								Zero-Storage Privacy Guarantee
 							</h3>
-							<p className="text-sm text-slate-600 leading-relaxed font-normal mt-0.5">
+							<p className="mt-0.5 text-sm text-emerald-950/70 leading-relaxed font-medium">
 								Udaan never records or stores the URLs, circular texts, or
 								queries you submit. All audits are performed ephemerally with
 								zero tracking.
 							</p>
 						</div>
 					</div>
-					<span className="text-xs font-semibold text-emerald-850 bg-emerald-100/60 border border-emerald-300/60 px-3 py-1 rounded-full whitespace-nowrap self-start sm:self-center">
+					<span className="shrink-0 rounded-full border-[1.5px] border-emerald-950 bg-yellow-200 px-3.5 py-1 text-xs font-bold text-emerald-950 self-start sm:self-center">
 						Zero PII Stored
 					</span>
 				</div>
 
-				<div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-2xs space-y-6">
-					<div className="flex items-center justify-between border-b border-slate-100 pb-4 flex-wrap gap-3">
+				{/* Verification Scanner Card */}
+				<div className="rounded-2xl border-[1.5px] border-emerald-950 bg-white p-6 sm:p-8 space-y-6">
+					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-[1.5px] border-dashed border-emerald-950/20 pb-5">
 						<div>
-							<h2 className="text-xl font-bold text-slate-900">
+							<h2 className="ud-display text-2xl font-bold text-emerald-950">
 								Verify a Portal or Circular
 							</h2>
-							<p className="text-sm text-emerald-950/80 mt-0.5">
+							<p className="mt-1 text-sm text-emerald-950/65 font-medium">
 								Scan for fee demands, fake guarantees, and unverified domains.
 							</p>
 						</div>
 
-						<div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+						{/* Pill Tab Switcher */}
+						<div className="flex items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950/20 bg-[#E9F0EA] p-1 self-start sm:self-auto">
 							<button
 								type="button"
 								onClick={() => setActiveTab("url")}
-								className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+								className={`cursor-pointer rounded-full px-4 py-1.5 text-xs font-bold transition ${
 									activeTab === "url"
-										? "bg-white text-slate-900 shadow-2xs"
-										: "text-slate-600 hover:text-slate-900"
-								}`}
+										? "border-[1.5px] border-emerald-950 bg-emerald-950 text-white"
+										: "text-emerald-950/75 hover:text-emerald-950"
+								} ${focusRing}`}
 							>
 								Website URL
 							</button>
 							<button
 								type="button"
 								onClick={() => setActiveTab("text")}
-								className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+								className={`cursor-pointer rounded-full px-4 py-1.5 text-xs font-bold transition ${
 									activeTab === "text"
-										? "bg-white text-slate-900 shadow-2xs"
-										: "text-slate-600 hover:text-slate-900"
-								}`}
+										? "border-[1.5px] border-emerald-950 bg-emerald-950 text-white"
+										: "text-emerald-950/75 hover:text-emerald-950"
+								} ${focusRing}`}
 							>
 								Message / Text
 							</button>
 						</div>
 					</div>
 
+					{/* Quick Demonstration Presets */}
 					<div className="space-y-2">
-						<span className="text-xs font-bold text-emerald-950/65 uppercase tracking-wider">
+						<span className="text-xs font-bold text-emerald-950/60 uppercase tracking-wider">
 							Quick Demonstration Presets:
 						</span>
 						<div className="flex flex-wrap gap-2">
@@ -310,16 +318,17 @@ export default function TrustShield() {
 									key={idx}
 									type="button"
 									onClick={() => applyPreset(p)}
-									className="cursor-pointer text-xs font-medium px-3 py-1.5 rounded-xl border border-slate-200 bg-[#FAF9F6] hover:bg-emerald-50/50 hover:border-emerald-300 text-emerald-950 transition flex items-center gap-1.5"
+									className={`cursor-pointer inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950/20 bg-white px-3.5 py-1 text-xs font-semibold text-emerald-950 transition-colors hover:border-emerald-950 hover:bg-yellow-200/60 ${focusRing}`}
 								>
-									<Sparkles size={12} className="text-emerald-700" />
+									<Sparkles size={12} className="text-emerald-800" />
 									<span>{p.label}</span>
 								</button>
 							))}
 						</div>
 					</div>
 
-					<form onSubmit={handleAnalyze} className="space-y-4">
+					{/* Scan Form */}
+					<form onSubmit={handleAnalyze} className="space-y-4 pt-1">
 						{activeTab === "url" ? (
 							<div className="relative">
 								<input
@@ -327,11 +336,11 @@ export default function TrustShield() {
 									placeholder="Paste scholarship URL (e.g., https://scholarships.gov.in or suspicious link)..."
 									value={urlInput}
 									onChange={(e) => setUrlInput(e.target.value)}
-									className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl pl-4 pr-12 py-3 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition"
+									className={`w-full rounded-2xl border-[1.5px] border-emerald-950 bg-white py-3.5 pl-4 pr-12 text-sm font-semibold text-emerald-950 placeholder:text-emerald-950/35 transition ${focusRing}`}
 								/>
 								<Globe
 									size={18}
-									className="absolute right-4 top-3.5 text-slate-400"
+									className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-emerald-950/40"
 								/>
 							</div>
 						) : (
@@ -341,32 +350,33 @@ export default function TrustShield() {
 									placeholder="Paste WhatsApp forward, SMS alert, or scholarship circular text here..."
 									value={textInput}
 									onChange={(e) => setTextInput(e.target.value)}
-									className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl p-4 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition leading-relaxed"
+									className={`w-full rounded-2xl border-[1.5px] border-emerald-950 bg-white p-4 text-sm font-semibold text-emerald-950 placeholder:text-emerald-950/35 leading-relaxed transition ${focusRing}`}
 								/>
 							</div>
 						)}
 
-						<div className="flex items-center justify-between pt-2">
-							<div className="text-xs text-slate-500 flex items-center gap-1.5">
-								<Info size={14} className="text-slate-400" />
+						<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+							<div className="text-xs font-semibold text-emerald-950/65 flex items-center gap-1.5">
+								<Info size={14} className="text-emerald-800 shrink-0" />
 								<span>
 									Government scholarships never ask for application fees or UPI
 									transfers.
 								</span>
 							</div>
+
 							<button
 								type="submit"
 								disabled={analyzing}
-								className="cursor-pointer inline-flex items-center gap-2 bg-slate-900 hover:bg-emerald-900 text-white text-xs font-bold px-6 py-2.5 rounded-full transition shadow-2xs disabled:opacity-60"
+								className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-emerald-800 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px disabled:opacity-60 ${focusRing}`}
 							>
 								{analyzing ? (
 									<>
-										<RefreshCw size={13} className="animate-spin" />
+										<RefreshCw size={14} className="animate-spin" />
 										<span>Analyzing Security...</span>
 									</>
 								) : (
 									<>
-										<Search size={13} />
+										<Search size={14} />
 										<span>Run Trust Audit</span>
 									</>
 								)}
@@ -374,68 +384,70 @@ export default function TrustShield() {
 						</div>
 					</form>
 
+					{/* Result Details */}
 					{result &&
 						(() => {
 							const details = getVerdictDetails(result.verdict, result.score);
 							const Icon = details.icon;
 							return (
 								<div
-									className={`mt-6 rounded-2xl border p-5 sm:p-6 space-y-5 transition-all ${details.cardBg}`}
+									className={`mt-6 rounded-2xl border-[1.5px] p-6 space-y-5 transition-all ${details.cardBg}`}
 								>
-									<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/60 pb-4">
-										<div className="flex items-center gap-3">
-											<div
-												className={`w-10 h-10 rounded-xl flex items-center justify-center ${details.color}`}
-											>
-												<Icon size={20} />
+									<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-[1.5px] border-dashed border-emerald-950/20 pb-4">
+										<div className="flex items-center gap-3.5">
+											<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-[1.5px] border-emerald-950 bg-white text-emerald-800">
+												<Icon size={22} />
 											</div>
 											<div>
 												<span
-													className={`text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md ${details.color}`}
+													className={`rounded-full px-3 py-0.5 text-xs font-bold ${details.badgeBg}`}
 												>
 													{details.badge}
 												</span>
-												<h3 className="text-lg font-bold text-slate-900 mt-1">
+												<h3 className="ud-display mt-1 text-xl font-extrabold text-emerald-950">
 													{details.title}
 												</h3>
 											</div>
 										</div>
 
-										<div className="text-right sm:text-right">
-											<div className="text-xs text-slate-500 font-medium">
+										<div className="text-left sm:text-right">
+											<div className="text-xs font-semibold text-emerald-950/60">
 												Calculated Trust Score
 											</div>
-											<div className="text-2xl font-serif font-bold text-slate-900">
-												{result.score}/100
+											<div className="ud-display text-3xl font-extrabold text-emerald-950">
+												{result.score}
+												<span className="text-lg font-semibold text-emerald-950/50">
+													/100
+												</span>
 											</div>
 										</div>
 									</div>
 
-									<p className="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+									<p className="text-[15px] leading-relaxed text-emerald-950/80 font-medium">
 										{details.summary}
 									</p>
 
 									{result.findings && result.findings.length > 0 && (
-										<div className="space-y-2.5 pt-2">
-											<h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-												Security & Heuristic Findings
+										<div className="space-y-3 pt-2">
+											<h4 className="ud-display text-xs font-bold uppercase tracking-wider text-emerald-950/65">
+												Security &amp; Heuristic Findings
 											</h4>
 											<div className="space-y-2.5">
 												{result.findings.map((finding, fIdx) => (
 													<div
 														key={fIdx}
-														className={`p-3.5 rounded-xl border text-sm flex items-start gap-3 bg-white ${
+														className={`flex items-start gap-3 rounded-xl border-[1.5px] bg-white p-4 text-sm ${
 															finding.severity === "critical"
-																? "border-rose-300 text-rose-950"
+																? "border-rose-400 text-rose-950"
 																: finding.severity === "positive"
-																	? "border-emerald-300 text-emerald-950"
-																	: "border-amber-300 text-amber-950"
+																	? "border-emerald-950/20 text-emerald-950"
+																	: "border-yellow-400 text-emerald-950"
 														}`}
 													>
 														{finding.severity === "positive" ? (
 															<CheckCircle2
 																size={18}
-																className="text-emerald-700 shrink-0 mt-0.5"
+																className="text-emerald-800 shrink-0 mt-0.5"
 															/>
 														) : finding.severity === "critical" ? (
 															<ShieldAlert
@@ -445,14 +457,14 @@ export default function TrustShield() {
 														) : (
 															<AlertTriangle
 																size={18}
-																className="text-amber-600 shrink-0 mt-0.5"
+																className="text-yellow-600 shrink-0 mt-0.5"
 															/>
 														)}
 														<div>
-															<span className="font-bold block text-sm">
+															<span className="block text-sm font-bold">
 																{finding.title}
 															</span>
-															<span className="text-slate-600 mt-0.5 block font-normal text-sm leading-relaxed">
+															<span className="mt-0.5 block text-xs leading-relaxed text-emerald-950/75">
 																{finding.description}
 															</span>
 														</div>
@@ -463,15 +475,15 @@ export default function TrustShield() {
 									)}
 
 									{result.crossReferencedScheme && (
-										<div className="bg-white border border-emerald-300/80 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+										<div className="rounded-xl border-[1.5px] border-emerald-950 bg-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 											<div>
 												<div className="text-xs font-bold uppercase tracking-wider text-emerald-800">
 													Official Scheme Match in Udaan
 												</div>
-												<h4 className="text-sm font-bold text-slate-900 mt-0.5">
+												<h4 className="ud-display text-base font-bold text-emerald-950 mt-0.5">
 													{result.crossReferencedScheme.title}
 												</h4>
-												<p className="text-xs text-slate-500 mt-0.5">
+												<p className="text-xs font-medium text-emerald-950/60 mt-0.5">
 													Issued by: {result.crossReferencedScheme.organization}
 												</p>
 											</div>
@@ -480,18 +492,18 @@ export default function TrustShield() {
 													href={result.crossReferencedScheme.officialPortal}
 													target="_blank"
 													rel="noreferrer"
-													className="cursor-pointer inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-1.5 rounded-xl transition shrink-0"
+													className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-900 ${focusRing}`}
 												>
 													<span>Open Official Portal</span>
-													<ExternalLink size={13} />
+													<ExternalLink size={12} />
 												</a>
 											)}
 										</div>
 									)}
 
 									{result.verdict === "HIGH_RISK_SUSPICIOUS" && (
-										<div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-rose-200/80">
-											<span className="text-sm text-rose-800 font-semibold">
+										<div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t-[1.5px] border-dashed border-rose-300">
+											<span className="text-sm font-bold text-rose-800">
 												Never transfer money or send Aadhaar numbers via
 												unverified channels.
 											</span>
@@ -499,10 +511,10 @@ export default function TrustShield() {
 												href="https://cybercrime.gov.in"
 												target="_blank"
 												rel="noreferrer"
-												className="cursor-pointer inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-xl transition shadow-2xs shrink-0"
+												className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-rose-700 px-5 py-2 text-xs font-bold text-white transition hover:bg-rose-800 ${focusRing}`}
 											>
 												<span>Report to Cyber Crime (cybercrime.gov.in)</span>
-												<ExternalLink size={13} />
+												<ExternalLink size={12} />
 											</a>
 										</div>
 									)}
@@ -511,74 +523,75 @@ export default function TrustShield() {
 						})()}
 				</div>
 
-				<div className="space-y-4">
-					<div className="flex items-center justify-between">
+				{/* Directory Section */}
+				<div className="space-y-5 pt-4">
+					<div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b-[1.5px] border-emerald-950/15 pb-4">
 						<div>
-							<h2 className="text-xl font-bold text-slate-900">
-								Verified Sovereign & CSR Directory
+							<h2 className="ud-display text-2xl font-bold text-emerald-950">
+								Verified Sovereign &amp; CSR Directory
 							</h2>
-							<p className="text-sm text-slate-500 mt-0.5">
+							<p className="mt-1 text-sm text-emerald-950/65 font-medium">
 								Official portals verified by ministry gazettes and statutory
 								guidelines.
 							</p>
 						</div>
 						<Link
 							to="/scholarships"
-							className="text-sm font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
+							className={`inline-flex items-center gap-1 text-sm font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
 						>
 							<span>Explore All Schemes</span>
 							<ArrowRight size={14} />
 						</Link>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
 						{registry.map((item, idx) => (
 							<div
 								key={idx}
-								className="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col justify-between hover:border-emerald-300 transition shadow-2xs space-y-3"
+								className="rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-5 flex flex-col justify-between hover:border-emerald-950 transition-colors space-y-4"
 							>
 								<div>
-									<div className="flex items-center justify-between gap-2 mb-2">
+									<div className="flex items-center justify-between gap-2 mb-2.5">
 										{(() => {
 											const badge = getRegistryTypeBadge(item.type);
 											return (
 												<span
-													className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-tight border ${badge.classes}`}
+													className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${badge.classes}`}
 												>
 													<span
 														className={`w-1.5 h-1.5 rounded-full shrink-0 ${badge.dot}`}
 													/>
-													<span className="font-heading truncate max-w-[130px]">
+													<span className="truncate max-w-[130px]">
 														{item.type}
 													</span>
 												</span>
 											);
 										})()}
-										<span className="text-[11px] text-slate-500 font-medium flex items-center gap-1">
-											<Lock size={11} className="text-emerald-700" /> SSL
+										<span className="text-[11px] text-emerald-950/55 font-bold flex items-center gap-1">
+											<Lock size={11} className="text-emerald-800" /> SSL
 											Verified
 										</span>
 									</div>
-									<h3 className="text-sm font-bold text-slate-900 leading-snug">
+									<h3 className="ud-display text-base font-bold text-emerald-950 leading-snug">
 										{item.name}
 									</h3>
-									<p className="text-xs sm:text-sm text-slate-500 mt-1 font-normal line-clamp-2">
+									<p className="text-xs sm:text-sm text-emerald-950/65 mt-1 font-medium line-clamp-2">
 										{item.description}
 									</p>
 								</div>
 
-								<div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-									<span className="text-xs text-slate-400 font-mono truncate max-w-36">
+								<div className="pt-3 border-t-[1.5px] border-dashed border-emerald-950/15 flex items-center justify-between">
+									<span className="text-xs text-emerald-950/50 font-mono truncate max-w-36 font-semibold">
 										{item.domain}
 									</span>
 									<a
 										href={item.url}
 										target="_blank"
 										rel="noreferrer"
-										className="text-xs sm:text-sm font-bold text-slate-800 hover:text-emerald-800 flex items-center gap-1 transition"
+										className={`inline-flex cursor-pointer items-center gap-1 rounded-full border-[1.5px] border-emerald-950/20 bg-white px-3 py-1 text-xs font-bold text-emerald-950 hover:bg-yellow-200 transition ${focusRing}`}
 									>
 										<span>Visit</span>
-										<ExternalLink size={12} />
+										<ExternalLink size={11} />
 									</a>
 								</div>
 							</div>
@@ -586,45 +599,57 @@ export default function TrustShield() {
 					</div>
 				</div>
 
-				<div className="bg-[#FAF9F6] border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-4">
-					<h3 className="text-base font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-						<HelpCircle size={18} className="text-emerald-800" /> Three Golden
+				{/* Safety Rules Banner */}
+				<div className="border-t-[1.5px] border-dashed border-emerald-950/20 pt-8 space-y-5">
+					<h3 className="ud-display text-xl font-bold text-emerald-950 flex items-center gap-2">
+						<HelpCircle size={20} className="text-emerald-800" /> Three Golden
 						Rules for Scholarship Safety
 					</h3>
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-						<div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-2">
-							<span className="font-bold text-slate-900 block text-base">
-								1. 100% Free Application
+					<div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+						<div className="rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-6 space-y-2 hover:border-emerald-950 transition-colors">
+							<span className="inline-block rounded-full bg-yellow-200 px-2.5 py-0.5 text-xs font-bold text-emerald-950">
+								Rule 01
 							</span>
-							<p className="text-slate-600 leading-relaxed font-normal text-sm">
+							<h4 className="ud-display text-base font-bold text-emerald-950 pt-1">
+								100% Free Application
+							</h4>
+							<p className="text-sm text-emerald-950/70 leading-relaxed font-medium">
 								Under Indian law, no government ministry, state department, or
 								genuine CSR charges an application or processing fee.
 							</p>
 						</div>
-						<div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-2">
-							<span className="font-bold text-slate-900 block text-base">
-								2. Verify Domain Extensions
+
+						<div className="rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-6 space-y-2 hover:border-emerald-950 transition-colors">
+							<span className="inline-block rounded-full bg-yellow-200 px-2.5 py-0.5 text-xs font-bold text-emerald-950">
+								Rule 02
 							</span>
-							<p className="text-slate-600 leading-relaxed font-normal text-sm">
+							<h4 className="ud-display text-base font-bold text-emerald-950 pt-1">
+								Verify Domain Extensions
+							</h4>
+							<p className="text-sm text-emerald-950/70 leading-relaxed font-medium">
 								Official government portals always end in{" "}
-								<span className="font-mono text-emerald-800 font-semibold">
+								<span className="font-mono text-emerald-900 font-bold bg-emerald-50 px-1 py-0.5 rounded border border-emerald-950/15">
 									.gov.in
 								</span>{" "}
 								or{" "}
-								<span className="font-mono text-emerald-800 font-semibold">
+								<span className="font-mono text-emerald-900 font-bold bg-emerald-50 px-1 py-0.5 rounded border border-emerald-950/15">
 									.nic.in
 								</span>
 								. Watch out for lookalikes ending in .com or .xyz.
 							</p>
 						</div>
-						<div className="bg-white border border-slate-200/80 rounded-2xl p-5 space-y-2">
-							<span className="font-bold text-slate-900 block text-base">
-								3. Direct Benefit Transfer (DBT)
+
+						<div className="rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-6 space-y-2 hover:border-emerald-950 transition-colors">
+							<span className="inline-block rounded-full bg-yellow-200 px-2.5 py-0.5 text-xs font-bold text-emerald-950">
+								Rule 03
 							</span>
-							<p className="text-slate-600 leading-relaxed font-normal text-sm">
+							<h4 className="ud-display text-base font-bold text-emerald-950 pt-1">
+								Direct Benefit Transfer (DBT)
+							</h4>
+							<p className="text-sm text-emerald-950/70 leading-relaxed font-medium">
 								Disbursements are credited directly to your Aadhaar-seeded bank
-								account through PFMS. Nobody can disburse grants via cash or
-								UPI.
+								account through PFMS. Nobody can disburse legitimate grants via
+								cash or UPI.
 							</p>
 						</div>
 					</div>

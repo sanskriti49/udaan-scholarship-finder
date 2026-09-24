@@ -96,6 +96,10 @@ function evaluateCondition(actual, operator, target) {
 		return { result: false, missingActual: true };
 	}
 
+	if (target === undefined || target === null || target === "" || (typeof target === "number" && Number.isNaN(target))) {
+		return { result: false, invalidTarget: true };
+	}
+
 	const targetStr = String(target).trim().toLowerCase();
 	const actualStr = String(actual).trim().toLowerCase();
 
@@ -122,12 +126,24 @@ function evaluateCondition(actual, operator, target) {
 	const normTarget = STATE_ALIASES[targetStr] || targetStr;
 
 	switch (operator) {
-		case "LT":
-			return { result: Number(actual) < Number(target) };
-		case "LTE":
-			return { result: Number(actual) <= Number(target) };
-		case "GTE":
-			return { result: Number(actual) >= Number(target) };
+		case "LT": {
+			const numA = Number(actual);
+			const numT = Number(target);
+			if (Number.isNaN(numA) || Number.isNaN(numT)) return { result: false };
+			return { result: numA < numT };
+		}
+		case "LTE": {
+			const numA = Number(actual);
+			const numT = Number(target);
+			if (Number.isNaN(numA) || Number.isNaN(numT)) return { result: false };
+			return { result: numA <= numT };
+		}
+		case "GTE": {
+			const numA = Number(actual);
+			const numT = Number(target);
+			if (Number.isNaN(numA) || Number.isNaN(numT)) return { result: false };
+			return { result: numA >= numT };
+		}
 		case "EQ":
 			return { result: normActual === normTarget };
 		case "IN": {
@@ -232,7 +248,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		}
 	}
 
-	const isEligible = failedRules.length === 0;
+	const isEligible = failedRules.length === 0 && unknownRules.length === 0;
 	const totalKnownRules = passedRules.length + failedRules.length;
 	const matchConfidence =
 		totalKnownRules > 0

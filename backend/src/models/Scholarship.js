@@ -213,6 +213,8 @@ scholarshipSchema.index(
 	},
 );
 scholarshipSchema.index({ "publication.state": 1, status: 1, sortDeadline: 1 });
+scholarshipSchema.index({ "publication.state": 1, hasChanges: 1 });
+scholarshipSchema.index({ "publication.state": 1, state: 1 });
 scholarshipSchema.index({ state: 1, category: 1, deadline: 1 });
 scholarshipSchema.index({ level: 1 });
 scholarshipSchema.index({ "amount.value": 1 });

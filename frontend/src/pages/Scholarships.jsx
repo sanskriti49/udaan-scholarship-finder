@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "../hooks/useAuth";
 import {
 	Search,
 	Bookmark,
@@ -16,6 +18,7 @@ import {
 	Check,
 	ChevronDown,
 	SlidersHorizontal,
+	Loader2,
 } from "lucide-react";
 import {
 	getScholarships,
@@ -24,6 +27,12 @@ import {
 	toggleBookmark as apiToggleBookmark,
 } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
+import AuthPromptModal from "../components/AuthPromptModal";
+import {
+	emitBookmarkChanged,
+	onBookmarkChanged,
+	setPendingBookmark,
+} from "../utils/bookmarkSync";
 import { formatGrant } from "../utils/formatGrant";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import {
@@ -37,7 +46,7 @@ import {
 	isGenuinePdf,
 } from "../utils/formatEvidence";
 import { PageStyles } from "../components/PageKit";
-import headerImg from "../assets/images/head.jpg";
+import headerImg from "../assets/images/boy_scholarship.jpg";
 
 const CATEGORIES = [
 	"All",
@@ -163,7 +172,13 @@ function DeadlineChip({ deadline }) {
 	);
 }
 
-function ScholarshipCard({ s, saved, onSave, onOpenDetails }) {
+function ScholarshipCard({
+	s,
+	saved,
+	onSave,
+	onOpenDetails,
+	isSaving = false,
+}) {
 	const grantInfo = formatGrant(s.amount);
 	const docCount = Array.isArray(s.requiredDocuments)
 		? s.requiredDocuments.length
@@ -191,16 +206,23 @@ function ScholarshipCard({ s, saved, onSave, onOpenDetails }) {
 
 				<button
 					type="button"
-					onClick={() => onSave(s._id || s.id)}
+					onClick={() => onSave(s._id || s.id, s)}
+					disabled={isSaving}
 					aria-label={saved ? "Remove from saved" : "Save this scholarship"}
 					aria-pressed={saved}
 					className={`-mr-1.5 -mt-1.5 flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors ${focusRing} ${
 						saved
 							? "text-emerald-800"
 							: "text-emerald-950/40 hover:bg-emerald-50 hover:text-emerald-950"
-					}`}
+					} ${isSaving ? "opacity-60 cursor-not-allowed" : ""}`}
 				>
-					{saved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+					{isSaving ? (
+						<Loader2 size={16} className="animate-spin text-emerald-800" />
+					) : saved ? (
+						<BookmarkCheck size={18} />
+					) : (
+						<Bookmark size={18} />
+					)}
 				</button>
 			</div>
 
@@ -313,6 +335,14 @@ function DrawerSection({ title, aside, children }) {
 
 export default function Scholarships() {
 	const [searchParams, setSearchParams] = useSearchParams();
+	const { user } = useAuth();
+	const navigate = useNavigate();
+
+	const [authPrompt, setAuthPrompt] = useState({
+		isOpen: false,
+		scholarship: null,
+	});
+	const [savingSet, setSavingSet] = useState(new Set());
 
 	const parseList = (key) => {
 		const raw = searchParams.get(key);
@@ -511,30 +541,105 @@ export default function Scholarships() {
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
-		if (!token) return;
+		if (!user || !token) {
+			setSaved(new Set());
+			return;
+		}
 		getBookmarks()
 			.then((res) => {
-				if (res.success && Array.isArray(res.data)) {
+				if (res && res.success && Array.isArray(res.data)) {
 					setSaved(new Set(res.data.map((s) => s._id || s.id)));
 				}
 			})
 			.catch(() => {});
+	}, [user]);
+
+	useEffect(() => {
+		const unsubscribe = onBookmarkChanged(({ scholarshipId, isBookmarked }) => {
+			setSaved((prev) => {
+				const next = new Set(prev);
+				if (isBookmarked) next.add(scholarshipId);
+				else next.delete(scholarshipId);
+				return next;
+			});
+		});
+		return unsubscribe;
 	}, []);
 
-	const toggleSave = async (id) => {
+	const toggleSave = async (id, targetScholarship = null) => {
+		const token = localStorage.getItem("token");
+		const scholarshipObj =
+			targetScholarship ||
+			scholarships.find((s) => (s._id || s.id) === id) ||
+			selectedScholarship;
+
+		// 1. Guard for logged-out users: do NOT silently fail, prompt intentionally
+		if (!user || !token) {
+			setPendingBookmark(id);
+			setAuthPrompt({
+				isOpen: true,
+				scholarship: scholarshipObj,
+			});
+			toast.info("Log in to save scholarships and access them later.", {
+				action: {
+					label: "Log In",
+					onClick: () => {
+						const currentPath = encodeURIComponent(
+							window.location.pathname + window.location.search,
+						);
+						navigate(`/login?redirect=${currentPath}`);
+					},
+				},
+			});
+			return;
+		}
+
+		// 2. Prevent concurrent / duplicate spamming
+		if (savingSet.has(id)) return;
+		setSavingSet((prev) => new Set(prev).add(id));
+
+		const wasSaved = saved.has(id);
+		const willBeSaved = !wasSaved;
+
+		// Optimistic update
 		setSaved((prev) => {
 			const next = new Set(prev);
-			next.has(id) ? next.delete(id) : next.add(id);
+			willBeSaved ? next.add(id) : next.delete(id);
 			return next;
 		});
 
-		const token = localStorage.getItem("token");
-		if (token) {
-			try {
-				await apiToggleBookmark(id);
-			} catch (err) {
-				console.warn("Could not sync bookmark with backend:", err.message);
+		try {
+			const res = await apiToggleBookmark(id);
+			const finalState = res.bookmarked ?? willBeSaved;
+			emitBookmarkChanged(id, finalState);
+			if (finalState) {
+				toast.success("Scholarship bookmarked! Deadline reminders queued.");
+			} else {
+				toast.success("Removed scholarship from bookmarks.");
 			}
+		} catch (err) {
+			// Rollback optimistic state
+			setSaved((prev) => {
+				const next = new Set(prev);
+				wasSaved ? next.add(id) : next.delete(id);
+				return next;
+			});
+
+			if (err.response?.status === 401) {
+				setPendingBookmark(id);
+				setAuthPrompt({ isOpen: true, scholarship: scholarshipObj });
+				toast.error(
+					"Your session expired. Please sign in to save scholarships.",
+				);
+			} else {
+				toast.error("Could not update bookmark. Please try again.");
+			}
+		} finally {
+			setSavingSet((prev) => {
+				const next = new Set(prev);
+				next.delete(id);
+				return next;
+			});
 		}
 	};
 
@@ -568,10 +673,10 @@ export default function Scholarships() {
 
 			{/* ---------- Hero ---------- */}
 			<section className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 md:pb-16 md:pt-16">
-				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-16">
+				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.75fr)] lg:gap-16">
 					<div>
-						<h1 className="font-serif max-w-[16ch] text-[2.75rem] font-medium leading-[1.02] tracking-tight sm:text-6xl">
-							Real scholarships, with the rules that decide them.
+						<h1 className="font-display text-[2.75rem] font-medium leading-[1.02] sm:text-6xl">
+							Scholarships hiding in plain sight? Not anymore.
 						</h1>
 						<p className="mt-5 max-w-[52ch] text-base leading-relaxed text-emerald-950/70 sm:text-lg">
 							Government, state, university and trust schemes. Every deadline is
@@ -674,7 +779,7 @@ export default function Scholarships() {
 					</div>
 
 					<div className="order-first lg:order-none">
-						<figure className="overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white p-2">
+						<figure className="overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white p-4 shadow-[4px_4px_0px_0px_rgba(2,44,34,1)]">
 							<img
 								src={headerImg}
 								alt=""
@@ -975,6 +1080,7 @@ export default function Scholarships() {
 											saved={saved.has(s._id || s.id)}
 											onSave={toggleSave}
 											onOpenDetails={() => openDetails(s)}
+											isSaving={savingSet.has(s._id || s.id)}
 										/>
 									))}
 								</div>
@@ -1035,14 +1141,51 @@ export default function Scholarships() {
 										<DeadlineChip deadline={selectedScholarship.deadline} />
 									</div>
 								</div>
-								<button
-									type="button"
-									onClick={closeDrawer}
-									aria-label="Close details"
-									className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 ${focusRing}`}
-								>
-									<X size={17} />
-								</button>
+								<div className="flex items-center gap-2 shrink-0">
+									<button
+										type="button"
+										onClick={() =>
+											toggleSave(
+												selectedScholarship._id || selectedScholarship.id,
+												selectedScholarship,
+											)
+										}
+										aria-label={
+											saved.has(
+												selectedScholarship._id || selectedScholarship.id,
+											)
+												? "Remove from saved"
+												: "Save this scholarship"
+										}
+										disabled={savingSet.has(
+											selectedScholarship._id || selectedScholarship.id,
+										)}
+										className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 ${focusRing} ${
+											saved.has(
+												selectedScholarship._id || selectedScholarship.id,
+											)
+												? "text-emerald-800"
+												: "text-emerald-950"
+										}`}
+									>
+										{saved.has(
+											selectedScholarship._id || selectedScholarship.id,
+										) ? (
+											<BookmarkCheck size={17} />
+										) : (
+											<Bookmark size={17} />
+										)}
+									</button>
+
+									<button
+										type="button"
+										onClick={closeDrawer}
+										aria-label="Close details"
+										className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 ${focusRing}`}
+									>
+										<X size={17} />
+									</button>
+								</div>
 							</div>
 
 							<div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-6 text-sm sm:px-8">
@@ -1310,6 +1453,33 @@ export default function Scholarships() {
 									<FileText size={15} />
 									Full rules
 								</button>
+								<button
+									type="button"
+									onClick={() =>
+										toggleSave(
+											selectedScholarship._id || selectedScholarship.id,
+											selectedScholarship,
+										)
+									}
+									disabled={savingSet.has(
+										selectedScholarship._id || selectedScholarship.id,
+									)}
+									className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-5 py-2.5 text-sm font-bold hover:bg-emerald-100 ${focusRing}`}
+								>
+									{saved.has(
+										selectedScholarship._id || selectedScholarship.id,
+									) ? (
+										<>
+											<BookmarkCheck size={15} className="text-emerald-800" />
+											<span>Saved</span>
+										</>
+									) : (
+										<>
+											<Bookmark size={15} />
+											<span>Save scheme</span>
+										</>
+									)}
+								</button>
 								{(() => {
 									const rawGl =
 										selectedScholarship.officialLinks?.guidelinesUrl ||
@@ -1339,6 +1509,15 @@ export default function Scholarships() {
 				isOpen={isEvidenceModalOpen}
 				onClose={() => setIsEvidenceModalOpen(false)}
 				scholarship={selectedScholarship}
+			/>
+
+			<AuthPromptModal
+				isOpen={authPrompt.isOpen}
+				onClose={() => setAuthPrompt({ isOpen: false, scholarship: null })}
+				scholarshipTitle={authPrompt.scholarship?.title}
+				scholarshipId={
+					authPrompt.scholarship?._id || authPrompt.scholarship?.id
+				}
 			/>
 		</div>
 	);

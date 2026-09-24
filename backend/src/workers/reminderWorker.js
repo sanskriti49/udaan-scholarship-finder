@@ -4,6 +4,7 @@ import { REMINDER_QUEUE_NAME } from "../queues/reminderQueue.js";
 import { emailService } from "../services/emailService.js";
 import { notificationService } from "../services/notificationService.js";
 import Scholarship from "../models/Scholarship.js";
+import Bookmark from "../models/Bookmark.js";
 import NotificationLog from "../models/NotificationLog.js";
 
 /**
@@ -58,6 +59,18 @@ export function createReminderWorker() {
 				return { status: "SKIPPED", reason: "Deadline expired" };
 			}
 
+			// Check if user still has this scholarship bookmarked
+			const isStillBookmarked = await Bookmark.exists({
+				user: userId,
+				scholarship: scholarshipId,
+			});
+			if (!isStillBookmarked) {
+				console.log(
+					`[ReminderWorker] User ${userId} has unbookmarked scholarship ${scholarshipId}. Skipping reminder.`,
+				);
+				return { status: "SKIPPED", reason: "Scholarship no longer bookmarked" };
+			}
+
 			// Step 2: Check user notification preferences
 			const prefs = await notificationService.getPreferences(userId);
 			if (!prefs.deadlineAlerts) {
@@ -82,7 +95,7 @@ export function createReminderWorker() {
 				.slice(0, 10);
 			const dedupKey = `${alertType.toLowerCase()}:${userId}:${scholarshipId}:${deadlineIsoDate}`;
 
-			// Step 3: Dispatch In-App Notification (Idempotent)
+			// Step 3: Dispatch In-App & Email Notification (Idempotent via unique dedupKey)
 			const notification = await notificationService.createNotification(userId, {
 				type: alertType,
 				title: isUrgent
@@ -108,28 +121,20 @@ export function createReminderWorker() {
 				dedupKey,
 			});
 
-			// Step 4: Dispatch Email via EmailService
-			let emailResult = { success: false, skipped: true };
-			if (prefs.channels?.email && email) {
-				emailResult = await emailService.sendEmail({
-					to: email,
-					type: alertType,
-					data: {
-						title: isUrgent
-							? `Urgent: 48 Hours Left to Apply: ${scholarship.title}`
-							: `7 Days Remaining: ${scholarship.title}`,
-						scholarshipTitle: scholarship.title,
-						deadline: scholarship.deadline,
-						link: "/scholarships",
-					},
-					notificationId: notification?._id,
-					userId,
-				});
+			// If notification is null, the unique dedupKey already exists in the database
+			// (e.g. from a prior run or retried job). Cleanly skip to enforce idempotency.
+			if (!notification) {
+				console.log(
+					`[ReminderWorker] Reminder already delivered for user ${userId} on ${scholarship.title} (${dedupKey}). Skipping cleanly.`,
+				);
+				return { status: "SKIPPED", reason: "Already delivered (idempotent)" };
 			}
 
-			// Step 5: Log telemetry in NotificationLog
+			const emailSent = notification.deliveryChannels?.email?.status === "sent";
+
+			// Step 4: Log telemetry in NotificationLog
 			await NotificationLog.create({
-				notification: notification?._id,
+				notification: notification._id,
 				user: userId,
 				jobName: "BULLMQ_REMINDER_WORKER",
 				channel: "job",
@@ -139,15 +144,15 @@ export function createReminderWorker() {
 				metadata: {
 					jobId: job.id,
 					attemptsMade: job.attemptsMade,
-					emailDispatched: emailResult.success,
+					emailDispatched: emailSent,
 				},
 			});
 
 			return {
 				status: "COMPLETED",
 				jobId: job.id,
-				notificationId: notification?._id,
-				emailSent: emailResult.success,
+				notificationId: notification._id,
+				emailSent,
 			};
 		},
 		{

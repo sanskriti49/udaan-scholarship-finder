@@ -10,7 +10,7 @@ import {
 	sendTestNotification,
 	triggerSchedulerJob,
 } from "../controllers/notificationController.js";
-import { protect } from "../middlewares/authMiddleware.js";
+import { protect, authorizeRoles } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -25,6 +25,6 @@ router.patch("/:id/read", markAsRead);
 router.post("/mark-all-read", markAllAsRead);
 router.delete("/:id", deleteNotification);
 router.post("/test", sendTestNotification);
-router.post("/trigger-job", triggerSchedulerJob);
+router.post("/trigger-job", authorizeRoles("admin"), triggerSchedulerJob);
 
 export default router;

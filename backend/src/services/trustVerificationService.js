@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Scholarship from "../models/Scholarship.js";
 
 // Official domain suffixes and whitelists
@@ -316,37 +317,45 @@ export class TrustVerificationService {
 
     // 3. Database Cross-Reference (MongoDB Scheme Check)
     try {
-      const searchTerms = rawInput
+      const cleaned = rawInput
         .replace(/https?:\/\/[^\s]+/gi, "")
         .replace(/[^a-zA-Z0-9\s]/g, " ")
         .trim();
+      const tokens = cleaned.split(/\s+/).filter((t) => t.length >= 4);
 
-      if (searchTerms.length > 3) {
+      if (tokens.length > 0) {
+        // Pick the most distinctive token (longest keyword) to avoid matching trivial words
+        const primaryToken = tokens.sort((a, b) => b.length - a.length)[0];
+        const safeToken = primaryToken.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        const tokenRegex = new RegExp(`\\b${safeToken}`, "i");
+
         const query = {
           $or: [
-            { title: { $regex: searchTerms.split(" ")[0], $options: "i" } },
-            { organization: { $regex: searchTerms.split(" ")[0], $options: "i" } },
+            { title: tokenRegex },
+            { organization: tokenRegex },
           ],
         };
-        const dbMatch = await Scholarship.findOne(query).select(
-          "title organization sourceSite sourceUrl amount deadline"
-        );
+        if (mongoose.connection.readyState === 1) {
+          const dbMatch = await Scholarship.findOne(query).select(
+            "title organization sourceSite sourceUrl amount deadline"
+          ).lean();
 
-        if (dbMatch) {
-          crossReferencedScheme = {
-            id: dbMatch._id,
-            title: dbMatch.title,
-            organization: dbMatch.organization,
-            officialPortal: dbMatch.sourceUrl,
-            deadline: dbMatch.deadline,
-          };
-          findings.push({
-            severity: "positive",
-            type: "DB_RECORD_MATCH",
-            title: "Verified Registry Match Found",
-            description: "Matches a verified scholarship record in Udaan's official database: '" + dbMatch.title + "'.",
-          });
-          score = Math.max(score, 85);
+          if (dbMatch) {
+            crossReferencedScheme = {
+              id: dbMatch._id,
+              title: dbMatch.title,
+              organization: dbMatch.organization,
+              officialPortal: dbMatch.sourceUrl,
+              deadline: dbMatch.deadline,
+            };
+            findings.push({
+              severity: "positive",
+              type: "DB_RECORD_MATCH",
+              title: "Verified Registry Match Found",
+              description: "Matches a verified scholarship record in Udaan's official database: '" + dbMatch.title + "'.",
+            });
+            score = Math.max(score, 85);
+          }
         }
       }
     } catch {

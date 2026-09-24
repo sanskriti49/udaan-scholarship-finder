@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Notification from "../models/Notification.js";
 import { notificationService } from "../services/notificationService.js";
 import { notificationScheduler } from "../jobs/notificationScheduler.js";
@@ -12,7 +13,10 @@ export const getNotifications = async (req, res) => {
 		const limit = parseInt(req.query.limit, 10) || 20;
 		const skip = (page - 1) * limit;
 
-		const filter = { user: req.user._id };
+		const filter = {
+			user: req.user._id,
+			"deliveryChannels.inApp.status": { $ne: "skipped" },
+		};
 		if (req.query.unread === "true") {
 			filter.isRead = false;
 		}
@@ -27,7 +31,11 @@ export const getNotifications = async (req, res) => {
 				.limit(limit)
 				.lean(),
 			Notification.countDocuments(filter),
-			Notification.countDocuments({ user: req.user._id, isRead: false }),
+			Notification.countDocuments({
+				user: req.user._id,
+				isRead: false,
+				"deliveryChannels.inApp.status": { $ne: "skipped" },
+			}),
 		]);
 
 		return res.status(200).json({
@@ -56,6 +64,7 @@ export const getUnreadCount = async (req, res) => {
 		const unreadCount = await Notification.countDocuments({
 			user: req.user._id,
 			isRead: false,
+			"deliveryChannels.inApp.status": { $ne: "skipped" },
 		});
 
 		return res.status(200).json({
@@ -78,6 +87,14 @@ export const getUnreadCount = async (req, res) => {
 export const markAsRead = async (req, res) => {
 	try {
 		const { id } = req.params;
+
+		if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid notification ID format",
+			});
+		}
+
 		const notification = await Notification.findOneAndUpdate(
 			{ _id: id, user: req.user._id },
 			{ isRead: true, readAt: new Date() },
@@ -135,6 +152,14 @@ export const markAllAsRead = async (req, res) => {
 export const deleteNotification = async (req, res) => {
 	try {
 		const { id } = req.params;
+
+		if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid notification ID format",
+			});
+		}
+
 		const deleted = await Notification.findOneAndDelete({
 			_id: id,
 			user: req.user._id,

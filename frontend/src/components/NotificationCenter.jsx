@@ -79,6 +79,20 @@ function getNotificationMeta(type, priority) {
 				badgeText: "Weekly Digest",
 				badgeClass: "bg-sky-100/70 text-sky-900 border-sky-300/50",
 			};
+		case "DEADLINE_CHANGED":
+			return {
+				icon: Clock,
+				iconBg: "bg-amber-50 text-amber-800 border-amber-200/80",
+				badgeText: "Deadline Update",
+				badgeClass: "bg-amber-100/70 text-amber-900 border-amber-300/50",
+			};
+		case "SYSTEM":
+			return {
+				icon: Sparkles,
+				iconBg: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
+				badgeText: "System Alert",
+				badgeClass: "bg-emerald-100/70 text-emerald-900 border-emerald-300/50",
+			};
 		default:
 			return {
 				icon: Bell,

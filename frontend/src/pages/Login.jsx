@@ -8,6 +8,8 @@ import { Turnstile } from "react-turnstile";
 import { useGoogleLogin } from "@react-oauth/google";
 import { ArrowRight, Eye, EyeOff, Sparkles } from "lucide-react";
 import gsap from "gsap";
+import { toggleBookmark } from "../services/scholarshipService";
+import { fulfillPendingBookmarkAndRedirect } from "../utils/bookmarkSync";
 
 function GoogleButton({ onClick, loading }) {
 	return (
@@ -91,7 +93,7 @@ export default function Login() {
 		try {
 			await login({ ...form, turnstileToken: turnstileToken || "dev-bypass" });
 			toast.success("Logged in successfully");
-			navigate("/");
+			await fulfillPendingBookmarkAndRedirect(navigate, toggleBookmark, toast);
 		} catch (err) {
 			toast.error(err.response?.data?.message || "Login failed");
 			turnstileRef.current?.reset();
@@ -105,7 +107,7 @@ export default function Login() {
 				setGoogleLoading(true);
 				await loginWithGoogle(tokenResponse.access_token);
 				toast.success("Signed in with Google successfully!");
-				navigate("/");
+				await fulfillPendingBookmarkAndRedirect(navigate, toggleBookmark, toast);
 			} catch (err) {
 				toast.error(
 					err.response?.data?.message ||
@@ -132,7 +134,7 @@ export default function Login() {
 					setGoogleLoading(true);
 					await loginWithGoogle("dev-bypass");
 					toast.success("Signed in with Demo Google Account (Dev Mode)");
-					navigate("/");
+					await fulfillPendingBookmarkAndRedirect(navigate, toggleBookmark, toast);
 				} catch (err) {
 					toast.error(err.response?.data?.message || "Google sign-in failed.");
 				} finally {

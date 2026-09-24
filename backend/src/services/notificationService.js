@@ -32,13 +32,37 @@ class NotificationService {
 		return prefs;
 	}
 
-	/**
-	 * Updates notification preferences
-	 */
-	async updatePreferences(userId, updateData) {
+	async updatePreferences(userId, updateData = {}) {
+		const allowedFields = [
+			"instantMatch",
+			"deadlineAlerts",
+			"deadline7Days",
+			"deadline48Hours",
+			"newGrantsInState",
+			"weeklyDigest",
+			"frequency",
+			"timezone",
+			"minMatchScore",
+		];
+		const sanitized = {};
+		for (const key of allowedFields) {
+			if (updateData[key] !== undefined) {
+				sanitized[key] = updateData[key];
+			}
+		}
+
+		if (updateData.channels && typeof updateData.channels === "object") {
+			if (updateData.channels.inApp !== undefined) {
+				sanitized["channels.inApp"] = Boolean(updateData.channels.inApp);
+			}
+			if (updateData.channels.email !== undefined) {
+				sanitized["channels.email"] = Boolean(updateData.channels.email);
+			}
+		}
+
 		return await NotificationPreference.findOneAndUpdate(
 			{ user: userId },
-			{ $set: updateData },
+			{ $set: sanitized },
 			{ new: true, upsert: true, runValidators: true },
 		);
 	}
@@ -61,9 +85,15 @@ class NotificationService {
 			(!prefs.deadlineAlerts || !prefs.deadline48Hours)
 		)
 			return null;
+		if (payload.type === "DEADLINE_CHANGED" && !prefs.deadlineAlerts) return null;
 		if (payload.type === "STATE_GRANT_UPDATE" && !prefs.newGrantsInState)
 			return null;
 		if (payload.type === "WEEKLY_DIGEST" && !prefs.weeklyDigest) return null;
+
+		// Channel gates: if user disabled both In-App and Email, suppress completely
+		if (prefs.channels?.inApp === false && prefs.channels?.email === false) {
+			return null;
+		}
 
 		let notification;
 		try {
@@ -548,7 +578,22 @@ class NotificationService {
 		console.log(`[NotificationService] Weekly digest sent: ${digestsSent}`);
 		return { digestsSent, weekIdentifier };
 	}
+
+	/**
+	 * Dispatches an instant test notification for verifying alerts
+	 */
+	async sendTestNotification(userId) {
+		return await this.createNotification(userId, {
+			type: "SYSTEM",
+			title: "Udaan Alert System: Active & Verified",
+			message: "Your notification and deadline alert preferences are verified and working properly.",
+			priority: "low",
+			link: "/scholarships",
+			dedupKey: `system:test:${userId}:${Date.now()}`,
+		});
+	}
 }
 
+export { NotificationService };
 export const notificationService = new NotificationService();
 export default notificationService;

@@ -217,7 +217,22 @@ export default function Settings() {
     try {
       const res = await sendTestNotification();
       if (res.success) {
-        toast.success("Test notification dispatched. Check your top navigation bell.");
+        if (!notifications.channels?.inApp && !notifications.channels?.email) {
+          toast.warning(
+            "Test alert processed, but both In-App and Email channels are disabled in your settings.",
+            { duration: 4000 }
+          );
+        } else if (!notifications.channels?.inApp) {
+          toast.info(
+            "Test alert dispatched to email only (In-App notifications are currently disabled).",
+            { duration: 4000 }
+          );
+        } else {
+          toast.success(
+            "Test notification dispatched! Check your top navigation bell.",
+            { duration: 4000 }
+          );
+        }
       }
     } catch (err) {
       if (err.response?.status === 401) {
@@ -649,27 +664,59 @@ export default function Settings() {
                 ) : (
                   <>
                     <div className="space-y-3">
-                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <Sparkles size={15} className="text-emerald-700" />
-                            <h4 className="text-sm font-bold text-slate-900">
-                              Instant Eligibility Match Alerts
-                            </h4>
+                      <div className="p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors space-y-3">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-2">
+                              <Sparkles size={15} className="text-emerald-700" />
+                              <h4 className="text-sm font-bold text-slate-900">
+                                Instant Eligibility Match Alerts
+                              </h4>
+                            </div>
+                            <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                              Automatically notify me the moment a newly discovered or updated scholarship matches my profile with {notifications.minMatchScore || 70}% or higher confidence.
+                            </p>
                           </div>
-                          <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                            Automatically notify me the moment a newly discovered or updated scholarship matches my profile with 70% or higher confidence.
-                          </p>
+                          <div className="shrink-0 mt-0.5">
+                            <Toggle
+                              checked={notifications.instantMatch}
+                              onChange={(val) =>
+                                setNotifications({ ...notifications, instantMatch: val })
+                              }
+                              ariaLabel="Instant Eligibility Match Alerts"
+                            />
+                          </div>
                         </div>
-                        <div className="shrink-0 mt-0.5">
-                          <Toggle
-                            checked={notifications.instantMatch}
-                            onChange={(val) =>
-                              setNotifications({ ...notifications, instantMatch: val })
-                            }
-                            ariaLabel="Instant Eligibility Match Alerts"
-                          />
-                        </div>
+
+                        {notifications.instantMatch && (
+                          <div className="pt-3 border-t border-slate-200/70 pl-6 space-y-2">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-semibold text-slate-700">Minimum Match Confidence</span>
+                              <span className="font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md border border-emerald-300/60 text-[11px]">
+                                {notifications.minMatchScore || 70}% Match
+                              </span>
+                            </div>
+                            <input
+                              type="range"
+                              min="50"
+                              max="95"
+                              step="5"
+                              value={notifications.minMatchScore || 70}
+                              onChange={(e) =>
+                                setNotifications({
+                                  ...notifications,
+                                  minMatchScore: Number(e.target.value),
+                                })
+                              }
+                              className="w-full accent-emerald-800 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none"
+                            />
+                            <div className="flex justify-between text-[10px] text-slate-500 font-medium">
+                              <span>50% (Broad match)</span>
+                              <span>70% (Balanced)</span>
+                              <span>90%+ (Strict match)</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors space-y-3">

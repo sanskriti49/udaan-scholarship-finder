@@ -4,11 +4,9 @@ import { Link } from "react-router-dom";
 import {
 	X,
 	FileText,
-	Clock,
 	ArrowUpRight,
 	ShieldCheck,
-	CheckCircle2,
-	Files,
+	Check,
 	ExternalLink,
 	Sparkles,
 	BookOpen,
@@ -16,7 +14,6 @@ import {
 	FolderCheck,
 	History as HistoryIcon,
 	Building2,
-	AlertCircle,
 	Loader2,
 } from "lucide-react";
 import {
@@ -30,11 +27,47 @@ import {
 } from "../utils/formatEvidence";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 
+const focusRing =
+	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
+
+function daysUntil(deadline) {
+	if (!deadline) return null;
+	return Math.max(
+		0,
+		Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)),
+	);
+}
+
+function deadlineMeta(deadline) {
+	const days = daysUntil(deadline);
+	if (days === null) return { text: "No fixed date", tone: "quiet" };
+	if (days === 0) return { text: "Closes today", tone: "urgent" };
+	if (days <= 10)
+		return { text: `${days} day${days === 1 ? "" : "s"} left`, tone: "urgent" };
+	if (days <= 30) return { text: `${days} days left`, tone: "soon" };
+	return { text: `${days} days left`, tone: "quiet" };
+}
+
+function DeadlineChip({ deadline }) {
+	const { text, tone } = deadlineMeta(deadline);
+	const tones = {
+		urgent: "border-rose-300 bg-rose-50 text-rose-800",
+		soon: "border-emerald-950/20 bg-yellow-200 text-emerald-950",
+		quiet: "border-emerald-950/15 bg-emerald-50 text-emerald-950/70",
+	};
+	return (
+		<span
+			className={`inline-flex shrink-0 items-center rounded-full border-[1.5px] px-2.5 py-1 text-xs font-bold ${tones[tone]}`}
+		>
+			{text}
+		</span>
+	);
+}
+
 export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 	const [activeSection, setActiveSection] = useState("gazette");
 	const [liveEvidence, setLiveEvidence] = useState(null);
 	const [isLoadingEvidence, setIsLoadingEvidence] = useState(false);
-	const [evidenceError, setEvidenceError] = useState(null);
 
 	useBodyScrollLock(isOpen);
 
@@ -42,7 +75,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 		if (!isOpen || !scholarship) return;
 		setActiveSection("gazette");
 		setLiveEvidence(null);
-		setEvidenceError(null);
 
 		const idOrSlug = scholarship._id || scholarship.id || scholarship.slug;
 		if (!idOrSlug) return;
@@ -65,7 +97,6 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					"Evidence live fetch error, using local scheme facts:",
 					err,
 				);
-				if (isMounted) setEvidenceError(err.message);
 			})
 			.finally(() => {
 				if (isMounted) setIsLoadingEvidence(false);
@@ -199,71 +230,79 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 			aria-labelledby="evidence-modal-title"
 		>
 			<div
-				className="fixed inset-0 bg-slate-950/40 backdrop-blur-[2px] transition-opacity duration-200 animate-fade-in"
+				className="animate-fade-in fixed inset-0 bg-emerald-950/45 backdrop-blur-[2px]"
 				onClick={onClose}
 				aria-hidden="true"
 			/>
 
 			<div
-				className="fixed inset-y-0 right-0 h-screen max-h-screen z-50 bg-white shadow-2xl flex flex-col border-l border-slate-200 animate-slide-in-right"
+				className="animate-slide-in-right fixed inset-y-0 right-0 z-50 flex h-screen max-h-screen flex-col border-l-[1.5px] border-emerald-950 bg-white text-emerald-950"
 				style={{ width: "min(680px, 100vw)" }}
 			>
-				<div className="bg-[#FAF9F6] border-b border-slate-200 px-6 py-4 flex items-start justify-between gap-4 shrink-0">
-					<div className="space-y-1.5 min-w-0 flex-1">
-						<div className="flex items-center gap-2 flex-wrap">
-							<span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2.5 py-0.5 rounded-full border border-emerald-200">
-								{scholarship.category || "Scholarship Scheme"}
-							</span>
-							<span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 bg-white px-2.5 py-0.5 rounded-full border border-slate-200 shadow-2xs">
-								<ShieldCheck size={13} className="text-emerald-700" />
-								<span>Official Rules & Guidelines</span>
+				{/* Modal Header */}
+				<div className="flex shrink-0 items-start justify-between gap-4 border-b-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-5">
+					<div className="min-w-0 flex-1">
+						<p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-emerald-950/55">
+							<span>{scholarship.category || "Scholarship Scheme"}</span>
+							<span aria-hidden>·</span>
+							<span className="inline-flex items-center gap-1 text-emerald-800">
+								<ShieldCheck size={13} />
+								Official Rules & Guidelines
 							</span>
 							{exactGuidelinePdf && (
-								<span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-									Official PDF Circular
-								</span>
+								<>
+									<span aria-hidden>·</span>
+									<span className="font-semibold text-emerald-950/70">Official PDF</span>
+								</>
 							)}
-						</div>
+						</p>
 
-						<h3
+						<h2
 							id="evidence-modal-title"
-							className="text-xl sm:text-2xl font-serif font-bold text-slate-900 leading-snug truncate"
+							className="ud-display mt-2 text-2xl font-extrabold leading-tight text-emerald-950 sm:text-3xl"
 						>
 							{scholarship.title}
-						</h3>
+						</h2>
 
-						<p className="text-xs sm:text-sm text-slate-600 font-medium truncate">
-							Offered by:{" "}
-							<span className="font-semibold text-slate-900">
-								{scholarship.organization}
-							</span>
-						</p>
+						<div className="mt-2 flex flex-wrap items-center gap-3">
+							<p className="text-sm font-medium text-emerald-950/65">
+								Offered by:{" "}
+								<span className="font-bold text-emerald-950">
+									{scholarship.organization}
+								</span>
+							</p>
+							{scholarship.deadline && (
+								<DeadlineChip deadline={scholarship.deadline} />
+							)}
+						</div>
 					</div>
 
 					<button
+						type="button"
 						onClick={onClose}
-						className="p-2 rounded-2xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer shrink-0"
+						className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 ${focusRing}`}
 						aria-label="Close dialog"
 					>
-						<X className="w-5 h-5" />
+						<X size={17} />
 					</button>
 				</div>
 
-				<div className="bg-emerald-50/50 border-b border-emerald-100/80 px-6 py-2.5 flex items-center justify-between gap-2 shrink-0 flex-wrap">
-					<span className="text-xs font-semibold text-emerald-900">
+				{/* Quick Official Links Banner */}
+				<div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-[1.5px] border-dashed border-emerald-950/20 bg-emerald-50/50 px-6 py-2.5 text-xs">
+					<span className="font-bold text-emerald-950/70">
 						Official Links:
 					</span>
-					<div className="flex items-center gap-2 flex-wrap">
+					<div className="flex flex-wrap items-center gap-2">
 						{exactGuidelinePdf && (
 							<a
 								href={exactGuidelinePdf}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-semibold transition-colors shadow-2xs cursor-pointer"
+								className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950/25 bg-white px-3 py-1 font-bold text-emerald-950 hover:bg-yellow-200 ${focusRing}`}
 							>
-								<FileText size={13} className="text-emerald-700" />
+								<FileText size={12} className="text-emerald-800" />
 								<span>Open Guidelines (PDF)</span>
-								<ArrowUpRight size={12} />
+								<ArrowUpRight size={11} />
 							</a>
 						)}
 						{scholarship.applicationLink && (
@@ -271,16 +310,17 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 								href={cleanOfficialUrl(scholarship.applicationLink)}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+								className={`inline-flex cursor-pointer items-center gap-1 rounded-full bg-emerald-800 px-3.5 py-1 font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
 							>
 								<span>Apply on Official Site</span>
-								<ArrowUpRight size={12} />
+								<ArrowUpRight size={11} />
 							</a>
 						)}
 					</div>
 				</div>
 
-				<div className="bg-slate-50 border-b border-slate-200 px-4 sm:px-6 py-2.5 flex flex-wrap items-center gap-1.5 shrink-0">
+				{/* Navigation Tabs */}
+				<div className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b-[1.5px] border-emerald-950 bg-white px-4 py-3 sm:px-6">
 					{navSections.map((sec) => {
 						const Icon = sec.icon;
 						const isActive = activeSection === sec.id;
@@ -289,23 +329,23 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 								key={sec.id}
 								type="button"
 								onClick={() => setActiveSection(sec.id)}
-								className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
+								className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-3.5 py-1.5 text-[13px] font-bold transition-colors ${focusRing} ${
 									isActive
-										? "bg-slate-900 text-white shadow-xs"
-										: "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+										? "border-emerald-950 bg-emerald-950 text-white"
+										: "border-emerald-950/20 bg-white text-emerald-950/80 hover:border-emerald-950 hover:text-emerald-950"
 								}`}
 							>
 								<Icon
-									size={14}
-									className={isActive ? "text-emerald-400" : "text-slate-400"}
+									size={13}
+									className={isActive ? "text-yellow-200" : "text-emerald-950/60"}
 								/>
 								<span>{sec.label}</span>
 								{sec.count !== null && (
 									<span
-										className={`text-[11px] font-mono px-1.5 py-0.2 rounded-md ${
+										className={`rounded-full px-1.5 py-0.2 text-[11px] font-bold ${
 											isActive
-												? "bg-slate-800 text-emerald-300"
-												: "bg-slate-200 text-slate-600"
+												? "bg-yellow-200 text-emerald-950"
+												: "bg-emerald-100 text-emerald-950/70"
 										}`}
 									>
 										{sec.count}
@@ -316,24 +356,22 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					})}
 				</div>
 
-				<div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-slate-700 flex-1 min-h-0 bg-white">
+				{/* Modal Scrollable Content Area */}
+				<div className="min-h-0 flex-1 space-y-6 overflow-y-auto bg-white px-6 py-6 text-sm text-emerald-950 sm:px-8">
 					{activeSection === "gazette" && (
 						<div className="space-y-6">
 							{exactGuidelinePdf ? (
-								<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 flex flex-col gap-3.5">
-									<div className="space-y-1.5 min-w-0">
-										<h4 className="font-bold text-slate-900 text-base flex items-center gap-2">
-											<FileText
-												size={18}
-												className="text-emerald-700 shrink-0"
-											/>
-											<span>Official Scheme Guidelines</span>
+								<div className="space-y-3 rounded-2xl border-[1.5px] border-emerald-950 bg-emerald-50/70 p-5">
+									<div className="space-y-1">
+										<h4 className="ud-display flex items-center gap-2 text-base font-bold text-emerald-950">
+											<FileText size={17} className="text-emerald-800" />
+											Official Scheme Guidelines
 										</h4>
-										<p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+										<p className="text-[14px] leading-relaxed text-emerald-950/75">
 											Official scheme rules and guidelines published by the
 											organizing government ministry or authority.
 										</p>
-										<p className="text-[11px] font-mono text-emerald-900 truncate break-all bg-white/80 px-2.5 py-1 rounded-lg border border-slate-200/60 max-w-full">
+										<p className="max-w-full truncate rounded-lg border-[1.5px] border-emerald-950/20 bg-white px-3 py-1 font-mono text-[11px] text-emerald-950/75">
 											Document: {exactGuidelinePdf}
 										</p>
 									</div>
@@ -342,23 +380,20 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 											href={exactGuidelinePdf}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold transition-colors shadow-2xs cursor-pointer w-full sm:w-auto"
+											className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2 text-sm font-bold text-white transition hover:bg-emerald-900 ${focusRing}`}
 										>
 											<span>Open Guidelines (PDF)</span>
-											<ArrowUpRight className="w-4 h-4" />
+											<ArrowUpRight size={14} />
 										</a>
 									</div>
 								</div>
 							) : (
-								<div className="p-4 sm:p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 space-y-1.5">
-									<h4 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-										<ShieldCheck
-											size={17}
-											className="text-emerald-700 shrink-0"
-										/>
-										<span>Official Scheme Verification</span>
+								<div className="space-y-1 rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/50 p-4">
+									<h4 className="ud-display flex items-center gap-2 text-base font-bold text-emerald-950">
+										<ShieldCheck size={16} className="text-emerald-800" />
+										Official Scheme Verification
 									</h4>
-									<p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+									<p className="text-[14px] leading-relaxed text-emerald-950/75">
 										Rules, eligibility criteria, and financial figures are
 										verified directly from published notifications on the
 										official portal (
@@ -371,20 +406,17 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 							)}
 
 							<div>
-								<div className="flex items-center justify-between mb-3.5 flex-wrap gap-2">
-									<h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-										<Sparkles className="w-4 h-4 text-emerald-700" />
+								<div className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
+									<h4 className="ud-display flex items-center gap-1.5 text-base font-bold text-emerald-950">
+										<Sparkles size={16} className="text-emerald-800" />
 										Official Guidelines & Direct Quotes (
 										{effectiveQuotes.length})
 									</h4>
-									<div className="flex items-center gap-2">
-										{isLoadingEvidence && (
-											<span className="inline-flex items-center gap-1 text-[11px] text-slate-400">
-												<Loader2 size={12} className="animate-spin" /> Checking
-												official source...
-											</span>
-										)}
-									</div>
+									{isLoadingEvidence && (
+										<span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-950/55">
+											<Loader2 size={12} className="animate-spin" /> Verifying live source...
+										</span>
+									)}
 								</div>
 
 								<div className="space-y-4">
@@ -398,30 +430,28 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 										return (
 											<div
 												key={idx}
-												className="p-4 sm:p-5 rounded-2xl border border-slate-200 bg-[#FAF9F6] space-y-2.5 transition-all hover:border-slate-300"
+												className="space-y-2.5 rounded-xl border-[1.5px] border-emerald-950/20 bg-white p-4 transition-colors hover:border-emerald-950"
 											>
-												<div className="flex items-center justify-between text-xs text-slate-500 flex-wrap gap-1.5">
-													<span className="font-bold text-slate-900 flex items-center gap-1.5">
-														<span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+												<div className="flex flex-wrap items-baseline justify-between gap-2 text-xs">
+													<span className="flex items-center gap-1.5 text-sm font-bold text-emerald-950">
+														<span className="h-1.5 w-1.5 rounded-full bg-emerald-800 shrink-0" />
 														{formatClauseTitle(q.clause, q.field, idx + 1)}
 													</span>
-													<div className="flex items-center gap-2">
-														{q.page && (
-															<span className="bg-white border border-slate-200 px-2 py-0.5 rounded text-[11px] font-semibold text-slate-700">
-																Page {q.page}
-															</span>
-														)}
-													</div>
+													{q.page && (
+														<span className="rounded-sm bg-yellow-200 px-1.5 py-0.5 text-xs font-bold text-emerald-950">
+															Page {q.page}
+														</span>
+													)}
 												</div>
 
-												<blockquote className="border-l-3 border-emerald-700 pl-3.5 text-slate-800 text-xs sm:text-sm leading-relaxed bg-emerald-50/25 py-2 rounded-r-lg">
-													&ldquo;{formatEvidenceText(q.quote, q.field)}&rdquo;
+												<blockquote className="border-l-2 border-yellow-400 pl-3 text-[14px] italic leading-relaxed text-emerald-950/85">
+													“{formatEvidenceText(q.quote, q.field)}”
 												</blockquote>
 
 												{quoteDocUrl && (
-													<div className="pt-1.5 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500 gap-2 flex-wrap">
+													<div className="flex flex-wrap items-center justify-between gap-2 border-t-[1.5px] border-dashed border-emerald-950/15 pt-2.5 text-xs">
 														<span
-															className="text-[11.5px] text-slate-500 truncate max-w-xs sm:max-w-md font-medium"
+															className="max-w-[260px] truncate font-medium text-emerald-950/55 sm:max-w-md"
 															title={quoteDocUrl}
 														>
 															Source: {sourceLabel}
@@ -431,13 +461,13 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 																href={quoteDocUrl}
 																target="_blank"
 																rel="noopener noreferrer"
-																className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-800 hover:text-emerald-950 hover:underline cursor-pointer"
+																className="inline-flex shrink-0 items-center gap-1 font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950"
 															>
-																<span>Open Cited PDF Document</span>
-																<ExternalLink size={12} />
+																<span>Open Cited PDF</span>
+																<ExternalLink size={11} />
 															</a>
 														) : (
-															<span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200/60">
+															<span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-900">
 																Verified Rule
 															</span>
 														)}
@@ -454,51 +484,51 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					{activeSection === "rules" && (
 						<div className="space-y-4">
 							<div>
-								<h4 className="text-base font-bold text-slate-900 mb-1">
+								<h4 className="ud-display text-lg font-bold text-emerald-950">
 									Who Can Apply (Eligibility Criteria)
 								</h4>
-								<p className="text-xs sm:text-sm text-slate-600">
+								<p className="text-sm text-emerald-950/65">
 									Please verify that you meet the following requirements before
 									submitting an application.
 								</p>
 							</div>
 
 							{rules.length > 0 ? (
-								<div className="grid grid-cols-1 gap-3">
+								<ul className="divide-y divide-dashed divide-emerald-950/20 rounded-xl border-[1.5px] border-emerald-950/20 bg-white">
 									{rules.map((rule, idx) => (
-										<div
+										<li
 											key={idx}
-											className="p-4 rounded-2xl bg-[#FAF9F6] border border-slate-200 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+											className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4"
 										>
 											<div className="space-y-1">
-												<p className="font-bold text-slate-900 text-base">
+												<p className="text-[15px] font-semibold text-emerald-950">
 													{rule.description || formatFieldLabel(rule.field)}
 												</p>
-												<div className="flex items-center gap-2 text-xs text-slate-500 flex-wrap">
+												<div className="flex flex-wrap items-center gap-2 text-xs text-emerald-950/55">
 													<span>
 														Criterion:{" "}
-														<span className="font-medium text-slate-700">
+														<strong className="font-semibold text-emerald-950/75">
 															{formatFieldLabel(rule.field)}
-														</span>
+														</strong>
 													</span>
-													<span>&bull;</span>
+													<span aria-hidden>·</span>
 													<span>
-														Eligibility:{" "}
-														<strong className="text-emerald-800 font-semibold">
+														Requirement:{" "}
+														<strong className="font-semibold text-emerald-950/75">
 															{formatRuleRequirement(rule)}
 														</strong>
 													</span>
 												</div>
 											</div>
-											<span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-850 border border-emerald-200 shrink-0 self-start sm:self-center">
-												Required
+											<span className="shrink-0 rounded-sm bg-yellow-200 px-2 py-0.5 text-[13px] font-bold text-emerald-950 self-start sm:self-center">
+												{formatRuleRequirement(rule)}
 											</span>
-										</div>
+										</li>
 									))}
-								</div>
+								</ul>
 							) : (
-								<div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-500">
-									<p className="text-sm">
+								<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/30 p-8 text-center text-emerald-950/60">
+									<p className="text-sm font-medium">
 										Standard eligibility criteria apply as described in the
 										official scheme guidelines.
 									</p>
@@ -511,64 +541,62 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 						<div className="space-y-4">
 							<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
 								<div>
-									<h4 className="text-base font-bold text-slate-900 mb-0.5">
+									<h4 className="ud-display text-lg font-bold text-emerald-950">
 										Required Documents ({docs.length > 0 ? docs.length : "Standard"})
 									</h4>
-									<p className="text-xs sm:text-sm text-slate-600">
+									<p className="text-sm text-emerald-950/65">
 										Keep these documents ready for verification when submitting your application.
 									</p>
 								</div>
 								<Link
 									to="/documents"
 									onClick={onClose}
-									className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100/80 px-3 py-1.5 rounded-xl border border-emerald-200/80 transition-colors shrink-0 self-start sm:self-auto"
+									className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 self-start sm:self-auto"
 								>
-									<FolderCheck size={14} className="text-emerald-700" />
+									<FolderCheck size={14} className="text-emerald-800" />
 									<span>Open Document Vault</span>
 									<ArrowUpRight size={12} />
 								</Link>
 							</div>
 
 							{docs.length > 0 ? (
-								<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+								<ul className="grid gap-2.5 sm:grid-cols-2">
 									{docs.map((doc, idx) => (
-										<div
+										<li
 											key={idx}
-											className="p-4 rounded-2xl bg-[#FAF9F6] border border-slate-200 text-sm text-slate-800 flex items-start gap-3 hover:border-emerald-200 transition-colors"
+											className="flex items-start gap-2.5 rounded-xl border-[1.5px] border-emerald-950/20 bg-white p-3.5 transition-colors hover:border-emerald-950"
 										>
-											<div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-emerald-700 shrink-0 shadow-2xs mt-0.5">
-												<Files size={16} />
-											</div>
-											<div className="min-w-0 flex-1">
-												<span className="font-semibold block text-slate-900 leading-snug">
+											<span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md border-[1.5px] border-emerald-950 bg-white">
+												{doc.mandatory !== false && (
+													<Check size={11} strokeWidth={3.5} />
+												)}
+											</span>
+											<span className="min-w-0 flex-1">
+												<span className="block text-sm font-semibold leading-snug text-emerald-950">
 													{doc.name}
 												</span>
-												<div className="flex items-center gap-1.5 mt-1.5">
-													<span
-														className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
-															doc.mandatory !== false
-																? "bg-emerald-50 text-emerald-800 border-emerald-200/80"
-																: "bg-slate-100 text-slate-600 border-slate-200"
-														}`}
-													>
-														{doc.mandatory !== false ? "Mandatory" : "Conditional / As applicable"}
+												<span className="mt-1 flex items-center gap-1.5">
+													<span className="text-xs font-semibold text-emerald-950/55">
+														{doc.mandatory !== false
+															? "Required"
+															: "If applicable"}
 													</span>
 													{doc.code && (
-														<span className="text-[10px] font-mono text-slate-400">
+														<span className="rounded bg-emerald-50 px-1.5 py-0.2 font-mono text-[10px] text-emerald-950/50">
 															{doc.code}
 														</span>
 													)}
-												</div>
-											</div>
-										</div>
+												</span>
+											</span>
+										</li>
 									))}
-								</div>
+								</ul>
 							) : (
-								<div className="p-6 text-center bg-slate-50 rounded-2xl border border-slate-200 text-slate-600 space-y-2">
-									<p className="text-sm font-medium">
+								<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/30 p-6 text-center text-emerald-950/70">
+									<p className="text-sm font-semibold">
 										Standard verification documents are required:
 									</p>
-									<p className="text-xs text-slate-500 max-w-lg mx-auto leading-relaxed">
+									<p className="mt-1.5 text-xs text-emerald-950/60 leading-relaxed max-w-lg mx-auto">
 										Aadhaar Card, institutional Bonafide / ID card, qualifying semester/board marksheets, bank account passbook (DBT enabled), and family income certificate (if applicable).
 									</p>
 								</div>
@@ -578,39 +606,42 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 
 					{activeSection === "authority" && (
 						<div className="space-y-5">
-							<div className="p-5 rounded-2xl bg-[#FAF9F6] border border-slate-200 space-y-3">
-								<span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
+							<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/50 p-6 space-y-3">
+								<span className="text-xs font-bold uppercase tracking-wider text-emerald-950/50 block">
 									Organizing Ministry or Department
 								</span>
-								<h3 className="text-xl font-bold text-slate-900 font-serif">
+								<h3 className="ud-display text-2xl font-bold text-emerald-950">
 									{scholarship.organization}
 								</h3>
-								<p className="text-sm text-slate-600 leading-relaxed">
+								<p className="text-[15px] leading-relaxed text-emerald-950/75">
 									{scholarship.description ||
-										"Official government body or organization offering this scholarship."}
+										scholarship.summary ||
+										"Official government body or verified institution offering this scholarship scheme."}
 								</p>
 
-								<div className="pt-2 flex items-center gap-3 flex-wrap">
+								<div className="pt-2 flex flex-wrap items-center gap-3">
 									{scholarship.applicationLink && (
 										<a
 											href={cleanOfficialUrl(scholarship.applicationLink)}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-emerald-800 px-4 py-2 rounded-xl transition cursor-pointer"
+											className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
 										>
 											<span>Application Portal</span>
-											<ArrowUpRight size={13} />
+											<ArrowUpRight size={14} />
 										</a>
 									)}
-									{scholarship.officialPortal && (
+									{(scholarship.officialPortal || scholarship.sourceUrl) && (
 										<a
-											href={cleanOfficialUrl(scholarship.officialPortal)}
+											href={cleanOfficialUrl(
+												scholarship.officialPortal || scholarship.sourceUrl,
+											)}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-4 py-2 rounded-xl transition cursor-pointer"
+											className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-5 py-2.5 text-sm font-bold text-emerald-950 hover:bg-yellow-200 transition ${focusRing}`}
 										>
 											<span>Official Website</span>
-											<ExternalLink size={12} />
+											<ExternalLink size={13} />
 										</a>
 									)}
 								</div>
@@ -621,10 +652,10 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					{activeSection === "history" && history.length > 0 && (
 						<div className="space-y-4">
 							<div>
-								<h4 className="text-base font-bold text-slate-900 mb-1">
+								<h4 className="ud-display text-lg font-bold text-emerald-950 mb-1">
 									Scheme Update History
 								</h4>
-								<p className="text-sm text-slate-600">
+								<p className="text-sm text-emerald-950/65">
 									Recent updates and notifications tracked for this scholarship.
 								</p>
 							</div>
@@ -633,13 +664,13 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 								{history.map((ver, idx) => (
 									<div
 										key={idx}
-										className="p-4 rounded-2xl border border-amber-200 bg-amber-50/50 text-sm space-y-1.5"
+										className="rounded-xl border-[1.5px] border-emerald-950/20 bg-yellow-100/60 p-4 space-y-1.5 text-sm"
 									>
-										<div className="flex items-center justify-between text-slate-600">
-											<span className="font-bold text-amber-950 capitalize">
+										<div className="flex items-center justify-between text-emerald-950">
+											<span className="font-bold capitalize">
 												{ver.changeType?.replace(/_/g, " ").toLowerCase()}
 											</span>
-											<span className="text-xs text-slate-500 font-mono">
+											<span className="font-mono text-xs text-emerald-950/60">
 												{new Date(ver.observedAt).toLocaleDateString("en-IN", {
 													day: "numeric",
 													month: "short",
@@ -647,7 +678,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 												})}
 											</span>
 										</div>
-										<p className="text-slate-800 leading-relaxed">
+										<p className="text-emerald-950/85 leading-relaxed">
 											{ver.summary}
 										</p>
 									</div>
@@ -657,30 +688,32 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					)}
 				</div>
 
-				<div className="p-4 sm:p-5 border-t border-slate-200 bg-[#FAF9F6] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
-					<span className="text-xs text-slate-500 hidden sm:inline-block">
+				{/* Modal Footer */}
+				<div className="flex shrink-0 items-center justify-between gap-3 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-4">
+					<span className="hidden text-xs font-semibold text-emerald-950/55 sm:inline">
 						Press{" "}
-						<kbd className="px-2 py-0.5 text-xs bg-white border border-slate-300 rounded font-mono">
+						<kbd className="rounded border-[1.5px] border-emerald-950/20 bg-white px-1.5 py-0.5 font-mono text-xs font-bold text-emerald-950">
 							Esc
 						</kbd>{" "}
 						to close
 					</span>
 
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-2.5 ml-auto">
 						{scholarship.applicationLink && (
 							<a
 								href={cleanOfficialUrl(scholarship.applicationLink)}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-800 hover:bg-emerald-900 text-white transition-colors flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
+								className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
 							>
-								<span>Apply on Official Site</span>
-								<ArrowUpRight size={14} />
+								<span>Apply on official site</span>
+								<ArrowUpRight size={15} />
 							</a>
 						)}
 						<button
+							type="button"
 							onClick={onClose}
-							className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-900 text-white hover:bg-slate-800 transition-colors cursor-pointer"
+							className={`cursor-pointer rounded-full border-[1.5px] border-emerald-950 bg-white px-5 py-2.5 text-sm font-bold text-emerald-950 transition hover:bg-yellow-200 active:translate-y-px ${focusRing}`}
 						>
 							Close
 						</button>

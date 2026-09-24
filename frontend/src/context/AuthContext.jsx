@@ -4,8 +4,15 @@ import { loginUser, signupUser, googleAuth } from "../services/authService";
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const syncUser = () => {
@@ -22,7 +29,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
 
-    syncUser();
     window.addEventListener("auth-changed", syncUser);
     return () => window.removeEventListener("auth-changed", syncUser);
   }, []);

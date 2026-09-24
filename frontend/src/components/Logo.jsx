@@ -14,19 +14,19 @@ export default function Logo({
 }) {
 	const sizeMap = {
 		sm: {
-			container: "w-8 h-8 sm:w-9 sm:h-9",
+			container: "w-8 h-8 sm:w-10 sm:h-10",
 			title: "text-lg sm:text-xl",
 			tagline: "text-[10px] sm:text-[11px]",
 			spacing: "gap-2 sm:gap-2.5",
 		},
 		md: {
-			container: "w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12",
+			container: "w-10 h-10 sm:w-[44px] sm:h-[44px] md:w-12 md:h-12",
 			title: "text-xl sm:text-2xl md:text-[1.65rem]",
 			tagline: "text-[11px] sm:text-xs",
 			spacing: "gap-2.5 sm:gap-3",
 		},
 		lg: {
-			container: "w-13 h-13 sm:w-15 sm:h-15",
+			container: "w-14 h-14 sm:w-16 sm:h-16",
 			title: "text-2xl sm:text-3xl",
 			tagline: "text-xs sm:text-sm",
 			spacing: "gap-3 sm:gap-3.5",

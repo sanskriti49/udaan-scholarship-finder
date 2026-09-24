@@ -9,6 +9,7 @@ import {
 	Compass,
 	CheckCircle2,
 	Bookmark,
+	BookmarkCheck,
 	ArrowRight,
 	Search,
 	X,
@@ -219,6 +220,14 @@ const Navbar = () => {
 											Check Eligibility
 										</NavLink>
 										<NavLink
+											to="/saved"
+											onClick={() => setIsProfileOpen(false)}
+											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
+										>
+											<BookmarkCheck size={14} className="text-emerald-700" />
+											Saved Scholarships
+										</NavLink>
+										<NavLink
 											to="/scholarships"
 											onClick={() => setIsProfileOpen(false)}
 											className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
@@ -346,6 +355,7 @@ const Navbar = () => {
 							<NavLink
 								key={link.name}
 								to={link.path}
+								onClick={() => setIsOpen(false)}
 								className={({ isActive }) =>
 									`px-4 py-2.5 text-sm rounded-xl font-medium transition-colors ${
 										isActive
@@ -362,7 +372,16 @@ const Navbar = () => {
 							{user ? (
 								<>
 									<NavLink
+										to="/saved"
+										onClick={() => setIsOpen(false)}
+										className="px-4 py-2.5 text-sm text-slate-700 font-medium flex items-center gap-2 rounded-xl hover:bg-slate-50"
+									>
+										<BookmarkCheck size={16} className="text-emerald-700" />{" "}
+										Saved Scholarships
+									</NavLink>
+									<NavLink
 										to="/settings"
+										onClick={() => setIsOpen(false)}
 										className="px-4 py-2.5 text-sm text-slate-700 font-medium flex items-center gap-2 rounded-xl hover:bg-slate-50"
 									>
 										<SettingsIcon size={16} className="text-slate-500" />{" "}

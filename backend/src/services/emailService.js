@@ -7,11 +7,10 @@ import NotificationLog from "../models/NotificationLog.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Target candidate paths for logo.png (checks your exact frontend structure)
+// Target candidate paths for logo.png (relative to package and process root)
 const CANDIDATE_PATHS = [
-	"C:\\Users\\sansk\\Downloads\\udaan-scholarship-finder\\frontend\\src\\assets\\images\\logo.png",
-	path.resolve(__dirname, "../../frontend/src/assets/images/logo.png"),
 	path.resolve(__dirname, "../../../frontend/src/assets/images/logo.png"),
+	path.resolve(__dirname, "../../frontend/src/assets/images/logo.png"),
 	path.resolve(process.cwd(), "frontend/src/assets/images/logo.png"),
 	path.resolve(process.cwd(), "../frontend/src/assets/images/logo.png"),
 	process.env.LOGO_PATH,

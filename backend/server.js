@@ -20,7 +20,7 @@ import {
 	closeReminderWorker,
 } from "./src/workers/reminderWorker.js";
 import { closeReminderQueue } from "./src/queues/reminderQueue.js";
-import { closeRedisClient } from "./src/config/redis.js";
+import { closeRedisClient, isRedisAvailable } from "./src/config/redis.js";
 import { bootstrapDatabase } from "./src/utils/bootstrapDatabase.js";
 
 const app = express();
@@ -114,8 +114,90 @@ app.use("/verify", verifyRoutes);
 app.use("/user/profile", profileRoutes);
 app.use("/bookmarks", bookmarkRoutes);
 
+// Health and Readiness Check Endpoint
+const getHealthStatus = () => {
+	const mongoState = mongoose.connection.readyState;
+	const mongoStatusMap = {
+		0: "disconnected",
+		1: "connected",
+		2: "connecting",
+		3: "disconnecting",
+	};
+
+	const isDbHealthy = mongoState === 1;
+	const isCacheHealthy = isRedisAvailable();
+
+	return {
+		status: isDbHealthy ? "healthy" : "degraded",
+		timestamp: new Date().toISOString(),
+		uptime: Math.round(process.uptime()),
+		environment: process.env.NODE_ENV || "development",
+		services: {
+			database: {
+				status: mongoStatusMap[mongoState] || "unknown",
+				healthy: isDbHealthy,
+			},
+			redis: {
+				status: isCacheHealthy ? "connected" : "fallback_mode",
+				healthy: isCacheHealthy,
+			},
+			crawlerScheduler: {
+				active: crawlerScheduler.active,
+			},
+			notificationScheduler: {
+				active: notificationScheduler.active,
+			},
+		},
+	};
+};
+
+app.get("/health", (req, res) => {
+	const health = getHealthStatus();
+	res.status(health.status === "healthy" ? 200 : 503).json(health);
+});
+app.get("/api/health", (req, res) => {
+	const health = getHealthStatus();
+	res.status(health.status === "healthy" ? 200 : 503).json(health);
+});
+
 app.get("/", (req, res) => {
 	res.send("Backend running...");
+});
+
+// 404 Handler for undefined API routes
+app.use((req, res, next) => {
+	res.status(404).json({
+		success: false,
+		message: `Route not found: ${req.method} ${req.originalUrl}`,
+	});
+});
+
+// Centralized JSON Error Handler Middleware
+app.use((err, req, res, next) => {
+	console.error("[ServerError]", err);
+
+	// Handle malformed JSON body from express.json()
+	if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+		return res.status(400).json({
+			success: false,
+			message: "Malformed JSON payload in request body",
+		});
+	}
+
+	// Handle MongoDB CastError
+	if (err.name === "CastError") {
+		return res.status(400).json({
+			success: false,
+			message: `Invalid format for field '${err.path}'`,
+		});
+	}
+
+	const statusCode = err.statusCode || err.status || 500;
+	return res.status(statusCode).json({
+		success: false,
+		message: err.message || "Internal server error",
+		...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+	});
 });
 const PORT = process.env.PORT || 5000;
 

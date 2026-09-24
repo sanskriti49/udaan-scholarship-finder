@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Bookmark from "../models/Bookmark.js";
 import Scholarship from "../models/Scholarship.js";
 import User from "../models/User.js";
@@ -12,14 +13,19 @@ export const getBookmarks = async (req, res) => {
 		const bookmarks = await Bookmark.find({ user: req.user._id })
 			.populate({
 				path: "scholarship",
-				select: "title organization deadline amount category level state slug trustScore hasChanges",
+				select:
+					"title organization deadline amount category level state slug trustScore hasChanges latestChangeSummary status statusReason sourceType applicationLink officialLinks requiredDocuments summary description verified popular fieldEvidence rules provenanceQuotes",
 			})
 			.sort({ createdAt: -1 })
 			.lean();
 
 		const scholarships = bookmarks
-			.map((b) => b.scholarship)
-			.filter(Boolean);
+			.filter((b) => b.scholarship)
+			.map((b) => ({
+				...b.scholarship,
+				isBookmarked: true,
+				bookmarkedAt: b.createdAt,
+			}));
 
 		return res.status(200).json({
 			success: true,
@@ -44,6 +50,13 @@ export const toggleBookmark = async (req, res) => {
 	try {
 		const { scholarshipId } = req.params;
 
+		if (!scholarshipId || !mongoose.Types.ObjectId.isValid(scholarshipId)) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid scholarship ID format",
+			});
+		}
+
 		const scholarship = await Scholarship.findById(scholarshipId).lean();
 		if (!scholarship) {
 			return res.status(404).json({
@@ -66,11 +79,23 @@ export const toggleBookmark = async (req, res) => {
 			});
 		}
 
-		// Create bookmark
-		const bookmark = await Bookmark.create({
-			user: req.user._id,
-			scholarship: scholarshipId,
-		});
+		// Create bookmark with idempotent handling for concurrent requests
+		let bookmark;
+		try {
+			bookmark = await Bookmark.create({
+				user: req.user._id,
+				scholarship: scholarshipId,
+			});
+		} catch (createErr) {
+			if (createErr.code === 11000) {
+				return res.status(200).json({
+					success: true,
+					bookmarked: true,
+					message: "Scholarship already bookmarked",
+				});
+			}
+			throw createErr;
+		}
 
 		// Queue real-time BullMQ countdown alerts for active deadline
 		if (scholarship.deadline && new Date(scholarship.deadline).getTime() > Date.now()) {
@@ -127,6 +152,14 @@ export const toggleBookmark = async (req, res) => {
 export const removeBookmark = async (req, res) => {
 	try {
 		const { scholarshipId } = req.params;
+
+		if (!scholarshipId || !mongoose.Types.ObjectId.isValid(scholarshipId)) {
+			return res.status(400).json({
+				success: false,
+				message: "Invalid scholarship ID format",
+			});
+		}
+
 		await Bookmark.findOneAndDelete({
 			user: req.user._id,
 			scholarship: scholarshipId,

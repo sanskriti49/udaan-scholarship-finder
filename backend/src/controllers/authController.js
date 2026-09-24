@@ -4,32 +4,37 @@ import User from "../models/User.js";
 import generateToken from "../utils/generateToken.js";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const registerUser = async (req, res) => {
 	try {
 		const { name, email, password } = req.body;
+		const rawName = String(name || "").trim();
+		const rawEmail = String(email || "").trim().toLowerCase();
+		const rawPassword = String(password || "");
 
-		if (!name || !email || !password) {
+		if (!rawName || !rawEmail || !rawPassword) {
 			return res.status(400).json({ message: "All fields are required" });
 		}
-		if (password.length < 6) {
+		if (!EMAIL_REGEX.test(rawEmail)) {
+			return res.status(400).json({ message: "Please provide a valid email address" });
+		}
+		if (rawPassword.length < 6) {
 			return res
 				.status(400)
 				.json({ message: "Password must be at least 6 characters" });
 		}
 
-		const existingUser = await User.findOne({ email });
+		const existingUser = await User.findOne({ email: rawEmail });
 		if (existingUser) {
 			return res.status(400).json({ message: "User already exists" });
 		}
 
-		const salt = await bcrypt.genSalt(10);
-		const hashedPassword = await bcrypt.hash(password, salt);
-
+		// userSchema.pre("save") safely hashes the password
 		const user = await User.create({
-			name,
-			email,
-			password,
+			name: rawName,
+			email: rawEmail,
+			password: rawPassword,
 			authProvider: "local",
 		});
 
@@ -53,14 +58,19 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
 	try {
 		const { email, password } = req.body;
+		const rawEmail = String(email || "").trim().toLowerCase();
+		const rawPassword = String(password || "");
 
-		if (!email || !password) {
+		if (!rawEmail || !rawPassword) {
 			return res
 				.status(400)
 				.json({ message: "Email and password are required" });
 		}
+		if (!EMAIL_REGEX.test(rawEmail)) {
+			return res.status(400).json({ message: "Please provide a valid email address" });
+		}
 
-		const user = await User.findOne({ email }).select("+password");
+		const user = await User.findOne({ email: rawEmail }).select("+password");
 		if (!user) {
 			return res.status(401).json({ message: "Invalid email or password" });
 		}

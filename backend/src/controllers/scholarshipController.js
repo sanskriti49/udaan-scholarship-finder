@@ -24,6 +24,20 @@ function withLiveStatus(doc, now = new Date()) {
 	const s = computeStatus(doc, now);
 	return { ...doc, status: s.status, statusReason: s.reason, stale: s.stale };
 }
+
+let cachedRecentUpdates = { count: 0, expiresAt: 0 };
+async function getRecentUpdatesCount() {
+	const now = Date.now();
+	if (now < cachedRecentUpdates.expiresAt) {
+		return cachedRecentUpdates.count;
+	}
+	const count = await Scholarship.countDocuments({
+		...PUBLIC_FILTER,
+		hasChanges: true,
+	});
+	cachedRecentUpdates = { count, expiresAt: now + 60000 };
+	return count;
+}
 import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 import { getRedisClient, isRedisAvailable } from "../config/redis.js";
 
@@ -296,10 +310,7 @@ export const getScholarships = async (req, res) => {
 		const now = new Date();
 		scholarships = scholarships.map((d) => withLiveStatus(d, now));
 
-		const recentUpdatesCount = await Scholarship.countDocuments({
-			...PUBLIC_FILTER,
-			hasChanges: true,
-		});
+		const recentUpdatesCount = await getRecentUpdatesCount();
 
 		return res.status(200).json({
 			success: true,
@@ -552,12 +563,12 @@ export const evaluateScholarships = async (req, res) => {
 				},
 			};
 
-			if (evaluation.isEligible) {
-				matched.push(cardData);
-			} else if (evaluation.failedRules.length > 0) {
+			if (evaluation.failedRules.length > 0) {
 				ineligible.push(cardData);
 			} else if (evaluation.unknownRules.length > 0) {
 				missingProfileData.push(cardData);
+			} else if (evaluation.isEligible) {
+				matched.push(cardData);
 			}
 		}
 
