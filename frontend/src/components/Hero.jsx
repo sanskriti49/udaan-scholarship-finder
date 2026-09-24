@@ -10,6 +10,12 @@ import {
 } from "lucide-react";
 import { CategoryMotifIcon } from "./CategoryMotif";
 import { Stamp } from "./PageKit";
+import {
+	ShockedStudent,
+	CornerPeeker,
+	CoinHugger,
+	DoodleSparkle,
+} from "./AnimatedIllustrations";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -97,8 +103,15 @@ function Hero() {
 							Less scrolling.
 							<br />
 							More{" "}
-							<span className="ud-display font-extrabold underline decoration-yellow-300 decoration-[5px] underline-offset-6 text-emerald-950">
+							<span className="ud-display inline-block relative font-extrabold underline decoration-yellow-300 decoration-[5px] underline-offset-6 text-emerald-950">
 								“wait, I qualify for this?”
+								<span className="absolute -top-14 -right-20 hidden md:inline-flex transform rotate-6 hover:rotate-0 transition-transform pointer-events-none">
+									<ShockedStudent
+										size={66}
+										showBubble={true}
+										bubbleText="Wait... ME?!"
+									/>
+								</span>
 							</span>
 						</h1>
 
@@ -186,6 +199,11 @@ function Hero() {
 
 							{/* Main Discovery Anchor Card (Editorial Scholarship Preview) */}
 							<div className="relative z-10 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-5 sm:p-6 shadow-[6px_6px_0px_0px_rgba(2,44,34,1)] transition-transform hover:-translate-y-1 duration-200">
+								{/* Cute peeker on the top right edge */}
+								<div className="absolute -top-5 right-16 hidden sm:block pointer-events-none z-30">
+									<CornerPeeker size={44} />
+								</div>
+
 								{/* Card Illustrated Header */}
 								<div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-dashed border-emerald-950/15">
 									<div className="flex items-center gap-2">
@@ -230,13 +248,19 @@ function Hero() {
 
 								{/* Card Bottom Grant Value + Action */}
 								<div className="mt-4 pt-3.5 border-t-[1.5px] border-emerald-950/15 flex items-center justify-between">
-									<div>
-										<span className="ud-display text-2xl sm:text-3xl font-extrabold text-emerald-950">
-											₹50,000
-										</span>
-										<span className="text-xs font-semibold text-emerald-950/55 ml-1 font-sans">
-											/ year
-										</span>
+									<div className="flex items-center gap-2">
+										<CoinHugger
+											size={42}
+											className="shrink-0 hidden xs:block"
+										/>
+										<div>
+											<span className="ud-display text-2xl sm:text-3xl font-extrabold text-emerald-950">
+												₹50,000
+											</span>
+											<span className="text-xs font-semibold text-emerald-950/55 ml-1 font-sans">
+												/ year
+											</span>
+										</div>
 									</div>
 
 									<button

@@ -19,7 +19,6 @@ import { formatGrant } from "../utils/formatGrant";
 import { PageStyles, Stamp } from "../components/PageKit";
 import headerImg from "../assets/images/edu.jpg";
 
-
 const COMMON_DOCUMENTS = [
 	{ code: "INCOME_CERT", name: "Family Income Certificate" },
 	{ code: "MARKSHEET", name: "10th / 12th / Semester Marksheet" },
@@ -70,7 +69,6 @@ const STATES = [
 	{ value: "Tamil Nadu", label: "Tamil Nadu" },
 ];
 
-
 function getChecks(formData, documentsHeld) {
 	return [
 		{
@@ -95,7 +93,6 @@ function getChecks(formData, documentsHeld) {
 		},
 	];
 }
-
 
 const inputCls =
 	"w-full rounded-lg border-[1.5px] border-emerald-950/40 bg-white px-3.5 py-2.5 text-[15px] text-emerald-950 placeholder:text-emerald-950/40 transition-colors hover:border-emerald-950 focus:border-emerald-950 focus:outline-none focus:ring-4 focus:ring-yellow-200";
@@ -198,7 +195,6 @@ function ResultTab({ active, onClick, tone, children }) {
 		</button>
 	);
 }
-
 
 export default function EligibilityPage() {
 	const [formData, setFormData] = useState({
@@ -323,7 +319,7 @@ export default function EligibilityPage() {
 			<section className="mx-auto max-w-7xl px-5 pb-10 pt-12 sm:px-8 md:pb-14 md:pt-16 lg:pt-18">
 				<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_550px] lg:gap-12">
 					<div>
-						<h1 className="max-w-2xl font-serif text-5xl font-medium leading-[0.98] sm:text-6xl md:text-7xl">
+						<h1 className="font-georgia max-w-2xl text-5xl font-medium leading-[0.98] sm:text-6xl md:text-7xl">
 							Find out what you actually qualify for.
 						</h1>
 
@@ -655,8 +651,7 @@ export default function EligibilityPage() {
 											</p>
 										</div>
 									) : (
-										<div className="grid gap-4">
-										</div>
+										<div className="grid gap-4"></div>
 									))}
 							</div>
 						</div>

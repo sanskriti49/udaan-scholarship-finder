@@ -252,14 +252,16 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 							{exactGuidelinePdf && (
 								<>
 									<span aria-hidden>·</span>
-									<span className="font-semibold text-emerald-950/70">Official PDF</span>
+									<span className="font-semibold text-emerald-950/70">
+										Official PDF
+									</span>
 								</>
 							)}
 						</p>
 
 						<h2
 							id="evidence-modal-title"
-							className="ud-display mt-2 text-2xl font-extrabold leading-tight text-emerald-950 sm:text-3xl"
+							className="font-serif mt-2 text-2xl font-extrabold leading-tight text-emerald-950 sm:text-3xl"
 						>
 							{scholarship.title}
 						</h2>
@@ -289,9 +291,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 
 				{/* Quick Official Links Banner */}
 				<div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-[1.5px] border-dashed border-emerald-950/20 bg-emerald-50/50 px-6 py-2.5 text-xs">
-					<span className="font-bold text-emerald-950/70">
-						Official Links:
-					</span>
+					<span className="font-bold text-emerald-950/70">Official Links:</span>
 					<div className="flex flex-wrap items-center gap-2">
 						{exactGuidelinePdf && (
 							<a
@@ -337,7 +337,9 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 							>
 								<Icon
 									size={13}
-									className={isActive ? "text-yellow-200" : "text-emerald-950/60"}
+									className={
+										isActive ? "text-yellow-200" : "text-emerald-950/60"
+									}
 								/>
 								<span>{sec.label}</span>
 								{sec.count !== null && (
@@ -363,7 +365,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 							{exactGuidelinePdf ? (
 								<div className="space-y-3 rounded-2xl border-[1.5px] border-emerald-950 bg-emerald-50/70 p-5">
 									<div className="space-y-1">
-										<h4 className="ud-display flex items-center gap-2 text-base font-bold text-emerald-950">
+										<h4 className="font-serif flex items-center gap-2 text-base font-bold text-emerald-950">
 											<FileText size={17} className="text-emerald-800" />
 											Official Scheme Guidelines
 										</h4>
@@ -389,7 +391,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 								</div>
 							) : (
 								<div className="space-y-1 rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/50 p-4">
-									<h4 className="ud-display flex items-center gap-2 text-base font-bold text-emerald-950">
+									<h4 className="font-serif flex items-center gap-2 text-base font-bold text-emerald-950">
 										<ShieldCheck size={16} className="text-emerald-800" />
 										Official Scheme Verification
 									</h4>
@@ -407,14 +409,15 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 
 							<div>
 								<div className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
-									<h4 className="ud-display flex items-center gap-1.5 text-base font-bold text-emerald-950">
+									<h4 className="font-serif flex items-center gap-1.5 text-base font-bold text-emerald-950">
 										<Sparkles size={16} className="text-emerald-800" />
 										Official Guidelines & Direct Quotes (
 										{effectiveQuotes.length})
 									</h4>
 									{isLoadingEvidence && (
 										<span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-950/55">
-											<Loader2 size={12} className="animate-spin" /> Verifying live source...
+											<Loader2 size={12} className="animate-spin" /> Verifying
+											live source...
 										</span>
 									)}
 								</div>
@@ -484,7 +487,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					{activeSection === "rules" && (
 						<div className="space-y-4">
 							<div>
-								<h4 className="ud-display text-lg font-bold text-emerald-950">
+								<h4 className="font-serif text-lg font-bold text-emerald-950">
 									Who Can Apply (Eligibility Criteria)
 								</h4>
 								<p className="text-sm text-emerald-950/65">
@@ -541,11 +544,13 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 						<div className="space-y-4">
 							<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
 								<div>
-									<h4 className="ud-display text-lg font-bold text-emerald-950">
-										Required Documents ({docs.length > 0 ? docs.length : "Standard"})
+									<h4 className="font-serif text-lg font-bold text-emerald-950">
+										Required Documents (
+										{docs.length > 0 ? docs.length : "Standard"})
 									</h4>
 									<p className="text-sm text-emerald-950/65">
-										Keep these documents ready for verification when submitting your application.
+										Keep these documents ready for verification when submitting
+										your application.
 									</p>
 								</div>
 								<Link
@@ -597,7 +602,9 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 										Standard verification documents are required:
 									</p>
 									<p className="mt-1.5 text-xs text-emerald-950/60 leading-relaxed max-w-lg mx-auto">
-										Aadhaar Card, institutional Bonafide / ID card, qualifying semester/board marksheets, bank account passbook (DBT enabled), and family income certificate (if applicable).
+										Aadhaar Card, institutional Bonafide / ID card, qualifying
+										semester/board marksheets, bank account passbook (DBT
+										enabled), and family income certificate (if applicable).
 									</p>
 								</div>
 							)}
@@ -610,7 +617,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 								<span className="text-xs font-bold uppercase tracking-wider text-emerald-950/50 block">
 									Organizing Ministry or Department
 								</span>
-								<h3 className="ud-display text-2xl font-bold text-emerald-950">
+								<h3 className="font-serif text-2xl font-bold text-emerald-950">
 									{scholarship.organization}
 								</h3>
 								<p className="text-[15px] leading-relaxed text-emerald-950/75">
@@ -652,7 +659,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 					{activeSection === "history" && history.length > 0 && (
 						<div className="space-y-4">
 							<div>
-								<h4 className="ud-display text-lg font-bold text-emerald-950 mb-1">
+								<h4 className="font-serif text-lg font-bold text-emerald-950 mb-1">
 									Scheme Update History
 								</h4>
 								<p className="text-sm text-emerald-950/65">

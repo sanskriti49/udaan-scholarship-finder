@@ -41,17 +41,19 @@ import {
 	cleanOfficialUrl,
 	isGenuinePdf,
 } from "../utils/formatEvidence";
-import {
-	emitBookmarkChanged,
-	onBookmarkChanged,
-} from "../utils/bookmarkSync";
+import { emitBookmarkChanged, onBookmarkChanged } from "../utils/bookmarkSync";
 import { PageStyles } from "../components/PageKit";
 import {
 	CategoryCardHeader,
 	CategoryMotifIcon,
-	EmptyBoardIllustration,
 	getCategoryTheme,
 } from "../components/CategoryMotif";
+import {
+	BoardCurator,
+	CablesDoctor,
+	ConfusedDetective,
+	DoodleSparkle,
+} from "../components/AnimatedIllustrations";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -66,7 +68,9 @@ function DeadlineChip({ deadline }) {
 	}
 	const d = new Date(deadline);
 	const now = new Date();
-	const diffDays = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+	const diffDays = Math.ceil(
+		(d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+	);
 	const isUrgent = diffDays >= 0 && diffDays <= 7;
 	const isPast = diffDays < 0;
 
@@ -197,9 +201,7 @@ export default function SavedScholarships() {
 		setRemovingSet((prev) => new Set(prev).add(id));
 
 		// Save backup for undo
-		const removedIndex = savedItems.findIndex(
-			(s) => (s._id || s.id) === id,
-		);
+		const removedIndex = savedItems.findIndex((s) => (s._id || s.id) === id);
 		const removedItem = savedItems[removedIndex];
 
 		// Optimistic removal
@@ -264,9 +266,7 @@ export default function SavedScholarships() {
 	// Categories available in saved items
 	const categories = [
 		"All",
-		...Array.from(
-			new Set(savedItems.map((s) => s.category).filter(Boolean)),
-		),
+		...Array.from(new Set(savedItems.map((s) => s.category).filter(Boolean))),
 	];
 
 	// Filtered & sorted items
@@ -274,7 +274,9 @@ export default function SavedScholarships() {
 		const matchesQuery =
 			!searchQuery.trim() ||
 			(s.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-			(s.organization || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+			(s.organization || "")
+				.toLowerCase()
+				.includes(searchQuery.toLowerCase()) ||
 			(s.state || "").toLowerCase().includes(searchQuery.toLowerCase());
 
 		const matchesCat =
@@ -374,8 +376,9 @@ export default function SavedScholarships() {
 						</h2>
 
 						<p className="mt-2.5 text-sm sm:text-base text-emerald-950/70 leading-relaxed font-medium">
-							Your bookmarked opportunities and proactive countdown alerts are tied
-							to your student account. Sign in to access your personal catalog.
+							Your bookmarked opportunities and proactive countdown alerts are
+							tied to your student account. Sign in to access your personal
+							catalog.
 						</p>
 
 						<div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -405,7 +408,8 @@ export default function SavedScholarships() {
 								<ShieldCheck size={14} className="text-emerald-800" /> 100% Free
 							</span>
 							<span className="flex items-center gap-1.5">
-								<Sparkles size={14} className="text-amber-700" /> Multi-device Sync
+								<Sparkles size={14} className="text-amber-700" /> Multi-device
+								Sync
 							</span>
 						</div>
 					</div>
@@ -500,22 +504,23 @@ export default function SavedScholarships() {
 
 						{/* Error State */}
 						{!loading && error && (
-							<div className="my-8 rounded-2xl border-[1.5px] border-rose-300 bg-white p-8 max-w-lg mx-auto text-center space-y-4">
-								<span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border-[1.5px] border-rose-700 bg-rose-50 text-rose-700">
-									<AlertCircle size={22} />
-								</span>
+							<div className="my-8 rounded-3xl border-[1.5px] border-rose-300 bg-white p-7 sm:p-9 max-w-lg mx-auto text-center space-y-4 shadow-[3px_3px_0px_0px_rgba(225,29,72,0.12)]">
+								<div className="mx-auto flex justify-center">
+									<CablesDoctor size={76} />
+								</div>
 								<div>
 									<h3 className="ud-display text-2xl font-bold text-emerald-950">
 										{error}
 									</h3>
-									<p className="mt-1 text-sm text-emerald-950/70">
+									<p className="mt-1 text-sm text-emerald-950/70 font-medium">
 										We encountered a connection issue fetching your saved list.
+										Your saved state is preserved.
 									</p>
 								</div>
 								<button
 									type="button"
 									onClick={fetchBookmarks}
-									className={`cursor-pointer rounded-full bg-emerald-800 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-900 ${focusRing}`}
+									className={`cursor-pointer rounded-full bg-emerald-800 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-900 transition ${focusRing}`}
 								>
 									Try Again
 								</button>
@@ -526,10 +531,11 @@ export default function SavedScholarships() {
 						{!loading && !error && savedItems.length === 0 && (
 							<div className="my-10 rounded-3xl border-[2px] border-emerald-950 bg-white p-8 sm:p-12 text-center max-w-xl mx-auto shadow-[4px_4px_0px_0px_rgba(2,44,34,1)]">
 								<div className="mx-auto flex justify-center mb-5">
-									<EmptyBoardIllustration size={110} />
+									<BoardCurator size={110} />
 								</div>
 
 								<div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-950/20 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-900 uppercase tracking-wide mb-3">
+									<DoodleSparkle size={13} color="#10B981" />
 									<span>Your Scholarship Pinboard</span>
 								</div>
 
@@ -538,7 +544,8 @@ export default function SavedScholarships() {
 								</h3>
 
 								<p className="mt-3 text-[15px] text-emerald-950/75 leading-relaxed font-medium max-w-md mx-auto">
-									Save schemes you qualify for to track official deadlines, document requirements, and policy notices all in one place.
+									Save schemes you qualify for to track official deadlines,
+									document requirements, and policy notices all in one place.
 								</p>
 
 								{/* Quick suggestions */}
@@ -581,12 +588,16 @@ export default function SavedScholarships() {
 							!error &&
 							savedItems.length > 0 &&
 							sortedItems.length === 0 && (
-								<div className="my-8 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-8 text-center max-w-md mx-auto">
+								<div className="my-8 rounded-3xl border-[1.5px] border-emerald-950 bg-white p-7 text-center max-w-md mx-auto shadow-xs">
+									<div className="mx-auto flex justify-center mb-3">
+										<ConfusedDetective size={72} />
+									</div>
 									<h3 className="ud-display text-xl font-bold text-emerald-950">
 										No saved schemes match your filter
 									</h3>
 									<p className="mt-1.5 text-xs text-emerald-950/70 font-medium">
-										Try adjusting your search terms or selecting another category.
+										Try adjusting your search terms or selecting another
+										category.
 									</p>
 									<button
 										type="button"
@@ -594,7 +605,7 @@ export default function SavedScholarships() {
 											setSearchQuery("");
 											setSelectedCategory("All");
 										}}
-										className={`mt-4 cursor-pointer rounded-full border-[1.5px] border-emerald-950 bg-yellow-200 px-4 py-2 text-xs font-bold text-emerald-950 hover:bg-yellow-300 ${focusRing}`}
+										className={`mt-4 cursor-pointer rounded-full border-[1.5px] border-emerald-950 bg-yellow-200 px-4 py-2 text-xs font-bold text-emerald-950 hover:bg-yellow-300 transition ${focusRing}`}
 									>
 										Clear Filters
 									</button>
@@ -670,7 +681,9 @@ export default function SavedScholarships() {
 															) : grantInfo ? (
 																<p className="flex items-baseline gap-1.5">
 																	<span className="ud-display text-2xl font-extrabold text-emerald-950">
-																		{grantInfo.isStipend ? grantInfo.main : `₹${grantInfo.main}`}
+																		{grantInfo.isStipend
+																			? grantInfo.main
+																			: `₹${grantInfo.main}`}
 																	</span>
 																	{grantInfo.period && (
 																		<span className="text-xs font-semibold text-emerald-950/55">
@@ -744,7 +757,9 @@ export default function SavedScholarships() {
 							style={{ width: "min(580px, 100vw)" }}
 						>
 							{(() => {
-								const drawerTheme = getCategoryTheme(selectedScholarship.category);
+								const drawerTheme = getCategoryTheme(
+									selectedScholarship.category,
+								);
 								return (
 									<div
 										className="relative overflow-hidden shrink-0 border-b-[1.5px] border-emerald-950 px-6 py-5"
@@ -752,7 +767,10 @@ export default function SavedScholarships() {
 									>
 										{/* Watermark in background */}
 										<div className="absolute -right-4 -bottom-4 opacity-15 pointer-events-none transform rotate-12 scale-150">
-											<CategoryMotifIcon category={selectedScholarship.category} size={96} />
+											<CategoryMotifIcon
+												category={selectedScholarship.category}
+												size={96}
+											/>
 										</div>
 
 										<div className="relative z-10 flex items-start justify-between gap-4">
@@ -766,8 +784,13 @@ export default function SavedScholarships() {
 															color: drawerTheme.colors.text,
 														}}
 													>
-														<CategoryMotifIcon category={selectedScholarship.category} size={15} />
-														<span>{selectedScholarship.category || "Scholarship"}</span>
+														<CategoryMotifIcon
+															category={selectedScholarship.category}
+															size={15}
+														/>
+														<span>
+															{selectedScholarship.category || "Scholarship"}
+														</span>
 													</span>
 
 													<span className="inline-flex items-center gap-1 rounded-full border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-800">
@@ -787,14 +810,18 @@ export default function SavedScholarships() {
 													<p className="text-sm font-medium text-emerald-950/65">
 														{selectedScholarship.organization}
 													</p>
-													<DeadlineChip deadline={selectedScholarship.deadline} />
+													<DeadlineChip
+														deadline={selectedScholarship.deadline}
+													/>
 												</div>
 											</div>
 
 											<div className="flex items-center gap-2 shrink-0">
 												<button
 													type="button"
-													onClick={() => handleRemoveBookmark(selectedScholarship)}
+													onClick={() =>
+														handleRemoveBookmark(selectedScholarship)
+													}
 													title="Remove bookmark"
 													className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-rose-50 text-emerald-800 hover:text-rose-700 transition ${focusRing}`}
 												>
@@ -849,7 +876,8 @@ export default function SavedScholarships() {
 											)}
 										</div>
 										<span className="mt-2 block text-xs text-emerald-950/60 font-medium">
-											Disbursed directly via DBT to Aadhaar-seeded student bank account.
+											Disbursed directly via DBT to Aadhaar-seeded student bank
+											account.
 										</span>
 									</div>
 								)}
@@ -891,7 +919,9 @@ export default function SavedScholarships() {
 															{doc.name}
 														</span>
 														<span className="mt-0.5 block text-xs text-emerald-950/55">
-															{doc.mandatory !== false ? "Required" : "Optional"}
+															{doc.mandatory !== false
+																? "Required"
+																: "Optional"}
 														</span>
 													</span>
 												</li>
@@ -899,7 +929,8 @@ export default function SavedScholarships() {
 										</ul>
 									) : (
 										<p className="text-sm text-emerald-950/70">
-											Standard student documents required: College ID, marksheet, income certificate, and DBT passbook.
+											Standard student documents required: College ID,
+											marksheet, income certificate, and DBT passbook.
 										</p>
 									)}
 								</DrawerSection>

@@ -50,9 +50,14 @@ import {
 	CategoryCardHeader,
 	CategoryMotifIcon,
 	ScholarshipsHeroCluster,
-	EmptyFilterIllustration,
 	getCategoryTheme,
 } from "../components/CategoryMotif";
+import {
+	CoinHugger,
+	ConfusedDetective,
+	CablesDoctor,
+	DoodleSparkle,
+} from "../components/AnimatedIllustrations";
 
 const CATEGORIES = [
 	"All",
@@ -236,7 +241,8 @@ function ScholarshipCard({
 						<div className="md:col-span-7 flex flex-col justify-between">
 							<div>
 								<div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-950/20 bg-yellow-200/80 px-2.5 py-0.5 text-[11px] font-bold text-emerald-950 mb-2.5">
-									★ Flagship Opportunity
+									<DoodleSparkle size={12} color="#D97706" />
+									<span>Flagship Opportunity</span>
 								</div>
 								<h3>
 									<button
@@ -247,7 +253,9 @@ function ScholarshipCard({
 										{s.title}
 									</button>
 								</h3>
-								<p className="mt-1 text-sm font-medium text-emerald-950/55">{s.organization}</p>
+								<p className="mt-1 text-sm font-medium text-emerald-950/55">
+									{s.organization}
+								</p>
 								<p className="mt-3 text-[15px] leading-relaxed text-emerald-950/75 line-clamp-3">
 									{s.summary || s.description}
 								</p>
@@ -277,15 +285,18 @@ function ScholarshipCard({
 									</span>
 									<DeadlineChip deadline={s.deadline} />
 								</div>
-								<div className="mt-3">
-									<span className="ud-display text-3xl font-extrabold text-emerald-950">
-										{grantInfo.main}
-									</span>
-									{grantInfo.period && (
-										<span className="text-sm font-semibold text-emerald-950/60 ml-1.5 font-sans">
-											{grantInfo.period}
+								<div className="mt-3 flex items-center justify-between gap-2">
+									<div>
+										<span className="ud-display text-3xl font-extrabold text-emerald-950">
+											{grantInfo.main}
 										</span>
-									)}
+										{grantInfo.period && (
+											<span className="text-sm font-semibold text-emerald-950/60 ml-1.5 font-sans">
+												{grantInfo.period}
+											</span>
+										)}
+									</div>
+									<CoinHugger size={42} className="shrink-0" />
 								</div>
 								{changeNotice && (
 									<p className="mt-2 text-xs text-emerald-950/70 line-clamp-2 border-l-2 border-yellow-400 pl-2">
@@ -348,7 +359,9 @@ function ScholarshipCard({
 						{s.title}
 					</button>
 				</h3>
-				<p className="mt-1 text-sm font-medium text-emerald-950/55">{s.organization}</p>
+				<p className="mt-1 text-sm font-medium text-emerald-950/55">
+					{s.organization}
+				</p>
 
 				<p className="mt-3 line-clamp-2 text-[15px] leading-relaxed text-emerald-950/75">
 					{s.summary || s.description}
@@ -787,7 +800,7 @@ export default function Scholarships() {
 			<section className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 md:pb-16 md:pt-16">
 				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.75fr)] lg:gap-16">
 					<div>
-						<h1 className="font-display text-[2.75rem] font-medium leading-[1.02] sm:text-6xl">
+						<h1 className="font-georgia text-[2.75rem] font-medium leading-[1.02] sm:text-6xl">
 							Scholarships hiding in plain sight? Not anymore.
 						</h1>
 						<p className="mt-5 max-w-[52ch] text-base leading-relaxed text-emerald-950/70 sm:text-lg">
@@ -1147,36 +1160,43 @@ export default function Scholarships() {
 									))}
 								</div>
 							) : error ? (
-								<div className="flex flex-col items-start gap-4 rounded-2xl border-[1.5px] border-rose-300 bg-white p-8">
-									<span className="flex h-11 w-11 items-center justify-center rounded-full border-[1.5px] border-rose-700 bg-rose-50">
-										<AlertCircle size={20} className="text-rose-700" />
-									</span>
-									<div>
-										<h3 className="ud-display text-2xl font-bold">{error}</h3>
-										<p className="mt-1.5 text-[15px] text-emerald-950/70 font-medium">
-											Your filters are still saved. Try loading again.
-										</p>
+								<div className="flex flex-col sm:flex-row items-center gap-6 rounded-3xl border-[1.5px] border-rose-300 bg-white p-7 sm:p-9 shadow-[3px_3px_0px_0px_rgba(225,29,72,0.15)]">
+									<div className="shrink-0 flex items-center justify-center p-3 rounded-2xl bg-rose-50 border-[1.5px] border-rose-200">
+										<CablesDoctor size={78} />
 									</div>
-									<button
-										type="button"
-										onClick={fetchLiveScholarships}
-										className={`cursor-pointer rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-900 ${focusRing}`}
-									>
-										Try again
-									</button>
+									<div className="flex-1 text-center sm:text-left space-y-2">
+										<h3 className="ud-display text-2xl font-bold text-emerald-950">
+											{error || "Loose connection to scholarship notice stream"}
+										</h3>
+										<p className="max-w-[48ch] text-[15px] text-emerald-950/70 font-medium leading-relaxed">
+											The scholarship service couldn't be reached right now.
+											Your selected filters and search query are safely
+											preserved!
+										</p>
+										<div className="pt-2">
+											<button
+												type="button"
+												onClick={fetchLiveScholarships}
+												className={`cursor-pointer rounded-full bg-emerald-800 px-6 py-2.5 text-sm font-bold text-white hover:bg-emerald-900 transition ${focusRing}`}
+											>
+												Try again
+											</button>
+										</div>
+									</div>
 								</div>
 							) : scholarships.length === 0 ? (
 								<div className="flex flex-col sm:flex-row items-center gap-6 rounded-3xl border-[1.5px] border-emerald-950 bg-white p-8 sm:p-10 shadow-[3px_3px_0px_0px_rgba(2,44,34,0.12)]">
 									<div className="shrink-0 flex items-center justify-center p-3 rounded-2xl bg-emerald-50 border-[1.5px] border-emerald-950/20">
-										<EmptyFilterIllustration size={80} />
+										<ConfusedDetective size={88} />
 									</div>
 									<div className="flex-1 text-center sm:text-left space-y-2">
 										<h3 className="ud-display text-2xl font-bold text-emerald-950">
 											No scheme matches that combination.
 										</h3>
 										<p className="max-w-[50ch] text-[15px] leading-relaxed text-emerald-950/75 font-medium">
-											Drop a filter, or search one word instead of a full phrase.
-											For example, “Merit” finds more active schemes than “merit based girls”.
+											Drop a filter, or search one word instead of a full
+											phrase. For example, “Merit” finds more active schemes
+											than “merit based girls”.
 										</p>
 										<div className="pt-2">
 											<button
@@ -1197,7 +1217,8 @@ export default function Scholarships() {
 											s.popular ||
 											s.isFeatured ||
 											s.hasChanges;
-										const isFeatured = isHighImpact && (idx === 0 || idx % 5 === 0);
+										const isFeatured =
+											isHighImpact && (idx === 0 || idx % 5 === 0);
 										return (
 											<ScholarshipCard
 												key={s._id || s.slug}
@@ -1238,7 +1259,9 @@ export default function Scholarships() {
 							style={{ width: "min(580px, 100vw)" }}
 						>
 							{(() => {
-								const drawerTheme = getCategoryTheme(selectedScholarship.category);
+								const drawerTheme = getCategoryTheme(
+									selectedScholarship.category,
+								);
 								return (
 									<div
 										className="relative overflow-hidden shrink-0 border-b-[1.5px] border-emerald-950 px-6 py-5"
@@ -1246,7 +1269,10 @@ export default function Scholarships() {
 									>
 										{/* Watermark in background */}
 										<div className="absolute -right-4 -bottom-4 opacity-15 pointer-events-none transform rotate-12 scale-150">
-											<CategoryMotifIcon category={selectedScholarship.category} size={96} />
+											<CategoryMotifIcon
+												category={selectedScholarship.category}
+												size={96}
+											/>
 										</div>
 
 										<div className="relative z-10 flex items-start justify-between gap-4">
@@ -1260,8 +1286,13 @@ export default function Scholarships() {
 															color: drawerTheme.colors.text,
 														}}
 													>
-														<CategoryMotifIcon category={selectedScholarship.category} size={15} />
-														<span>{selectedScholarship.category || "Scholarship"}</span>
+														<CategoryMotifIcon
+															category={selectedScholarship.category}
+															size={15}
+														/>
+														<span>
+															{selectedScholarship.category || "Scholarship"}
+														</span>
 													</span>
 
 													<span className="inline-flex items-center gap-1 rounded-full border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-800">
@@ -1269,7 +1300,9 @@ export default function Scholarships() {
 														Verified
 													</span>
 
-													{isGenuinePdf(selectedScholarship.officialLinks?.guidelinesUrl) && (
+													{isGenuinePdf(
+														selectedScholarship.officialLinks?.guidelinesUrl,
+													) && (
 														<span className="inline-flex items-center gap-1 rounded-full border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-950/70">
 															<FileText size={12} />
 															Official PDF
@@ -1288,7 +1321,9 @@ export default function Scholarships() {
 													<p className="text-sm font-medium text-emerald-950/65">
 														{selectedScholarship.organization}
 													</p>
-													<DeadlineChip deadline={selectedScholarship.deadline} />
+													<DeadlineChip
+														deadline={selectedScholarship.deadline}
+													/>
 												</div>
 											</div>
 
@@ -1406,7 +1441,8 @@ export default function Scholarships() {
 																		key={i}
 																		className="rounded-full border-[1.5px] border-emerald-950/25 bg-white px-3 py-1 text-xs font-bold text-emerald-950"
 																	>
-																		₹{opt.value?.toLocaleString("en-IN")} / {opt.period}
+																		₹{opt.value?.toLocaleString("en-IN")} /{" "}
+																		{opt.period}
 																	</span>
 																))}
 															</div>

@@ -30,7 +30,6 @@ function getFY(date) {
 const NOW_FY = getFY(new Date());
 const ACADEMIC_YEAR = `${NOW_FY.start}-${NOW_FY.start + 1}`;
 
-
 const CATEGORIES = [
 	{ id: "all", label: "All essentials" },
 	{ id: "central", label: "Central Govt (NSP)" },
@@ -161,7 +160,6 @@ const STATE_PORTALS = [
 	},
 ];
 
-
 const inputCls =
 	"w-full rounded-lg border-[1.5px] border-emerald-950/40 bg-white px-3.5 py-2.5 text-[15px] text-emerald-950 placeholder:text-emerald-950/40 transition-colors hover:border-emerald-950 focus:border-emerald-950 focus:outline-none focus:ring-4 focus:ring-yellow-200";
 
@@ -256,7 +254,6 @@ function ModalShell({ title, subtitle, onClose, children }) {
 		</div>
 	);
 }
-
 
 export default function DocumentVault() {
 	const [activeCategory, setActiveCategory] = useState("all");
@@ -355,7 +352,7 @@ export default function DocumentVault() {
 				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-14">
 					<div>
 						<div className="relative mt-6">
-							<h1 className="font-display text-5xl font-medium leading-[0.98] sm:text-6xl md:text-7xl">
+							<h1 className="font-georgia text-5xl font-medium leading-[0.98] sm:text-6xl md:text-7xl">
 								Check your papers before the portal does.
 							</h1>
 							<Stamp
@@ -466,9 +463,9 @@ export default function DocumentVault() {
 											<h3 className="font-sans text-xl font-bold leading-tight">
 												{doc.name}
 											</h3>
-											<p className="mt-1 font-heading text-sm text-emerald-950/65">
+											<p className="mt-1 font-sans text-sm text-emerald-950/85">
 												Issued by{" "}
-												<span className="font-medium text-emerald-950">
+												<span className="font-medium font-serif text-emerald-950">
 													{doc.authority}
 												</span>
 											</p>

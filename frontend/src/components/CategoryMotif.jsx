@@ -1,4 +1,5 @@
 import React from "react";
+import { CornerPeeker, CoinHugger } from "./AnimatedIllustrations";
 
 /**
  * Udaan Category Visual System
@@ -7,15 +8,59 @@ import React from "react";
  */
 
 export function normalizeCategoryKey(rawCategory = "") {
-	const cat = String(rawCategory || "").toLowerCase().trim();
-	if (cat.includes("merit") && (cat.includes("need") || cat.includes("mean"))) return "need";
-	if (cat.includes("stem") || cat.includes("tech") || cat.includes("engineer") || cat.includes("science")) return "stem";
-	if (cat.includes("women") || cat.includes("girl") || cat.includes("female")) return "women";
-	if (cat.includes("sc") || cat.includes("st") || cat.includes("obc") || cat.includes("caste") || cat.includes("dalit") || cat.includes("tribal")) return "scst";
-	if (cat.includes("minority") || cat.includes("inclusion") || cat.includes("bridge") || cat.includes("pwd") || cat.includes("disab")) return "minority";
-	if (cat.includes("need") || cat.includes("mean") || cat.includes("income") || cat.includes("finan")) return "need";
-	if (cat.includes("merit") || cat.includes("academic") || cat.includes("talent") || cat.includes("rank")) return "merit";
-	if (cat.includes("govt") || cat.includes("government") || cat.includes("state") || cat.includes("central") || cat.includes("national")) return "government";
+	const cat = String(rawCategory || "")
+		.toLowerCase()
+		.trim();
+	if (cat.includes("merit") && (cat.includes("need") || cat.includes("mean")))
+		return "need";
+	if (
+		cat.includes("stem") ||
+		cat.includes("tech") ||
+		cat.includes("engineer") ||
+		cat.includes("science")
+	)
+		return "stem";
+	if (cat.includes("women") || cat.includes("girl") || cat.includes("female"))
+		return "women";
+	if (
+		cat.includes("sc") ||
+		cat.includes("st") ||
+		cat.includes("obc") ||
+		cat.includes("caste") ||
+		cat.includes("dalit") ||
+		cat.includes("tribal")
+	)
+		return "scst";
+	if (
+		cat.includes("minority") ||
+		cat.includes("inclusion") ||
+		cat.includes("bridge") ||
+		cat.includes("pwd") ||
+		cat.includes("disab")
+	)
+		return "minority";
+	if (
+		cat.includes("need") ||
+		cat.includes("mean") ||
+		cat.includes("income") ||
+		cat.includes("finan")
+	)
+		return "need";
+	if (
+		cat.includes("merit") ||
+		cat.includes("academic") ||
+		cat.includes("talent") ||
+		cat.includes("rank")
+	)
+		return "merit";
+	if (
+		cat.includes("govt") ||
+		cat.includes("government") ||
+		cat.includes("state") ||
+		cat.includes("central") ||
+		cat.includes("national")
+	)
+		return "government";
 	return "general";
 }
 
@@ -170,14 +215,78 @@ export function CategoryMotifIcon({ category, size = 28, className = "" }) {
 					/>
 					<circle cx="22" cy="22" r="3.5" fill={accentColor} />
 					{/* Radiating hand-sketched spokes */}
-					<line x1="22" y1="9" x2="22" y2="18.5" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
-					<line x1="22" y1="25.5" x2="22" y2="35" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
-					<line x1="9" y1="22" x2="18.5" y2="22" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
-					<line x1="25.5" y1="22" x2="35" y2="22" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
-					<line x1="12.8" y1="12.8" x2="19.5" y2="19.5" stroke={strokeColor} strokeWidth="1.2" strokeLinecap="round" />
-					<line x1="24.5" y1="24.5" x2="31.2" y2="31.2" stroke={strokeColor} strokeWidth="1.2" strokeLinecap="round" />
-					<line x1="31.2" y1="12.8" x2="24.5" y2="19.5" stroke={strokeColor} strokeWidth="1.2" strokeLinecap="round" />
-					<line x1="19.5" y1="24.5" x2="12.8" y2="31.2" stroke={strokeColor} strokeWidth="1.2" strokeLinecap="round" />
+					<line
+						x1="22"
+						y1="9"
+						x2="22"
+						y2="18.5"
+						stroke={strokeColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="22"
+						y1="25.5"
+						x2="22"
+						y2="35"
+						stroke={strokeColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="9"
+						y1="22"
+						x2="18.5"
+						y2="22"
+						stroke={strokeColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="25.5"
+						y1="22"
+						x2="35"
+						y2="22"
+						stroke={strokeColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="12.8"
+						y1="12.8"
+						x2="19.5"
+						y2="19.5"
+						stroke={strokeColor}
+						strokeWidth="1.2"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="24.5"
+						y1="24.5"
+						x2="31.2"
+						y2="31.2"
+						stroke={strokeColor}
+						strokeWidth="1.2"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="31.2"
+						y1="12.8"
+						x2="24.5"
+						y2="19.5"
+						stroke={strokeColor}
+						strokeWidth="1.2"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="19.5"
+						y1="24.5"
+						x2="12.8"
+						y2="31.2"
+						stroke={strokeColor}
+						strokeWidth="1.2"
+						strokeLinecap="round"
+					/>
 				</svg>
 			);
 
@@ -459,9 +568,33 @@ export function CategoryMotifIcon({ category, size = 28, className = "" }) {
 					/>
 					<circle cx="22" cy="9.5" r="2.5" fill={accentColor} />
 					{/* Foundation Pillars */}
-					<line x1="8" y1="34" x2="8" y2="38" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" />
-					<line x1="36" y1="34" x2="36" y2="38" stroke={strokeColor} strokeWidth="2" strokeLinecap="round" />
-					<line x1="5" y1="38" x2="39" y2="38" stroke={strokeColor} strokeWidth="1.5" strokeLinecap="round" />
+					<line
+						x1="8"
+						y1="34"
+						x2="8"
+						y2="38"
+						stroke={strokeColor}
+						strokeWidth="2"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="36"
+						y1="34"
+						x2="36"
+						y2="38"
+						stroke={strokeColor}
+						strokeWidth="2"
+						strokeLinecap="round"
+					/>
+					<line
+						x1="5"
+						y1="38"
+						x2="39"
+						y2="38"
+						stroke={strokeColor}
+						strokeWidth="1.5"
+						strokeLinecap="round"
+					/>
 				</svg>
 			);
 
@@ -489,10 +622,24 @@ export function CategoryMotifIcon({ category, size = 28, className = "" }) {
 						strokeDasharray="4 2"
 					/>
 					{/* Central Nucleus / Compass Center */}
-					<circle cx="22" cy="22" r="5" fill="#A7F3D0" stroke={strokeColor} strokeWidth="1.75" />
+					<circle
+						cx="22"
+						cy="22"
+						r="5"
+						fill="#A7F3D0"
+						stroke={strokeColor}
+						strokeWidth="1.75"
+					/>
 					<circle cx="22" cy="22" r="2" fill={accentColor} />
 					{/* Orbiting Satellite Node */}
-					<circle cx="34" cy="14" r="2.8" fill={accentColor} stroke={strokeColor} strokeWidth="1.2" />
+					<circle
+						cx="34"
+						cy="14"
+						r="2.8"
+						fill={accentColor}
+						stroke={strokeColor}
+						strokeWidth="1.2"
+					/>
 					{/* Compass drafting arms */}
 					<path
 						d="M22 6V11"
@@ -540,7 +687,14 @@ export function CategoryMotifIcon({ category, size = 28, className = "" }) {
 						strokeWidth="1.75"
 						strokeLinejoin="round"
 					/>
-					<line x1="22" y1="14" x2="22" y2="34" stroke={strokeColor} strokeWidth="1.75" />
+					<line
+						x1="22"
+						y1="14"
+						x2="22"
+						y2="34"
+						stroke={strokeColor}
+						strokeWidth="1.75"
+					/>
 					{/* Bookmark ribbon */}
 					<path
 						d="M27 8V19L30 16L33 19V8"
@@ -565,11 +719,12 @@ export function CategoryBadge({
 	tilt = 0,
 }) {
 	const theme = getCategoryTheme(category);
-	const sizeStyles = {
-		sm: "text-[11px] px-2.5 py-0.5 gap-1.5",
-		md: "text-xs px-3 py-1 gap-2",
-		lg: "text-sm px-4 py-1.5 gap-2.5",
-	}[size] || "text-xs px-3 py-1 gap-2";
+	const sizeStyles =
+		{
+			sm: "text-[11px] px-2.5 py-0.5 gap-1.5",
+			md: "text-xs px-3 py-1 gap-2",
+			lg: "text-sm px-4 py-1.5 gap-2.5",
+		}[size] || "text-xs px-3 py-1 gap-2";
 
 	const iconSizes = { sm: 16, md: 19, lg: 24 }[size] || 19;
 
@@ -590,7 +745,9 @@ export function CategoryBadge({
 					className="shrink-0 -my-1"
 				/>
 			)}
-			<span className="truncate tracking-wide font-sans">{category || theme.label}</span>
+			<span className="truncate tracking-wide font-sans">
+				{category || theme.label}
+			</span>
 		</span>
 	);
 }
@@ -686,7 +843,14 @@ export function EmptyBoardIllustration({ size = 120, className = "" }) {
 				strokeLinecap="round"
 			/>
 			{/* Pin head */}
-			<circle cx="60" cy="12" r="6" fill="#FBBF24" stroke="#022C22" strokeWidth="2.5" />
+			<circle
+				cx="60"
+				cy="12"
+				r="6"
+				fill="#FBBF24"
+				stroke="#022C22"
+				strokeWidth="2.5"
+			/>
 			<circle cx="58.5" cy="10.5" r="1.5" fill="#FFFFFF" />
 
 			{/* Board interior lines / memo cards */}
@@ -715,10 +879,42 @@ export function EmptyBoardIllustration({ size = 120, className = "" }) {
 				stroke="#022C22"
 				strokeWidth="1.75"
 			/>
-			<line x1="70" y1="44" x2="88" y2="44" stroke="#78350F" strokeWidth="2" strokeLinecap="round" />
-			<line x1="70" y1="52" x2="84" y2="52" stroke="#78350F" strokeWidth="1.75" strokeLinecap="round" />
-			<line x1="70" y1="60" x2="86" y2="60" stroke="#78350F" strokeWidth="1.75" strokeLinecap="round" />
-			<line x1="70" y1="68" x2="80" y2="68" stroke="#78350F" strokeWidth="1.75" strokeLinecap="round" />
+			<line
+				x1="70"
+				y1="44"
+				x2="88"
+				y2="44"
+				stroke="#78350F"
+				strokeWidth="2"
+				strokeLinecap="round"
+			/>
+			<line
+				x1="70"
+				y1="52"
+				x2="84"
+				y2="52"
+				stroke="#78350F"
+				strokeWidth="1.75"
+				strokeLinecap="round"
+			/>
+			<line
+				x1="70"
+				y1="60"
+				x2="86"
+				y2="60"
+				stroke="#78350F"
+				strokeWidth="1.75"
+				strokeLinecap="round"
+			/>
+			<line
+				x1="70"
+				y1="68"
+				x2="80"
+				y2="68"
+				stroke="#78350F"
+				strokeWidth="1.75"
+				strokeLinecap="round"
+			/>
 
 			{/* Floating bookmark ribbon badge */}
 			<g transform="translate(24, 72)">
@@ -779,9 +975,36 @@ export function EmptyFilterIllustration({ size = 110, className = "" }) {
 				strokeDasharray="3 3"
 			/>
 			{/* Mock text lines */}
-			<line x1="30" y1="38" x2="60" y2="38" stroke="#022C22" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
-			<line x1="30" y1="46" x2="72" y2="46" stroke="#022C22" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
-			<line x1="30" y1="54" x2="66" y2="54" stroke="#022C22" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
+			<line
+				x1="30"
+				y1="38"
+				x2="60"
+				y2="38"
+				stroke="#022C22"
+				strokeWidth="2"
+				strokeLinecap="round"
+				opacity="0.3"
+			/>
+			<line
+				x1="30"
+				y1="46"
+				x2="72"
+				y2="46"
+				stroke="#022C22"
+				strokeWidth="2"
+				strokeLinecap="round"
+				opacity="0.3"
+			/>
+			<line
+				x1="30"
+				y1="54"
+				x2="66"
+				y2="54"
+				stroke="#022C22"
+				strokeWidth="2"
+				strokeLinecap="round"
+				opacity="0.3"
+			/>
 
 			{/* Large Magnifying Glass */}
 			<circle
@@ -833,6 +1056,11 @@ export function ScholarshipsHeroCluster() {
 
 			{/* Main Foreground Card: Flagship Scheme Preview */}
 			<div className="relative rounded-2xl border-[2px] border-emerald-950 bg-white p-5 sm:p-6 shadow-[5px_5px_0px_0px_rgba(2,44,34,1)] transition-transform duration-200 hover:-translate-y-1">
+				{/* Cute peeker on the card edge */}
+				<div className="absolute -top-5 right-14 hidden sm:block pointer-events-none z-30">
+					<CornerPeeker size={44} />
+				</div>
+
 				{/* Category Band */}
 				<div className="flex items-center justify-between pb-3 border-b-[1.5px] border-emerald-950/15">
 					<div className="flex items-center gap-2">
@@ -865,16 +1093,19 @@ export function ScholarshipsHeroCluster() {
 
 				{/* Financial Highlight */}
 				<div className="mt-4 rounded-xl border-[1.5px] border-emerald-950/15 bg-emerald-50/80 p-3.5 flex items-center justify-between">
-					<div>
-						<p className="text-[11px] font-bold uppercase tracking-wider text-emerald-950/55">
-							Direct Benefit Transfer
-						</p>
-						<p className="ud-display text-2xl font-extrabold text-emerald-950">
-							₹50,000{" "}
-							<span className="text-xs font-bold text-emerald-950/60 font-sans">
-								/ year
-							</span>
-						</p>
+					<div className="flex items-center gap-2">
+						<CoinHugger size={38} className="shrink-0 hidden xs:block" />
+						<div>
+							<p className="text-[11px] font-bold uppercase tracking-wider text-emerald-950/55">
+								Direct Benefit Transfer
+							</p>
+							<p className="ud-display text-2xl font-extrabold text-emerald-950">
+								₹50,000{" "}
+								<span className="text-xs font-bold text-emerald-950/60 font-sans">
+									/ year
+								</span>
+							</p>
+						</div>
 					</div>
 					<div className="text-right">
 						<span className="inline-flex items-center gap-1 rounded-full bg-emerald-800 text-white text-[11px] font-bold px-2.5 py-1">

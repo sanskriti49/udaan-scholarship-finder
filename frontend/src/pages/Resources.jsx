@@ -519,7 +519,7 @@ export default function Resources() {
 
 			<section className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-12 sm:px-8 md:pb-24 md:pt-20 lg:grid-cols-12">
 				<div className="lg:col-span-7">
-					<h1 className="font-display text-5xl font-medium leading-[1.05] sm:text-6xl md:text-7xl">
+					<h1 className="font-georgia text-5xl font-medium leading-[1.05] sm:text-6xl md:text-7xl">
 						Get your paperwork ready before the deadline does.
 					</h1>
 					<p className="mt-6 max-w-xl text-base leading-relaxed text-emerald-950/75 sm:text-lg">
