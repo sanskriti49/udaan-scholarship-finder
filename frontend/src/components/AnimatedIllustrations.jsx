@@ -40,7 +40,7 @@ export function ShockedStudent({
 					strokeLinecap="round"
 				/>
 
-				{/* Cute sprout / hair flick on top */}
+				{/* sprout / hair flick on top */}
 				<path
 					d="M42 14C41 8 46 6 48 9C49 11 46 14 42 14Z"
 					fill="#40916C"
@@ -89,7 +89,7 @@ export function ShockedStudent({
 				<circle cx="48" cy="30" r="3.8" fill={stroke} />
 				<circle cx="47" cy="29" r="1.3" fill="#FFFFFF" />
 
-				{/* Cute Blushing Cheeks */}
+				{/* Blushing Cheeks */}
 				<ellipse cx="27" cy="36" rx="3.5" ry="2" fill="#FDA4AF" />
 				<ellipse cx="53" cy="36" rx="3.5" ry="2" fill="#FDA4AF" />
 
@@ -103,7 +103,7 @@ export function ShockedStudent({
 					stroke={stroke}
 					strokeWidth="2"
 				/>
-				{/* Cute tongue accent */}
+				{/* tongue accent */}
 				<path
 					d="M39 41C40 40 41 40 42 41"
 					stroke="#F472B6"
@@ -190,8 +190,8 @@ export function ShockedStudent({
 
 			{/* Speech Bubble */}
 			{showBubble && (
-				<div className="relative -mt-6 rounded-xl border-[1.5px] border-emerald-950 bg-white px-2.5 py-1 shadow-2xs">
-					<span className="font-heading text-xs font-bold text-emerald-950 whitespace-nowrap">
+				<div className="relative -mt-1 rounded-xl border-[1.5px] border-emerald-950 bg-white px-2.5 py-1 shadow-2xs">
+					<span className="font-serif text-sm font-bold text-emerald-950 whitespace-nowrap">
 						{bubbleText}
 					</span>
 					{/* Bubble triangle pointer */}
@@ -391,7 +391,7 @@ export function CheeringStudent({ size = 70, className = "" }) {
 
 /**
  * 3. CoinHugger
- * A tiny cute student affectionately hugging a giant gold Rupee coin.
+ * A tiny student affectionately hugging a giant gold Rupee coin.
  * Ideal for high-value grants (₹50,000+) on Flagship scholarship cards!
  */
 export function CoinHugger({ size = 56, className = "" }) {
@@ -457,7 +457,7 @@ export function CoinHugger({ size = 56, className = "" }) {
 				strokeWidth="1.4"
 			/>
 
-			{/* Cute round head leaning on coin */}
+			{/* round head leaning on coin */}
 			<circle
 				cx="16"
 				cy="26"
@@ -509,7 +509,7 @@ export function CoinHugger({ size = 56, className = "" }) {
 
 /**
  * 4. ConfusedDetective
- * A cute student holding a giant magnifying glass, head tilted in confusion with floating questions.
+ * A student holding a giant magnifying glass, head tilted in confusion with floating questions.
  * Perfect for the Empty Search / Filter state!
  */
 export function ConfusedDetective({ size = 90, className = "" }) {
@@ -523,7 +523,7 @@ export function ConfusedDetective({ size = 90, className = "" }) {
 			aria-hidden="true"
 			className={`overflow-visible select-none ${className}`}
 		>
-			{/* Floating cute squiggly question marks */}
+			{/* Floating squiggly question marks */}
 			<path
 				d="M18 22C18 17 24 16 25 20C25 24 21 24 21 27"
 				stroke="#D97706"
@@ -655,7 +655,7 @@ export function ConfusedDetective({ size = 90, className = "" }) {
 
 /**
  * 5. BoardCurator
- * A proud cute student holding a pin and a starred scholarship ribbon for the Saved Scholarships board.
+ * A proud student holding a pin and a starred scholarship ribbon for the Saved Scholarships board.
  */
 export function BoardCurator({ size = 110, className = "" }) {
 	return (
@@ -760,7 +760,7 @@ export function BoardCurator({ size = 110, className = "" }) {
 				/>
 			</g>
 
-			{/* Cute Character in foreground holding a bookmark ribbon */}
+			{/* Character in foreground holding a bookmark ribbon */}
 			{/* Body */}
 			<path
 				d="M24 64C22 66 20 86 20 90C20 91 26 92 40 92C50 92 52 91 52 90C52 86 50 66 48 64"
@@ -780,7 +780,7 @@ export function BoardCurator({ size = 110, className = "" }) {
 				strokeWidth="2.4"
 			/>
 
-			{/* Hair with cute side bun */}
+			{/* Hair with side bun */}
 			<path
 				d="M23 45C22 35 30 32 37 32C46 32 50 35 50 45"
 				fill="#1B432A"
@@ -854,7 +854,7 @@ export function BoardCurator({ size = 110, className = "" }) {
 
 /**
  * 6. CablesDoctor
- * A cute student holding unplugged wires with funny curly cords and a sweat drop.
+ * A student holding unplugged wires with funny curly cords and a sweat drop.
  * Perfect for Network / Connection Error states.
  */
 export function CablesDoctor({ size = 80, className = "" }) {
@@ -931,7 +931,7 @@ export function CablesDoctor({ size = 80, className = "" }) {
 				strokeLinejoin="round"
 			/>
 
-			{/* Cute Character looking down nervously */}
+			{/* Character looking down nervously */}
 			<circle
 				cx="40"
 				cy="28"
@@ -981,7 +981,7 @@ export function CablesDoctor({ size = 80, className = "" }) {
 
 /**
  * 7. CornerPeeker
- * A tiny cute head peeking over cards or containers with huge curious eyes.
+ * A tiny head peeking over cards or containers with huge curious eyes.
  */
 export function CornerPeeker({ size = 48, className = "" }) {
 	return (
@@ -994,7 +994,7 @@ export function CornerPeeker({ size = 48, className = "" }) {
 			aria-hidden="true"
 			className={`overflow-visible select-none ${className}`}
 		>
-			{/* Cute sprout on head */}
+			{/* sprout on head */}
 			<path
 				d="M25 10C24 4 30 3 31 6C32 8 28 10 25 10Z"
 				fill="#40916C"

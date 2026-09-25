@@ -100,12 +100,10 @@ function Hero() {
 							className="font-georgia font-medium text-emerald-950 leading-[0.98] tracking-tight"
 							style={{ fontSize: "clamp(2.6rem, 5.8vw, 4.45rem)" }}
 						>
-							Less scrolling.
-							<br />
-							More{" "}
+							Less scrolling. More <br />
 							<span className="ud-display inline-block relative font-extrabold underline decoration-yellow-300 decoration-[5px] underline-offset-6 text-emerald-950">
 								“wait, I qualify for this?”
-								<span className="absolute -top-14 -right-20 hidden md:inline-flex transform rotate-6 hover:rotate-0 transition-transform pointer-events-none">
+								<span className="font-serif absolute -top-5 -right-16 hidden md:inline-flex transform rotate-6 hover:rotate-0 transition-transform pointer-events-none">
 									<ShockedStudent
 										size={66}
 										showBubble={true}
