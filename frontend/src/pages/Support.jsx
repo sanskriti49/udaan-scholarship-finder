@@ -545,12 +545,12 @@ function Support() {
 
 			<section className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-12 sm:px-8 md:pb-24 md:pt-20 lg:grid-cols-12">
 				<div className="lg:col-span-7">
-					<div className="inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-3.5 py-1.5 text-sm font-semibold">
+					<div className="inline-flex items-center gap-2.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-3.5 py-1.5 text-sm font-semibold shadow-2xs">
 						<span
-							className={`h-2.5 w-2.5 rounded-full ${status.open ? "ud-live bg-emerald-500" : "bg-amber-500"}`}
+							className={`h-2.5 w-2.5 rounded-full shrink-0 ${status.open ? "bg-emerald-600" : "bg-amber-500"}`}
 						/>
-						{status.open ? "Helpline is open" : "Helpline is closed"}
-						<span className="font-normal text-emerald-950/60">
+						<span>{status.open ? "Helpline is open" : "Helpline is closed"}</span>
+						<span className="font-normal text-emerald-950/60 border-l border-emerald-950/15 pl-2">
 							{status.time} IST
 						</span>
 					</div>

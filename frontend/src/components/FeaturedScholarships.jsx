@@ -90,7 +90,7 @@ function FeaturedScholarships() {
 						return (
 							<article
 								key={s.id}
-								className="rounded-2xl font-serif border-[1.5px] border-emerald-950/20 bg-white overflow-hidden flex flex-col justify-between hover:border-emerald-950 hover:-translate-y-1 transition-all duration-200 group shadow-[3px_3px_0px_0px_rgba(2,44,34,0.12)] hover:shadow-[5px_5px_0px_0px_rgba(2,44,34,1)]"
+								className="card-fluid rounded-2xl font-serif border-[1.5px] border-emerald-950/20 bg-white overflow-hidden flex flex-col justify-between hover:border-emerald-950 group shadow-[3px_3px_0px_0px_rgba(2,44,34,0.12)] hover:shadow-[6px_6px_0px_0px_rgba(2,44,34,1)]"
 							>
 								{/* Category Illustrated Header */}
 								<CategoryCardHeader
@@ -131,10 +131,10 @@ function FeaturedScholarships() {
 
 											<Link
 												to={`/scholarships?search=${encodeURIComponent(s.query)}`}
-												className={`inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 group-hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
+												className={`btn-fluid inline-flex items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-emerald-900 group-hover:bg-emerald-900 ${focusRing}`}
 											>
 												<span>View scheme</span>
-												<ArrowUpRight size={14} />
+												<ArrowUpRight size={14} className="transition-transform duration-200 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
 											</Link>
 										</div>
 									</div>

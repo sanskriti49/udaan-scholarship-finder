@@ -20,6 +20,7 @@ import {
   Clock,
   Send,
   Loader2,
+  Sliders,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
@@ -302,8 +303,8 @@ export default function Settings() {
     <div className="min-h-screen bg-[#FAF9F6] py-10 px-5 sm:px-8 text-slate-900">
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-700"></span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 bg-white text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-2 shadow-2xs">
+            <Sliders size={13} className="text-emerald-700 shrink-0" />
             <span>Account Settings</span>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif text-slate-900 leading-tight">

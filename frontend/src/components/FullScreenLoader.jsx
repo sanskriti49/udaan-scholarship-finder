@@ -16,8 +16,8 @@ export default function FullScreenLoader() {
 				</div>
 			</div>
 
-			<div className="w-36 h-1 bg-slate-200/80 rounded-full overflow-hidden">
-				<div className="h-full w-2/3 bg-emerald-750 rounded-full animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
+			<div className="w-40 h-1.5 bg-emerald-950/10 rounded-full overflow-hidden relative">
+				<div className="absolute inset-y-0 bg-gradient-to-r from-emerald-700 via-teal-600 to-emerald-800 rounded-full animate-indeterminate" />
 			</div>
 		</div>
 	);

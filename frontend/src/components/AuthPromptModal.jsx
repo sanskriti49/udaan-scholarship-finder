@@ -51,7 +51,7 @@ export default function AuthPromptModal({
 		>
 			{/* Backdrop */}
 			<div
-				className="fixed inset-0 bg-emerald-950/45 backdrop-blur-[2px] transition-opacity"
+				className="animate-fade-in fixed inset-0 bg-emerald-950/45 backdrop-blur-[2px]"
 				onClick={onClose}
 				aria-hidden="true"
 			/>

@@ -181,7 +181,7 @@ const Navbar = () => {
 								<div className="relative" ref={profileRef}>
 									<button
 										onClick={() => setIsProfileOpen((prev) => !prev)}
-										className="cursor-pointer flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 bg-white hover:border-slate-300 transition-all shadow-2xs"
+										className="cursor-pointer flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 bg-white hover:border-slate-300 transition-all duration-200 active:scale-95 shadow-2xs"
 									>
 										<div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-800 to-emerald-950 text-white text-xs font-bold flex items-center justify-center shrink-0 shadow-2xs">
 											{initials}
@@ -191,14 +191,14 @@ const Navbar = () => {
 										</span>
 										<ChevronDown
 											size={13}
-											className={`text-slate-400 transition-transform ${
+											className={`text-slate-400 transition-transform duration-250 ease-out ${
 												isProfileOpen ? "rotate-180" : ""
 											}`}
 										/>
 									</button>
 
 									<div
-										className={`absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden transition-all duration-150 origin-top-right z-50 ${
+										className={`absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right z-50 ${
 											isProfileOpen
 												? "opacity-100 scale-100 pointer-events-auto"
 												: "opacity-0 scale-95 pointer-events-none"

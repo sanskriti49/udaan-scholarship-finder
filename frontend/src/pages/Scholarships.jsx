@@ -227,7 +227,7 @@ function ScholarshipCard({
 
 	if (isFeatured) {
 		return (
-			<article className="group md:col-span-2 lg:col-span-2 flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/20 bg-white overflow-hidden transition-all duration-200 hover:border-emerald-950 hover:shadow-[5px_5px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[4px_4px_0px_0px_rgba(2,44,34,0.12)]">
+			<article className="card-fluid group md:col-span-2 lg:col-span-2 flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/20 bg-white overflow-hidden hover:border-emerald-950 hover:shadow-[6px_6px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[4px_4px_0px_0px_rgba(2,44,34,0.12)]">
 				<CategoryCardHeader
 					category={s.category}
 					sourceType={s.sourceType || "Official Scheme"}
@@ -341,7 +341,7 @@ function ScholarshipCard({
 	}
 
 	return (
-		<article className="group flex h-full flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white overflow-hidden transition-all duration-200 hover:border-emerald-950 hover:shadow-[4px_4px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,0.08)]">
+		<article className="card-fluid group flex h-full flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white overflow-hidden hover:border-emerald-950 hover:shadow-[5px_5px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,0.08)]">
 			<CategoryCardHeader
 				category={s.category}
 				sourceType={s.sourceType || "Official"}
@@ -1141,20 +1141,20 @@ export default function Scholarships() {
 									{[1, 2, 3, 4, 5, 6].map((i) => (
 										<div
 											key={i}
-											className={`flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white overflow-hidden animate-pulse ${
+											className={`flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white overflow-hidden shadow-2xs ${
 												i === 1 ? "md:col-span-2 lg:col-span-2 h-80" : "h-72"
 											}`}
 										>
-											<div className="h-10 bg-emerald-950/5 border-b border-emerald-950/10" />
+											<div className="h-10 bg-emerald-950/5 border-b border-emerald-950/10 animate-shimmer" />
 											<div className="p-6 space-y-3 flex-1">
-												<div className="h-6 w-3/4 rounded bg-emerald-950/10" />
-												<div className="h-3.5 w-1/2 rounded bg-emerald-950/10" />
-												<div className="h-3.5 w-full rounded bg-emerald-950/10" />
-												<div className="h-3.5 w-2/3 rounded bg-emerald-950/10" />
+												<div className="h-6 w-3/4 rounded-lg bg-emerald-950/10 animate-shimmer" />
+												<div className="h-3.5 w-1/2 rounded-md bg-emerald-950/10 animate-shimmer" />
+												<div className="h-3.5 w-full rounded-md bg-emerald-950/10 animate-shimmer" />
+												<div className="h-3.5 w-2/3 rounded-md bg-emerald-950/10 animate-shimmer" />
 											</div>
 											<div className="p-6 pt-0 flex items-center justify-between border-t border-dashed border-emerald-950/10">
-												<div className="h-6 w-24 rounded bg-emerald-950/10" />
-												<div className="h-9 w-20 rounded-full bg-emerald-950/10" />
+												<div className="h-6 w-24 rounded-md bg-emerald-950/10 animate-shimmer" />
+												<div className="h-9 w-20 rounded-full bg-emerald-950/10 animate-shimmer" />
 											</div>
 										</div>
 									))}

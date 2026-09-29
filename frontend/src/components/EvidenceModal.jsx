@@ -437,7 +437,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 											>
 												<div className="flex flex-wrap items-baseline justify-between gap-2 text-xs">
 													<span className="flex items-center gap-1.5 text-sm font-bold text-emerald-950">
-														<span className="h-1.5 w-1.5 rounded-full bg-emerald-800 shrink-0" />
+														<FileText size={13} className="text-emerald-800 shrink-0" />
 														{formatClauseTitle(q.clause, q.field, idx + 1)}
 													</span>
 													{q.page && (

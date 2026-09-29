@@ -16,7 +16,14 @@ import {
 } from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
 import { formatGrant } from "../utils/formatGrant";
-import { PageStyles, Stamp } from "../components/PageKit";
+import { PageStyles, Stamp, Confetti } from "../components/PageKit";
+import {
+	MotionStyles,
+	Reveal,
+	CountUp,
+	ProgressRing,
+	VerifyingCard,
+} from "../components/MotionKit";
 import headerImg from "../assets/images/edu.jpg";
 
 const COMMON_DOCUMENTS = [
@@ -117,7 +124,7 @@ function Chip({ active, onClick, children }) {
 			type="button"
 			onClick={onClick}
 			aria-pressed={active}
-			className={`cursor-pointer rounded-full border-[1.5px] px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+			className={`mk-lift cursor-pointer rounded-full border-[1.5px] px-3.5 py-1.5 text-sm font-semibold transition-colors ${
 				active
 					? "border-emerald-950 bg-emerald-950 text-white"
 					: "border-emerald-950/30 bg-white text-emerald-950 hover:border-emerald-950"
@@ -156,7 +163,7 @@ function DocChip({ doc, checked, onToggle }) {
 			type="button"
 			onClick={onToggle}
 			aria-pressed={checked}
-			className={`flex cursor-pointer items-center gap-3 rounded-xl border-[1.5px] p-3.5 text-left text-sm transition-colors ${
+			className={`mk-lift flex cursor-pointer items-center gap-3 rounded-xl border-[1.5px] p-3.5 text-left text-sm transition-colors ${
 				checked
 					? "border-emerald-950 bg-emerald-50 font-bold text-emerald-950"
 					: "border-emerald-950/25 bg-white font-medium text-emerald-950/80 hover:border-emerald-950"
@@ -315,6 +322,7 @@ export default function EligibilityPage() {
 	return (
 		<main className="ud-root min-h-screen bg-[#E9F0EA] font-sans text-emerald-950">
 			<PageStyles />
+			<MotionStyles />
 
 			<section className="mx-auto max-w-7xl px-5 pb-10 pt-12 sm:px-8 md:pb-14 md:pt-16 lg:pt-18">
 				<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_550px] lg:gap-12">
@@ -511,7 +519,7 @@ export default function EligibilityPage() {
 							<button
 								type="submit"
 								disabled={isSubmitting}
-								className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-emerald-800 px-7 py-3.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px disabled:cursor-wait disabled:opacity-70"
+								className="mk-lift inline-flex cursor-pointer items-center gap-2 rounded-full bg-emerald-800 px-7 py-3.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px disabled:cursor-wait disabled:opacity-70"
 							>
 								{isSubmitting ? (
 									<>
@@ -529,6 +537,7 @@ export default function EligibilityPage() {
 								Takes a few seconds
 							</span>
 						</div>
+						<VerifyingCard active={isSubmitting} />
 					</div>
 
 					<aside className="relative flex flex-col gap-8 border-t-[1.5px] border-dashed border-emerald-950 bg-emerald-50 p-6 sm:p-8 lg:border-l-[1.5px] lg:border-t-0">
@@ -544,7 +553,9 @@ export default function EligibilityPage() {
 						<div className="-rotate-1 rounded-md bg-yellow-200 p-5 shadow-[0_6px_0_-3px_rgba(2,44,34,0.15)]">
 							<div className="flex items-center justify-between">
 								<p className="ud-display text-lg font-bold">Sharper results</p>
-								<span className="text-sm font-bold">{score}/3</span>
+								<span className="text-sm font-bold">
+									<CountUp value={score} />/3
+								</span>
 							</div>
 							<div className="mt-3 flex gap-1.5" aria-hidden>
 								{checks.map((c, i) => (
@@ -651,13 +662,103 @@ export default function EligibilityPage() {
 											</p>
 										</div>
 									) : (
-										<div className="grid gap-4"></div>
+										<div className="grid gap-4">
+											{evaluationData.matched.map((s, i) => (
+												<Reveal key={s.id || i} delay={i * 80}>
+													<article className="mk-lift relative rounded-xl border-[1.5px] border-emerald-950 bg-white p-5">
+														<span className="ud-fold" aria-hidden />
+														<h3 className="ud-display pr-8 text-xl font-bold">
+															{s.name || s.title}
+														</h3>
+														<p className="mt-1 text-sm text-emerald-950/70">
+															{formatGrant(s)}
+														</p>
+														<div className="mt-4 flex flex-wrap items-center gap-3">
+															<Stamp
+																slam
+																delay={0.15 + i * 0.08}
+																tilt={-4}
+																className="text-sm"
+															>
+																Eligible
+															</Stamp>
+															<button
+																type="button"
+																onClick={() => {
+																	setEvidenceScholarship(s);
+																	setIsEvidenceOpen(true);
+																}}
+																className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 px-4 py-2 text-sm font-bold hover:bg-yellow-200"
+															>
+																<HelpCircle size={14} /> Why am I eligible?
+															</button>
+														</div>
+													</article>
+												</Reveal>
+											))}
+										</div>
+									))}
+
+								{activeTab === "ineligible" &&
+									(evaluationData.ineligible.length === 0 ? (
+										<div className="flex flex-col items-start gap-4 p-4 sm:p-6">
+											<span className="flex h-12 w-12 items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-emerald-100">
+												<CheckCircle2 size={24} className="text-emerald-800" />
+											</span>
+											<p className="text-sm text-emerald-950/75">
+												You meet the criteria for every evaluated scheme!
+											</p>
+										</div>
+									) : (
+										<div className="grid gap-4">
+											{evaluationData.ineligible.map((s, i) => (
+												<Reveal key={s.id || i} delay={i * 80}>
+													<article className="mk-lift relative rounded-xl border-[1.5px] border-emerald-950/40 bg-emerald-50/40 p-5">
+														<span className="ud-fold" aria-hidden />
+														<h3 className="ud-display pr-8 text-xl font-bold text-emerald-950/80">
+															{s.name || s.title}
+														</h3>
+														<p className="mt-1 text-sm text-emerald-950/60">
+															{formatGrant(s)}
+														</p>
+														<div className="mt-4 flex flex-wrap items-center gap-3">
+															<Stamp
+																slam
+																delay={0.15 + i * 0.08}
+																tilt={3}
+																className="border-rose-700 bg-white/70 text-sm text-rose-700"
+															>
+																Not Eligible
+															</Stamp>
+															<button
+																type="button"
+																onClick={() => {
+																	setEvidenceScholarship(s);
+																	setIsEvidenceOpen(true);
+																}}
+																className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 px-4 py-2 text-sm font-bold hover:bg-yellow-200"
+															>
+																<HelpCircle size={14} /> View reasons
+															</button>
+														</div>
+													</article>
+												</Reveal>
+											))}
+										</div>
 									))}
 							</div>
 						</div>
 					</div>
 				)}
 			</section>
+
+			{isEvidenceOpen && (
+				<EvidenceModal
+					isOpen={isEvidenceOpen}
+					onClose={() => setIsEvidenceOpen(false)}
+					scholarship={evidenceScholarship}
+				/>
+			)}
 		</main>
 	);
 }

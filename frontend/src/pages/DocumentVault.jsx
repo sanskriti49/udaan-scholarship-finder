@@ -14,7 +14,15 @@ import {
 	ArrowUpRight,
 } from "lucide-react";
 import { toast } from "sonner";
-import { PageStyles, Stamp } from "../components/PageKit";
+//import { PageStyles, Stamp } from "../components/PageKit";
+import { PageStyles, Stamp, Confetti } from "../components/PageKit";
+import {
+	MotionStyles,
+	Reveal,
+	CountUp,
+	ProgressRing,
+	VerifyingCard,
+} from "../components/MotionKit";
 import documentImg from "../assets/images/document.png";
 
 function getFY(date) {
@@ -210,10 +218,11 @@ function StatusButton({ status, onClick }) {
 	const s = map[status];
 	return (
 		<button
+			key={status}
 			type="button"
 			onClick={onClick}
 			aria-label={`Status: ${s.label}. Click to change.`}
-			className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-3.5 py-1.5 text-sm font-bold transition-colors ${s.cls}`}
+			className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-3.5 py-1.5 text-sm font-bold transition-colors ${s.cls}${status === "ready" ? " mk-pop" : ""}`}
 		>
 			{s.icon}
 			{s.label}
@@ -257,6 +266,7 @@ function ModalShell({ title, subtitle, onClose, children }) {
 
 export default function DocumentVault() {
 	const [activeCategory, setActiveCategory] = useState("all");
+	const [burst, setBurst] = useState(0);
 	const [docStatuses, setDocStatuses] = useState(() => {
 		try {
 			const saved = localStorage.getItem("udaan_doc_vault");
@@ -295,9 +305,10 @@ export default function DocumentVault() {
 			localStorage.setItem("udaan_doc_vault", JSON.stringify(updated));
 		} catch {}
 
-		if (nextStatus === "ready") {
+		if (nextStatus === "ready")
 			toast.success("Document marked as verified and ready.");
-		}
+		const allReady = DOCUMENT_REGISTRY.every((d) => updated[d.id] === "ready");
+		if (allReady) setBurst((b) => b + 1); // confetti only when the whole list is done
 	};
 
 	const handleAuditIncomeDate = (e) => {
@@ -346,7 +357,9 @@ export default function DocumentVault() {
 
 	return (
 		<main className="ud-root min-h-screen bg-[#E9F0EA] pb-24 font-sans text-emerald-950">
+			<Confetti burst={burst} />
 			<PageStyles />
+			<MotionStyles />
 
 			<section className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 md:pb-16 md:pt-20">
 				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-14">
@@ -400,9 +413,16 @@ export default function DocumentVault() {
 			<section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 md:pb-28">
 				<div className="flex flex-wrap items-end justify-between gap-6">
 					<div>
-						<h2 className="ud-display text-4xl font-extrabold leading-[1.02] sm:text-5xl">
-							Your checklist
-						</h2>
+						<div className="flex items-center gap-3">
+							<h2 className="ud-display text-4xl font-extrabold leading-[1.02] sm:text-5xl">
+								Your checklist
+							</h2>
+							{progressPercent === 100 && (
+								<Stamp slam tilt={-6}>
+									All set
+								</Stamp>
+							)}
+						</div>
 						<p className="mt-3 max-w-xl text-base leading-relaxed text-emerald-950/75">
 							Click a status to move it from not started, to in progress, to
 							ready.
@@ -415,7 +435,7 @@ export default function DocumentVault() {
 								{readyCount} of {filteredDocs.length} ready
 							</span>
 							<span className="ud-display text-2xl font-extrabold">
-								{progressPercent}%
+								<ProgressRing percent={progressPercent} />
 							</span>
 						</div>
 						<div className="mt-2 flex gap-1.5" aria-hidden>
@@ -449,72 +469,73 @@ export default function DocumentVault() {
 
 				<div className="mt-6 overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white">
 					<div className="divide-y-[1.5px] divide-dashed divide-emerald-950/25">
-						{filteredDocs.map((doc) => {
+						{filteredDocs.map((doc, i) => {
 							const status = docStatuses[doc.id] || "pending";
 							return (
-								<div
-									key={doc.id}
-									className={`px-5 py-5 transition-colors sm:px-6 ${
-										status === "ready" ? "bg-emerald-50/70" : ""
-									}`}
-								>
-									<div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-										<div className="min-w-0">
-											<h3 className="font-sans text-xl font-bold leading-tight">
-												{doc.name}
-											</h3>
-											<p className="mt-1 font-sans text-sm text-emerald-950/85">
-												Issued by{" "}
-												<span className="font-medium font-serif text-emerald-950">
-													{doc.authority}
-												</span>
-											</p>
+								<Reveal key={doc.id} delay={i * 60}>
+									<div
+										className={`px-5 py-5 transition-colors sm:px-6 ${
+											status === "ready" ? "bg-emerald-50/70" : ""
+										}`}
+									>
+										<div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+											<div className="min-w-0">
+												<h3 className="font-sans text-xl font-bold leading-tight">
+													{doc.name}
+												</h3>
+												<p className="mt-1 font-sans text-sm text-emerald-950/85">
+													Issued by{" "}
+													<span className="font-medium font-serif text-emerald-950">
+														{doc.authority}
+													</span>
+												</p>
+											</div>
+											<StatusButton
+												status={status}
+												onClick={() => toggleDocStatus(doc.id)}
+											/>
 										</div>
-										<StatusButton
-											status={status}
-											onClick={() => toggleDocStatus(doc.id)}
-										/>
-									</div>
 
-									<p className="mt-3 max-w-prose text-[15px] leading-relaxed text-emerald-950/80">
-										<span className="rounded-sm bg-yellow-200 px-1.5 py-0.5 text-sm font-bold text-emerald-950">
-											Why it gets rejected
-										</span>{" "}
-										{doc.pitfall}
-									</p>
-
-									<div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-										<p className="text-sm text-emerald-950/65">
-											Valid:{" "}
-											<span className="font-bold text-emerald-950">
-												{doc.validity}
-											</span>
+										<p className="mt-3 max-w-prose text-[15px] leading-relaxed text-emerald-950/80">
+											<span className="rounded-sm bg-yellow-200 px-1.5 py-0.5 text-sm font-bold text-emerald-950">
+												Why it gets rejected
+											</span>{" "}
+											{doc.pitfall}
 										</p>
 
-										<div className="flex flex-wrap items-center gap-2">
-											{doc.hasGenerator && (
-												<button
-													type="button"
-													onClick={() => setBonafideModalOpen(true)}
-													className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-4 py-2 text-sm font-bold hover:bg-emerald-50"
-												>
-													<Printer size={14} />
-													Bonafide template
-												</button>
-											)}
-											{doc.hasDbtGuide && (
-												<button
-													type="button"
-													onClick={() => setDbtModalOpen(true)}
-													className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-4 py-2 text-sm font-bold hover:bg-emerald-50"
-												>
-													<HelpCircle size={14} />
-													DBT seeding guide
-												</button>
-											)}
+										<div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+											<p className="text-sm text-emerald-950/65">
+												Valid:{" "}
+												<span className="font-bold text-emerald-950">
+													{doc.validity}
+												</span>
+											</p>
+
+											<div className="flex flex-wrap items-center gap-2">
+												{doc.hasGenerator && (
+													<button
+														type="button"
+														onClick={() => setBonafideModalOpen(true)}
+														className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-4 py-2 text-sm font-bold hover:bg-emerald-50"
+													>
+														<Printer size={14} />
+														Bonafide template
+													</button>
+												)}
+												{doc.hasDbtGuide && (
+													<button
+														type="button"
+														onClick={() => setDbtModalOpen(true)}
+														className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-4 py-2 text-sm font-bold hover:bg-emerald-50"
+													>
+														<HelpCircle size={14} />
+														DBT seeding guide
+													</button>
+												)}
+											</div>
 										</div>
 									</div>
-								</div>
+								</Reveal>
 							);
 						})}
 					</div>
@@ -635,30 +656,31 @@ export default function DocumentVault() {
 
 					<div className="overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white">
 						<div className="divide-y-[1.5px] divide-dashed divide-emerald-950/25">
-							{STATE_PORTALS.map((sp) => (
-								<a
-									key={sp.state}
-									href={sp.url}
-									target="_blank"
-									rel="noreferrer"
-									className="group flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-emerald-50/70 sm:px-6"
-								>
-									<div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-6">
-										<span className="w-36 shrink-0 text-sm font-bold text-emerald-950/60">
-											{sp.state}
+							{STATE_PORTALS.map((sp, i) => (
+								<Reveal key={sp.state} delay={i * 60}>
+									<a
+										href={sp.url}
+										target="_blank"
+										rel="noreferrer"
+										className="group flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-emerald-50/70 sm:px-6"
+									>
+										<div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-6">
+											<span className="w-36 shrink-0 text-sm font-bold text-emerald-950/60">
+												{sp.state}
+											</span>
+											<span className="truncate text-[15px] font-bold">
+												{sp.portal}
+											</span>
+										</div>
+										<span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 group-hover:decoration-emerald-950">
+											Open
+											<ArrowUpRight
+												size={15}
+												className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+											/>
 										</span>
-										<span className="truncate text-[15px] font-bold">
-											{sp.portal}
-										</span>
-									</div>
-									<span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 group-hover:decoration-emerald-950">
-										Open
-										<ArrowUpRight
-											size={15}
-											className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-										/>
-									</span>
-								</a>
+									</a>
+								</Reveal>
 							))}
 						</div>
 					</div>

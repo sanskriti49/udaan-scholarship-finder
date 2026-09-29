@@ -558,9 +558,7 @@ export default function TrustShield() {
 												<span
 													className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${badge.classes}`}
 												>
-													<span
-														className={`w-1.5 h-1.5 rounded-full shrink-0 ${badge.dot}`}
-													/>
+													<ShieldCheck size={11} className="shrink-0" />
 													<span className="truncate max-w-[130px]">
 														{item.type}
 													</span>

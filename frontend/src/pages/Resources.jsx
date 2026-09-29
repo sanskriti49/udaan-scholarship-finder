@@ -690,7 +690,9 @@ export default function Resources() {
 										key={tip}
 										className="flex items-start gap-3 text-[15px] leading-snug"
 									>
-										<span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-700" />
+										<span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+											<Check size={10} strokeWidth={3} />
+										</span>
 										{tip}
 									</li>
 								))}

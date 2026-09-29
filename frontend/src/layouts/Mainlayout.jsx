@@ -20,7 +20,7 @@ function Mainlayout() {
       {loading && <FullScreenLoader />}
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <div key={location.pathname} className="grow flex flex-col min-h-[calc(100vh-5rem)] animate-fade-in">
+        <div key={location.pathname} className="grow flex flex-col min-h-[calc(100vh-5rem)] animate-page-enter">
           <Outlet />
         </div>
         <Footer />

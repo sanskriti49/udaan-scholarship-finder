@@ -486,16 +486,16 @@ export default function SavedScholarships() {
 								{[1, 2, 3, 4].map((i) => (
 									<div
 										key={i}
-										className="flex h-64 animate-pulse flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-6"
+										className="flex h-64 flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-6 shadow-2xs"
 									>
 										<div className="space-y-3">
-											<div className="h-3.5 w-1/4 rounded bg-emerald-950/10" />
-											<div className="h-6 w-4/5 rounded bg-emerald-950/10" />
-											<div className="h-3.5 w-1/2 rounded bg-emerald-950/10" />
+											<div className="h-3.5 w-1/4 rounded-md bg-emerald-950/10 animate-shimmer" />
+											<div className="h-6 w-4/5 rounded-lg bg-emerald-950/10 animate-shimmer" />
+											<div className="h-3.5 w-1/2 rounded-md bg-emerald-950/10 animate-shimmer" />
 										</div>
 										<div className="flex items-center justify-between pt-4 border-t border-emerald-950/10">
-											<div className="h-4 w-28 rounded bg-emerald-950/10" />
-											<div className="h-8 w-24 rounded-full bg-emerald-950/10" />
+											<div className="h-4 w-28 rounded-md bg-emerald-950/10 animate-shimmer" />
+											<div className="h-8 w-24 rounded-full bg-emerald-950/10 animate-shimmer" />
 										</div>
 									</div>
 								))}
@@ -626,7 +626,7 @@ export default function SavedScholarships() {
 									return (
 										<article
 											key={id}
-											className="group flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/20 bg-white overflow-hidden transition-all duration-200 hover:border-emerald-950 hover:shadow-[4px_4px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,0.08)]"
+											className="card-fluid group flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/20 bg-white overflow-hidden hover:border-emerald-950 hover:shadow-[5px_5px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,0.08)]"
 										>
 											<CategoryCardHeader
 												category={s.category}

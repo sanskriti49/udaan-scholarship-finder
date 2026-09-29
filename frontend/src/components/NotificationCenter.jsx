@@ -270,7 +270,7 @@ export default function NotificationCenter() {
 				onClick={() => setIsOpen((prev) => !prev)}
 				aria-label="View notifications"
 				aria-expanded={isOpen}
-				className="relative p-2 rounded-full border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-all duration-150 shadow-2xs cursor-pointer flex items-center justify-center"
+				className="btn-fluid relative p-2 rounded-full border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-2xs cursor-pointer flex items-center justify-center"
 			>
 				<Bell size={17} />
 				{unreadCount > 0 && (
@@ -281,7 +281,7 @@ export default function NotificationCenter() {
 			</button>
 
 			{isOpen && (
-				<div className="absolute right-0 mt-2 w-80 sm:w-96 max-h-[32rem] bg-white border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden flex flex-col z-50 origin-top-right transition-all duration-200">
+				<div className="absolute right-0 mt-2 w-80 sm:w-96 max-h-[32rem] bg-white border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden flex flex-col z-50 origin-top-right animate-scale-in">
 					<div className="px-4 py-3 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
 						<div className="flex items-center gap-2">
 							<h3 className="text-sm font-bold text-slate-900">Notifications</h3>
@@ -326,7 +326,9 @@ export default function NotificationCenter() {
 						>
 							<span>Unread</span>
 							{unreadCount > 0 && (
-								<span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+								<span className="px-1.5 py-0.2 rounded-full bg-emerald-700 text-white text-[10px] font-bold leading-tight">
+									{unreadCount}
+								</span>
 							)}
 						</button>
 					</div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { CornerPeeker, CoinHugger } from "./AnimatedIllustrations";
+import { Sparkles, CheckCircle2 } from "lucide-react";
 
 /**
  * Udaan Category Visual System
@@ -796,8 +797,8 @@ export function CategoryCardHeader({
 
 			<div className="relative z-10 flex items-center gap-2 shrink-0">
 				{hasChanges && (
-					<span className="inline-flex items-center gap-1 rounded-full border-[1.5px] border-emerald-950/20 bg-yellow-200 px-2 py-0.5 text-[11px] font-bold text-emerald-950 shadow-2xs">
-						<span className="w-1.5 h-1.5 rounded-full bg-emerald-800 animate-pulse"></span>
+					<span className="inline-flex items-center gap-1 rounded-full border-[1.5px] border-emerald-950/20 bg-yellow-200 px-2.5 py-0.5 text-[11px] font-bold text-emerald-950 shadow-2xs">
+						<Sparkles size={11} className="text-amber-800 shrink-0" />
 						Updated
 					</span>
 				)}
@@ -1050,7 +1051,10 @@ export function ScholarshipsHeroCluster() {
 					<span className="text-[11px] font-extrabold uppercase tracking-wider text-[#78350F]">
 						NSP & State Gazette Registry
 					</span>
-					<span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
+					<span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full border border-emerald-300/60">
+						<CheckCircle2 size={10} className="text-emerald-700" />
+						<span>Active</span>
+					</span>
 				</div>
 			</div>
 

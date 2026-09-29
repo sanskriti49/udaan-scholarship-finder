@@ -10,10 +10,10 @@ const focusRing =
 function FaqItem({ question, answer, isOpen, onClick }) {
 	return (
 		<div
-			className={`border-[1.5px] rounded-2xl overflow-hidden transition-colors ${
+			className={`border-[1.5px] rounded-2xl overflow-hidden transition-all duration-250 ease-out ${
 				isOpen
-					? "border-emerald-950 bg-white"
-					: "border-emerald-950/15 bg-white hover:border-emerald-950"
+					? "border-emerald-950 bg-white shadow-xs"
+					: "border-emerald-950/15 bg-white hover:border-emerald-950/60"
 			}`}
 		>
 			<button
@@ -26,18 +26,18 @@ function FaqItem({ question, answer, isOpen, onClick }) {
 					{question}
 				</span>
 				<span
-					className={`mt-0.5 w-7 h-7 shrink-0 rounded-full border-[1.5px] border-emerald-950 flex items-center justify-center transition-colors ${
+					className={`mt-0.5 w-7 h-7 shrink-0 rounded-full border-[1.5px] border-emerald-950 flex items-center justify-center transition-all duration-200 ${
 						isOpen
-							? "bg-yellow-200 text-emerald-950"
-							: "bg-emerald-50 text-emerald-950"
+							? "bg-yellow-200 text-emerald-950 rotate-180"
+							: "bg-emerald-50 text-emerald-950 rotate-0"
 					}`}
 				>
 					{isOpen ? <Minus size={14} /> : <Plus size={14} />}
 				</span>
 			</button>
 			<div
-				className={`grid transition-all duration-200 ease-in-out ${
-					isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+				className={`grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+					isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
 				}`}
 			>
 				<div className="overflow-hidden">

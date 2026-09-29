@@ -673,7 +673,7 @@ const ApplicationGuide = () => {
 											community."
 										</blockquote>
 										<div className="mt-4 flex items-center gap-2 text-xs font-semibold text-emerald-300">
-											<span className="w-2 h-2 rounded-full bg-emerald-400" />
+											<Award size={14} className="text-emerald-400 shrink-0" />
 											<span>Udaan Academic Advisory Council</span>
 										</div>
 									</div>
