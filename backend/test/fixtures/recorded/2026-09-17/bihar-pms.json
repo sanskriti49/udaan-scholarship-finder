@@ -1,0 +1,87 @@
+{
+  "academicYear": "2026-27",
+  "source": "Bihar Post Matric Scholarship Portal",
+  "schemes": [
+    {
+      "title": "Bihar Post Matric Scholarship for BC and EBC Students",
+      "department": "BC & EBC Welfare Department, Government of Bihar",
+      "academicYear": "2026-27",
+      "opensAt": "15-07-2026",
+      "closesAt": "30-09-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://pmsonline.bihar.gov.in/",
+      "category": "SC / ST / OBC",
+      "level": "UG",
+      "state": "Bihar",
+      "tags": [
+        "Bihar",
+        "PMS",
+        "BC / EBC",
+        "Fee Concession"
+      ],
+      "familyIncomeMax": 300000,
+      "amountValue": 20000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "OBC"
+      ],
+      "description": "Direct benefit transfer of post-matric tuition fees and non-refundable mandatory charges for Backward Class and Extremely Backward Class students of Bihar."
+    },
+    {
+      "title": "Bihar Post Matric Scholarship for SC and ST Students",
+      "department": "SC & ST Welfare Department, Government of Bihar",
+      "academicYear": "2026-27",
+      "opensAt": "15-07-2026",
+      "closesAt": "30-09-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://pmsonline.bihar.gov.in/",
+      "category": "SC / ST / OBC",
+      "level": "UG",
+      "state": "Bihar",
+      "tags": [
+        "Bihar",
+        "PMS",
+        "SC / ST",
+        "Direct Benefit Transfer"
+      ],
+      "familyIncomeMax": 300000,
+      "amountValue": 25000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "SC",
+        "ST"
+      ],
+      "description": "Government of India & Government of Bihar joint scholarship granting comprehensive fee coverage and maintenance to SC/ST students in post-matric studies."
+    },
+    {
+      "title": "Mukhyamantri Medhavriti Yojana for 12th Pass Girl Students (Bihar)",
+      "department": "Education Department, Government of Bihar",
+      "academicYear": "2026-27",
+      "opensAt": "15-07-2026",
+      "closesAt": "31-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://pmsonline.bihar.gov.in/",
+      "category": "Women",
+      "gender": "Female",
+      "level": "Class 12",
+      "state": "Bihar",
+      "tags": [
+        "Bihar",
+        "Kanya Utthan",
+        "Girls Education",
+        "Merit Incentive"
+      ],
+      "familyIncomeMax": 300000,
+      "amountValue": 15000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Special state incentive of ₹15,000 to unmarried female students of Bihar who pass the Intermediate examination in first division."
+    }
+  ]
+}

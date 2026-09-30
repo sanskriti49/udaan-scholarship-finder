@@ -1,0 +1,94 @@
+{
+  "academicYear": "2026-27",
+  "source": "Swami Vivekananda Merit-cum-Means Scholarship (SVMCM)",
+  "schemes": [
+    {
+      "title": "Swami Vivekananda Merit-cum-Means Scholarship (SVMCM) for Higher Secondary & UG",
+      "department": "Department of Higher Education, Government of West Bengal",
+      "academicYear": "2026-27",
+      "opensAt": "01-08-2026",
+      "closesAt": "31-12-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://svmcm.wbhed.gov.in/",
+      "category": "Merit based",
+      "level": "UG",
+      "state": "West Bengal",
+      "tags": [
+        "West Bengal",
+        "SVMCM",
+        "Merit-cum-Means",
+        "Higher Education"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 18000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Premier merit-cum-means scholarship for meritorious students of West Bengal scoring at least 60 percent in qualifying examinations."
+    },
+    {
+      "title": "Swami Vivekananda Merit-cum-Means Scholarship (SVMCM) for Postgraduate Studies",
+      "department": "Department of Higher Education, Government of West Bengal",
+      "academicYear": "2026-27",
+      "opensAt": "01-08-2026",
+      "closesAt": "31-12-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://svmcm.wbhed.gov.in/",
+      "category": "Merit based",
+      "level": "PG",
+      "state": "West Bengal",
+      "tags": [
+        "West Bengal",
+        "SVMCM",
+        "Postgraduate",
+        "Master Degree"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 30000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Financial assistance of ₹2,000 to ₹2,500 per month for university students pursuing M.A., M.Sc., M.Com and professional postgraduate programs in West Bengal."
+    },
+    {
+      "title": "Swami Vivekananda Merit-cum-Means Scholarship for Kanyashree (K3) Enrolled Girls",
+      "department": "Department of Higher Education, Government of West Bengal",
+      "academicYear": "2026-27",
+      "opensAt": "01-08-2026",
+      "closesAt": "31-12-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://svmcm.wbhed.gov.in/",
+      "category": "Women",
+      "gender": "Female",
+      "level": "PG",
+      "state": "West Bengal",
+      "tags": [
+        "West Bengal",
+        "Kanyashree",
+        "Women Empowerment",
+        "Postgraduate"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 30000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Dedicated scholarship for female students registered under Kanyashree K2 who secure admission in regular PG courses across West Bengal."
+    }
+  ]
+}

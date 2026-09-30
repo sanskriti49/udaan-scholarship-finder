@@ -1,0 +1,119 @@
+{
+  "academicYear": "2026-27",
+  "source": "Premier Public Undertakings & Foundations",
+  "schemes": [
+    {
+      "title": "ONGC Scholarship Scheme for SC / ST / OBC / EWS Students in Professional Courses",
+      "department": "ONGC Foundation",
+      "academicYear": "2026-27",
+      "opensAt": "01-04-2026",
+      "closesAt": "31-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://www.ongcscholar.org/",
+      "category": "SC / ST / OBC",
+      "level": "UG",
+      "state": "All India",
+      "tags": [
+        "Engineering",
+        "MBBS",
+        "MBA",
+        "Corporate CSR"
+      ],
+      "familyIncomeMax": 450000,
+      "amountValue": 48000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "SC",
+        "ST",
+        "OBC",
+        "General"
+      ],
+      "description": "Merit-based scholarship of ₹48,000 per year by ONGC Foundation to first-year students pursuing Engineering, MBBS, MBA, or Master in Geosciences across India, with 50 percent reservation for girl students."
+    },
+    {
+      "title": "Reliance Foundation Undergraduate Scholarship",
+      "department": "Reliance Foundation",
+      "academicYear": "2026-27",
+      "opensAt": "15-06-2026",
+      "closesAt": "05-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://www.ongcscholar.org/",
+      "category": "Merit based",
+      "level": "UG",
+      "state": "All India",
+      "tags": [
+        "UG Degree",
+        "Merit-cum-Means",
+        "Corporate CSR"
+      ],
+      "familyIncomeMax": 1500000,
+      "amountValue": 50000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "EWS"
+      ],
+      "description": "Up to ₹2,00,000 total grant (₹50,000/year over 4 years) supporting first-year undergraduate students in any discipline based on merit, aptitude test and household financial need."
+    },
+    {
+      "title": "Reliance Foundation Postgraduate Scholarship",
+      "department": "Reliance Foundation",
+      "academicYear": "2026-27",
+      "opensAt": "15-06-2026",
+      "closesAt": "05-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://www.ongcscholar.org/",
+      "category": "Merit based",
+      "level": "PG",
+      "state": "All India",
+      "tags": [
+        "STEM",
+        "AI",
+        "Computer Science",
+        "Corporate CSR"
+      ],
+      "familyIncomeMax": 1500000,
+      "amountValue": 300000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "EWS"
+      ],
+      "description": "Prestigious fellowship of up to ₹6,00,000 total (₹3,00,000/year) for first-year postgraduate students pursuing cutting-edge STEM degrees including Artificial Intelligence, Computing and Energy Sciences."
+    },
+    {
+      "title": "LIC Golden Jubilee Scholarship Scheme",
+      "department": "Life Insurance Corporation of India (LIC Golden Jubilee Foundation)",
+      "academicYear": "2026-27",
+      "opensAt": "01-07-2026",
+      "closesAt": "31-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://www.ongcscholar.org/",
+      "category": "Need based",
+      "level": "UG",
+      "state": "All India",
+      "tags": [
+        "Higher Education",
+        "Economically Weaker",
+        "PSU CSR"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 20000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Scholarship of ₹20,000 to ₹40,000 per annum by LIC of India for meritorious students from economically weaker families pursuing higher studies in government or recognized private colleges."
+    }
+  ]
+}

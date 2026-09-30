@@ -1,0 +1,119 @@
+{
+  "academicYear": "2026-27",
+  "source": "Uttar Pradesh Scholarship and Fee Reimbursement Online System",
+  "schemes": [
+    {
+      "title": "UP Pre-Matric Scholarship Scheme for SC/ST/General/OBC/Minority (Class 9-10)",
+      "department": "Social Welfare Department, Government of Uttar Pradesh",
+      "academicYear": "2026-27",
+      "opensAt": "01-07-2026",
+      "closesAt": "10-11-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://scholarship.up.gov.in/",
+      "category": "Welfare based",
+      "level": "Class 10",
+      "state": "UP",
+      "tags": [
+        "UP State",
+        "Pre-Matric",
+        "Secondary School",
+        "Fee Waiver"
+      ],
+      "familyIncomeMax": 200000,
+      "amountValue": 3500,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Financial assistance to students of Uttar Pradesh studying in Class 9th and 10th in recognized schools whose parental annual income is within prescribed limits."
+    },
+    {
+      "title": "UP Post-Matric Intermediate Scholarship Scheme (Class 11-12)",
+      "department": "Social Welfare Department, Government of Uttar Pradesh",
+      "academicYear": "2026-27",
+      "opensAt": "01-07-2026",
+      "closesAt": "30-11-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://scholarship.up.gov.in/",
+      "category": "Welfare based",
+      "level": "Class 12",
+      "state": "UP",
+      "tags": [
+        "UP State",
+        "Post-Matric",
+        "Intermediate",
+        "Fee Reimbursement"
+      ],
+      "familyIncomeMax": 200000,
+      "amountValue": 10000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Financial assistance and complete tuition fee reimbursement for students studying in Classes 11 and 12 in recognized Uttar Pradesh schools and colleges."
+    },
+    {
+      "title": "UP Dashmottar Scholarship and Fee Reimbursement Scheme for Higher Education",
+      "department": "Social Welfare / Backward Classes Welfare Department, Government of Uttar Pradesh",
+      "academicYear": "2026-27",
+      "opensAt": "01-07-2026",
+      "closesAt": "31-12-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://scholarship.up.gov.in/",
+      "category": "Welfare based",
+      "level": "UG",
+      "state": "UP",
+      "tags": [
+        "UP State",
+        "Dashmottar",
+        "Undergraduate",
+        "Fee Reimbursement"
+      ],
+      "familyIncomeMax": 200000,
+      "amountValue": 30000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "Minority"
+      ],
+      "description": "Post-matric other than inter scholarship providing maintenance allowance and full fee reimbursement for undergraduate and diploma courses in UP universities."
+    },
+    {
+      "title": "UP Post-Matric Scholarship for SC/ST Students (Social Welfare UP)",
+      "department": "Social Welfare Department, Government of Uttar Pradesh",
+      "academicYear": "2026-27",
+      "opensAt": "01-07-2026",
+      "closesAt": "31-12-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://scholarship.up.gov.in/",
+      "category": "SC / ST / OBC",
+      "level": "UG",
+      "state": "UP",
+      "tags": [
+        "UP State",
+        "SC / ST",
+        "Post-Matric",
+        "Direct Benefit Transfer"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 50000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "SC",
+        "ST"
+      ],
+      "description": "Comprehensive fee reimbursement and monthly maintenance support for Scheduled Caste and Scheduled Tribe students pursuing higher education across Uttar Pradesh."
+    }
+  ]
+}

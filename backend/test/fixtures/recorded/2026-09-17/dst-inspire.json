@@ -1,0 +1,35 @@
+{
+  "academicYear": "2026-27",
+  "source": "Department of Science & Technology - INSPIRE",
+  "schemes": [
+    {
+      "title": "INSPIRE Scholarship for Higher Education (SHE)",
+      "department": "Department of Science & Technology, Ministry of Science & Technology",
+      "academicYear": "2026-27",
+      "opensAt": "01-09-2026",
+      "closesAt": "30-11-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://online-inspire.gov.in/",
+      "category": "Merit based",
+      "level": "UG",
+      "state": "All India",
+      "tags": [
+        "STEM",
+        "Basic Sciences",
+        "Research",
+        "Top 1%"
+      ],
+      "familyIncomeMax": 1000000,
+      "amountValue": 80000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "General",
+        "OBC",
+        "SC",
+        "ST",
+        "EWS"
+      ],
+      "description": "Prestigious national scholarship of ₹80,000 per year (₹60,000 scholarship + ₹20,000 mentorship) to meritorious students within the top 1% of Class 12 pursuing B.Sc. or Integrated M.Sc. in natural sciences."
+    }
+  ]
+}

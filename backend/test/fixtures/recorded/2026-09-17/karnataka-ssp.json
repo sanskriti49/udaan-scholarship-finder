@@ -1,0 +1,82 @@
+{
+  "academicYear": "2026-27",
+  "source": "State Scholarship Portal (Government of Karnataka)",
+  "schemes": [
+    {
+      "title": "Karnataka Post-Matric Scholarship for SC/ST Students",
+      "department": "Social Welfare Department, Government of Karnataka",
+      "academicYear": "2026-27",
+      "opensAt": "15-06-2026",
+      "closesAt": "31-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://ssp.postmatric.karnataka.gov.in/",
+      "category": "SC / ST / OBC",
+      "level": "UG",
+      "state": "Karnataka",
+      "tags": [
+        "Karnataka",
+        "SSP",
+        "SC / ST",
+        "Post-Matric"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 25000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "SC",
+        "ST"
+      ],
+      "description": "State post-matric financial assistance for eligible SC/ST students studying in post-secondary and degree institutions in Karnataka."
+    },
+    {
+      "title": "Vidyasiri - Food and Accommodation Scheme (BCWD Karnataka)",
+      "department": "Backward Classes Welfare Department, Government of Karnataka",
+      "academicYear": "2026-27",
+      "opensAt": "15-06-2026",
+      "closesAt": "31-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://ssp.postmatric.karnataka.gov.in/",
+      "category": "Need based",
+      "level": "UG",
+      "state": "Karnataka",
+      "tags": [
+        "Karnataka",
+        "Vidyasiri",
+        "BCWD",
+        "Food and Accommodation"
+      ],
+      "familyIncomeMax": 250000,
+      "amountValue": 15000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "OBC"
+      ],
+      "description": "Monthly stipend of ₹1,500 for 10 months to students from backward classes who do not get hostel admission, assisting with boarding and lodging."
+    },
+    {
+      "title": "Karnataka State Post-Matric Scholarship for Minorities",
+      "department": "Directorate of Minorities, Government of Karnataka",
+      "academicYear": "2026-27",
+      "opensAt": "15-06-2026",
+      "closesAt": "31-10-2026",
+      "guidelinesUrl": null,
+      "applyUrl": "https://ssp.postmatric.karnataka.gov.in/",
+      "category": "Minority",
+      "level": "UG",
+      "state": "Karnataka",
+      "tags": [
+        "Karnataka",
+        "Minorities",
+        "Higher Education",
+        "Maintenance"
+      ],
+      "familyIncomeMax": 200000,
+      "amountValue": 20000,
+      "amountPeriod": "yearly",
+      "casteGroups": [
+        "Minority"
+      ],
+      "description": "Maintenance allowance and academic fee reimbursement for notified minority community students pursuing graduation and post-graduation in Karnataka."
+    }
+  ]
+}
