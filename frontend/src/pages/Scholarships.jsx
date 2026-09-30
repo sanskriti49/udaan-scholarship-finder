@@ -5,20 +5,16 @@ import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import {
 	Search,
-	Bookmark,
-	BookmarkCheck,
 	X,
 	ShieldCheck,
 	History,
 	FileText,
 	ExternalLink,
-	AlertCircle,
 	RotateCcw,
 	ArrowUpRight,
 	Check,
 	ChevronDown,
 	SlidersHorizontal,
-	Loader2,
 } from "lucide-react";
 import {
 	getScholarships,
@@ -46,17 +42,20 @@ import {
 	isGenuinePdf,
 } from "../utils/formatEvidence";
 import { PageStyles } from "../components/PageKit";
+import { CountUp } from "../components/MotionKit";
 import {
-	CategoryCardHeader,
+	ScholarshipCard,
+	SaveButton,
+	CardSkeleton,
+} from "../components/ScholarshipKit";
+import {
 	CategoryMotifIcon,
 	ScholarshipsHeroCluster,
 	getCategoryTheme,
 } from "../components/CategoryMotif";
 import {
-	CoinHugger,
 	ConfusedDetective,
 	CablesDoctor,
-	DoodleSparkle,
 } from "../components/AnimatedIllustrations";
 
 const CATEGORIES = [
@@ -149,14 +148,14 @@ function FilterGroup({
 							type="button"
 							onClick={() => onChange(o)}
 							aria-pressed={isSelected}
-							className={`inline-flex cursor-pointer items-center gap-1 rounded-full border-[1.5px] px-3 py-1 text-[13px] font-semibold transition-colors ${focusRing} ${
+							className={`sk-chip inline-flex min-h-[38px] cursor-pointer items-center gap-1 rounded-full border-[1.5px] px-3.5 py-1 text-[13px] font-semibold ${focusRing} ${
 								isSelected
 									? "border-emerald-950 bg-emerald-950 text-white"
 									: "border-emerald-950/20 bg-white text-emerald-950/80 hover:border-emerald-950 hover:text-emerald-950"
 							}`}
 						>
 							{isSelected && o !== defaultOption && (
-								<Check size={11} strokeWidth={3.5} />
+								<Check size={11} strokeWidth={3.5} className="sk-pop" />
 							)}
 							{o}
 						</button>
@@ -180,251 +179,6 @@ function DeadlineChip({ deadline }) {
 		>
 			{text}
 		</span>
-	);
-}
-
-function ScholarshipCard({
-	s,
-	saved,
-	onSave,
-	onOpenDetails,
-	isSaving = false,
-	isFeatured = false,
-}) {
-	const grantInfo = formatGrant(s.amount);
-	const docCount = Array.isArray(s.requiredDocuments)
-		? s.requiredDocuments.length
-		: 0;
-	const changeNotice = s.latestChangeSummary
-		? formatChangeNotice(s.latestChangeSummary)
-		: null;
-
-	const bookmarkButton = (
-		<button
-			type="button"
-			onClick={(e) => {
-				e.stopPropagation();
-				onSave(s._id || s.id, s);
-			}}
-			disabled={isSaving}
-			aria-label={saved ? "Remove from saved" : "Save this scholarship"}
-			aria-pressed={saved}
-			className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950/20 bg-white/90 transition hover:bg-white active:scale-95 ${focusRing} ${
-				saved
-					? "text-emerald-800 border-emerald-800 bg-white"
-					: "text-emerald-950/50 hover:text-emerald-950"
-			} ${isSaving ? "opacity-60 cursor-not-allowed" : ""}`}
-		>
-			{isSaving ? (
-				<Loader2 size={15} className="animate-spin text-emerald-800" />
-			) : saved ? (
-				<BookmarkCheck size={16} />
-			) : (
-				<Bookmark size={16} />
-			)}
-		</button>
-	);
-
-	if (isFeatured) {
-		return (
-			<article className="card-fluid group md:col-span-2 lg:col-span-2 flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/20 bg-white overflow-hidden hover:border-emerald-950 hover:shadow-[6px_6px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[4px_4px_0px_0px_rgba(2,44,34,0.12)]">
-				<CategoryCardHeader
-					category={s.category}
-					sourceType={s.sourceType || "Official Scheme"}
-					hasChanges={s.hasChanges}
-					rightSlot={bookmarkButton}
-				/>
-
-				<div className="p-5 sm:p-7 flex flex-col flex-1">
-					<div className="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1">
-						{/* Left 7 cols */}
-						<div className="md:col-span-7 flex flex-col justify-between">
-							<div>
-								<div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-950/20 bg-yellow-200/80 px-2.5 py-0.5 text-[11px] font-bold text-emerald-950 mb-2.5">
-									<DoodleSparkle size={12} color="#D97706" />
-									<span>Flagship Opportunity</span>
-								</div>
-								<h3>
-									<button
-										type="button"
-										onClick={onOpenDetails}
-										className={`ud-display cursor-pointer text-left text-xl sm:text-2xl font-bold leading-tight text-emerald-950 decoration-yellow-300 decoration-2 underline-offset-4 group-hover:underline ${focusRing} rounded-sm`}
-									>
-										{s.title}
-									</button>
-								</h3>
-								<p className="mt-1 text-sm font-medium text-emerald-950/55">
-									{s.organization}
-								</p>
-								<p className="mt-3 text-[15px] leading-relaxed text-emerald-950/75 line-clamp-3">
-									{s.summary || s.description}
-								</p>
-							</div>
-
-							<div className="mt-4 pt-3 border-t border-dashed border-emerald-950/15 flex flex-wrap items-center gap-2 text-xs font-semibold text-emerald-950/70">
-								{s.state && s.state !== "All India" && (
-									<span className="rounded-md bg-emerald-50 px-2 py-0.5 border border-emerald-950/15">
-										📍 {s.state}
-									</span>
-								)}
-								<span className="rounded-md bg-emerald-50 px-2 py-0.5 border border-emerald-950/15">
-									✓ Direct Bank Transfer (DBT)
-								</span>
-								<span className="rounded-md bg-emerald-50 px-2 py-0.5 border border-emerald-950/15">
-									✓ Official Notice Checked
-								</span>
-							</div>
-						</div>
-
-						{/* Right 5 cols */}
-						<div className="md:col-span-5 flex flex-col justify-between rounded-xl border-[1.5px] border-emerald-950/15 bg-emerald-50/60 p-5">
-							<div>
-								<div className="flex items-center justify-between gap-2">
-									<span className="text-xs font-extrabold uppercase tracking-wider text-emerald-950/60">
-										Financial Grant
-									</span>
-									<DeadlineChip deadline={s.deadline} />
-								</div>
-								<div className="mt-3 flex items-center justify-between gap-2">
-									<div>
-										<span className="ud-display text-3xl font-extrabold text-emerald-950">
-											{grantInfo.main}
-										</span>
-										{grantInfo.period && (
-											<span className="text-sm font-semibold text-emerald-950/60 ml-1.5 font-sans">
-												{grantInfo.period}
-											</span>
-										)}
-									</div>
-									<CoinHugger size={42} className="shrink-0" />
-								</div>
-								{changeNotice && (
-									<p className="mt-2 text-xs text-emerald-950/70 line-clamp-2 border-l-2 border-yellow-400 pl-2">
-										{changeNotice}
-									</p>
-								)}
-							</div>
-
-							<div className="mt-5 pt-4 border-t border-dashed border-emerald-950/20 flex flex-col gap-2">
-								<a
-									href={cleanOfficialUrl(s.applicationLink || s.sourceUrl)}
-									target="_blank"
-									rel="noopener noreferrer"
-									className={`group/apply inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
-								>
-									Apply on Official Portal
-									<ArrowUpRight
-										size={15}
-										className="transition-transform group-hover/apply:-translate-y-0.5 group-hover/apply:translate-x-0.5"
-									/>
-								</a>
-								<div className="flex items-center justify-between text-xs font-bold pt-1">
-									<button
-										type="button"
-										onClick={onOpenDetails}
-										className={`cursor-pointer text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
-									>
-										Rules and documents
-									</button>
-									{docCount > 0 && (
-										<span className="text-emerald-950/50">
-											{docCount} required {docCount === 1 ? "doc" : "docs"}
-										</span>
-									)}
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</article>
-		);
-	}
-
-	return (
-		<article className="card-fluid group flex h-full flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white overflow-hidden hover:border-emerald-950 hover:shadow-[5px_5px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,0.08)]">
-			<CategoryCardHeader
-				category={s.category}
-				sourceType={s.sourceType || "Official"}
-				hasChanges={s.hasChanges}
-				rightSlot={bookmarkButton}
-			/>
-
-			<div className="p-5 sm:p-6 flex flex-col flex-1">
-				<h3>
-					<button
-						type="button"
-						onClick={onOpenDetails}
-						className={`ud-display cursor-pointer text-left text-xl font-bold leading-tight text-emerald-950 decoration-yellow-300 decoration-2 underline-offset-4 group-hover:underline ${focusRing} rounded-sm`}
-					>
-						{s.title}
-					</button>
-				</h3>
-				<p className="mt-1 text-sm font-medium text-emerald-950/55">
-					{s.organization}
-				</p>
-
-				<p className="mt-3 line-clamp-2 text-[15px] leading-relaxed text-emerald-950/75">
-					{s.summary || s.description}
-				</p>
-
-				{changeNotice && (
-					<p className="mt-3 line-clamp-2 border-l-2 border-yellow-400 pl-3 text-sm leading-snug text-emerald-950/70">
-						{changeNotice}
-					</p>
-				)}
-
-				<div className="mt-auto pt-5">
-					<div className="flex items-center justify-between gap-3 border-t-[1.5px] border-dashed border-emerald-950/20 pt-4">
-						<div className="min-w-0">
-							{grantInfo.isUnpublished ? (
-								<p className="text-[15px] font-medium italic leading-snug text-emerald-950/60">
-									{grantInfo.main}
-								</p>
-							) : (
-								<p className="flex items-baseline gap-1.5">
-									<span className="ud-display text-2xl font-extrabold leading-none text-emerald-950">
-										{grantInfo.main}
-									</span>
-									{grantInfo.period && (
-										<span className="text-xs font-semibold text-emerald-950/55">
-											{grantInfo.period}
-										</span>
-									)}
-								</p>
-							)}
-						</div>
-						<DeadlineChip deadline={s.deadline} />
-					</div>
-
-					<div className="mt-4 flex items-center gap-3">
-						<a
-							href={cleanOfficialUrl(s.applicationLink || s.sourceUrl)}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={`group/apply inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
-						>
-							Apply
-							<ArrowUpRight
-								size={14}
-								className="transition-transform group-hover/apply:-translate-y-0.5 group-hover/apply:translate-x-0.5"
-							/>
-						</a>
-						<button
-							type="button"
-							onClick={onOpenDetails}
-							className={`cursor-pointer rounded-sm text-sm font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
-						>
-							Rules & docs
-						</button>
-						{docCount > 0 && (
-							<span className="ml-auto hidden shrink-0 text-xs font-semibold text-emerald-950/45 sm:inline">
-								{docCount} docs
-							</span>
-						)}
-					</div>
-				</div>
-			</div>
-		</article>
 	);
 }
 
@@ -662,7 +416,14 @@ export default function Scholarships() {
 	}, [isModalOpen]);
 
 	// Lock for both surfaces, otherwise the page scrolls behind the evidence modal.
-	useBodyScrollLock(isModalOpen || isEvidenceModalOpen);
+	useBodyScrollLock(isModalOpen || isEvidenceModalOpen || filtersOpen);
+
+	useEffect(() => {
+		if (!filtersOpen) return;
+		const onKey = (e) => e.key === "Escape" && setFiltersOpen(false);
+		window.addEventListener("keydown", onKey);
+		return () => window.removeEventListener("keydown", onKey);
+	}, [filtersOpen]);
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -916,34 +677,62 @@ export default function Scholarships() {
 			>
 				<div className="flex flex-col items-start gap-8 lg:flex-row lg:gap-10">
 					<aside
-						className={`w-full shrink-0 lg:sticky lg:w-72 lg:self-start ${HEADER_OFFSET}`}
+						className={`sticky top-16 ${filtersOpen ? "z-[70]" : "z-30"} w-full shrink-0 bg-[#E9F0EA] py-2 lg:w-72 lg:self-start lg:bg-transparent lg:py-0 ${HEADER_OFFSET}`}
 					>
-						<button
-							type="button"
-							onClick={() => setFiltersOpen((v) => !v)}
-							aria-expanded={filtersOpen}
-							aria-controls="filter-panel"
-							className={`flex w-full cursor-pointer items-center justify-between rounded-xl border-[1.5px] border-emerald-950 bg-white px-4 py-3 text-sm font-bold lg:hidden ${focusRing}`}
-						>
-							<span className="inline-flex items-center gap-2">
+						<div className="flex items-center gap-2 lg:hidden">
+							<button
+								type="button"
+								onClick={() => setFiltersOpen(true)}
+								aria-expanded={filtersOpen}
+								aria-controls="filter-panel"
+								className={`sk-chip inline-flex min-h-[44px] shrink-0 cursor-pointer items-center gap-2 rounded-full border-[1.5px] border-emerald-950 bg-white px-4 text-sm font-bold shadow-[0_3px_0_0_#022c22] ${focusRing}`}
+							>
 								<SlidersHorizontal size={16} />
 								Filters
 								{activeCount > 0 && (
-									<span className="rounded-full bg-emerald-950 px-2 py-0.5 text-xs text-white">
+									<span className="sk-pop rounded-full bg-emerald-950 px-2 py-0.5 text-xs text-white">
 										{activeCount}
 									</span>
 								)}
-							</span>
-							<ChevronDown
-								size={16}
-								className={`text-emerald-950/60 transition-transform ${filtersOpen ? "rotate-180" : ""}`}
-							/>
-						</button>
+							</button>
+							<div className="no-scrollbar -mr-5 flex gap-2 overflow-x-auto py-1 pr-5">
+								{CATEGORIES.slice(1).map((c) => {
+									const on = selectedCats.includes(c);
+									return (
+										<button
+											key={c}
+											type="button"
+											onClick={() => toggleCat(c)}
+											aria-pressed={on}
+											className={`sk-chip inline-flex min-h-[40px] shrink-0 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border-[1.5px] px-3 text-[13px] font-semibold ${focusRing} ${
+												on
+													? "border-emerald-950 bg-emerald-950 text-white"
+													: "border-emerald-950/20 bg-white text-emerald-950/80"
+											}`}
+										>
+											<CategoryMotifIcon category={c} size={16} />
+											{c}
+										</button>
+									);
+								})}
+							</div>
+						</div>
 
+						{filtersOpen && (
+							<div
+								className="animate-fade-in fixed inset-0 z-[60] bg-emerald-950/40 lg:hidden"
+								onClick={() => setFiltersOpen(false)}
+								aria-hidden
+							/>
+						)}
 						<div
 							id="filter-panel"
-							className={`${filtersOpen ? "mt-3 block" : "hidden"} rounded-2xl border-[1.5px] border-emerald-950 bg-white lg:mt-0 lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto`}
+							role={filtersOpen ? "dialog" : undefined}
+							aria-modal={filtersOpen ? "true" : undefined}
+							aria-label="Filters"
+							className={`${filtersOpen ? "sk-sheet fixed inset-x-0 bottom-0 z-[61] flex max-h-[85vh] flex-col rounded-t-3xl" : "hidden"} border-[1.5px] border-emerald-950 bg-white lg:static lg:z-auto lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:rounded-2xl lg:[animation:none]`}
 						>
+							<span aria-hidden className="mx-auto mt-2 block h-1.5 w-12 shrink-0 rounded-full bg-emerald-950/20 lg:hidden" />
 							<div className="sticky top-0 z-10 flex items-center justify-between border-b-[1.5px] border-emerald-950 bg-emerald-50 px-5 py-3.5">
 								<span className="ud-display text-lg font-bold">Filters</span>
 								{activeCount > 0 && (
@@ -958,7 +747,7 @@ export default function Scholarships() {
 								)}
 							</div>
 
-							<div className="space-y-6 p-5">
+							<div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 lg:overflow-visible">
 								<button
 									type="button"
 									role="switch"
@@ -1028,6 +817,25 @@ export default function Scholarships() {
 									onChange={toggleSource}
 								/>
 							</div>
+							<div className="sticky bottom-0 flex shrink-0 gap-2 border-t-[1.5px] border-emerald-950 bg-white p-4 lg:hidden">
+								<button
+									type="button"
+									onClick={clearAll}
+									className={`min-h-[48px] cursor-pointer rounded-full border-[1.5px] border-emerald-950 px-5 text-sm font-bold ${focusRing}`}
+								>
+									Reset
+								</button>
+								<button
+									type="button"
+									onClick={() => {
+										setFiltersOpen(false);
+										scrollToCatalog();
+									}}
+									className={`min-h-[48px] flex-1 cursor-pointer rounded-full bg-emerald-800 px-5 text-sm font-bold text-white ${focusRing}`}
+								>
+									{loading ? "Updating…" : `Show ${scholarships.length} ${scholarships.length === 1 ? "scheme" : "schemes"}`}
+								</button>
+							</div>
 						</div>
 					</aside>
 
@@ -1036,7 +844,14 @@ export default function Scholarships() {
 							<p className="text-base font-bold" aria-live="polite">
 								{loading
 									? "Loading schemes"
-									: `${scholarships.length} ${scholarships.length === 1 ? "scheme" : "schemes"}`}
+									: (
+										<>
+											<span className="ud-display text-2xl font-extrabold">
+												<CountUp value={scholarships.length} duration={500} />
+											</span>{" "}
+											{scholarships.length === 1 ? "scheme" : "schemes"}
+										</>
+									)}
 								<span className="ml-2 font-medium text-emerald-950/55">
 									{hasAnyFilter
 										? "matching your filters"
@@ -1134,29 +949,12 @@ export default function Scholarships() {
 						<div className="mt-6">
 							{loading ? (
 								<div
-									className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+									className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3"
 									role="status"
 									aria-label="Loading scholarships"
 								>
 									{[1, 2, 3, 4, 5, 6].map((i) => (
-										<div
-											key={i}
-											className={`flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white overflow-hidden shadow-2xs ${
-												i === 1 ? "md:col-span-2 lg:col-span-2 h-80" : "h-72"
-											}`}
-										>
-											<div className="h-10 bg-emerald-950/5 border-b border-emerald-950/10 animate-shimmer" />
-											<div className="p-6 space-y-3 flex-1">
-												<div className="h-6 w-3/4 rounded-lg bg-emerald-950/10 animate-shimmer" />
-												<div className="h-3.5 w-1/2 rounded-md bg-emerald-950/10 animate-shimmer" />
-												<div className="h-3.5 w-full rounded-md bg-emerald-950/10 animate-shimmer" />
-												<div className="h-3.5 w-2/3 rounded-md bg-emerald-950/10 animate-shimmer" />
-											</div>
-											<div className="p-6 pt-0 flex items-center justify-between border-t border-dashed border-emerald-950/10">
-												<div className="h-6 w-24 rounded-md bg-emerald-950/10 animate-shimmer" />
-												<div className="h-9 w-20 rounded-full bg-emerald-950/10 animate-shimmer" />
-											</div>
-										</div>
+										<CardSkeleton key={i} />
 									))}
 								</div>
 							) : error ? (
@@ -1210,27 +1008,18 @@ export default function Scholarships() {
 									</div>
 								</div>
 							) : (
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-									{scholarships.map((s, idx) => {
-										const isHighImpact =
-											(s.amount?.value && s.amount.value >= 50000) ||
-											s.popular ||
-											s.isFeatured ||
-											s.hasChanges;
-										const isFeatured =
-											isHighImpact && (idx === 0 || idx % 5 === 0);
-										return (
-											<ScholarshipCard
-												key={s._id || s.slug}
-												s={s}
-												saved={saved.has(s._id || s.id)}
-												onSave={toggleSave}
-												onOpenDetails={() => openDetails(s)}
-												isSaving={savingSet.has(s._id || s.id)}
-												isFeatured={isFeatured}
-											/>
-										);
-									})}
+								<div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+									{scholarships.map((s, idx) => (
+										<ScholarshipCard
+											key={s._id || s.slug}
+											s={s}
+											index={idx}
+											saved={saved.has(s._id || s.id)}
+											saving={savingSet.has(s._id || s.id)}
+											onSave={toggleSave}
+											onOpen={() => openDetails(s)}
+										/>
+									))}
 								</div>
 							)}
 						</div>
@@ -1328,40 +1117,17 @@ export default function Scholarships() {
 											</div>
 
 											<div className="flex items-center gap-2 shrink-0">
-												<button
-													type="button"
-													onClick={() =>
+												<SaveButton
+													saved={saved.has(selectedScholarship._id || selectedScholarship.id)}
+													saving={savingSet.has(selectedScholarship._id || selectedScholarship.id)}
+													name={selectedScholarship.title}
+													onToggle={() =>
 														toggleSave(
 															selectedScholarship._id || selectedScholarship.id,
 															selectedScholarship,
 														)
 													}
-													aria-label={
-														saved.has(
-															selectedScholarship._id || selectedScholarship.id,
-														)
-															? "Remove from saved"
-															: "Save this scholarship"
-													}
-													disabled={savingSet.has(
-														selectedScholarship._id || selectedScholarship.id,
-													)}
-													className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 transition ${focusRing} ${
-														saved.has(
-															selectedScholarship._id || selectedScholarship.id,
-														)
-															? "text-emerald-800"
-															: "text-emerald-950"
-													}`}
-												>
-													{saved.has(
-														selectedScholarship._id || selectedScholarship.id,
-													) ? (
-														<BookmarkCheck size={17} />
-													) : (
-														<Bookmark size={17} />
-													)}
-												</button>
+												/>
 
 												<button
 													type="button"
@@ -1401,10 +1167,7 @@ export default function Scholarships() {
 										<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-[#FAF9F6] p-5 shadow-xs">
 											<div className="flex items-center justify-between border-b border-dashed border-emerald-950/15 pb-2.5 mb-3">
 												<span className="text-xs font-extrabold uppercase tracking-wider text-emerald-950/60">
-													Financial Award Grant
-												</span>
-												<span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800">
-													✓ Direct Bank Transfer (DBT)
+													Award amount
 												</span>
 											</div>
 
@@ -1625,7 +1388,7 @@ export default function Scholarships() {
 								</DrawerSection>
 							</div>
 
-							<div className="flex shrink-0 items-center gap-3 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-4">
+							<div className="flex shrink-0 flex-wrap items-center gap-2 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
 								{selectedScholarship.applicationLink && (
 									<a
 										href={cleanOfficialUrl(selectedScholarship.applicationLink)}
@@ -1651,33 +1414,17 @@ export default function Scholarships() {
 									<FileText size={15} />
 									Full rules
 								</button>
-								<button
-									type="button"
-									onClick={() =>
+								<SaveButton
+									variant="pill"
+									saved={saved.has(selectedScholarship._id || selectedScholarship.id)}
+									saving={savingSet.has(selectedScholarship._id || selectedScholarship.id)}
+									onToggle={() =>
 										toggleSave(
 											selectedScholarship._id || selectedScholarship.id,
 											selectedScholarship,
 										)
 									}
-									disabled={savingSet.has(
-										selectedScholarship._id || selectedScholarship.id,
-									)}
-									className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-5 py-2.5 text-sm font-bold hover:bg-emerald-100 ${focusRing}`}
-								>
-									{saved.has(
-										selectedScholarship._id || selectedScholarship.id,
-									) ? (
-										<>
-											<BookmarkCheck size={15} className="text-emerald-800" />
-											<span>Saved</span>
-										</>
-									) : (
-										<>
-											<Bookmark size={15} />
-											<span>Save scheme</span>
-										</>
-									)}
-								</button>
+								/>
 								{(() => {
 									const rawGl =
 										selectedScholarship.officialLinks?.guidelinesUrl ||

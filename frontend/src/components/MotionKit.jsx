@@ -172,16 +172,16 @@ const STEPS = [
 	"Checking state and category quotas",
 	"Tying each result to its circular",
 ];
-export function VerifyingCard({ active }) {
+export function VerifyingCard({ active, steps = STEPS }) {
 	const [i, setI] = useState(0);
 	useEffect(() => {
 		if (!active) return setI(0);
 		const t = setInterval(
-			() => setI((v) => Math.min(v + 1, STEPS.length - 1)),
+			() => setI((v) => Math.min(v + 1, steps.length - 1)),
 			700,
 		);
 		return () => clearInterval(t);
-	}, [active]);
+	}, [active, steps.length]);
 	if (!active) return null;
 	return (
 		<div
@@ -190,7 +190,7 @@ export function VerifyingCard({ active }) {
 		>
 			<span className="mk-scanline" />
 			<ul className="space-y-2 text-sm font-semibold">
-				{STEPS.map((s, n) => (
+				{steps.map((s, n) => (
 					<li
 						key={s}
 						className={`flex items-center gap-2 transition-opacity ${n > i ? "opacity-30" : ""}`}

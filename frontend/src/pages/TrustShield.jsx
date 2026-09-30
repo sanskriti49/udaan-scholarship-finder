@@ -20,7 +20,8 @@ import {
 	getOfficialRegistry,
 } from "../services/verifyService";
 import { toast } from "sonner";
-import { PageStyles } from "../components/PageKit";
+import { PageStyles, Stamp } from "../components/PageKit";
+import { MotionStyles, CountUp, VerifyingCard } from "../components/MotionKit";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -31,6 +32,7 @@ export default function TrustShield() {
 	const [textInput, setTextInput] = useState("");
 	const [analyzing, setAnalyzing] = useState(false);
 	const [result, setResult] = useState(null);
+	const [scanId, setScanId] = useState(0);
 	const [registry, setRegistry] = useState([]);
 
 	const presets = [
@@ -90,6 +92,7 @@ export default function TrustShield() {
 			const res = await scanLinkOrContent({ url: targetUrl, text: targetText });
 			if (res.success) {
 				setResult(res.result);
+				setScanId((n) => n + 1);
 				if (
 					res.result.verdict === "VERIFIED_OFFICIAL" ||
 					res.result.verdict === "VERIFIED_CSR"
@@ -137,6 +140,13 @@ export default function TrustShield() {
 				.finally(() => setAnalyzing(false));
 		}, 100);
 	};
+
+	const SCAN_STEPS = [
+		"Reading the domain and message",
+		"Matching against the official registry",
+		"Looking for fee, UPI and OTP traps",
+		"Scoring what we found",
+	];
 
 	const getVerdictDetails = (verdict, score) => {
 		switch (verdict) {
@@ -220,6 +230,7 @@ export default function TrustShield() {
 	return (
 		<div className="ud-root min-h-screen bg-[#E9F0EA] pb-24 font-sans text-emerald-950">
 			<PageStyles />
+			<MotionStyles />
 
 			{/* Hero Section */}
 			<section className="mx-auto max-w-7xl px-5 pt-12 pb-10 sm:px-8 md:pt-16">
@@ -384,6 +395,8 @@ export default function TrustShield() {
 						</div>
 					</form>
 
+					<VerifyingCard active={analyzing} steps={SCAN_STEPS} />
+
 					{/* Result Details */}
 					{result &&
 						(() => {
@@ -391,8 +404,28 @@ export default function TrustShield() {
 							const Icon = details.icon;
 							return (
 								<div
-									className={`mt-6 rounded-2xl border-[1.5px] p-6 space-y-5 transition-all ${details.cardBg}`}
+									key={scanId}
+									aria-live="polite"
+									className={`sk-in relative mt-6 space-y-5 rounded-2xl border-[1.5px] p-5 sm:p-6 ${details.cardBg}`}
 								>
+									<Stamp
+										slam
+										delay={0.2}
+										tilt={result.verdict === "HIGH_RISK_SUSPICIOUS" ? 6 : -6}
+										className={`absolute -top-4 right-4 bg-white/80 text-sm sm:text-base ${
+											result.verdict === "HIGH_RISK_SUSPICIOUS"
+												? "border-rose-700 text-rose-700"
+												: result.verdict?.startsWith("VERIFIED")
+													? "border-emerald-700 text-emerald-800"
+													: "border-amber-700 text-amber-800"
+										}`}
+									>
+										{result.verdict === "HIGH_RISK_SUSPICIOUS"
+											? "Do not pay"
+											: result.verdict?.startsWith("VERIFIED")
+												? "Official"
+												: "Unverified"}
+									</Stamp>
 									<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-[1.5px] border-dashed border-emerald-950/20 pb-4">
 										<div className="flex items-center gap-3.5">
 											<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border-[1.5px] border-emerald-950 bg-white text-emerald-800">
@@ -415,10 +448,19 @@ export default function TrustShield() {
 												Calculated Trust Score
 											</div>
 											<div className="ud-display text-3xl font-extrabold text-emerald-950">
-												{result.score}
+												<CountUp value={result.score || 0} duration={900} />
 												<span className="text-lg font-semibold text-emerald-950/50">
 													/100
 												</span>
+											</div>
+											<div className="sk-meter mt-2 w-40 sm:ml-auto" aria-hidden>
+												<span
+													style={{
+														width: `${Math.max(4, result.score || 0)}%`,
+														background:
+															result.score >= 70 ? "#2d6a4f" : result.score >= 40 ? "#f59e0b" : "#e11d48",
+													}}
+												/>
 											</div>
 										</div>
 									</div>
@@ -436,7 +478,8 @@ export default function TrustShield() {
 												{result.findings.map((finding, fIdx) => (
 													<div
 														key={fIdx}
-														className={`flex items-start gap-3 rounded-xl border-[1.5px] bg-white p-4 text-sm ${
+														style={{ "--d": `${250 + fIdx * 90}ms` }}
+														className={`sk-in flex items-start gap-3 rounded-xl border-[1.5px] bg-white p-4 text-sm ${
 															finding.severity === "critical"
 																? "border-rose-400 text-rose-950"
 																: finding.severity === "positive"

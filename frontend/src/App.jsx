@@ -1,10 +1,16 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+	createBrowserRouter,
+	Navigate,
+	RouterProvider,
+	useLocation,
+} from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import Mainlayout from "./layouts/Mainlayout";
 import HomePage from "./pages/HomePage";
 import FullScreenLoader from "./components/FullScreenLoader";
+import { useAuth } from "./hooks/useAuth";
 
 // Route-level code splitting: secondary routes and heavy libraries (gsap, oauth, turnstile)
 // are loaded on-demand, keeping the initial home page bundle ultra-compact.
@@ -28,29 +34,49 @@ const withSuspense = (Component) => (
 	</Suspense>
 );
 
+// Signed-in only pages. Guests are sent to login and brought back afterwards.
+function RequireAuth({ children }) {
+	const { user } = useAuth();
+	const location = useLocation();
+	if (user) return children;
+	const back = encodeURIComponent(location.pathname + location.search);
+	return <Navigate to={`/login?redirect=${back}`} replace />;
+}
+
+// Login/Signup are for guests only.
+function GuestOnly({ children }) {
+	const { user } = useAuth();
+	const location = useLocation();
+	if (!user) return children;
+	const to = new URLSearchParams(location.search).get("redirect");
+	return <Navigate to={to && to.startsWith("/") ? to : "/"} replace />;
+}
+
+const withAuth = (Component) => <RequireAuth>{withSuspense(Component)}</RequireAuth>;
+
 const router = createBrowserRouter([
 	{
 		element: <Mainlayout />,
 		children: [
 			{ path: "/", element: <HomePage /> },
 			{ path: "support", element: withSuspense(Support) },
-			{ path: "eligibility", element: withSuspense(EligibilityPage) },
+			{ path: "eligibility", element: withAuth(EligibilityPage) },
 			{ path: "scholarships", element: withSuspense(Scholarships) },
 			{ path: "trust-shield", element: withSuspense(TrustShield) },
 			{ path: "verify", element: withSuspense(TrustShield) },
-			{ path: "documents", element: withSuspense(DocumentVault) },
-			{ path: "document-vault", element: withSuspense(DocumentVault) },
-			{ path: "saved", element: withSuspense(SavedScholarships) },
-			{ path: "bookmarks", element: withSuspense(SavedScholarships) },
+			{ path: "documents", element: withAuth(DocumentVault) },
+			{ path: "document-vault", element: withAuth(DocumentVault) },
+			{ path: "saved", element: withAuth(SavedScholarships) },
+			{ path: "bookmarks", element: withAuth(SavedScholarships) },
 			{ path: "resources", element: withSuspense(Resources) },
 			{ path: "application-guide", element: withSuspense(ApplicationGuide) },
 			{ path: "how-to-apply", element: withSuspense(HowToApply) },
-			{ path: "settings", element: withSuspense(Settings) },
+			{ path: "settings", element: withAuth(Settings) },
 			{ path: "*", element: withSuspense(NotFoundPage) },
 		],
 	},
-	{ path: "signup", element: withSuspense(SignUp) },
-	{ path: "login", element: withSuspense(Login) },
+	{ path: "signup", element: <GuestOnly>{withSuspense(SignUp)}</GuestOnly> },
+	{ path: "login", element: <GuestOnly>{withSuspense(Login)}</GuestOnly> },
 ]);
 
 export default function App() {

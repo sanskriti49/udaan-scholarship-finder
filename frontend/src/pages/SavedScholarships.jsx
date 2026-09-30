@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -10,18 +10,13 @@ import {
 	ShieldCheck,
 	History,
 	FileText,
-	ExternalLink,
-	AlertCircle,
 	ArrowUpRight,
 	Check,
-	ChevronDown,
 	Sparkles,
 	Clock,
 	Compass,
 	ArrowRight,
 	RotateCcw,
-	Loader2,
-	SlidersHorizontal,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -34,17 +29,14 @@ import AuthPromptModal from "../components/AuthPromptModal";
 import { formatGrant } from "../utils/formatGrant";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import {
-	formatClauseTitle,
-	formatEvidenceText,
-	formatSourceLabel,
-	formatChangeNotice,
 	cleanOfficialUrl,
-	isGenuinePdf,
 } from "../utils/formatEvidence";
 import { emitBookmarkChanged, onBookmarkChanged } from "../utils/bookmarkSync";
 import { PageStyles } from "../components/PageKit";
+import { ScholarshipCard, CardSkeleton } from "../components/ScholarshipKit";
+import { CountUp } from "../components/MotionKit";
+import { deadlineInfo } from "../utils/scholarshipMeta";
 import {
-	CategoryCardHeader,
 	CategoryMotifIcon,
 	getCategoryTheme,
 } from "../components/CategoryMotif";
@@ -135,6 +127,7 @@ export default function SavedScholarships() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("All");
 	const [sortBy, setSortBy] = useState("deadline");
+	const [view, setView] = useState("shelf");
 
 	const [selectedScholarship, setSelectedScholarship] = useState(null);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -228,13 +221,13 @@ export default function SavedScholarships() {
 								return copy;
 							});
 							toast.success("Bookmark restored!");
-						} catch (_) {
+						} catch {
 							toast.error("Could not restore bookmark");
 						}
 					},
 				},
 			});
-		} catch (err) {
+		} catch {
 			// Rollback on failure
 			if (removedItem) {
 				setSavedItems((prev) => {
@@ -298,13 +291,40 @@ export default function SavedScholarships() {
 		return dateA - dateB;
 	});
 
-	// Count statistics
-	const now = Date.now();
-	const closingSoonCount = savedItems.filter((s) => {
-		if (!s.deadline) return false;
-		const diff = new Date(s.deadline).getTime() - now;
-		return diff > 0 && diff <= 7 * 24 * 60 * 60 * 1000;
-	}).length;
+	// Shelf grouping: each scheme lands on the first shelf it fits.
+	const SHELVES = [
+		{ id: "closing", title: "Closing soon", note: "Deadline within 14 days. Do these first.", icon: Clock,
+			test: (s, d) => d.days !== null && d.days <= 14 && d.tone !== "closed" },
+		{ id: "updated", title: "Recently updated", note: "Rules, dates or amounts changed. Worth a re-read.", icon: History,
+			test: (s, d) => s.hasChanges && d.tone !== "closed" },
+		{ id: "ready", title: "Ready to apply", note: "Open now, with a direct official link.", icon: ArrowUpRight,
+			test: (s, d) => !!s.applicationLink && d.tone !== "closed" && s.status !== "upcoming" },
+		{ id: "later", title: "On the shelf", note: "Opening later or no fixed date yet.", icon: BookmarkCheck,
+			test: (s, d) => d.tone !== "closed" },
+		{ id: "past", title: "Past deadline", note: "Kept for next year's cycle.", icon: RotateCcw, test: () => true },
+	];
+	const shelves = SHELVES.map((sh) => ({ ...sh, items: [] }));
+	for (const item of sortedItems) {
+		const d = deadlineInfo(item.deadline, item.status);
+		shelves.find((sh) => sh.test(item, d)).items.push(item);
+	}
+	const count = (id) => shelves.find((sh) => sh.id === id).items.length;
+	const showShelf = view === "shelf" && !searchQuery.trim() && selectedCategory === "All";
+
+	const renderCard = (s, i) => {
+		const id = s._id || s.id;
+		return (
+			<ScholarshipCard
+				key={id}
+				s={s}
+				index={i}
+				saved
+				saving={removingSet.has(id)}
+				onSave={() => handleRemoveBookmark(s)}
+				onOpen={() => openDetails(s)}
+			/>
+		);
+	};
 
 	return (
 		<div className="min-h-screen bg-[#FAF9F6] text-emerald-950 font-sans selection:bg-yellow-200">
@@ -339,23 +359,18 @@ export default function SavedScholarships() {
 						{/* Quick stats pills */}
 						{user && !loading && (
 							<div className="flex flex-wrap items-center gap-3">
-								<div className="rounded-2xl border-[1.5px] border-emerald-950 bg-white px-4 py-3 shadow-2xs">
-									<span className="block text-2xl font-black text-emerald-950">
-										{savedItems.length}
-									</span>
-									<span className="text-xs font-bold text-emerald-950/60 uppercase tracking-wider">
-										Saved Schemes
-									</span>
-								</div>
-
-								<div className="rounded-2xl border-[1.5px] border-emerald-950 bg-yellow-200 px-4 py-3 shadow-2xs">
-									<span className="block text-2xl font-black text-emerald-950">
-										{closingSoonCount}
-									</span>
-									<span className="text-xs font-bold text-emerald-950/80 uppercase tracking-wider">
-										Closing &lt; 7 Days
-									</span>
-								</div>
+								{[
+									["Saved", savedItems.length, "bg-white"],
+									["Closing soon", count("closing"), "bg-yellow-200"],
+									["Ready to apply", count("ready"), "bg-emerald-100"],
+								].map(([label, n, bg]) => (
+									<div key={label} className={`min-w-[6.5rem] rounded-2xl border-[1.5px] border-emerald-950 px-4 py-3 shadow-[2px_2px_0_0_#022c22] ${bg}`}>
+										<span className="ud-display block text-3xl font-extrabold leading-none">
+											<CountUp value={n} duration={700} />
+										</span>
+										<span className="mt-1 block text-xs font-bold text-emerald-950/70">{label}</span>
+									</div>
+								))}
 							</div>
 						)}
 					</div>
@@ -445,7 +460,7 @@ export default function SavedScholarships() {
 							</div>
 
 							{/* Sort & Category controls */}
-							<div className="flex items-center gap-3">
+							<div className="flex flex-wrap items-center gap-2 sm:gap-3">
 								{categories.length > 2 && (
 									<select
 										value={selectedCategory}
@@ -459,6 +474,20 @@ export default function SavedScholarships() {
 										))}
 									</select>
 								)}
+
+								<div role="group" aria-label="Layout" className="flex rounded-full border-[1.5px] border-emerald-950 bg-white p-0.5">
+									{["shelf", "list"].map((v) => (
+										<button
+											key={v}
+											type="button"
+											aria-pressed={view === v}
+											onClick={() => setView(v)}
+											className={`min-h-[36px] cursor-pointer rounded-full px-3.5 text-xs font-bold capitalize transition-colors ${focusRing} ${view === v ? "bg-emerald-950 text-white" : "text-emerald-950/70"}`}
+										>
+											{v}
+										</button>
+									))}
+								</div>
 
 								<select
 									value={sortBy}
@@ -482,22 +511,9 @@ export default function SavedScholarships() {
 
 						{/* Loading Skeleton */}
 						{loading && (
-							<div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-								{[1, 2, 3, 4].map((i) => (
-									<div
-										key={i}
-										className="flex h-64 flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-6 shadow-2xs"
-									>
-										<div className="space-y-3">
-											<div className="h-3.5 w-1/4 rounded-md bg-emerald-950/10 animate-shimmer" />
-											<div className="h-6 w-4/5 rounded-lg bg-emerald-950/10 animate-shimmer" />
-											<div className="h-3.5 w-1/2 rounded-md bg-emerald-950/10 animate-shimmer" />
-										</div>
-										<div className="flex items-center justify-between pt-4 border-t border-emerald-950/10">
-											<div className="h-4 w-28 rounded-md bg-emerald-950/10 animate-shimmer" />
-											<div className="h-8 w-24 rounded-full bg-emerald-950/10 animate-shimmer" />
-										</div>
-									</div>
+							<div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+								{[1, 2, 3].map((i) => (
+									<CardSkeleton key={i} />
 								))}
 							</div>
 						)}
@@ -613,125 +629,36 @@ export default function SavedScholarships() {
 							)}
 
 						{/* Saved Scholarship Cards Grid */}
-						{!loading && !error && sortedItems.length > 0 && (
-							<div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-								{sortedItems.map((s) => {
-									const id = s._id || s.id;
-									const grantInfo = formatGrant(s.amount);
-									const isRemoving = removingSet.has(id);
-									const docCount = Array.isArray(s.requiredDocuments)
-										? s.requiredDocuments.length
-										: 0;
-
-									return (
-										<article
-											key={id}
-											className="card-fluid group flex flex-col justify-between rounded-2xl border-[1.5px] border-emerald-950/20 bg-white overflow-hidden hover:border-emerald-950 hover:shadow-[5px_5px_0px_0px_rgba(2,44,34,1)] focus-within:border-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,0.08)]"
-										>
-											<CategoryCardHeader
-												category={s.category}
-												sourceType={s.sourceType || "Official"}
-												hasChanges={s.hasChanges}
-												rightSlot={
-													<button
-														type="button"
-														onClick={() => handleRemoveBookmark(s)}
-														disabled={isRemoving}
-														title="Remove from saved"
-														aria-label={`Remove ${s.title} from saved`}
-														className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950/20 bg-white/90 text-emerald-800 transition hover:bg-rose-50 hover:text-rose-700 hover:border-rose-400 active:scale-95 ${focusRing} ${
-															isRemoving ? "opacity-50 cursor-not-allowed" : ""
-														}`}
-													>
-														{isRemoving ? (
-															<Loader2
-																size={15}
-																className="animate-spin text-emerald-800"
-															/>
-														) : (
-															<BookmarkCheck size={16} />
-														)}
-													</button>
-												}
-											/>
-
-											<div className="p-5 sm:p-6 flex flex-col flex-1">
-												<h3>
-													<button
-														type="button"
-														onClick={() => openDetails(s)}
-														className={`ud-display cursor-pointer text-left text-xl font-bold leading-tight text-emerald-950 decoration-yellow-300 decoration-2 underline-offset-4 group-hover:underline ${focusRing} rounded-sm`}
-													>
-														{s.title}
-													</button>
-												</h3>
-
-												<p className="mt-1 text-sm text-emerald-950/65 font-medium">
-													{s.organization}
-												</p>
-
-												<div className="mt-auto pt-4">
-													{/* Benefits & Deadline summary row */}
-													<div className="flex items-center justify-between gap-3 border-t-[1.5px] border-dashed border-emerald-950/20 pt-4">
-														<div className="min-w-0">
-															{grantInfo?.isUnpublished ? (
-																<p className="text-sm font-medium italic text-emerald-950/60">
-																	{grantInfo.main}
-																</p>
-															) : grantInfo ? (
-																<p className="flex items-baseline gap-1.5">
-																	<span className="ud-display text-2xl font-extrabold text-emerald-950">
-																		{grantInfo.isStipend
-																			? grantInfo.main
-																			: `₹${grantInfo.main}`}
-																	</span>
-																	{grantInfo.period && (
-																		<span className="text-xs font-semibold text-emerald-950/55">
-																			{grantInfo.period}
-																		</span>
-																	)}
-																</p>
-															) : null}
-														</div>
-														<DeadlineChip deadline={s.deadline} />
-													</div>
-
-													{/* Bottom Action Footer */}
-													<div className="mt-4 flex items-center justify-between gap-3">
-														<button
-															type="button"
-															onClick={() => openDetails(s)}
-															className={`cursor-pointer rounded-sm text-sm font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
-														>
-															Rules & documents
-														</button>
-
-														{s.applicationLink ? (
-															<a
-																href={cleanOfficialUrl(s.applicationLink)}
-																target="_blank"
-																rel="noopener noreferrer"
-																className={`group/apply inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
-															>
-																<span>Apply Direct</span>
-																<ArrowUpRight
-																	size={13}
-																	className="transition-transform group-hover/apply:-translate-y-0.5 group-hover/apply:translate-x-0.5"
-																/>
-															</a>
-														) : (
-															<span className="text-xs text-emerald-950/40 font-medium">
-																Official portal link inside
-															</span>
-														)}
+						{!loading && !error && sortedItems.length > 0 &&
+							(showShelf ? (
+								<div className="space-y-12">
+									{shelves
+										.filter((sh) => sh.items.length > 0)
+										.map((sh) => (
+											<section key={sh.id} aria-labelledby={`shelf-${sh.id}`}>
+												<div className="mb-4 flex items-end gap-3 border-b-[1.5px] border-emerald-950 pb-3">
+													<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-[1.5px] border-emerald-950 bg-yellow-200 shadow-[2px_2px_0_0_#022c22]">
+														<sh.icon size={18} />
+													</span>
+													<div className="min-w-0 flex-1">
+														<h2 id={`shelf-${sh.id}`} className="ud-display text-xl font-bold leading-tight sm:text-2xl">
+															{sh.title}{" "}
+															<span className="text-emerald-950/40">{sh.items.length}</span>
+														</h2>
+														<p className="text-sm text-emerald-950/60">{sh.note}</p>
 													</div>
 												</div>
-											</div>
-										</article>
-									);
-								})}
-							</div>
-						)}
+												<div className="sk-shelf md:grid md:grid-cols-2 md:gap-5 xl:grid-cols-3">
+													{sh.items.map(renderCard)}
+												</div>
+											</section>
+										))}
+								</div>
+							) : (
+								<div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+									{sortedItems.map(renderCard)}
+								</div>
+							))}
 					</>
 				)}
 			</section>

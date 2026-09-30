@@ -66,14 +66,6 @@ export const SCHEMES = [
 const lakh = (n) => `₹${(n / 100000).toFixed(n % 100000 ? 1 : 0)}L`;
 
 const CSS = `
-.hs-range{-webkit-appearance:none;appearance:none;width:100%;height:16px;border-radius:999px;
- border:1.5px solid #022c22;cursor:pointer;}
-.hs-range::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;
- background:#fde047;border:2px solid #022c22;box-shadow:0 3px 0 #022c22;transition:transform .15s}
-.hs-range::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fde047;
- border:2px solid #022c22;box-shadow:0 3px 0 #022c22}
-.hs-range:active::-webkit-slider-thumb{transform:scale(1.15) translateY(2px);box-shadow:0 1px 0 #022c22}
-.hs-range:focus-visible{outline:3px solid #143621;outline-offset:4px}
 @keyframes hs-bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-7px) rotate(4deg)}}
 .hs-bob{animation:hs-bob 3.2s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.hs-bob{animation:none}}

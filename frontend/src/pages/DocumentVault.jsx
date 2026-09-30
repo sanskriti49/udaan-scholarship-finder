@@ -177,7 +177,7 @@ function Chip({ active, onClick, children }) {
 			type="button"
 			onClick={onClick}
 			aria-pressed={active}
-			className={`cursor-pointer rounded-full border-[1.5px] px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+			className={`sk-chip min-h-[44px] shrink-0 cursor-pointer whitespace-nowrap rounded-full border-[1.5px] px-4 text-sm font-semibold ${
 				active
 					? "border-emerald-950 bg-emerald-950 text-white"
 					: "border-emerald-950/30 bg-white text-emerald-950 hover:border-emerald-950"
@@ -424,8 +424,15 @@ export default function DocumentVault() {
 							)}
 						</div>
 						<p className="mt-3 max-w-xl text-base leading-relaxed text-emerald-950/75">
-							Click a status to move it from not started, to in progress, to
+							Tap a status to move it from not started, to in progress, to
 							ready.
+						</p>
+						<p key={readyCount} className="ud-fade-in mt-2 text-sm font-bold text-emerald-800" aria-live="polite">
+							{progressPercent === 100
+								? "Every paper is in the folder. You're application-ready."
+								: readyCount === 0
+									? "Your folder is empty. Start with the one you already have in a drawer."
+									: `${filteredDocs.length - readyCount} more to go and this folder is application-ready.`}
 						</p>
 					</div>
 
@@ -455,7 +462,7 @@ export default function DocumentVault() {
 					</div>
 				</div>
 
-				<div className="mt-8 flex flex-wrap gap-2">
+				<div className="no-scrollbar -mx-5 mt-8 flex gap-2 overflow-x-auto px-5 py-1 sm:mx-0 sm:flex-wrap sm:px-0">
 					{CATEGORIES.map((cat) => (
 						<Chip
 							key={cat.id}
@@ -474,14 +481,23 @@ export default function DocumentVault() {
 							return (
 								<Reveal key={doc.id} delay={i * 60}>
 									<div
-										className={`px-5 py-5 transition-colors sm:px-6 ${
-											status === "ready" ? "bg-emerald-50/70" : ""
+										className={`border-l-[6px] px-5 py-5 transition-colors duration-300 sm:px-6 ${
+											status === "ready"
+												? "border-l-emerald-700 bg-emerald-50/70"
+												: status === "in_progress"
+													? "border-l-yellow-300"
+													: "border-l-transparent"
 										}`}
 									>
 										<div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
 											<div className="min-w-0">
-												<h3 className="font-sans text-xl font-bold leading-tight">
+												<h3 className="flex flex-wrap items-center gap-3 font-sans text-xl font-bold leading-tight">
 													{doc.name}
+													{status === "ready" && (
+														<Stamp slam tilt={-5} className="text-xs">
+															In the folder
+														</Stamp>
+													)}
 												</h3>
 												<p className="mt-1 font-sans text-sm text-emerald-950/85">
 													Issued by{" "}
@@ -490,10 +506,12 @@ export default function DocumentVault() {
 													</span>
 												</p>
 											</div>
-											<StatusButton
-												status={status}
-												onClick={() => toggleDocStatus(doc.id)}
-											/>
+											<span key={status} className="sk-pop shrink-0">
+												<StatusButton
+													status={status}
+													onClick={() => toggleDocStatus(doc.id)}
+												/>
+											</span>
 										</div>
 
 										<p className="mt-3 max-w-prose text-[15px] leading-relaxed text-emerald-950/80">

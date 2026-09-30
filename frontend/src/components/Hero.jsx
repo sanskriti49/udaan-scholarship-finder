@@ -1,21 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	Search,
-	ArrowRight,
-	ShieldCheck,
-	ArrowUpRight,
-	CheckCircle2,
-	Sparkles,
-} from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { Search, ArrowRight, Sparkles } from "lucide-react";
 import { CategoryMotifIcon } from "./CategoryMotif";
-import { Stamp } from "./PageKit";
-import {
-	ShockedStudent,
-	CornerPeeker,
-	CoinHugger,
-} from "./AnimatedIllustrations";
-import { TearOffCountdown, SecretCornerKnock } from "./SignatureInteractions";
+import { ShockedStudent } from "./AnimatedIllustrations";
+import { SecretCornerKnock } from "./SignatureInteractions";
 import HeroSchemeCard from "./HeroSchemeCard";
 
 const focusRing =
@@ -86,6 +75,7 @@ function Hero() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [focused, setFocused] = useState(false);
 	const navigate = useNavigate();
+	const { user } = useAuth();
 	const placeholder = useRotatingPlaceholder(
 		PLACEHOLDERS,
 		focused || searchQuery !== "",
@@ -185,10 +175,12 @@ function Hero() {
 								className={`inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-yellow-200 px-4 py-1.5 text-sm font-bold text-emerald-950 shadow-[2px_2px_0px_0px_rgba(2,44,34,1)] transition hover:-translate-y-0.5 active:translate-y-0 active:scale-95 ${focusRing}`}
 							>
 								<Sparkles size={14} aria-hidden="true" />
-								<span>Answer 3 questions</span>
+								<span>{user ? "Check my eligibility" : "Log in & check eligibility"}</span>
 							</button>
 							<span className="text-xs text-emerald-950/55">
-								About a minute. No passwords, no Aadhaar number.
+								{user
+									? "Four quick steps. No Aadhaar number."
+									: "Free account. Then four quick steps, no Aadhaar number."}
 							</span>
 						</div>
 
@@ -214,113 +206,6 @@ function Hero() {
 					</div>
 
 					{/* Right: one real scheme, shown the way students will see it */}
-					{/* <div className="relative flex justify-center lg:col-span-5">
-						<div className="relative w-full max-w-sm sm:max-w-md">
-							<div className="animate-subtle-float absolute -top-6 -left-6 z-20 hidden sm:block">
-								<Stamp
-									tilt={-6}
-									className="border-[#B45309] bg-[#FEF9EE] text-[#78350F] shadow-xs"
-								>
-									<div className="flex items-center gap-1.5">
-										<CategoryMotifIcon category="Merit-Based" size={17} />
-										<span>100% VERIFIED</span>
-									</div>
-								</Stamp>
-							</div>
-							<div className="animate-subtle-float-reverse absolute -top-4 -right-4 z-20 hidden sm:block">
-								<Stamp
-									tilt={5}
-									className="border-[#047857] bg-[#F0FDF9] text-[#064E3B] shadow-xs"
-								>
-									<div className="flex items-center gap-1.5">
-										<CategoryMotifIcon category="STEM" size={17} />
-										<span>NSP TRACKED</span>
-									</div>
-								</Stamp>
-							</div>
-
-							<article className="card-fluid relative z-10 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-5 shadow-[6px_6px_0px_0px_rgba(2,44,34,1)] hover:shadow-[8px_8px_0px_0px_rgba(2,44,34,1)] sm:p-6">
-								<div
-									className="pointer-events-none absolute -top-5 right-16 z-30 hidden sm:block"
-									aria-hidden="true"
-								>
-									<CornerPeeker size={44} />
-								</div>
-
-								<div className="mb-3 flex items-center justify-between gap-2 border-b border-dashed border-emerald-950/15 pb-3">
-									<div className="flex items-center gap-2">
-										<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-[1.5px] border-[#9D174D] bg-[#FDF2F8]">
-											<CategoryMotifIcon category="Women & Girls" size={20} />
-										</div>
-										<div>
-											<span className="block text-xs font-bold text-[#9D174D]">
-												Featured scheme
-											</span>
-											<span className="text-xs font-semibold leading-none text-emerald-950/60">
-												AICTE approved
-											</span>
-										</div>
-									</div>
-									<TearOffCountdown deadline={FLAGSHIP_DEADLINE} compact />
-								</div>
-
-								<h3 className="ud-display text-xl font-bold leading-tight text-emerald-950 sm:text-2xl">
-									AICTE Pragati Scholarship for Girl Students
-								</h3>
-								<p className="mt-1 font-sans text-xs text-emerald-950/60">
-									Ministry of Education · Govt of India
-								</p>
-
-								<div className="mt-3.5 space-y-1.5 rounded-xl border border-dashed border-emerald-950/20 bg-[#FAF9F6] p-3 text-xs font-medium text-emerald-950/80">
-									<div className="flex items-center gap-1.5 font-bold text-emerald-800">
-										<CheckCircle2 size={13} className="shrink-0" />
-										<span>Who can apply (from the official notice)</span>
-									</div>
-									<p className="pl-4 font-sans text-[11px] leading-relaxed text-emerald-950/70">
-										First-year technical degree · family income up to ₹8 lakh a
-										year · max 2 girls per family.
-									</p>
-								</div>
-
-								<div className="mt-4 flex items-center justify-between border-t-[1.5px] border-emerald-950/15 pt-3.5">
-									<div className="flex items-center gap-2">
-										<CoinHugger
-											size={42}
-											className="hidden shrink-0 sm:block"
-										/>
-										<div>
-											<span className="ud-display text-2xl font-extrabold text-emerald-950 sm:text-3xl">
-												₹50,000
-											</span>
-											<span className="ml-1 font-sans text-xs font-semibold text-emerald-950/55">
-												a year
-											</span>
-										</div>
-									</div>
-									<button
-										type="button"
-										onClick={() => go("Pragati")}
-										className={`btn-fluid inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-full bg-emerald-800 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-emerald-900 ${focusRing}`}
-									>
-										<span>View scheme</span>
-										<ArrowUpRight size={13} />
-									</button>
-								</div>
-							</article>
-
-							<div className="animate-subtle-float absolute -bottom-4 -left-4 z-20 hidden sm:block">
-								<Stamp
-									tilt={-4}
-									className="border-[#1B432A] bg-[#F2F7F4] text-[#143621] shadow-xs"
-								>
-									<div className="flex items-center gap-1.5">
-										<CategoryMotifIcon category="Government" size={16} />
-										<span>ZERO ADS · ₹0 CHARGES</span>
-									</div>
-								</Stamp>
-							</div>
-						</div>
-					</div> */}
 					<div className="lg:col-span-5">
 						<HeroSchemeCard
 							deadline={FLAGSHIP_DEADLINE}
