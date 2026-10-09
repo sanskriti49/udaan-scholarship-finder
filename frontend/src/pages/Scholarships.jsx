@@ -240,6 +240,7 @@ export default function Scholarships() {
 
 	const sort = searchParams.get("sort") || "deadline";
 	const hasChangesOnly = searchParams.get("hasChanges") === "true";
+	const status = searchParams.get("status") || "active";
 
 	const [search, setSearch] = useState(() => searchParams.get("search") || "");
 
@@ -300,6 +301,7 @@ export default function Scholarships() {
 	const setSort = (val) => updateParam("sort", val, "deadline");
 	const setHasChangesOnly = (val) =>
 		updateParam("hasChanges", val ? "true" : "", "");
+	const setStatus = (val) => updateParam("status", val, "active");
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -369,6 +371,7 @@ export default function Scholarships() {
 				sourceType:
 					selectedSources.length > 0 ? selectedSources.join(",") : undefined,
 				hasChanges: hasChangesOnly ? "true" : undefined,
+				status,
 				sort,
 				limit: 50,
 			};
@@ -550,7 +553,8 @@ export default function Scholarships() {
 		selectedLevels.length +
 		selectedStates.length +
 		selectedSources.length +
-		(hasChangesOnly ? 1 : 0);
+		(hasChangesOnly ? 1 : 0) +
+		(status !== "active" ? 1 : 0);
 	const hasAnyFilter = activeCount > 0 || !!search;
 
 	return (
@@ -732,7 +736,10 @@ export default function Scholarships() {
 							aria-label="Filters"
 							className={`${filtersOpen ? "sk-sheet fixed inset-x-0 bottom-0 z-[61] flex max-h-[85vh] flex-col rounded-t-3xl" : "hidden"} border-[1.5px] border-emerald-950 bg-white lg:static lg:z-auto lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:rounded-2xl lg:[animation:none]`}
 						>
-							<span aria-hidden className="mx-auto mt-2 block h-1.5 w-12 shrink-0 rounded-full bg-emerald-950/20 lg:hidden" />
+							<span
+								aria-hidden
+								className="mx-auto mt-2 block h-1.5 w-12 shrink-0 rounded-full bg-emerald-950/20 lg:hidden"
+							/>
 							<div className="sticky top-0 z-10 flex items-center justify-between border-b-[1.5px] border-emerald-950 bg-emerald-50 px-5 py-3.5">
 								<span className="ud-display text-lg font-bold">Filters</span>
 								{activeCount > 0 && (
@@ -789,6 +796,24 @@ export default function Scholarships() {
 								</button>
 
 								<FilterGroup
+									label="Application status"
+									options={["Active only", "All schemes", "Closed only"]}
+									selected={
+										status === "all"
+											? ["All schemes"]
+											: status === "closed"
+												? ["Closed only"]
+												: ["Active only"]
+									}
+									defaultOption="Active only"
+									onChange={(val) => {
+										if (val === "All schemes") setStatus("all");
+										else if (val === "Closed only") setStatus("closed");
+										else setStatus("active");
+									}}
+								/>
+
+								<FilterGroup
 									label="Category"
 									options={CATEGORIES}
 									selected={selectedCats}
@@ -833,7 +858,9 @@ export default function Scholarships() {
 									}}
 									className={`min-h-[48px] flex-1 cursor-pointer rounded-full bg-emerald-800 px-5 text-sm font-bold text-white ${focusRing}`}
 								>
-									{loading ? "Updating…" : `Show ${scholarships.length} ${scholarships.length === 1 ? "scheme" : "schemes"}`}
+									{loading
+										? "Updating…"
+										: `Show ${scholarships.length} ${scholarships.length === 1 ? "scheme" : "schemes"}`}
 								</button>
 							</div>
 						</div>
@@ -842,16 +869,16 @@ export default function Scholarships() {
 					<main className="w-full min-w-0 flex-1">
 						<div className="flex flex-wrap items-center justify-between gap-4">
 							<p className="text-base font-bold" aria-live="polite">
-								{loading
-									? "Loading schemes"
-									: (
-										<>
-											<span className="ud-display text-2xl font-extrabold">
-												<CountUp value={scholarships.length} duration={500} />
-											</span>{" "}
-											{scholarships.length === 1 ? "scheme" : "schemes"}
-										</>
-									)}
+								{loading ? (
+									"Loading schemes"
+								) : (
+									<>
+										<span className="ud-display text-2xl font-extrabold">
+											<CountUp value={scholarships.length} duration={500} />
+										</span>{" "}
+										{scholarships.length === 1 ? "scheme" : "schemes"}
+									</>
+								)}
 								<span className="ml-2 font-medium text-emerald-950/55">
 									{hasAnyFilter
 										? "matching your filters"
@@ -934,6 +961,14 @@ export default function Scholarships() {
 										label="Remove recently updated"
 									>
 										Recently updated
+									</ActiveFilter>
+								)}
+								{status !== "active" && (
+									<ActiveFilter
+										onRemove={() => setStatus("active")}
+										label="Reset application status"
+									>
+										Status: {status === "all" ? "All schemes" : "Closed only"}
 									</ActiveFilter>
 								)}
 								<button
@@ -1105,6 +1140,12 @@ export default function Scholarships() {
 												>
 													{selectedScholarship.title}
 												</h2>
+												<a
+													href={`/scanner?scholarship=${encodeURIComponent(selectedScholarship._id || selectedScholarship.id)}`}
+													className="mt-3 inline-block text-sm font-semibold text-emerald-900 underline underline-offset-4"
+												>
+													Check document readiness ↗
+												</a>
 
 												<div className="mt-2.5 flex flex-wrap items-center gap-3">
 													<p className="text-sm font-medium text-emerald-950/65">
@@ -1118,8 +1159,12 @@ export default function Scholarships() {
 
 											<div className="flex items-center gap-2 shrink-0">
 												<SaveButton
-													saved={saved.has(selectedScholarship._id || selectedScholarship.id)}
-													saving={savingSet.has(selectedScholarship._id || selectedScholarship.id)}
+													saved={saved.has(
+														selectedScholarship._id || selectedScholarship.id,
+													)}
+													saving={savingSet.has(
+														selectedScholarship._id || selectedScholarship.id,
+													)}
 													name={selectedScholarship.title}
 													onToggle={() =>
 														toggleSave(
@@ -1416,8 +1461,12 @@ export default function Scholarships() {
 								</button>
 								<SaveButton
 									variant="pill"
-									saved={saved.has(selectedScholarship._id || selectedScholarship.id)}
-									saving={savingSet.has(selectedScholarship._id || selectedScholarship.id)}
+									saved={saved.has(
+										selectedScholarship._id || selectedScholarship.id,
+									)}
+									saving={savingSet.has(
+										selectedScholarship._id || selectedScholarship.id,
+									)}
 									onToggle={() =>
 										toggleSave(
 											selectedScholarship._id || selectedScholarship.id,

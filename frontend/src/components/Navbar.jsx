@@ -5,10 +5,8 @@ import {
 	LogOut,
 	ChevronDown,
 	Settings as SettingsIcon,
-	Sparkles,
 	Compass,
 	CheckCircle2,
-	Bookmark,
 	BookmarkCheck,
 	ArrowRight,
 	Search,
@@ -68,6 +66,7 @@ const Navbar = () => {
 		{ name: "Scholarships", path: "/scholarships" },
 		{ name: "Trust Shield", path: "/trust-shield" },
 		{ name: "Resources", path: "/resources" },
+		{ name: "Scanner", path: "/scanner" },
 	];
 
 	const loggedInLinks = [
@@ -76,6 +75,7 @@ const Navbar = () => {
 		{ name: "Eligibility", path: "/eligibility" },
 		{ name: "Documents", path: "/documents" },
 		{ name: "Resources", path: "/resources" },
+		{ name: "Scanner", path: "/scanner" },
 	];
 
 	const activeNavLinks = user ? loggedInLinks : guestLinks;
@@ -118,6 +118,7 @@ const Navbar = () => {
 							<NavLink
 								key={link.name}
 								to={link.path}
+								reloadDocument={link.external}
 								className={({ isActive }) =>
 									`px-4 py-1.5 text-sm rounded-full transition-all duration-150 font-medium ${
 										isActive
@@ -358,6 +359,7 @@ const Navbar = () => {
 							<NavLink
 								key={link.name}
 								to={link.path}
+								reloadDocument={link.external}
 								onClick={() => setIsOpen(false)}
 								className={({ isActive }) =>
 									`px-4 py-2.5 text-sm rounded-xl font-medium transition-colors ${

@@ -32,3 +32,6 @@ coverage/
 # Playwright
 playwright-report/
 test-results/
+
+# Reproducible self-hosted OCR/PDF assets, copied from locked npm packages
+frontend/public/scanner-assets/

@@ -20,6 +20,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Resources = lazy(() => import("./pages/Resources"));
 const EligibilityPage = lazy(() => import("./pages/Eligibility"));
 const Scholarships = lazy(() => import("./pages/Scholarships"));
+const Scanner = lazy(() => import("./scanner/Scanner"));
 const ApplicationGuide = lazy(() => import("./pages/ApplicationGuide"));
 const HowToApply = lazy(() => import("./pages/HowToApply"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -62,6 +63,8 @@ const router = createBrowserRouter([
 			{ path: "support", element: withSuspense(Support) },
 			{ path: "eligibility", element: withAuth(EligibilityPage) },
 			{ path: "scholarships", element: withSuspense(Scholarships) },
+			{ path: "scanner", element: withSuspense(Scanner) },
+			{ path: "scanner.html", element: <Navigate to="/scanner" replace /> },
 			{ path: "trust-shield", element: withSuspense(TrustShield) },
 			{ path: "verify", element: withSuspense(TrustShield) },
 			{ path: "documents", element: withAuth(DocumentVault) },

@@ -1,11 +1,19 @@
-import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { useRef, useState } from "react";
+import {
+	ArrowUpRight,
+	CheckCircle2,
+	CircleAlert,
+	Info,
+	SlidersHorizontal,
+	Landmark,
+} from "lucide-react";
 import { CategoryMotifIcon } from "./CategoryMotif";
-import { Stamp } from "./PageKit";
 import { CoinHugger } from "./AnimatedIllustrations";
 import { TearOffCountdown } from "./SignatureInteractions";
 import { CountUp } from "./MotionKit";
+import "./hero.css";
 
+// Scheme metadata and numerical behavior are retained from the existing component.
 export const SCHEMES = [
 	{
 		id: "all_degrees",
@@ -20,7 +28,8 @@ export const SCHEMES = [
 		payout: 20000,
 		payoutSub: "/ year",
 		payoutLabel: "Direct bank transfer",
-		eligibleNote: "Regular college degree (UG/PG), 80th percentile in 12th board.",
+		eligibleNote:
+			"Regular college degree (UG/PG), 80th percentile in 12th board.",
 		ineligibleNote: "Family income over ₹4.5L/yr. Try state or private trusts!",
 		searchQuery: "Central Sector Scheme",
 		deadline: "2026-10-31",
@@ -38,7 +47,8 @@ export const SCHEMES = [
 		payout: 50000,
 		payoutSub: "/ year",
 		payoutLabel: "Tuition + contingency",
-		eligibleNote: "First-year technical degree or diploma (Engineering, Architecture, Pharmacy).",
+		eligibleNote:
+			"First-year technical degree or diploma (Engineering, Architecture, Pharmacy).",
 		ineligibleNote: "Just over the ₹8L limit. Merit & state schemes still fit.",
 		searchQuery: "AICTE",
 		deadline: "2026-10-31",
@@ -56,8 +66,10 @@ export const SCHEMES = [
 		payout: 48000,
 		payoutSub: "/ yr (avg)",
 		payoutLabel: "100% Tuition + hostel",
-		eligibleNote: "Post-matric studies, SC/ST/OBC/EWS & freeship eligible students.",
-		ineligibleNote: "Above ₹2.5L ceiling for full DBT. State partial waivers available.",
+		eligibleNote:
+			"Post-matric studies, SC/ST/OBC/EWS & freeship eligible students.",
+		ineligibleNote:
+			"Above ₹2.5L ceiling for full DBT. State partial waivers available.",
 		searchQuery: "Post Matric",
 		deadline: "2026-11-15",
 	},
@@ -65,22 +77,15 @@ export const SCHEMES = [
 
 const lakh = (n) => `₹${(n / 100000).toFixed(n % 100000 ? 1 : 0)}L`;
 
-const CSS = `
-@keyframes hs-bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-7px) rotate(4deg)}}
-.hs-bob{animation:hs-bob 3.2s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){.hs-bob{animation:none}}
-`;
-
-/* A scholarship "ticket": top = interactive scheme tabs + fit meter, tear line, bottom = payout stub. */
 export default function HeroSchemeCard({ deadline, onView }) {
 	const [activeIdx, setActiveIdx] = useState(0);
 	const activeScheme = SCHEMES[activeIdx];
-
 	const [income, setIncome] = useState(350000);
+	const tabRefs = useRef([]);
 	const ok = income <= activeScheme.limit;
-
 	const limitPct = Math.min(100, (activeScheme.limit / activeScheme.max) * 100);
 
+	// Same tab switch and income clamping logic as before.
 	const handleSwitch = (idx) => {
 		setActiveIdx(idx);
 		const targetScheme = SCHEMES[idx];
@@ -95,56 +100,72 @@ export default function HeroSchemeCard({ deadline, onView }) {
 		}
 	};
 
+	// Adds keyboard arrow/Home/End support to the existing tab buttons.
+	const handleTabKeyDown = (e, idx) => {
+		let next;
+		if (e.key === "ArrowRight") next = (idx + 1) % SCHEMES.length;
+		else if (e.key === "ArrowLeft")
+			next = (idx - 1 + SCHEMES.length) % SCHEMES.length;
+		else if (e.key === "Home") next = 0;
+		else if (e.key === "End") next = SCHEMES.length - 1;
+		else return;
+		e.preventDefault();
+		handleSwitch(next);
+		tabRefs.current[next]?.focus();
+	};
+
 	return (
-		<div className="relative mx-auto w-full max-w-md lg:ml-auto lg:mr-0">
-			<style>{CSS}</style>
-
-			<div className="absolute -right-3 -top-5 z-20">
-				<Stamp
-					slam
-					delay={0.4}
-					tilt={7}
-					className="border-[#047857] bg-[#F0FDF9] text-base text-[#064E3B]"
-				>
-					Verified
-				</Stamp>
-			</div>
-
-			<article className="relative rounded-3xl border-2 border-emerald-950 bg-white shadow-[7px_7px_0_0_#022c22]">
-				{/* top half */}
-				<div className="p-6 pb-5 sm:p-7 sm:pb-6">
-					{/* Interactive scheme switcher tabs */}
-					<div
-						role="tablist"
-						aria-label="Popular scheme examples"
-						className="mb-4 flex items-center gap-1 rounded-full border-[1.5px] border-emerald-950/20 bg-emerald-50/70 p-1"
-					>
-						{SCHEMES.map((s, idx) => {
-							const active = idx === activeIdx;
-							return (
-								<button
-									key={s.id}
-									type="button"
-									role="tab"
-									aria-selected={active}
-									onClick={() => handleSwitch(idx)}
-									className={`cursor-pointer flex-1 rounded-full px-2.5 py-1 text-xs font-bold transition-all ${
-										active
-											? "border-[1.5px] border-emerald-950 bg-white text-emerald-950 shadow-[1.5px_1.5px_0_0_#022c22]"
-											: "border-[1.5px] border-transparent text-emerald-950/60 hover:text-emerald-950 hover:bg-white/50"
-									}`}
-								>
-									{s.tab}
-								</button>
-							);
-						})}
+		<div className="uh-card-stack">
+			<article
+				className="uh-scheme-card"
+				aria-label="Interactive scholarship preview"
+			>
+				<div className="uh-card-masthead">
+					<div className="uh-card-masthead-title">
+						<span className="uh-card-masthead-icon" aria-hidden="true">
+							<Landmark size={16} />
+						</span>
+						<span>SCHOLARSHIP SPOTLIGHT</span>
 					</div>
+					<span className="uh-card-page">
+						0{activeIdx + 1} <span>/ 0{SCHEMES.length}</span>
+					</span>
+				</div>
 
-					<div className="flex items-center justify-between gap-3">
-						<span
-							key={activeScheme.id + "-badge"}
-							className={`ud-pop-in inline-flex items-center gap-1.5 rounded-full border-[1.5px] py-1 pl-1.5 pr-3 text-xs font-bold ${activeScheme.badgeTheme}`}
+				<div
+					className="uh-card-tabs"
+					role="tablist"
+					aria-label="Popular scholarship examples"
+				>
+					{SCHEMES.map((s, idx) => (
+						<button
+							ref={(element) => {
+								tabRefs.current[idx] = element;
+							}}
+							type="button"
+							role="tab"
+							aria-selected={idx === activeIdx}
+							aria-controls="uh-scheme-tab-panel"
+							id={`uh-scheme-tab-${idx}`}
+							tabIndex={idx === activeIdx ? 0 : -1}
+							key={s.id}
+							onClick={() => handleSwitch(idx)}
+							onKeyDown={(e) => handleTabKeyDown(e, idx)}
+							className={`uh-card-tab ${idx === activeIdx ? "is-active" : ""}`}
 						>
+							{s.tab}
+						</button>
+					))}
+				</div>
+
+				<div
+					id="uh-scheme-tab-panel"
+					role="tabpanel"
+					aria-labelledby={`uh-scheme-tab-${activeIdx}`}
+					className="uh-card-body"
+				>
+					<div className="uh-card-meta">
+						<span className={`uh-scheme-tag ${activeScheme.badgeTheme}`}>
 							<CategoryMotifIcon category={activeScheme.category} size={18} />
 							{activeScheme.tag}
 						</span>
@@ -154,112 +175,112 @@ export default function HeroSchemeCard({ deadline, onView }) {
 						/>
 					</div>
 
-					<h3
-						key={activeScheme.id + "-title"}
-						className="ud-display ud-pop-in mt-4 text-2xl font-extrabold leading-[1.1] sm:text-[1.75rem]"
-					>
-						{activeScheme.title}
-					</h3>
-					<p
-						key={activeScheme.id + "-auth"}
-						className="ud-pop-in mt-1.5 text-sm font-medium text-emerald-950/60"
-					>
-						{activeScheme.authority}
-					</p>
+					<div className="uh-card-title-block" key={activeScheme.id}>
+						<h3 className="uh-card-title font-georgia">{activeScheme.title}</h3>
+						<p>{activeScheme.authority}</p>
+					</div>
 
-					{/* fit meter */}
-					<div className="mt-6">
-						<div className="mb-3 flex items-center justify-between text-sm font-bold">
-							<label htmlFor="hero-income">Slide your family income</label>
-							<span className="ud-display rounded-full bg-emerald-950 px-3 py-0.5 text-sm text-white">
-								{lakh(income)} / yr
+					<div className="uh-grant-block">
+						<div className="uh-grant-content">
+							<span className="uh-grant-label">POTENTIAL SUPPORT</span>
+							<div className="uh-grant-amount">
+								₹
+								<CountUp
+									key={activeScheme.id}
+									value={activeScheme.payout}
+									duration={800}
+								/>
+								<span>{activeScheme.payoutSub}</span>
+							</div>
+							<span className="uh-grant-detail">
+								{activeScheme.payoutLabel}
 							</span>
 						</div>
-						<input
-							id="hero-income"
-							className="hs-range"
-							type="range"
-							min="0"
-							max={activeScheme.max}
-							step="25000"
-							value={income}
-							onChange={(e) => setIncome(+e.target.value)}
-							style={{
-								background: `linear-gradient(to right,#6ee7b7 0 ${limitPct}%,#fecdd3 ${limitPct}% 100%)`,
-							}}
-						/>
-						<div
-							className="relative mt-1.5 h-4 text-[11px] font-bold text-emerald-950/50"
-							aria-hidden
-						>
-							<span className="absolute left-0">₹0</span>
-							<span
-								className="absolute -translate-x-1/2 transition-[left] duration-300"
-								style={{ left: `${limitPct}%` }}
-							>
-								{lakh(activeScheme.limit)} limit
-							</span>
-							<span className="absolute right-0">{lakh(activeScheme.max)}</span>
+						<div className="uh-grant-character" aria-hidden="true">
+							<CoinHugger size={71} />
 						</div>
+					</div>
 
-						<p
-							key={`${activeScheme.id}-${ok}`}
-							aria-live="polite"
-							className={`ud-pop-in mt-3 flex items-center gap-2.5 rounded-2xl border-[1.5px] px-3.5 py-2.5 text-sm font-bold ${
-								ok
-									? "border-emerald-700 bg-emerald-50 text-emerald-900"
-									: "border-rose-400 bg-rose-50 text-rose-800"
-							}`}
-						>
-							<span className="text-2xl leading-none" aria-hidden>
-								{ok ? "🎉" : "🥲"}
-							</span>
-							<span>
-								{ok ? "You may qualify!" : "Above this scheme's limit."}
-								<span className="block text-xs font-medium opacity-75">
-									{ok ? activeScheme.eligibleNote : activeScheme.ineligibleNote}
+					<div className="uh-income-section">
+						<div className="uh-income-heading">
+							<div className="uh-income-heading-left">
+								<SlidersHorizontal size={17} aria-hidden="true" />
+								<label htmlFor="hero-income">Annual family income</label>
+							</div>
+							<output htmlFor="hero-income" className="uh-income-amount">
+								{lakh(income)} <small>/ yr</small>
+							</output>
+						</div>
+						<p className="uh-income-caption">
+							Drag the slider to explore this scheme's income limit.
+						</p>
+
+						<div className="uh-range-wrap">
+							<input
+								id="hero-income"
+								className="uh-income-range"
+								type="range"
+								min="0"
+								max={activeScheme.max}
+								step="25000"
+								value={income}
+								onChange={(e) => setIncome(+e.target.value)}
+								aria-valuetext={`${lakh(income)} annual family income`}
+								style={{
+									background: `linear-gradient(to right, #8dd8ae 0 ${limitPct}%, #f3c8b9 ${limitPct}% 100%)`,
+								}}
+							/>
+							<div className="uh-range-ticks" aria-hidden="true">
+								<span>₹0</span>
+								<span
+									className="uh-range-limit"
+									style={{ left: `${limitPct}%` }}
+								>
+									{lakh(activeScheme.limit)} limit
 								</span>
+								<span>{lakh(activeScheme.max)}</span>
+							</div>
+						</div>
+
+						<div
+							className={`uh-income-verdict ${ok ? "is-within" : "is-over"}`}
+							aria-live="polite"
+						>
+							<span className="uh-verdict-icon" aria-hidden="true">
+								{ok ? <CheckCircle2 size={20} /> : <CircleAlert size={20} />}
 							</span>
+							<div key={`${activeScheme.id}-${ok}`}>
+								<strong>
+									{ok
+										? "Within the income limit"
+										: "Above this scheme's income limit"}
+								</strong>
+								<p>
+									{ok ? activeScheme.eligibleNote : activeScheme.ineligibleNote}
+								</p>
+							</div>
+						</div>
+						<p className="uh-verdict-disclaimer">
+							<Info size={13} aria-hidden="true" /> Income is only one
+							eligibility factor.
 						</p>
 					</div>
 				</div>
 
-				{/* tear line with punched notches */}
-				<div className="relative border-t-2 border-dashed border-emerald-950/40">
-					<span
-						aria-hidden
-						className="absolute -left-[13px] -top-[13px] h-6 w-6 rounded-full border-2 border-emerald-950 bg-[#E9F0EA] [clip-path:inset(0_0_0_50%)]"
-					/>
-					<span
-						aria-hidden
-						className="absolute -right-[13px] -top-[13px] h-6 w-6 rounded-full border-2 border-emerald-950 bg-[#E9F0EA] [clip-path:inset(0_50%_0_0)]"
-					/>
-				</div>
-
-				{/* stub */}
-				<div className="flex items-center justify-between gap-3 rounded-b-3xl bg-yellow-200/60 px-6 py-4 sm:px-7">
-					<div className="flex items-center gap-3">
-						<span className="hs-bob hidden shrink-0 sm:block">
-							<CoinHugger size={46} />
+				<div className="uh-card-bottom">
+					<div>
+						<span className="uh-card-bottom-overline">
+							WANT THE FULL DETAILS?
 						</span>
-						<div>
-							<p className="text-xs font-bold text-emerald-950/60">
-								{activeScheme.payoutLabel}
-							</p>
-							<p className="ud-display text-3xl font-extrabold leading-none">
-								₹<CountUp key={activeScheme.id} value={activeScheme.payout} duration={800} />
-								<span className="ml-1 font-sans text-sm font-semibold text-emerald-950/60">
-									{activeScheme.payoutSub}
-								</span>
-							</p>
-						</div>
+						<p>Requirements, documents & how to apply.</p>
 					</div>
 					<button
 						type="button"
+						className="uh-view-button"
 						onClick={handleViewClick}
-						className="btn-fluid inline-flex min-h-[44px] cursor-pointer items-center gap-1 rounded-full border-2 border-emerald-950 bg-emerald-800 px-5 py-2 text-sm font-bold text-white shadow-[0_3px_0_#022c22] hover:bg-emerald-900 active:translate-y-[2px] active:shadow-none focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200"
 					>
-						View <ArrowUpRight size={15} />
+						<span>Explore scheme</span>
+						<ArrowUpRight size={18} aria-hidden="true" />
 					</button>
 				</div>
 			</article>

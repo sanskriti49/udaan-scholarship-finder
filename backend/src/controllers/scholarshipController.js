@@ -236,9 +236,38 @@ export const getScholarships = async (req, res) => {
 		}
 
 		if (hasChanges === "true" || hasChanges === true) conditions.push({ hasChanges: true });
-		if (status) {
+		
+		const now = new Date();
+		if (status === "all") {
+			// Include all scholarships regardless of status
+		} else if (status === "closed") {
+			conditions.push({
+				$or: [{ status: "closed" }, { sortDeadline: { $lt: now } }],
+			});
+		} else if (status && status !== "active") {
 			const wanted = String(status).split(",").filter((x) => STATUSES.has(x));
-			if (wanted.length) conditions.push({ status: { $in: wanted } });
+			if (wanted.length) {
+				conditions.push({ status: { $in: wanted } });
+				if (!wanted.includes("closed")) {
+					conditions.push({
+						$or: [
+							{ sortDeadline: { $gte: now } },
+							{ sortDeadline: null },
+							{ sortDeadline: { $exists: false } },
+						],
+					});
+				}
+			}
+		} else {
+			// Default: "active" (open, closing_soon, upcoming, unknown with active/unannounced deadline)
+			conditions.push({
+				status: { $ne: "closed" },
+				$or: [
+					{ sortDeadline: { $gte: now } },
+					{ sortDeadline: null },
+					{ sortDeadline: { $exists: false } },
+				],
+			});
 		}
 
 		if (minAmount || maxAmount) {
@@ -259,8 +288,8 @@ export const getScholarships = async (req, res) => {
 			if (sort === "newest") return { "freshness.firstSeenAt": -1 };
 			if (sort === "relevance" && isTextSearch) return { score: { $meta: "textScore" } };
 			return isTextSearch
-				? { score: { $meta: "textScore" }, _noDeadline: 1, sortDeadline: 1 }
-				: { _noDeadline: 1, sortDeadline: 1, title: 1 };
+				? { score: { $meta: "textScore" }, _isClosed: 1, _noDeadline: 1, sortDeadline: 1 }
+				: { _isClosed: 1, _noDeadline: 1, sortDeadline: 1, title: 1 };
 		})();
 
 		const runQuery = async (conds) => {
@@ -269,6 +298,23 @@ export const getScholarships = async (req, res) => {
 				{ $match: match },
 				{
 					$addFields: {
+						_isClosed: {
+							$cond: [
+								{
+									$or: [
+										{ $eq: ["$status", "closed"] },
+										{
+											$and: [
+												{ $ne: [{ $ifNull: ["$sortDeadline", null] }, null] },
+												{ $lt: ["$sortDeadline", now] },
+											],
+										},
+									],
+								},
+								1,
+								0,
+							],
+						},
 						_noDeadline: { $cond: [{ $ifNull: ["$sortDeadline", false] }, 0, 1] },
 						_noAmount: { $cond: [{ $ifNull: ["$amount.value", false] }, 0, 1] },
 					},
@@ -307,8 +353,10 @@ export const getScholarships = async (req, res) => {
 			if (Object.keys(sortStage).length === 0) Object.assign(sortStage, { _noDeadline: 1, sortDeadline: 1 });
 			[scholarships, total] = await runQuery(fallbackConditions);
 		}
-		const now = new Date();
 		scholarships = scholarships.map((d) => withLiveStatus(d, now));
+		if (!status || status === "active") {
+			scholarships = scholarships.filter((d) => d.status !== "closed");
+		}
 
 		const recentUpdatesCount = await getRecentUpdatesCount();
 

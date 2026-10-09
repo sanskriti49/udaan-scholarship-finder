@@ -184,7 +184,8 @@ export default function TrustShield() {
 				return {
 					title: "Unverified Third-Party Source",
 					badge: "Caution (" + score + "%)",
-					badgeBg: "bg-yellow-200 text-emerald-950 border border-emerald-950/20",
+					badgeBg:
+						"bg-yellow-200 text-emerald-950 border border-emerald-950/20",
 					cardBg: "bg-yellow-50/80 border-emerald-950/30",
 					icon: AlertTriangle,
 					summary:
@@ -235,11 +236,6 @@ export default function TrustShield() {
 			{/* Hero Section */}
 			<section className="mx-auto max-w-7xl px-5 pt-12 pb-10 sm:px-8 md:pt-16">
 				<div className="max-w-3xl">
-					<div className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-emerald-950/20 bg-white/70 px-3.5 py-1 text-xs font-bold text-emerald-950">
-						<ShieldCheck size={14} className="text-emerald-800" />
-						<span>Autonomous Fraud Prevention & Verification</span>
-					</div>
-
 					<h1 className="font-serif mt-4 text-[2.75rem] font-medium leading-[1.04] tracking-tight sm:text-6xl text-emerald-950">
 						Anti-Scam &amp;{" "}
 						<span className="ud-display font-extrabold underline decoration-yellow-300 decoration-4 underline-offset-4 text-emerald-950">
@@ -453,12 +449,19 @@ export default function TrustShield() {
 													/100
 												</span>
 											</div>
-											<div className="sk-meter mt-2 w-40 sm:ml-auto" aria-hidden>
+											<div
+												className="sk-meter mt-2 w-40 sm:ml-auto"
+												aria-hidden
+											>
 												<span
 													style={{
 														width: `${Math.max(4, result.score || 0)}%`,
 														background:
-															result.score >= 70 ? "#2d6a4f" : result.score >= 40 ? "#f59e0b" : "#e11d48",
+															result.score >= 70
+																? "#2d6a4f"
+																: result.score >= 40
+																	? "#f59e0b"
+																	: "#e11d48",
 													}}
 												/>
 											</div>
