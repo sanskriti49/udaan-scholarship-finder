@@ -1,291 +1,136 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
-	ArrowLeft,
 	ArrowRight,
-	Building2,
-	Camera,
 	Check,
 	ChevronDown,
-	Copy,
-	CreditCard,
 	Download,
 	ExternalLink,
-	FileText,
-	GraduationCap,
-	Landmark,
-	Receipt,
-	ShieldCheck,
-	Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Confetti, PageStyles, Stamp, useCopy } from "../components/PageKit";
+import { Confetti, PageStyles, Stamp } from "../components/PageKit";
+
+const focusRing =
+	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
+
+// Left column width for the checklist.
+const SIDE_COL = "lg:grid-cols-[18rem_1fr]";
+
+// Warn when the deadline is this close and slow documents are still missing.
+const URGENT_DAYS = 21;
 
 const ROADMAP_STEPS = [
 	{
 		step: "01",
 		title: "Find and shortlist scholarships",
-		short: "Find schemes",
 		category: "Discovery",
 		description:
 			"Target the highest-probability opportunities for your state, category and degree, without drowning in 200 tabs.",
 		time: "4 min read",
-		path: "/how-to-apply",
+		path: "/how-to-apply#discovery",
+		linkLabel: "Learn how to shortlist",
 		tips: [
 			"Filter by your state, category and course first. Ignore the rest.",
 			"Shortlist 5 to 8 schemes and put each deadline in your phone's calendar.",
 			"Read eligibility from the official circular, never from a forwarded message.",
 		],
-		illustration: (
-			<svg
-				viewBox="0 0 240 140"
-				className="h-full max-h-52 w-full"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<ellipse
-					cx="120"
-					cy="95"
-					rx="80"
-					ry="32"
-					fill="#D8F3DC"
-					fillOpacity="0.6"
-				/>
-				<rect
-					x="70"
-					y="28"
-					width="100"
-					height="76"
-					rx="10"
-					fill="#FFFFFF"
-					stroke="#022c22"
-					strokeWidth="2"
-				/>
-				<rect x="82" y="42" width="76" height="7" rx="3.5" fill="#143621" />
-				<rect x="82" y="55" width="55" height="5" rx="2.5" fill="#52B788" />
-				<rect x="82" y="66" width="65" height="5" rx="2.5" fill="#74C69D" />
-				<circle cx="150" cy="78" r="16" fill="#143621" />
-				<circle cx="147" cy="75" r="7" stroke="#FFFFFF" strokeWidth="2" />
-				<path
-					d="M152 80L160 88"
-					stroke="#FFFFFF"
-					strokeWidth="2.5"
-					strokeLinecap="round"
-				/>
-			</svg>
-		),
 	},
 	{
 		step: "02",
 		title: "Prepare your documents",
-		short: "Get paperwork",
 		category: "Paperwork",
 		description:
-			"Certificates, issuing officers, bonafide letters and bank Aadhaar seeding, all in one checklist further down this page.",
+			"Certificates, issuing officers, bonafide letters and bank Aadhaar seeding, all in the checklist further down this page.",
 		time: "5 min read",
-		path: "/how-to-apply",
+		target: "checklist",
+		linkLabel: "Open document checklist",
 		tips: [
 			"Start the income and caste certificates first. They take the longest.",
 			"Scan every document as PDF or JPEG under 2 MB.",
 			"Check that your bank account is Aadhaar-seeded and the name matches your ID.",
 		],
-		illustration: (
-			<svg
-				viewBox="0 0 240 140"
-				className="h-full max-h-52 w-full"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<ellipse
-					cx="120"
-					cy="95"
-					rx="80"
-					ry="32"
-					fill="#D8F3DC"
-					fillOpacity="0.6"
-				/>
-				<rect
-					x="65"
-					y="32"
-					width="70"
-					height="75"
-					rx="8"
-					fill="#FFFFFF"
-					stroke="#74C69D"
-					strokeWidth="1.5"
-				/>
-				<rect
-					x="85"
-					y="24"
-					width="80"
-					height="85"
-					rx="10"
-					fill="#FFFFFF"
-					stroke="#022c22"
-					strokeWidth="2"
-				/>
-				<rect x="98" y="38" width="54" height="6" rx="3" fill="#143621" />
-				<rect x="98" y="50" width="45" height="5" rx="2.5" fill="#52B788" />
-				<rect x="98" y="61" width="50" height="5" rx="2.5" fill="#74C69D" />
-				<circle cx="142" cy="85" r="11" fill="#2D6A4F" />
-				<path
-					d="M138 85L141 88L147 82"
-					stroke="#FFFFFF"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				/>
-			</svg>
-		),
 	},
 	{
 		step: "03",
-		title: "Write a strong personal statement",
-		short: "Write your story",
+		title: "Write a personal statement, if required",
 		category: "Statement",
 		description:
-			"Use the 5-step narrative blueprint and the STAR framework to turn your challenges into a story reviewers remember.",
+			"Check whether your scholarship asks for a statement. If it does, use the narrative blueprint and STAR framework to tell your story. Otherwise, mark this step as not required.",
 		time: "6 min read",
 		path: "/application-guide",
+		linkLabel: "Read statement guide",
+		optional: true,
 		tips: [
-			"Open with one specific moment, not “I have always been passionate about…”.",
+			"Open with one specific moment, not \u201CI have always been passionate about\u2026\u201D.",
 			"Use STAR: Situation, Task, Action, Result. Put real numbers in the result.",
 			"End with what this scholarship lets you do next.",
 		],
-		illustration: (
-			<svg
-				viewBox="0 0 240 140"
-				className="h-full max-h-52 w-full"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<ellipse
-					cx="120"
-					cy="95"
-					rx="80"
-					ry="32"
-					fill="#D8F3DC"
-					fillOpacity="0.6"
-				/>
-				<rect
-					x="75"
-					y="25"
-					width="90"
-					height="82"
-					rx="10"
-					fill="#FFFFFF"
-					stroke="#022c22"
-					strokeWidth="2"
-				/>
-				<rect x="88" y="38" width="64" height="6" rx="3" fill="#143621" />
-				<rect x="88" y="50" width="55" height="4" rx="2" fill="#52B788" />
-				<rect x="88" y="60" width="60" height="4" rx="2" fill="#74C69D" />
-				<rect x="88" y="70" width="40" height="4" rx="2" fill="#95D5B2" />
-				<path d="M165 45L180 30L190 40L175 55L165 45Z" fill="#143621" />
-				<path d="M165 45L155 58L168 55L165 45Z" fill="#D97706" />
-				<circle cx="155" cy="58" r="1.5" fill="#FFFFFF" />
-			</svg>
-		),
 	},
 	{
 		step: "04",
 		title: "Verify and submit without errors",
-		short: "Submit",
 		category: "Final submit",
 		description:
 			"Double-check file sizes, bank account status and names, then save the official acknowledgement receipt.",
 		time: "3 min read",
-		path: "/how-to-apply",
+		path: "/how-to-apply#submission",
+		linkLabel: "See submission checks",
 		tips: [
 			"Open every upload once more. Is it readable and the right way up?",
 			"Make sure name, date of birth and bank details match across documents.",
 			"Save the application ID and receipt as a PDF and a screenshot.",
 		],
-		illustration: (
-			<svg
-				viewBox="0 0 240 140"
-				className="h-full max-h-52 w-full"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<ellipse
-					cx="120"
-					cy="95"
-					rx="80"
-					ry="32"
-					fill="#D8F3DC"
-					fillOpacity="0.6"
-				/>
-				<rect
-					x="70"
-					y="30"
-					width="100"
-					height="74"
-					rx="10"
-					fill="#FFFFFF"
-					stroke="#022c22"
-					strokeWidth="2"
-				/>
-				<path d="M120 42L140 78L120 70L100 78L120 42Z" fill="#143621" />
-				<path d="M120 42L127 72L120 70V42Z" fill="#2D6A4F" />
-				<circle cx="120" cy="58" r="3" fill="#D8F3DC" />
-				<path
-					d="M115 75L120 85L125 75"
-					stroke="#D97706"
-					strokeWidth="2"
-					strokeLinecap="round"
-				/>
-			</svg>
-		),
 	},
 ];
 
+// `slow` = depends on a government office or bank, so it sets your timeline.
+// `short` = the label printed on the sheet in the folder.
 const DOCUMENTS = [
 	{
 		name: "Aadhaar Card (Identity & DOB)",
-		icon: CreditCard,
+		short: "Aadhaar",
 		slow: false,
 		tip: "Download your e-Aadhaar from the UIDAI portal. The PDF is accepted for most uploads.",
 	},
 	{
 		name: "Income Certificate (Tehsildar/SDM)",
-		icon: Wallet,
+		short: "Income cert.",
 		slow: true,
 		tip: "Apply through your state's e-District portal or the Tehsildar/SDM office. Check which financial year the scheme accepts.",
 	},
 	{
 		name: "Caste / Category Certificate",
-		icon: FileText,
+		short: "Caste cert.",
 		slow: true,
 		tip: "Issued by the Tehsildar/SDM office, usually via the same e-District portal. Some schemes want a recent or specific format, so check the circular.",
 	},
 	{
 		name: "Previous Year Academic Mark Sheets",
-		icon: GraduationCap,
+		short: "Marksheets",
 		slow: false,
 		tip: "Use your last completed year. Merge multi-page results into one PDF so the upload doesn't fail.",
 	},
 	{
 		name: "College Bonafide Certificate",
-		icon: Building2,
+		short: "Bonafide",
 		slow: false,
 		tip: "Request it from your college office or admin portal, and ask for the current academic year on it.",
 	},
 	{
 		name: "Bank Passbook (Aadhaar Seeded)",
-		icon: Landmark,
+		short: "Passbook",
 		slow: true,
 		tip: "Scan the first page with your name, account number and IFSC. Confirm with the bank that the account is Aadhaar-seeded for direct benefit transfer.",
 	},
 	{
 		name: "Passport Size Photographs",
-		icon: Camera,
+		short: "Photos",
 		slow: false,
 		tip: "Plain background, face clearly visible. Check each portal's file-size limit before you compress.",
 	},
 	{
 		name: "Current Year College Fee Receipt",
-		icon: Receipt,
+		short: "Fee receipt",
 		slow: false,
 		tip: "Ask the accounts office for this year's receipt, stamped or signed if the portal asks for it.",
 	},
@@ -320,7 +165,7 @@ const PORTALS = [
 		url: "https://scholarship.up.gov.in/",
 		tag: "State",
 	},
-];
+].map((p) => ({ ...p, host: new URL(p.url).hostname }));
 
 const DOWNLOADS = [
 	{
@@ -350,11 +195,23 @@ const LEVELS = [
 	{ min: 0, label: "Just starting" },
 ];
 
+const NAV = [
+	{ id: "roadmap", label: "Roadmap" },
+	{ id: "checklist", label: "Document checklist" },
+	{ id: "portals", label: "Official portals" },
+	{ id: "templates", label: "Templates" },
+];
+
+// Persists any JSON value; falls back to `initial` if the stored shape differs.
 function usePersisted(key, initial) {
 	const [value, setValue] = useState(() => {
 		try {
 			const raw = JSON.parse(localStorage.getItem(key) || "null");
-			return Array.isArray(raw) ? raw : initial;
+			const sameShape =
+				raw !== null &&
+				typeof raw === typeof initial &&
+				Array.isArray(raw) === Array.isArray(initial);
+			return sameShape ? raw : initial;
 		} catch {
 			return initial;
 		}
@@ -362,81 +219,259 @@ function usePersisted(key, initial) {
 	useEffect(() => {
 		try {
 			localStorage.setItem(key, JSON.stringify(value));
-		} catch {}
+		} catch {
+			// Keep the checklist usable when browser storage is unavailable.
+		}
 	}, [key, value]);
 	return [value, setValue];
 }
 
 const goTo = (id) =>
-	document
-		.getElementById(id)
-		?.scrollIntoView({ behavior: "smooth", block: "start" });
+	{
+		const target = document.getElementById(id);
+		target?.scrollIntoView({
+			behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+			block: "start",
+		});
+		target?.focus({ preventScroll: true });
+	};
 
-function Segmented({ options, value, onChange }) {
+/* ------------------------------------------------------------------ */
+/* Small pieces                                                        */
+/* ------------------------------------------------------------------ */
+
+// Highlighter pen: sweeps across the text when `on` becomes true.
+function Highlight({ on, color = "#fde047", children }) {
+	return (
+		<span
+			className={`box-decoration-clone bg-no-repeat bg-left transition-[background-size] duration-500 ease-out motion-reduce:transition-none ${
+				on ? "bg-[length:100%_100%]" : "bg-[length:0%_100%]"
+			}`}
+			style={{
+				backgroundImage: `linear-gradient(transparent 58%, ${color} 58%)`,
+			}}
+		>
+			{children}
+		</span>
+	);
+}
+
+// Collapsible region that stays out of the tab order while closed.
+function Collapse({ open, className = "", children }) {
 	return (
 		<div
-			className="inline-flex rounded-full border-[1.5px] border-emerald-950 bg-white p-1"
-			role="tablist"
+			className={`grid transition-[grid-template-rows,visibility] duration-300 ease-out motion-reduce:transition-none ${
+				open ? "visible grid-rows-[1fr]" : "invisible grid-rows-[0fr]"
+			} ${className}`}
 		>
-			{options.map((o) => (
-				<button
-					key={o.value}
-					type="button"
-					role="tab"
-					aria-selected={value === o.value}
-					onClick={() => onChange(o.value)}
-					className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-bold transition-colors ${
-						value === o.value
-							? "bg-emerald-950 text-white"
-							: "text-emerald-950/70 hover:bg-emerald-50"
-					}`}
-				>
-					{o.label}
-				</button>
-			))}
+			<div className="overflow-hidden">{children}</div>
 		</div>
 	);
 }
 
-function MeterBar({ label, done, total }) {
+// The only place a trusted web address ending is highlighted.
+function Host({ host }) {
+	const m = host.match(/^(.*?)(gov\.in|nic\.in)$/);
+	if (!m) return <>{host}</>;
 	return (
-		<div>
-			<div className="mb-1.5 flex items-baseline justify-between text-sm">
-				<span className="font-semibold">{label}</span>
-				<span className="text-emerald-950/65">
-					{done} of {total}
-				</span>
-			</div>
-			<div className="flex gap-1" aria-hidden>
-				{Array.from({ length: total }, (_, i) => (
-					<span
-						key={i}
-						className={`h-2.5 flex-1 rounded-sm border border-emerald-950 transition-colors duration-300 ${i < done ? "bg-emerald-700" : "bg-white"}`}
-					/>
-				))}
-			</div>
-		</div>
+		<>
+			{m[1]}
+			<mark className="bg-yellow-200 px-0.5 font-bold text-emerald-950">
+				{m[2]}
+			</mark>
+		</>
 	);
 }
+
+function PaperThumb({ label }) {
+	return (
+		<svg
+			viewBox="0 0 36 46"
+			className="h-12 w-9 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 motion-reduce:transition-none"
+			fill="none"
+			aria-hidden
+		>
+			<path
+				d="M2 2h23l9 9v33H2z"
+				fill="#fff"
+				stroke="#022c22"
+				strokeWidth="1.5"
+				strokeLinejoin="round"
+			/>
+			<path
+				d="M25 2v9h9"
+				fill="#fde047"
+				stroke="#022c22"
+				strokeWidth="1.5"
+				strokeLinejoin="round"
+			/>
+			<path
+				d="M7 19h22M7 24h22M7 29h14"
+				stroke="#022c22"
+				strokeOpacity=".3"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+			/>
+			<text
+				x="18"
+				y="41"
+				textAnchor="middle"
+				fontSize="7"
+				fontWeight="800"
+				fill="#022c22"
+			>
+				{label}
+			</text>
+		</svg>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/* The application file: sheets rise out of the folder as you tick     */
+/* ------------------------------------------------------------------ */
+
+const TOP = 142; // sheet top when tucked in
+const SHEET_H = 132;
+const RISE = 92; // how far a ready sheet lifts
+const JITTER = [-1.6, 1.1, -0.6, 1.8, -1.2, 0.7, -1.8, 1.3];
+
+function ApplicationFile({ docs, isReady, compact = false }) {
+	// Start tucked in, then rise on mount so saved progress animates in once.
+	const [shown, setShown] = useState(false);
+	useEffect(() => {
+		const id = requestAnimationFrame(() => setShown(true));
+		return () => cancelAnimationFrame(id);
+	}, []);
+
+	const n = docs.length;
+	const pitch = 380 / n;
+	const w = pitch - 8;
+	const ready = docs.filter((d) => isReady(d.name)).length;
+
+	return (
+		<svg
+			viewBox="0 20 420 270"
+			role="img"
+			aria-label={`Application file with ${ready} of ${n} documents ready`}
+			className="w-full overflow-visible"
+		>
+			{/* back of the folder, with its tab */}
+			<path
+				d="M12 96V72Q12 66 18 66H112L128 88H402Q408 88 408 94V276Q408 282 402 282H18Q12 282 12 276Z"
+				fill="#064e3b"
+				stroke="#022c22"
+				strokeWidth="2"
+				strokeLinejoin="round"
+			/>
+			{!compact && (
+				<text x="24" y="82" fontSize="11" fontWeight="700" fill="#fde047">
+					Application file
+				</text>
+			)}
+
+			{/* sheets */}
+			{docs.map((d, i) => {
+				const on = isReady(d.name);
+				const x = 20 + i * pitch + 4;
+				const cx = x + w / 2;
+				const lifted = shown && on;
+				return (
+					<g
+						key={d.name}
+						className="transition-transform duration-700 ease-[cubic-bezier(0.2,1.3,0.4,1)] motion-reduce:transition-none"
+						style={{
+							transformOrigin: `${cx}px ${TOP + SHEET_H}px`,
+							transform: `translateY(${lifted ? -RISE : 0}px) rotate(${lifted ? JITTER[i % JITTER.length] : 0}deg)`,
+							transitionDelay: shown ? `${i * 40}ms` : "0ms",
+						}}
+					>
+						<rect
+							x={x}
+							y={TOP}
+							width={w}
+							height={SHEET_H}
+							rx="3"
+							fill={on ? "#ffffff" : d.slow ? "#fff1f2" : "#ecfdf5"}
+							stroke={on ? "#022c22" : d.slow ? "#be123c" : "#022c22"}
+							strokeOpacity={on || d.slow ? 1 : 0.5}
+							strokeWidth="1.8"
+						/>
+						{on && (
+							<>
+								<circle cx={cx} cy={TOP + 11} r="6.5" fill="#065f46" />
+								<path
+									d={`M${cx - 3} ${TOP + 11}l2.4 2.6 4.2-4.8`}
+									stroke="#fff"
+									strokeWidth="1.8"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+								{compact ? (
+									<path
+										d={`M${x + 7} ${TOP + 30}h${w - 14}M${x + 7} ${TOP + 40}h${w - 14}M${x + 7} ${TOP + 50}h${(w - 14) * 0.6}`}
+										stroke="#022c22"
+										strokeOpacity=".3"
+										strokeWidth="2"
+										strokeLinecap="round"
+									/>
+								) : (
+									<text
+										transform={`translate(${cx - 3.5} ${TOP + 26}) rotate(90)`}
+										fontSize="10"
+										fontWeight="700"
+										fill="#022c22"
+									>
+										{d.short}
+									</text>
+								)}
+							</>
+						)}
+					</g>
+				);
+			})}
+
+			{/* front of the folder */}
+			<path
+				d="M12 150H408V276Q408 282 402 282H18Q12 282 12 276Z"
+				fill="#065f46"
+				stroke="#022c22"
+				strokeWidth="2"
+				strokeLinejoin="round"
+			/>
+		</svg>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/* Page                                                                */
+/* ------------------------------------------------------------------ */
 
 export default function Resources() {
+	const { hash } = useLocation();
+	useEffect(() => {
+		if (!hash) return;
+		const frame = requestAnimationFrame(() => {
+			const target = document.getElementById(hash.slice(1));
+			target?.scrollIntoView({ block: "start", behavior: "instant" });
+			target?.focus({ preventScroll: true });
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [hash]);
 	const [checked, setChecked] = usePersisted("checkedDocs", []);
 	const [doneSteps, setDoneSteps] = usePersisted("doneRoadmapSteps", []);
-	const [active, setActive] = useState(0);
-	const [docFilter, setDocFilter] = useState("all");
+	const [skippedSteps, setSkippedSteps] = usePersisted("skippedRoadmapSteps", []);
+	const [deadline, setDeadline] = usePersisted("applicationDeadline", "");
+	// null = default (first unfinished step open), -1 = everything closed
+	const [active, setActive] = useState(null);
 	const [openTip, setOpenTip] = useState(null);
-	const [fresh, setFresh] = useState(null);
+	const [hideReady, setHideReady] = useState(false);
 	const [burst, setBurst] = useState(0);
-	const [portalFilter, setPortalFilter] = useState("All");
-	const [fileFilter, setFileFilter] = useState("All");
-	const [saved, setSaved] = useState([]);
-	const [copied, copy] = useCopy();
 
 	const isReady = (name) => checked.includes(name);
 	const docCount = DOCUMENTS.filter((d) => isReady(d.name)).length;
-	const stepCount = ROADMAP_STEPS.filter((s) =>
-		doneSteps.includes(s.step),
-	).length;
+	const isStepComplete = (step) => doneSteps.includes(step.step) ||
+		(step.optional && skippedSteps.includes(step.step));
+	const stepCount = ROADMAP_STEPS.filter(isStepComplete).length;
 	const readiness = Math.round(
 		((stepCount / ROADMAP_STEPS.length) * 0.4 +
 			(docCount / DOCUMENTS.length) * 0.6) *
@@ -445,6 +480,11 @@ export default function Resources() {
 	const level = LEVELS.find((l) => readiness >= l.min);
 	const allDocs = docCount === DOCUMENTS.length;
 	const allSteps = stepCount === ROADMAP_STEPS.length;
+
+	const firstUnfinished = ROADMAP_STEPS.findIndex(
+		(s) => !isStepComplete(s),
+	);
+	const openIdx = active ?? firstUnfinished;
 
 	const prev = useRef({ allDocs, allSteps });
 	useEffect(() => {
@@ -458,24 +498,44 @@ export default function Resources() {
 		prev.current = { allDocs, allSteps };
 	}, [allDocs, allSteps]);
 
-	const toggleDoc = (name) => {
-		if (!isReady(name)) setFresh(name);
+	const toggleDoc = (name) =>
 		setChecked((list) =>
 			list.includes(name) ? list.filter((n) => n !== name) : [...list, name],
 		);
-	};
-	const resetDocs = () => {
-		setChecked([]);
-		setFresh(null);
-	};
 
 	const toggleStep = (stepId, idx) => {
 		const wasDone = doneSteps.includes(stepId);
+		setSkippedSteps((list) => list.filter((s) => s !== stepId));
 		setDoneSteps((list) =>
 			wasDone ? list.filter((s) => s !== stepId) : [...list, stepId],
 		);
 		if (!wasDone && idx < ROADMAP_STEPS.length - 1) setActive(idx + 1);
 	};
+	const toggleSkippedStep = (stepId, idx) => {
+		const wasSkipped = skippedSteps.includes(stepId);
+		setDoneSteps((list) => list.filter((s) => s !== stepId));
+		setSkippedSteps((list) => wasSkipped ? list.filter((s) => s !== stepId) : [...list, stepId]);
+		if (!wasSkipped && idx < ROADMAP_STEPS.length - 1) setActive(idx + 1);
+	};
+
+	// Deadline awareness: days left, and whether slow documents put it at risk.
+	const slowLeft = DOCUMENTS.filter((d) => d.slow && !isReady(d.name)).length;
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	const daysLeft = deadline
+		? Math.round((new Date(`${deadline}T00:00:00`) - today) / 86400000)
+		: null;
+	let deadlineNote = null;
+	let urgent = false;
+	if (daysLeft !== null) {
+		if (daysLeft < 0) deadlineNote = "That date has passed.";
+		else if (daysLeft === 0) deadlineNote = "Your deadline is today.";
+		else deadlineNote = `${daysLeft} day${daysLeft === 1 ? "" : "s"} left`;
+		if (daysLeft >= 0 && daysLeft <= URGENT_DAYS && slowLeft > 0) {
+			urgent = true;
+			deadlineNote += `, and ${slowLeft} slow document${slowLeft === 1 ? " is" : "s are"} still to collect.`;
+		}
+	}
 
 	const next = (() => {
 		const slow = DOCUMENTS.find((d) => d.slow && !isReady(d.name));
@@ -484,7 +544,7 @@ export default function Resources() {
 		const doc = DOCUMENTS.find((d) => !isReady(d.name));
 		if (doc)
 			return { text: `Collect: ${doc.name}`, go: () => goTo("checklist") };
-		const stepIdx = ROADMAP_STEPS.findIndex((s) => !doneSteps.includes(s.step));
+		const stepIdx = ROADMAP_STEPS.findIndex((s) => !isStepComplete(s));
 		if (stepIdx >= 0)
 			return {
 				text: `Read: ${ROADMAP_STEPS[stepIdx].title}`,
@@ -496,92 +556,92 @@ export default function Resources() {
 		return { text: "Find schemes that match you", to: "/eligibility" };
 	})();
 
-	const visibleDocs = DOCUMENTS.filter((d) =>
-		docFilter === "todo"
-			? !isReady(d.name)
-			: docFilter === "ready"
-				? isReady(d.name)
-				: true,
-	);
-	const visiblePortals = PORTALS.filter(
-		(p) => portalFilter === "All" || p.tag === portalFilter,
-	);
-	const visibleFiles = DOWNLOADS.filter(
-		(f) => fileFilter === "All" || f.type === fileFilter,
-	);
-	const s = ROADMAP_STEPS[active];
-	const stepDone = doneSteps.includes(s.step);
+	const docGroups = [
+		{
+			key: "slow",
+			title: "Start these first",
+			note: "Issued by a government office or your bank, so they depend on someone else\u2019s turnaround.",
+			color: "#fecdd3",
+			items: DOCUMENTS.filter((d) => d.slow),
+		},
+		{
+			key: "quick",
+			title: "Mostly in your hands",
+			note: "Download it, scan it, or ask your college office.",
+			color: "#bbf7d0",
+			items: DOCUMENTS.filter((d) => !d.slow),
+		},
+	].map((g) => ({
+		...g,
+		items: hideReady ? g.items.filter((d) => !isReady(d.name)) : g.items,
+	}));
+	const nothingShown = docGroups.every((g) => g.items.length === 0);
 
 	return (
 		<div className="ud-root min-h-screen bg-[#E9F0EA] font-sans text-emerald-950">
 			<PageStyles />
 			<Confetti burst={burst} />
 
-			<section className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-12 sm:px-8 md:pb-24 md:pt-20 lg:grid-cols-12">
-				<div className="lg:col-span-7">
-					<h1 className="font-georgia text-5xl font-medium leading-[1.05] sm:text-6xl md:text-7xl">
+			{/* Hero */}
+			<section className="mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-12 sm:px-8 md:pt-20 lg:grid-cols-12">
+				<div className="lg:col-span-6">
+					<h1
+						className="font-georgia text-5xl font-medium leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
+						style={{ textWrap: "balance" }}
+					>
 						Get your paperwork ready before the deadline does.
 					</h1>
 					<p className="mt-6 max-w-xl text-base leading-relaxed text-emerald-950/75 sm:text-lg">
-						A step-by-step roadmap, a document checklist that remembers your
-						progress, templates you can download, and links to the official
-						portals.
+						A four-step roadmap, a document checklist that remembers your
+						progress, templates to download, and links to the official portals.
 					</p>
-					<div className="mt-8 flex flex-wrap gap-3">
-						<button
-							type="button"
-							onClick={() => goTo("roadmap")}
-							className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-emerald-800 px-6 py-3 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px"
-						>
-							Start the roadmap <ArrowRight size={16} />
-						</button>
-						<button
-							type="button"
-							onClick={() => goTo("checklist")}
-							className="cursor-pointer rounded-full border-[1.5px] border-emerald-950 bg-white px-6 py-3 text-sm font-bold transition hover:bg-emerald-50"
-						>
-							Jump to checklist
-						</button>
-					</div>
+					<nav
+						aria-label="On this page"
+						className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold"
+					>
+						{NAV.map((n) => (
+							<button
+								key={n.id}
+								type="button"
+								onClick={() => goTo(n.id)}
+								className={`cursor-pointer underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
+							>
+								{n.label}
+							</button>
+						))}
+					</nav>
 				</div>
 
-				<div className="relative mx-auto w-full max-w-md lg:col-span-5">
-					<div
-						aria-hidden
-						className="absolute inset-0 rotate-3 rounded-2xl border-[1.5px] border-emerald-950 bg-emerald-100"
-					/>
-					<div className="relative -rotate-1 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-6 sm:p-7">
-						<p className="text-sm font-semibold text-emerald-950/65">
-							Your application readiness
-						</p>
-						<div className="mt-3 flex min-h-[3.5rem] items-center">
-							<Stamp
-								key={level.label}
-								slam
-								tilt={-4}
-								className="text-2xl sm:text-3xl"
-							>
-								{level.label}
-							</Stamp>
-						</div>
-						<div className="mt-6 space-y-4">
-							<MeterBar
-								label="Roadmap steps"
-								done={stepCount}
-								total={ROADMAP_STEPS.length}
-							/>
-							<MeterBar
-								label="Documents"
-								done={docCount}
-								total={DOCUMENTS.length}
-							/>
-						</div>
-						<div className="mt-6 border-t-[1.5px] border-dashed border-emerald-950/40 pt-5">
-							<p className="text-sm text-emerald-950/65">Next up</p>
+				<div className="mx-auto w-full max-w-xl lg:col-span-6">
+					<div className="relative">
+						<ApplicationFile docs={DOCUMENTS} isReady={isReady} />
+						<Stamp
+							key={level.label}
+							slam
+							tilt={-6}
+							className="absolute bottom-[9%] left-[5%] border-emerald-950 bg-yellow-200/95 text-xl text-emerald-950 sm:text-2xl"
+						>
+							{level.label}
+						</Stamp>
+					</div>
+
+					<div className="relative mt-5 flex flex-col gap-6 sm:-mt-5 sm:flex-row sm:items-start sm:justify-between sm:gap-5">
+						<div className="min-w-0 flex-1 sm:pt-9">
+							<p className="text-sm leading-relaxed text-emerald-950/75">
+								<span className="font-semibold text-emerald-950">
+									{docCount} of {DOCUMENTS.length}
+								</span>{" "}
+								documents ready,{" "}
+								<span className="font-semibold text-emerald-950">
+									{stepCount} of {ROADMAP_STEPS.length}
+								</span>{" "}
+								roadmap steps done. Rose-edged sheets take the longest.
+							</p>
+							<p className="mt-4 text-sm text-emerald-950/65">Next up</p>
 							{next.to ? (
 								<Link
 									to={next.to}
-									className="mt-1 flex items-center justify-between gap-3 text-[15px] font-bold underline decoration-yellow-300 decoration-2 underline-offset-4"
+									className={`mt-0.5 inline-flex items-center gap-2 text-[15px] font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 ${focusRing}`}
 								>
 									{next.text} <ArrowRight size={16} className="shrink-0" />
 								</Link>
@@ -589,197 +649,202 @@ export default function Resources() {
 								<button
 									type="button"
 									onClick={next.go}
-									className="mt-1 flex w-full cursor-pointer items-center justify-between gap-3 text-left text-[15px] font-bold underline decoration-yellow-300 decoration-2 underline-offset-4"
+									className={`mt-0.5 inline-flex cursor-pointer items-center gap-2 text-left text-[15px] font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 ${focusRing}`}
 								>
 									{next.text} <ArrowRight size={16} className="shrink-0" />
 								</button>
 							)}
 						</div>
+
+						{/* Sticky note */}
+						<div className="relative w-44 shrink-0 self-end rotate-2 bg-yellow-200 px-3 pb-3 pt-5 shadow-[3px_4px_0_rgba(2,44,34,0.3)] sm:self-auto">
+							<span
+								aria-hidden
+								className="absolute -top-2 left-1/2 h-4 w-14 -translate-x-1/2 -rotate-2 bg-white/60"
+							/>
+							<label className="block text-sm font-semibold">
+								Your deadline
+								<input
+									type="date"
+									value={deadline}
+									onChange={(e) => setDeadline(e.target.value)}
+									className="mt-1 w-full border-b-[1.5px] border-emerald-950 bg-transparent py-0.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-950"
+								/>
+							</label>
+							<p
+								aria-live="polite"
+								className={`mt-2 text-xs leading-snug ${urgent ? "font-semibold text-rose-700" : "text-emerald-950/75"}`}
+							>
+								{deadlineNote ?? "Add a date and we\u2019ll count the days."}
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			<section
-				id="roadmap"
-				className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 md:pb-28"
-			>
-				<h2 className="ud-display max-w-2xl text-4xl font-extrabold leading-[1.02] sm:text-5xl">
-					Four steps from “where do I start?” to submitted
-				</h2>
-				<p className="mt-4 max-w-xl text-base leading-relaxed text-emerald-950/75">
-					Tap a step to see what to do. Mark it done when you're through, and it
-					counts toward your readiness.
-				</p>
+			<div className="mx-auto max-w-7xl space-y-28 px-5 sm:px-8">
+				{/* Roadmap */}
+				<section id="roadmap" tabIndex={-1} className="scroll-mt-28">
+					<h2 className="max-w-2xl font-georgia text-4xl leading-[1.05] sm:text-5xl">
+						Four steps from &ldquo;where do I start?&rdquo; to submitted
+					</h2>
+					<p className="mt-4 max-w-xl text-base leading-relaxed text-emerald-950/75">
+						Open a step to see what to do. Tick it off and it counts toward your
+						readiness. A statement that is not required counts as complete too.
+					</p>
 
-				<div className="mt-10 grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-					<ol className="relative flex flex-col gap-3">
-						<span
-							aria-hidden
-							className="absolute bottom-8 left-[2.15rem] top-8 hidden w-[1.5px] bg-emerald-950/25 sm:block"
-						/>
+					<ol className="mt-10 border-t-[1.5px] border-emerald-950">
 						{ROADMAP_STEPS.map((st, idx) => {
-							const on = active === idx;
-							const done = doneSteps.includes(st.step);
+							const open = openIdx === idx;
+							const done = isStepComplete(st);
+							const checkedStep = doneSteps.includes(st.step);
+							const skipped = st.optional && skippedSteps.includes(st.step);
 							return (
-								<li key={st.step}>
-									<button
-										type="button"
-										onClick={() => setActive(idx)}
-										aria-current={on ? "step" : undefined}
-										className={`relative flex w-full cursor-pointer items-center gap-4 rounded-xl border-[1.5px] p-4 text-left transition-colors ${
-											on
-												? "border-emerald-950 bg-white"
-												: "border-emerald-950/20 bg-white/60 hover:border-emerald-950 hover:bg-white"
+								<li
+									key={st.step}
+									className="grid grid-cols-[4.25rem_minmax(0,1fr)] gap-x-4 border-b border-emerald-950/15 py-7 md:grid-cols-[7rem_minmax(0,5fr)_minmax(0,6fr)] md:gap-x-8"
+								>
+									<span
+										aria-hidden
+										className={`font-georgia text-5xl leading-none transition-colors md:text-7xl ${
+											done
+												? "text-emerald-700"
+												: open
+													? "text-emerald-950"
+													: "text-emerald-950/20"
 										}`}
 									>
-										<span
-											className={`ud-display flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[1.5px] border-emerald-950 text-base font-extrabold transition-colors ${
-												done
-													? "bg-emerald-800 text-white"
-													: on
-														? "bg-yellow-200"
-														: "bg-white"
-											}`}
+										{st.step}
+									</span>
+
+									<div className="min-w-0">
+										<button
+											type="button"
+											onClick={() => setActive(open ? -1 : idx)}
+											aria-expanded={open}
+											className={`flex w-full cursor-pointer items-start justify-between gap-4 text-left ${focusRing}`}
 										>
-											{done ? <Check size={20} strokeWidth={3} /> : st.step}
-										</span>
-										<span className="min-w-0 flex-1">
-											<span className="block text-[15px] font-bold leading-snug sm:text-base">
-												{st.title}
+											<span>
+												<span className="block font-georgia text-2xl leading-snug">
+													<Highlight on={done}>{st.title}</Highlight>
+												</span>
+												<span className="mt-1 block text-sm text-emerald-950/60">
+													{st.category}, {st.time}
+												</span>
 											</span>
-											<span className="mt-0.5 block text-sm text-emerald-950/60">
-												{st.category}, {st.time}
+											<ChevronDown
+												size={18}
+												className={`mt-2 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+											/>
+										</button>
+
+										<label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm font-semibold">
+											<input
+												type="checkbox"
+												checked={checkedStep}
+												onChange={() => toggleStep(st.step, idx)}
+												className="peer sr-only"
+											/>
+											<span
+												className={`flex h-5 w-5 items-center justify-center rounded border-[1.5px] border-emerald-950 transition-colors peer-focus-visible:ring-4 peer-focus-visible:ring-yellow-200 ${
+													checkedStep ? "bg-emerald-800 text-white" : "bg-white"
+												}`}
+											>
+												{checkedStep && <Check size={12} strokeWidth={3.5} />}
 											</span>
-										</span>
-									</button>
+											{checkedStep ? "Done" : "Mark as done"}
+										</label>
+										{st.optional && (
+											<button
+												type="button"
+												aria-pressed={Boolean(skipped)}
+												onClick={() => toggleSkippedStep(st.step, idx)}
+												className={`mt-3 ml-4 cursor-pointer text-sm font-semibold underline underline-offset-4 ${focusRing}`}
+											>
+												{skipped ? "Not required — undo" : "Not required for my scholarship"}
+											</button>
+										)}
+									</div>
+
+									<Collapse
+										open={open}
+										className="col-start-2 md:col-start-3 md:row-start-1"
+									>
+										<div className="pt-5 md:pt-0">
+											<p className="max-w-[60ch] text-[15px] leading-relaxed text-emerald-950/80">
+												{st.description}
+											</p>
+
+											{/* Tips on ruled notepad paper */}
+											<ul
+												className="relative mt-5 list-none rounded-sm border-[1.5px] border-emerald-950 bg-white pl-12 pr-4 text-[15px] leading-[28px] shadow-[3px_3px_0_#022c22] before:absolute before:inset-y-0 before:left-8 before:w-px before:bg-rose-300"
+												style={{
+													backgroundImage:
+														"repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(2,44,34,0.13) 27px, rgba(2,44,34,0.13) 28px)",
+												}}
+											>
+												{st.tips.map((tip) => (
+													<li key={tip}>{tip}</li>
+												))}
+											</ul>
+
+											{st.target ? (
+												<button type="button" onClick={() => goTo(st.target)}
+													className={`mt-6 inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}>
+													{st.linkLabel} <ArrowRight size={14} />
+												</button>
+											) : <Link
+												to={st.path}
+												className={`mt-6 inline-flex items-center gap-1.5 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
+											>
+												{st.linkLabel} <ArrowRight size={14} />
+											</Link>}
+										</div>
+									</Collapse>
 								</li>
 							);
 						})}
 					</ol>
+				</section>
 
-					<div
-						key={active}
-						className="ud-fade-in overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white"
-					>
-						<div className="relative flex h-56 items-center justify-center border-b-[1.5px] border-emerald-950 bg-emerald-100 p-4">
-							{s.illustration}
-							{stepDone && (
-								<Stamp
-									slam
-									tilt={-10}
-									className="absolute right-5 top-5 bg-white/50 text-lg"
-								>
-									Done
-								</Stamp>
-							)}
-						</div>
-						<div className="p-6 sm:p-8">
-							<p className="text-sm font-semibold text-emerald-800">
-								Step {s.step}: {s.category}
-							</p>
-							<h3 className="ud-display mt-1 text-3xl font-extrabold leading-tight">
-								{s.title}
-							</h3>
-							<p className="mt-3 text-[15px] leading-relaxed text-emerald-950/75">
-								{s.description}
-							</p>
-
-							<ul className="mt-6 space-y-3">
-								{s.tips.map((tip) => (
-									<li
-										key={tip}
-										className="flex items-start gap-3 text-[15px] leading-snug"
-									>
-										<span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-											<Check size={10} strokeWidth={3} />
-										</span>
-										{tip}
-									</li>
-								))}
-							</ul>
-
-							<div className="mt-8 flex flex-wrap items-center gap-3">
-								<button
-									type="button"
-									onClick={() => toggleStep(s.step, active)}
-									className={`inline-flex cursor-pointer items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition active:translate-y-px ${
-										stepDone
-											? "border-[1.5px] border-emerald-950 bg-white hover:bg-emerald-50"
-											: "bg-emerald-800 text-white hover:bg-emerald-900"
-									}`}
-								>
-									<Check size={16} />
-									{stepDone ? "Marked done. Undo" : "Mark step done"}
-								</button>
-								<Link
-									to={s.path}
-									className="inline-flex items-center gap-1.5 text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4"
-								>
-									Read the full guide <ArrowRight size={15} />
-								</Link>
-								<div className="ml-auto flex gap-2">
-									<button
-										type="button"
-										aria-label="Previous step"
-										disabled={active === 0}
-										onClick={() => setActive(active - 1)}
-										className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-30"
-									>
-										<ArrowLeft size={16} />
-									</button>
-									<button
-										type="button"
-										aria-label="Next step"
-										disabled={active === ROADMAP_STEPS.length - 1}
-										onClick={() => setActive(active + 1)}
-										className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-30"
-									>
-										<ArrowRight size={16} />
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section
-				id="checklist"
-				className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 md:pb-28"
-			>
-				<div className="grid gap-10 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-14">
-					<div className="lg:sticky lg:top-24 lg:self-start">
-						<h2 className="ud-display text-4xl font-extrabold leading-[1.02] sm:text-5xl">
+				{/* Checklist */}
+				<section
+					id="checklist"
+					tabIndex={-1}
+					className={`grid scroll-mt-28 gap-10 lg:gap-14 ${SIDE_COL}`}
+				>
+					<div className="lg:sticky lg:top-8 lg:self-start">
+						<h2 className="font-georgia text-4xl leading-[1.05] sm:text-5xl">
 							Document checklist
 						</h2>
-						<p className="mt-4 text-base leading-relaxed text-emerald-950/75">
-							Tick a document when you have a digital copy ready (PDF or JPEG
-							under 2 MB). We save your ticks on this device.
+						<p className="mt-4 text-sm leading-relaxed text-emerald-950/70">
+							Tick a document once you have a digital copy ready, as a PDF or
+							JPEG under 2 MB. Ticks are saved on this device.
 						</p>
-						<div className="mt-6">
-							<MeterBar
-								label={
-									allDocs ? "All ready" : `${DOCUMENTS.length - docCount} to go`
-								}
-								done={docCount}
-								total={DOCUMENTS.length}
-							/>
+
+						<div className="mt-8 max-w-[18rem]">
+							<ApplicationFile docs={DOCUMENTS} isReady={isReady} compact />
+							<p className="mt-3 text-sm font-semibold">
+								{allDocs
+									? "Every document is in the file."
+									: `${docCount} of ${DOCUMENTS.length} in the file, ${DOCUMENTS.length - docCount} to go`}
+							</p>
 						</div>
-						<div className="mt-6 flex flex-wrap items-center gap-3">
-							<Segmented
-								value={docFilter}
-								onChange={setDocFilter}
-								options={[
-									{ value: "all", label: "All" },
-									{ value: "todo", label: "To do" },
-									{ value: "ready", label: "Ready" },
-								]}
-							/>
+
+						<div className="mt-5 flex items-center gap-5 text-sm font-semibold">
+							<button
+								type="button"
+								aria-pressed={hideReady}
+								onClick={() => setHideReady((v) => !v)}
+								className={`cursor-pointer underline underline-offset-4 ${focusRing}`}
+							>
+								{hideReady ? "Show ready documents" : "Hide ready documents"}
+							</button>
 							{docCount > 0 && (
 								<button
 									type="button"
-									onClick={resetDocs}
-									className="cursor-pointer text-sm font-semibold text-emerald-950/60 underline underline-offset-4 hover:text-red-700"
+									onClick={() => setChecked([])}
+									className={`cursor-pointer text-emerald-950/60 underline underline-offset-4 hover:text-rose-700 ${focusRing}`}
 								>
 									Reset
 								</button>
@@ -787,277 +852,197 @@ export default function Resources() {
 						</div>
 					</div>
 
-					<div>
-						{visibleDocs.length === 0 ? (
-							<div className="rounded-2xl border-[1.5px] border-dashed border-emerald-950/50 bg-white/60 p-8 text-[15px]">
-								{docFilter === "todo"
-									? "Nothing left to collect. Every document is ready."
-									: "No documents ticked yet. Tap one on the left to stamp it."}
-							</div>
-						) : (
-							<ul className="grid gap-4 sm:grid-cols-2">
-								{visibleDocs.map((d) => {
-									const on = isReady(d.name);
-									const tipOpen = openTip === d.name;
-									const Icon = d.icon;
-									return (
-										<li
-											key={d.name}
-											className={`relative rounded-xl border-[1.5px] transition-colors ${on ? "border-emerald-950 bg-emerald-50" : "border-emerald-950/25 bg-white"}`}
-										>
-											{on && (
-												<Stamp
-													slam={fresh === d.name}
-													tilt={-9}
-													className="absolute -top-3 right-12 bg-emerald-50/70 text-xs"
-												>
-													Ready
-												</Stamp>
-											)}
-											<button
-												type="button"
-												onClick={() => toggleDoc(d.name)}
-												aria-pressed={on}
-												className="flex w-full cursor-pointer items-center gap-4 p-4 text-left"
-											>
-												<span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-[1.5px] border-emerald-950 bg-white">
-													<Icon size={20} />
-												</span>
-												<span className="min-w-0 flex-1">
-													<span className="block text-[15px] font-semibold leading-snug">
-														{d.name}
-													</span>
-													{d.slow && !on && (
-														<span className="mt-1.5 inline-block rounded-full bg-yellow-200 px-2.5 py-0.5 text-xs font-bold">
-															Start early
-														</span>
-													)}
-												</span>
-												<span
-													className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-[1.5px] border-emerald-950 transition-colors ${on ? "bg-emerald-800 text-white" : "bg-white"}`}
-												>
-													{on && <Check size={14} strokeWidth={3.5} />}
-												</span>
-											</button>
-											<div className="border-t border-dashed border-emerald-950/25 px-4 py-2">
-												<button
-													type="button"
-													aria-expanded={tipOpen}
-													onClick={() => setOpenTip(tipOpen ? null : d.name)}
-													className="inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline"
-												>
-													How to get it
-													<ChevronDown
-														size={15}
-														className={`transition-transform ${tipOpen ? "rotate-180" : ""}`}
-													/>
-												</button>
-											</div>
-											<div
-												className={`grid transition-[grid-template-rows] duration-300 ease-out ${tipOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
-											>
-												<div className="overflow-hidden">
-													<p className="px-4 pb-4 text-sm leading-relaxed text-emerald-950/80">
-														{d.tip}
-													</p>
-												</div>
-											</div>
-										</li>
-									);
-								})}
-							</ul>
+					<div className="space-y-12">
+						{nothingShown && (
+							<p className="text-[15px]">Every document is ready.</p>
+						)}
+						{docGroups.map(
+							(g) =>
+								g.items.length > 0 && (
+									<div key={g.key}>
+										<h3 className="font-georgia text-2xl">
+											<Highlight on color={g.color}>
+												{g.title}
+											</Highlight>
+										</h3>
+										<p className="mt-2 text-sm text-emerald-950/65">{g.note}</p>
+										<ul className="mt-4 border-t-[1.5px] border-emerald-950">
+											{g.items.map((d) => {
+												const on = isReady(d.name);
+												const tipOpen = openTip === d.name;
+												return (
+													<li
+														key={d.name}
+														className="border-b border-emerald-950/15 py-4"
+													>
+														<label className="flex cursor-pointer items-start gap-4">
+															<input
+																type="checkbox"
+																checked={on}
+																onChange={() => toggleDoc(d.name)}
+																className="peer sr-only"
+															/>
+															<span
+																className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-[1.5px] border-emerald-950 transition-colors peer-focus-visible:ring-4 peer-focus-visible:ring-yellow-200 ${
+																	on ? "bg-emerald-800 text-white" : "bg-white"
+																}`}
+															>
+																{on && <Check size={14} strokeWidth={3.5} />}
+															</span>
+															<span className="text-[15px] font-semibold leading-snug">
+																<Highlight on={on}>{d.name}</Highlight>
+															</span>
+														</label>
+
+														<button
+															type="button"
+															aria-expanded={tipOpen}
+															onClick={() =>
+																setOpenTip(tipOpen ? null : d.name)
+															}
+															className={`ml-10 mt-1 inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-emerald-800 hover:underline ${focusRing}`}
+														>
+															How to get it
+															<ChevronDown
+																size={15}
+																className={`transition-transform ${tipOpen ? "rotate-180" : ""}`}
+															/>
+														</button>
+														<Collapse open={tipOpen} className="ml-10">
+															<p className="max-w-[58ch] pt-2 text-sm leading-relaxed text-emerald-950/80">
+																{d.tip}
+															</p>
+														</Collapse>
+													</li>
+												);
+											})}
+										</ul>
+									</div>
+								),
 						)}
 					</div>
-				</div>
-			</section>
+				</section>
 
-			<section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 md:pb-28">
-				<div className="flex flex-wrap items-end justify-between gap-6">
-					<div className="max-w-2xl">
-						<h2 className="ud-display text-4xl font-extrabold leading-[1.02] sm:text-5xl">
+				{/* Portals and templates */}
+				<section className="grid gap-16 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:gap-20">
+					<div id="portals" tabIndex={-1} className="scroll-mt-28">
+						<h2 className="font-georgia text-4xl leading-[1.05] sm:text-5xl">
 							Official portals
 						</h2>
-						<p className="mt-4 text-base leading-relaxed text-emerald-950/75">
-							Apply only on government domains. Udaan reads scholarship rules
-							straight from these authorities.
+						<p className="mt-4 max-w-[56ch] text-sm leading-relaxed text-emerald-950/70">
+							The government sites most central and state schemes run through.
+							Look at how each address ends. If a site asks for a processing fee
+							to apply, close it.
 						</p>
-					</div>
-					<Segmented
-						value={portalFilter}
-						onChange={setPortalFilter}
-						options={["All", "Central", "Fellowship", "State"].map((v) => ({
-							value: v,
-							label: v,
-						}))}
-					/>
-				</div>
 
-				<div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
-					<div className="divide-y-[1.5px] divide-dashed divide-emerald-950/25 overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white">
-						{visiblePortals.map((p) => {
-							const host = new URL(p.url).hostname;
-							return (
-								<div
-									key={p.url}
-									className="ud-fade-in flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6"
-								>
-									<div className="min-w-0 flex-1">
-										<div className="flex flex-wrap items-center gap-2.5">
-											<h3 className="text-lg font-bold leading-snug">
+						<ul className="mt-8 border-t-[1.5px] border-emerald-950">
+							{PORTALS.map((p) => (
+								<li key={p.url} className="border-b border-emerald-950/15 py-6">
+									<div className="flex items-start justify-between gap-4">
+										<div className="min-w-0">
+											<h3 className="font-georgia text-xl leading-snug">
 												{p.name}
 											</h3>
-											<span className="rounded-full border-[1.5px] border-emerald-950 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold">
-												{p.tag}
-											</span>
+											<p className="mt-0.5 text-sm text-emerald-950/60">
+												{p.authority}
+											</p>
 										</div>
-										<p className="mt-1 text-sm text-emerald-950/60">
-											{p.authority}
-										</p>
-										<p className="mt-2 text-[15px] leading-relaxed text-emerald-950/80">
-											{p.desc}
-										</p>
-										<p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-800">
-											<ShieldCheck size={15} /> {host}
-										</p>
-									</div>
-									<div className="flex shrink-0 items-center gap-2">
-										<button
-											type="button"
-											aria-label={`Copy link to ${p.name}`}
-											onClick={() =>
-												copy(p.url, p.url).then(
-													(ok) => ok && toast.success("Link copied"),
-												)
-											}
-											className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950/30 hover:border-emerald-950"
-										>
-											{copied === p.url ? (
-												<Check size={16} className="text-emerald-700" />
-											) : (
-												<Copy size={16} />
-											)}
-										</button>
 										<a
 											href={p.url}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="inline-flex items-center gap-2 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px"
+											aria-label={`Open portal: ${p.name}`}
+											className={`inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold underline decoration-emerald-950/30 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
 										>
-											Open portal <ExternalLink size={15} />
+											Open portal <ExternalLink size={13} />
 										</a>
 									</div>
-								</div>
-							);
-						})}
+									<p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-emerald-950/80">
+										{p.desc}
+									</p>
+									<p className="mt-3 flex flex-wrap items-baseline gap-x-3 text-xs text-emerald-950/60">
+										<span>{p.tag}</span>
+										<span className="font-mono text-sm text-emerald-950">
+											<Host host={p.host} />
+										</span>
+									</p>
+								</li>
+							))}
+						</ul>
 					</div>
 
-					<div className="-rotate-1 rounded-md bg-yellow-200 p-5 shadow-[0_6px_0_-3px_rgba(2,44,34,0.15)]">
-						<p className="ud-display text-lg font-bold">
-							Check the address bar
-						</p>
-						<p className="mt-2 text-sm leading-relaxed">
-							Real scholarship portals end in <strong>.gov.in</strong> or{" "}
-							<strong>.nic.in</strong>. If a site asks for a “processing fee” to
-							apply, close it.
-						</p>
-					</div>
-				</div>
-			</section>
-
-			<section className="mx-auto max-w-7xl px-5 pb-20 sm:px-8 md:pb-28">
-				<div className="grid gap-10 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-14">
-					<div>
-						<h2 className="ud-display text-4xl font-extrabold leading-[1.02] sm:text-5xl">
-							Free templates
+					<div id="templates" className="scroll-mt-8">
+						<h2 className="font-georgia text-4xl leading-[1.05] sm:text-5xl">
+							Templates
 						</h2>
-						<p className="mt-4 text-base leading-relaxed text-emerald-950/75">
-							Pre-formatted files for your CV and statement of purpose, so
-							you're editing, not starting from a blank page.
+						<p className="mt-4 text-sm leading-relaxed text-emerald-950/70">
+							Start from a formatted CV or statement of purpose instead of a
+							blank page.
 						</p>
-						<div className="mt-6">
-							<Segmented
-								value={fileFilter}
-								onChange={setFileFilter}
-								options={["All", "PDF", "DOCX"].map((v) => ({
-									value: v,
-									label: v,
-								}))}
-							/>
-						</div>
-					</div>
 
-					<ul className="grid gap-5 sm:grid-cols-2">
-						{visibleFiles.map((f) => {
-							const done = saved.includes(f.title);
-							return (
-								<li key={f.title} className="ud-fade-in">
+						<ul className="mt-8 border-t-[1.5px] border-emerald-950">
+							{DOWNLOADS.map((f) => (
+								<li key={f.title} className="border-b border-emerald-950/15">
 									<a
 										href={f.href}
 										download
-										onClick={() => {
-											setSaved((list) =>
-												list.includes(f.title) ? list : [...list, f.title],
-											);
-											toast.success(`Downloading ${f.title}`);
-										}}
-										className="group relative flex h-full flex-col rounded-xl rounded-tr-none border-[1.5px] border-emerald-950 bg-white p-5 pt-6 transition-colors hover:bg-emerald-50"
+										onClick={() => toast.success(`Downloading ${f.title}`)}
+										className={`group flex items-center gap-4 py-4 ${focusRing}`}
 									>
-										<span aria-hidden className="ud-fold" />
-										<span
-											className={`w-fit rounded-md border-[1.5px] border-emerald-950 px-2 py-0.5 text-xs font-extrabold ${f.type === "PDF" ? "bg-red-100" : "bg-sky-100"}`}
-										>
-											{f.type}
-										</span>
-										<span className="mt-4 flex-1 text-base font-bold leading-snug">
-											{f.title}
-										</span>
-										<span className="mt-5 flex items-center justify-between border-t border-dashed border-emerald-950/30 pt-3 text-sm">
-											<span className="text-emerald-950/60">{f.size}</span>
-											<span
-												className={`inline-flex items-center gap-1.5 font-bold ${done ? "text-emerald-700" : "text-emerald-950"}`}
-											>
-												{done ? (
-													<Check size={16} />
-												) : (
-													<Download
-														size={16}
-														className="transition-transform group-hover:translate-y-0.5"
-													/>
-												)}
-												{done ? "Downloaded" : "Download"}
+										<PaperThumb label={f.type} />
+										<span className="min-w-0 flex-1">
+											<span className="block font-semibold leading-snug underline-offset-4 group-hover:underline">
+												{f.title}
+											</span>
+											<span className="mt-0.5 block text-xs text-emerald-950/60">
+												{f.type}, {f.size}
 											</span>
 										</span>
+										<Download
+											size={16}
+											className="shrink-0 transition-transform group-hover:translate-y-0.5 motion-reduce:transition-none"
+										/>
 									</a>
 								</li>
-							);
-						})}
-					</ul>
-				</div>
-			</section>
+							))}
+						</ul>
+					</div>
+				</section>
+			</div>
 
-			<section className="mx-auto max-w-7xl px-5 pb-24 sm:px-8 md:pb-32">
-				<div className="flex flex-col items-start justify-between gap-8 rounded-2xl border-[1.5px] border-emerald-950 bg-emerald-950 p-8 text-white sm:p-12 md:flex-row md:items-center">
-					<div className="max-w-xl">
-						<h3 className="ud-display text-3xl font-extrabold leading-tight sm:text-4xl">
+			{/* Closing band with a perforated edge */}
+			<section className="relative mt-32 bg-emerald-950 text-white">
+				<div
+					aria-hidden
+					className="absolute inset-x-0 -top-3 h-3"
+					style={{
+						background:
+							"radial-gradient(circle at 10px 0, transparent 6px, #022c22 6.5px)",
+						backgroundSize: "20px 12px",
+					}}
+				/>
+				<div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-16 sm:px-8 md:flex-row md:items-end md:justify-between md:py-20">
+					<div className="max-w-2xl">
+						<h2 className="font-georgia text-4xl leading-[1.05] sm:text-5xl">
 							{readiness >= 60
-								? "You're nearly set. See which schemes fit you."
-								: "Ready to see which schemes fit your profile?"}
-						</h3>
-						<p className="mt-3 text-base leading-relaxed text-emerald-50/80">
-							Answer a few questions and Udaan matches you against real
-							eligibility rules in under a minute.
+								? "You\u2019re nearly set. See which schemes fit you."
+								: "Next, see which schemes fit your profile."}
+						</h2>
+						<p className="mt-4 text-base leading-relaxed text-emerald-50/80">
+							Answer a few questions and Udaan checks you against the
+							eligibility rules.
 						</p>
 					</div>
-					<div className="flex shrink-0 flex-wrap gap-3">
+					<div className="flex shrink-0 flex-wrap items-center gap-x-6 gap-y-3">
 						<Link
 							to="/eligibility"
-							className="inline-flex items-center gap-2 rounded-full bg-yellow-300 px-6 py-3 text-sm font-bold text-emerald-950 transition hover:bg-yellow-200 active:translate-y-px"
+							className={`inline-flex items-center gap-2 rounded-md bg-yellow-300 px-6 py-3 text-sm font-semibold text-emerald-950 transition hover:bg-yellow-200 active:translate-y-px ${focusRing}`}
 						>
 							Check eligibility <ArrowRight size={16} />
 						</Link>
 						<Link
 							to="/scholarships"
-							className="rounded-full border-[1.5px] border-white/50 px-6 py-3 text-sm font-bold transition hover:border-white hover:bg-white/10"
+							className={`text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-white ${focusRing}`}
 						>
 							Browse scholarships
 						</Link>

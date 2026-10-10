@@ -57,6 +57,8 @@ import {
 	ConfusedDetective,
 	CablesDoctor,
 } from "../components/AnimatedIllustrations";
+import PreFlightChecklist from "../components/PreFlightChecklist";
+import AddToCalendarButton from "../components/AddToCalendarButton";
 
 const CATEGORIES = [
 	"All",
@@ -1158,6 +1160,10 @@ export default function Scholarships() {
 											</div>
 
 											<div className="flex items-center gap-2 shrink-0">
+												<AddToCalendarButton
+													scholarship={selectedScholarship}
+													variant="mini"
+												/>
 												<SaveButton
 													saved={saved.has(
 														selectedScholarship._id || selectedScholarship.id,
@@ -1387,50 +1393,7 @@ export default function Scholarships() {
 									</DrawerSection>
 								)}
 
-								<DrawerSection
-									title="Documents to keep ready"
-									aside={
-										<Link
-											to="/documents"
-											className="text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950"
-										>
-											Open checklist
-										</Link>
-									}
-								>
-									{Array.isArray(selectedScholarship.requiredDocuments) &&
-									selectedScholarship.requiredDocuments.length > 0 ? (
-										<ul className="grid gap-2 sm:grid-cols-2">
-											{selectedScholarship.requiredDocuments.map((doc, idx) => (
-												<li
-													key={idx}
-													className="flex items-start gap-2.5 rounded-xl border-[1.5px] border-emerald-950/20 p-3"
-												>
-													<span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md border-[1.5px] border-emerald-950 bg-white">
-														{doc.mandatory !== false && (
-															<Check size={11} strokeWidth={3.5} />
-														)}
-													</span>
-													<span className="min-w-0">
-														<span className="block text-sm font-semibold leading-snug">
-															{doc.name}
-														</span>
-														<span className="mt-0.5 block text-xs text-emerald-950/55">
-															{doc.mandatory !== false
-																? "Required"
-																: "If applicable"}
-														</span>
-													</span>
-												</li>
-											))}
-										</ul>
-									) : (
-										<p className="text-[15px] leading-relaxed text-emerald-950/75">
-											Usually: identity card, bonafide college certificate,
-											latest marksheet, and a bank passbook with DBT active.
-										</p>
-									)}
-								</DrawerSection>
+								<PreFlightChecklist scholarship={selectedScholarship} />
 							</div>
 
 							<div className="flex shrink-0 flex-wrap items-center gap-2 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
@@ -1448,6 +1411,10 @@ export default function Scholarships() {
 										/>
 									</a>
 								)}
+								<AddToCalendarButton
+									scholarship={selectedScholarship}
+									variant="pill"
+								/>
 								<button
 									type="button"
 									onClick={() => {

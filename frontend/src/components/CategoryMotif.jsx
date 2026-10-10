@@ -1145,7 +1145,7 @@ export function ScholarshipsHeroCluster() {
 			<div className="absolute -top-4 -right-4 z-20 hidden sm:block">
 				<div className="rounded-full border-[1.5px] border-emerald-950 bg-[#FEF9EE] px-3.5 py-1 shadow-sm transform rotate-6">
 					<span className="text-xs font-extrabold text-[#78350F] tracking-wide">
-						★ 55+ VERIFIED
+						★ 50+ VERIFIED
 					</span>
 				</div>
 			</div>

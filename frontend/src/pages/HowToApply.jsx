@@ -1,241 +1,123 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Search, FileText, Users, PenTool, CheckCircle2, ArrowRight, Sparkles, BookOpen, Clock, Calendar } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { PageStyles, Stamp } from "../components/PageKit";
 
+const focusRing = "focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200";
 const STEPS = [
-	{
-		number: "01",
-		title: "Research & Shortlist Eligible Schemes",
-		description:
-			"Start by filtering scholarships that match your exact level of study, social category, and state domicile. Don't limit yourself to national awards: state-level and corporate CSR grants often have higher approval odds.",
-		details: [
-			"Use Udaan's deterministic rule engine to match against 37+ verified schemes",
-			"Check income ceilings and minimum CGPA criteria before preparing materials",
-			"Track closing deadlines in a calendar: missing official cutoffs cannot be appealed",
-		],
-		icon: Search,
-	},
-	{
-		number: "02",
-		title: "Prepare Your Verified Document Folder",
-		description:
-			"Gather digital copies (PDF & JPEG under 2MB) of all mandatory government certificates. Having these verified ahead of time prevents last-minute portal crashes.",
-		details: [
-			"Latest academic mark sheets and provisional passing certificates",
-			"Official Income Certificate issued by competent revenue authority (Tehsildar/SDM)",
-			"Caste / Category certificate and State Domicile Certificate",
-			"Bank account passbook front page (must be linked with student's Aadhaar)",
-		],
-		icon: FileText,
-	},
-	{
-		number: "03",
-		title: "Obtain Bonafide & Recommendation Letters",
-		description:
-			"Most merit-based and CSR grants require an institution bonafide certificate and recommendation letters from faculty or department heads.",
-		details: [
-			"Request your college administration for Bonafide certificate at least 2 weeks early",
-			"Ask professors who know your academic and extracurricular contributions well",
-			"Provide them with your CV and a summary of the scholarship criteria",
-		],
-		icon: Users,
-	},
-	{
-		number: "04",
-		title: "Draft a Compelling Statement of Purpose",
-		description:
-			"Your personal statement is your opportunity to demonstrate genuine financial need, academic ambition, and how the scholarship will enable your career goals.",
-		details: [
-			"Answer the prompt directly: explain how this grant directly alleviates your fees",
-			"Highlight academic milestones, community involvement, and future aspirations",
-			"Proofread thoroughly for clarity, honesty, and grammatical precision",
-		],
-		icon: PenTool,
-	},
-	{
-		number: "05",
-		title: "Verify Clauses & Submit on Designated Portal",
-		description:
-			"A minor formatting mistake or missing signature can disqualify an application. Double-check all uploaded attachments before hitting final submission.",
-		details: [
-			"Confirm every form field matches your official government ID exactly",
-			"Verify that document uploads are crisp and readable within specified file limits",
-			"Submit at least 48 hours before the deadline to avoid portal traffic bottlenecks",
-		],
-		icon: CheckCircle2,
-	},
-];
-
-const TIPS = [
-	{
-		emoji: "📅",
-		title: "Apply to Multiple Schemes",
-		body: "Apply to 4 to 6 eligible grants simultaneously across central, state, and corporate CSR categories.",
-	},
-	{
-		emoji: "🔁",
-		title: "Maintain a Master Asset Kit",
-		body: "Keep certified PDFs of your transcripts, income certificate, and SOP drafts organized in cloud storage.",
-	},
-	{
-		emoji: "📬",
-		title: "Track Application Status",
-		body: "After submitting, log your Application ID and check portal verification status periodically.",
-	},
+  {
+    id: "discovery", number: "01", title: "Find and shortlist scholarships", category: "Discovery",
+    description: "Build a shortlist you can act on. Start with schemes that match your profile, then check the official requirements before investing time in an application.",
+    details: [
+      "Filter by your state, course and level of study. Check category, income and academic requirements for each scheme.",
+      "Read the current official notice. Check the deadline, award amount, renewal rules and whether you can hold other scholarships at the same time.",
+      "Save a manageable shortlist. Note the official application link and deadline for each scholarship, and add reminders to your calendar.",
+    ],
+    note: "Finish this step when you have a shortlist of eligible schemes with their official links and deadlines.",
+    links: [{ to: "/scholarships", label: "Browse scholarships" }, { to: "/eligibility", label: "Check eligibility" }],
+  },
+  {
+    id: "documents", number: "02", title: "Prepare your documents", category: "Paperwork",
+    description: "Use the scheme's document list as your source of truth. Keep readable digital copies in one folder so you can upload them without a last-minute search.",
+    details: [
+      "Start certificates issued by government offices and any required bank verification early. Check the accepted financial year, validity and issuing authority.",
+      "Collect the required identity documents, mark sheets, fee receipts and bank details. Request bonafide or recommendation letters if the scheme asks for them.",
+      "Follow the portal's file type and size limits. Open every scan to check readability, page order and orientation; compare names and dates across documents.",
+    ],
+    note: "The Resources checklist saves your ticks on this device. Use it to keep track while you collect your files.",
+    links: [{ to: "/resources#checklist", label: "Open document checklist" }],
+  },
+  {
+    id: "statement", number: "03", title: "Write a personal statement, if required", category: "Statement · Optional",
+    description: "Only write a statement when your chosen scholarship requests one. Follow its prompt and word limit; give a focused, honest account of your goals and experience.",
+    details: [
+      "Answer the actual prompt. Explain your goals and how the scholarship would help with your studies.",
+      "Use specific examples of your work, responsibilities or challenges. Describe what you did and the result, using numbers where they are accurate.",
+      "Proofread your draft and ask someone you trust to review it. Request recommendation letters separately if they are required.",
+    ],
+    note: "No statement in the requirements? Choose 'Not required for my scholarship' on the Resources roadmap to complete this step.",
+    links: [{ to: "/application-guide", label: "Read statement guide" }],
+  },
+  {
+    id: "submission", number: "04", title: "Verify and submit without errors", category: "Final submit",
+    description: "Take one final pass through the application on the official portal. Leave time to fix upload errors and confirm that the application was submitted, rather than saved as a draft.",
+    details: [
+      "Compare your name, date of birth, course and bank details with your supporting documents. Check all required fields and declarations.",
+      "Preview every uploaded file. Confirm that it is the correct document, readable and within the portal's format and size limits.",
+      "Review the final preview, then submit before the deadline. Save the application ID and acknowledgement receipt as a PDF or screenshot.",
+      "Check the portal for verification updates and any correction requests. Note deadlines for institution verification or follow-up actions if the scheme specifies them.",
+    ],
+    note: "Finish this step when the portal confirms submission and you have saved the acknowledgement. Submission does not guarantee an award.",
+    links: [{ to: "/resources#portals", label: "Find official portals" }, { to: "/resources#roadmap", label: "Return to your roadmap" }],
+  },
 ];
 
 export default function HowToApply() {
-	return (
-		<div className="min-h-screen bg-[#FAF9F6] text-slate-900">
-			<section className="bg-white border-b border-slate-200/80 px-5 pt-12 pb-10 sm:pt-16 sm:pb-14 text-center">
-				<div className="max-w-3xl mx-auto">
-					<div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 bg-slate-50 text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-3 shadow-2xs">
-						<BookOpen size={13} className="text-emerald-700 shrink-0" />
-						<span>Student Application Guide</span>
-					</div>
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (!hash) return;
+    // Wait until the layout's route scroll reset has finished.
+    const frame = requestAnimationFrame(() => {
+      const target = document.getElementById(hash.slice(1));
+      target?.scrollIntoView({ block: "start", behavior: "instant" });
+      target?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [hash]);
 
-					<h1 className="text-3xl sm:text-5xl md:text-6xl font-serif text-slate-900 leading-[1.12] tracking-tight font-normal">
-						How to Apply for a{" "}
-						<span className="italic font-normal text-emerald-800">
-							Scholarship
-						</span>
-					</h1>
-
-					<p className="text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto mt-3 font-normal">
-						From finding the right match to hitting submit, follow these five clear steps to build a verified, winning application.
-					</p>
-
-					<div className="flex justify-center gap-8 sm:gap-12 mt-8 pt-7 border-t border-slate-100 max-w-lg mx-auto">
-						{[
-							{ num: "5 Steps", label: "Clear roadmap" },
-							{ num: "100%", label: "Verified portals" },
-							{ num: "₹0", label: "Application fee" },
-						].map((s) => (
-							<div key={s.label} className="text-center">
-								<div className="text-xl sm:text-2xl font-serif font-bold text-slate-900">
-									{s.num}
-								</div>
-								<div className="text-xs text-slate-500 font-medium mt-0.5">
-									{s.label}
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-
-			<section className="max-w-3xl mx-auto px-5 py-12 sm:py-16">
-				<div className="space-y-6">
-					{STEPS.map((step, idx) => {
-						const IconComponent = step.icon;
-						return (
-							<div
-								key={idx}
-								className="bg-white border border-slate-200/90 hover:border-emerald-300 rounded-3xl p-6 sm:p-7 shadow-2xs hover:shadow-xs transition-all duration-200 flex flex-col gap-4"
-							>
-								<div className="flex items-center justify-between">
-									<div className="flex items-center gap-3">
-										<div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center justify-center shrink-0 shadow-2xs">
-											<IconComponent size={18} />
-										</div>
-										<span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/70 px-2.5 py-1 rounded-full uppercase tracking-wider">
-											Step {step.number}
-										</span>
-									</div>
-								</div>
-
-								<div>
-									<h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug font-sans">
-										{step.title}
-									</h2>
-									<p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal mt-2">
-										{step.description}
-									</p>
-								</div>
-
-								<div className="pt-3 border-t border-slate-100">
-									<ul className="space-y-2">
-										{step.details.map((d, i) => (
-											<li
-												key={i}
-												className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 font-normal"
-											>
-												<span className="mt-0.5 w-4 h-4 rounded-full bg-emerald-100/70 flex items-center justify-center shrink-0 text-emerald-800">
-													<CheckCircle2 size={12} />
-												</span>
-												<span>{d}</span>
-											</li>
-										))}
-									</ul>
-								</div>
-							</div>
-						);
-					})}
-				</div>
-			</section>
-
-			<section className="bg-white border-y border-slate-200/80 px-5 py-14">
-				<div className="max-w-4xl mx-auto">
-					<div className="text-center mb-10">
-						<span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
-							Application Strategy
-						</span>
-						<h2 className="text-2xl sm:text-3xl font-serif text-slate-900 mt-1 leading-tight">
-							Pro Tips That Actually Make a Difference
-						</h2>
-					</div>
-
-					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-						{TIPS.map((t) => (
-							<div
-								key={t.title}
-								className="bg-[#FAF9F6] border border-slate-200/90 rounded-3xl p-6 hover:border-emerald-300 transition-all shadow-2xs flex flex-col justify-between"
-							>
-								<div>
-									<div className="text-2xl mb-3">{t.emoji}</div>
-									<h3 className="text-sm sm:text-base font-bold text-slate-900 mb-1.5 font-sans">
-										{t.title}
-									</h3>
-									<p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
-										{t.body}
-									</p>
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-
-			<section className="px-5 py-16">
-				<div className="max-w-2xl mx-auto bg-white border border-slate-200/90 rounded-3xl p-8 sm:p-10 text-center shadow-2xs">
-					<div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center mx-auto mb-4 text-emerald-800 shadow-2xs">
-						<Sparkles size={20} />
-					</div>
-					<h2 className="text-2xl sm:text-3xl font-serif text-slate-900 mb-2 leading-tight">
-						Ready to Find Your Scholarship?
-					</h2>
-					<p className="text-sm text-slate-600 leading-relaxed mb-6 max-w-md mx-auto font-normal">
-						Answer a few quick questions about your academic background to surface every scholarship you're eligible for.
-					</p>
-
-					<div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-						<Link
-							to="/eligibility"
-							className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold transition shadow-2xs hover:shadow-xs"
-						>
-							<span>Check My Eligibility</span>
-							<ArrowRight size={14} />
-						</Link>
-						<Link
-							to="/scholarships"
-							className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition shadow-2xs"
-						>
-							Browse All Scholarships
-						</Link>
-					</div>
-				</div>
-			</section>
-		</div>
-	);
+  return (
+    <div className="ud-root min-h-screen bg-[#E9F0EA] font-sans text-emerald-950">
+      <PageStyles />
+      <header className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 sm:pt-20">
+        <Link to="/resources#roadmap" className={`inline-flex items-center gap-2 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 ${focusRing}`}>
+          <ArrowLeft size={16} /> Back to your roadmap
+        </Link>
+        <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold uppercase tracking-widest text-emerald-950/60">Student application guide</p>
+            <h1 className="mt-4 font-georgia text-5xl leading-[1.05] sm:text-6xl">From your first shortlist to submitted.</h1>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-emerald-950/75">Four steps to help you prepare and apply. Start at the beginning, or jump to the help you need right now.</p>
+          </div>
+          <aside className="relative max-w-xs rotate-2 bg-yellow-200 px-5 pb-5 pt-7 shadow-[3px_4px_0_rgba(2,44,34,0.3)]">
+            <span aria-hidden className="absolute -top-2 left-1/2 h-4 w-16 -translate-x-1/2 bg-white/60" />
+            <Stamp tilt={-4} className="text-sm">Before you begin</Stamp>
+            <p className="mt-4 text-sm leading-relaxed">Every scheme has its own rules. Check the current official notice for deadlines, documents and application requirements.</p>
+          </aside>
+        </div>
+        <nav aria-label="Application guide sections" className="mt-12 flex flex-wrap gap-x-7 gap-y-4 border-y-[1.5px] border-emerald-950 py-5">
+          {STEPS.map((step) => <Link key={step.id} to={`#${step.id}`} className={`text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 ${focusRing}`}>{step.number} {step.category}</Link>)}
+        </nav>
+      </header>
+      <main className="mx-auto max-w-7xl px-5 pb-20 sm:px-8">
+        {STEPS.map((step) => (
+          <section key={step.id} id={step.id} tabIndex={-1} aria-labelledby={`${step.id}-title`} className="grid scroll-mt-28 grid-cols-[3rem_minmax(0,1fr)] gap-x-4 border-b border-emerald-950/20 py-12 sm:grid-cols-[5rem_minmax(0,1fr)] lg:grid-cols-[7rem_minmax(0,5fr)_minmax(0,6fr)] lg:gap-x-8 lg:py-16">
+            <span aria-hidden className="font-georgia text-5xl leading-none text-emerald-950/25 sm:text-7xl">{step.number}</span>
+            <div>
+              <p className="mb-2 text-sm font-semibold text-emerald-950/60">{step.category}</p>
+              <h2 id={`${step.id}-title`} className="font-georgia text-3xl leading-snug sm:text-4xl">{step.title}</h2>
+              <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-emerald-950/80">{step.description}</p>
+            </div>
+            <div className="col-start-2 pt-7 lg:col-start-3 lg:pt-0">
+              <ul className="relative space-y-4 rounded-sm border-[1.5px] border-emerald-950 bg-white py-5 pl-12 pr-5 text-[15px] leading-7 shadow-[3px_3px_0_#022c22] before:absolute before:inset-y-0 before:left-8 before:w-px before:bg-rose-300" style={{ backgroundImage: "repeating-linear-gradient(to bottom, transparent 0, transparent 27px, rgba(2,44,34,0.08) 27px, rgba(2,44,34,0.08) 28px)" }}>
+                {step.details.map((detail) => <li key={detail}>{detail}</li>)}
+              </ul>
+              <p className="mt-7 border-l-4 border-yellow-300 pl-4 text-sm leading-relaxed text-emerald-950/75">{step.note}</p>
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
+                {step.links.map((link) => <Link key={link.to} to={link.to} className={`inline-flex items-center gap-2 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}>{link.label} <ArrowRight size={14} /></Link>)}
+              </div>
+            </div>
+          </section>
+        ))}
+      </main>
+      <footer className="bg-emerald-950 text-white">
+        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-16 sm:px-8 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-xl">
+            <h2 className="font-georgia text-4xl leading-[1.05]">Keep your next step in sight.</h2>
+            <p className="mt-4 text-base leading-relaxed text-emerald-50/80">Return to Resources to track your documents and mark each roadmap step as complete.</p>
+          </div>
+          <Link to="/resources#roadmap" className={`inline-flex items-center justify-center gap-2 self-start rounded-md bg-yellow-300 px-6 py-3 text-sm font-semibold text-emerald-950 hover:bg-yellow-200 ${focusRing}`}>Back to your roadmap <ArrowRight size={16} /></Link>
+        </div>
+      </footer>
+    </div>
+  );
 }
-

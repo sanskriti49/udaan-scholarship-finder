@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	ArrowRight,
 	ArrowUpRight,
@@ -16,10 +17,11 @@ import {
 	RotateCcw,
 	ScanLine,
 	ShieldCheck,
+	Sparkles,
 	Upload,
 	Wallet,
 } from "lucide-react";
-import { schemas } from "./extract";
+import { schemas, parseMoney } from "./extract";
 import { evaluate } from "./rules";
 import { loadScholarships } from "./scholarships";
 import { useScanner } from "./useScanner";
@@ -96,18 +98,10 @@ export default function Scanner() {
 						</span>
 						DOCUMENT TOOLS
 					</div>
-					<span className="scanner-topline-tag">
-						<span className="scanner-live-dot" aria-hidden="true" />
-						Private by design
-					</span>
 				</div>
 
 				<header className="scanner-hero">
 					<div className="scanner-hero-copy">
-						<span className="scanner-eyebrow">
-							<span className="scanner-eyebrow-line" />
-							THE DOCUMENT PRE-CHECK
-						</span>
 						<h1 className="font-georgia">
 							Every detail matters.
 							<br />
@@ -338,6 +332,7 @@ export default function Scanner() {
 }
 
 function Workflow({ type, scheme }) {
+	const navigate = useNavigate();
 	const scanner = useScanner(type);
 	const [dragging, setDragging] = useState(false);
 	const reviewHeading = useRef(null);
@@ -347,6 +342,62 @@ function Workflow({ type, scheme }) {
 	const report =
 		scanner.stage === "results" ? evaluate(type, scanner.fields, scheme) : null;
 	const currentStep = scanner.stage === "results" ? 4 : reviewing ? 3 : 2;
+
+	const handleSyncToEligibility = () => {
+		const prefill = {};
+		if (type === "income") {
+			const rawIncome = scanner.fields.annualIncome?.value;
+			const num =
+				parseMoney(rawIncome) ??
+				(Number(rawIncome) > 0 ? Number(rawIncome) : null);
+			if (num && !isNaN(num)) {
+				prefill.familyIncome = num;
+			}
+			prefill.documentsHeld = ["INCOME_CERT"];
+		} else if (type === "caste") {
+			const rawCat = (scanner.fields.casteCategory?.value || "")
+				.toUpperCase()
+				.trim();
+			if (rawCat.includes("OBC")) prefill.casteCategory = "OBC";
+			else if (rawCat.includes("SC")) prefill.casteCategory = "SC";
+			else if (rawCat.includes("ST")) prefill.casteCategory = "ST";
+			else if (rawCat.includes("EWS")) prefill.casteCategory = "EWS";
+			else if (rawCat.includes("GEN")) prefill.casteCategory = "General";
+			prefill.documentsHeld = ["CASTE_CERT"];
+		} else if (type === "bonafide") {
+			const study = (scanner.fields.study?.value || "").toLowerCase();
+			if (study.includes("phd") || study.includes("doctor"))
+				prefill.educationLevel = "PhD";
+			else if (
+				study.includes("pg") ||
+				study.includes("post") ||
+				study.includes("master")
+			)
+				prefill.educationLevel = "PG";
+			else if (study.includes("diploma")) prefill.educationLevel = "Diploma";
+			else if (study.includes("12") || study.includes("twelfth"))
+				prefill.educationLevel = "Class 12";
+			else if (study.includes("10") || study.includes("tenth"))
+				prefill.educationLevel = "Class 10";
+			else if (
+				study.includes("ug") ||
+				study.includes("under") ||
+				study.includes("bachelor") ||
+				study.includes("b.tech") ||
+				study.includes("semester")
+			)
+				prefill.educationLevel = "UG";
+			prefill.documentsHeld = ["BONAFIDE_CERT"];
+		}
+
+		navigate("/eligibility", {
+			state: {
+				prefill,
+				autoEvaluate: true,
+				sourceDocLabel: schemas[type]?.label || "Document",
+			},
+		});
+	};
 
 	useEffect(() => {
 		if (scanner.stage === "review") reviewHeading.current?.focus();
@@ -608,10 +659,20 @@ function Workflow({ type, scheme }) {
 								<strong>All details checked?</strong>
 								<p>You can still return and edit after seeing results.</p>
 							</div>
-							<button className="scanner-primary" type="submit">
-								Validate reviewed details{" "}
-								<ArrowRight size={18} aria-hidden="true" />
-							</button>
+							<div className="scanner-review-buttons">
+								<button
+									type="button"
+									className="scanner-bridge-quick-btn"
+									onClick={handleSyncToEligibility}
+								>
+									<Sparkles size={16} aria-hidden="true" />
+									<span>Sync to Eligibility</span>
+								</button>
+								<button className="scanner-primary" type="submit">
+									Validate reviewed details{" "}
+									<ArrowRight size={18} aria-hidden="true" />
+								</button>
+							</div>
 						</div>
 					</form>
 				</section>
@@ -678,6 +739,33 @@ function Workflow({ type, scheme }) {
 									<ArrowUpRight size={15} aria-hidden="true" />
 								</a>
 							)}
+						</div>
+					</div>
+
+					<div className="scanner-bridge-card">
+						<div className="scanner-bridge-icon-col">
+							<div className="scanner-bridge-symbol">
+								<Sparkles size={22} aria-hidden="true" />
+							</div>
+						</div>
+						<div className="scanner-bridge-content">
+							<div className="scanner-bridge-badge">
+								<span>1-CLICK SCHOLARSHIP DISCOVERY</span>
+							</div>
+							<h3>Auto-Fill Profile & Discover All Matching Schemes</h3>
+							<p>
+								We've verified your {schemas[type].label} client-side. Send these values straight to Udaan's official eligibility engine to discover all schemes you qualify for without re-typing.
+							</p>
+						</div>
+						<div className="scanner-bridge-action-col">
+							<button
+								type="button"
+								className="scanner-bridge-btn"
+								onClick={handleSyncToEligibility}
+							>
+								<span>Sync to Profile & Match Schemes</span>
+								<ArrowRight size={17} aria-hidden="true" />
+							</button>
 						</div>
 					</div>
 

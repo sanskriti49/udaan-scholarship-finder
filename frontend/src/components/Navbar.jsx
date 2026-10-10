@@ -65,17 +65,18 @@ const Navbar = () => {
 		{ name: "Home", path: "/" },
 		{ name: "Scholarships", path: "/scholarships" },
 		{ name: "Trust Shield", path: "/trust-shield" },
+
 		{ name: "Resources", path: "/resources" },
-		{ name: "Scanner", path: "/scanner" },
 	];
 
 	const loggedInLinks = [
 		{ name: "Home", path: "/" },
 		{ name: "Scholarships", path: "/scholarships" },
 		{ name: "Eligibility", path: "/eligibility" },
+
+		{ name: "Scanner", path: "/scanner" },
 		{ name: "Documents", path: "/documents" },
 		{ name: "Resources", path: "/resources" },
-		{ name: "Scanner", path: "/scanner" },
 	];
 
 	const activeNavLinks = user ? loggedInLinks : guestLinks;

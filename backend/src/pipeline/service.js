@@ -11,17 +11,47 @@ import { rootLogger } from "./core/logger.js";
  * not open Redis/BullMQ connections.
  */
 
-const DEADLINE_CHANGES = new Set(["DEADLINE_EXTENSION", "DEADLINE_SHORTENED", "CYCLE_DATES_CHANGED"]);
+const DEADLINE_CHANGES = new Set([
+	"DEADLINE_EXTENSION",
+	"DEADLINE_SHORTENED",
+	"CYCLE_DATES_CHANGED",
+	"STATUS_OPENED",
+]);
 
 async function notifyDeadlineChange({ record, changeType, summary, deltas }) {
-	if (!DEADLINE_CHANGES.has(changeType) || !deltas?.some((d) => d.field === "closesAt")) return;
-	const { notificationService } = await import("../services/notificationService.js");
-	await notificationService.onScholarshipIngested({ ...record, _id: record.id }, false, {
-		hasChanges: true,
-		changeType,
-		summary: `Official application deadline changed. ${summary}`,
-		deltas,
-	});
+	const isDeadlineField = deltas?.some((d) => d.field === "closesAt");
+	const isStatusOpened = changeType === "STATUS_OPENED" || changeType === "CYCLE_REOPENED";
+	if (!DEADLINE_CHANGES.has(changeType) || (!isDeadlineField && !isStatusOpened)) return;
+
+	const closesDelta = deltas?.find((d) => d.field === "closesAt");
+	const oldClosesAt = closesDelta?.oldValue || null;
+	const newClosesAt = closesDelta?.newValue || record.currentCycle?.closesAt || record.deadline;
+
+	try {
+		// Event-driven BullMQ fan-out
+		const { scheduleDeadlineChangeAlert } = await import("../queues/reminderQueue.js");
+		const job = await scheduleDeadlineChangeAlert({
+			scholarshipId: record.id || record._id,
+			scholarshipTitle: record.title,
+			changeType,
+			summary,
+			oldClosesAt,
+			newClosesAt,
+		});
+
+		// Fail-open fallback: if Redis/BullMQ is offline, notify via service directly
+		if (!job) {
+			const { notificationService } = await import("../services/notificationService.js");
+			await notificationService.onScholarshipIngested({ ...record, _id: record.id || record._id }, false, {
+				hasChanges: true,
+				changeType,
+				summary: `Official application deadline changed. ${summary}`,
+				deltas,
+			});
+		}
+	} catch (err) {
+		rootLogger.warn("deadline change notification dispatch failed", { error: err.message });
+	}
 }
 
 export function createPipeline({ replay = false, notify = !replay, store = new MongoStore() } = {}) {

@@ -10,6 +10,7 @@ import { CategoryCardHeader } from "./CategoryMotif";
 import { formatGrant } from "../utils/formatGrant";
 import { cleanOfficialUrl, formatChangeNotice } from "../utils/formatEvidence";
 import { deadlineInfo, whyItFits } from "../utils/scholarshipMeta";
+import AddToCalendarButton from "./AddToCalendarButton";
 
 export const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -245,8 +246,9 @@ export function ScholarshipCard({
 
 				<div className="mt-auto pt-5">
 					<div className="border-t-[1.5px] border-dashed border-emerald-950/20 pt-4">
-						<div className="flex items-baseline justify-between gap-3">
+						<div className="flex items-center justify-between gap-3">
 							<GrantAmount amount={s.amount} />
+							<AddToCalendarButton scholarship={s} variant="mini" />
 						</div>
 						<div className="mt-3 flex items-center justify-between gap-2">
 							<button

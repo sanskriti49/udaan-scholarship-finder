@@ -78,7 +78,7 @@
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: 800;
 	letter-spacing: 0.16em;
 	color: #4e695a;
@@ -86,8 +86,8 @@
 }
 .uh-topnote-symbol {
 	display: grid;
-	width: 29px;
-	height: 29px;
+	width: 31px;
+	height: 31px;
 	place-items: center;
 	background: var(--uh-ink);
 	color: #f8e69e;
@@ -101,14 +101,13 @@
 }
 .uh-topnote-aside {
 	white-space: nowrap;
-	font-size: 9px;
+	font-size: 11px;
 }
 .uh-layout {
 	display: grid;
 	grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
 	gap: clamp(34px, 5vw, 76px);
 	align-items: center;
-	margin-top: 24px;
 }
 .uh-copy {
 	min-width: 0;
@@ -117,7 +116,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 10px;
-	margin-bottom: 22px;
+	margin-bottom: 15px;
 	color: #245744;
 	font-size: 13px;
 	font-weight: 700;
@@ -816,7 +815,7 @@
 	color: #315a46;
 }
 .uh-income-heading-left label {
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 850;
 	cursor: pointer;
 }

@@ -375,8 +375,25 @@ test("buildDeterministicCacheKey: normalizes trailing slashes on paths", () => {
 	assert.equal(keySlash, keyNoSlash, "Paths with and without trailing slash must yield identical keys");
 });
 
+import { scheduleDeadlineChangeAlert, closeReminderQueue } from "../../src/queues/reminderQueue.js";
+
+test("scheduleDeadlineChangeAlert: exports function and handles fail-open gracefully when Redis offline", async () => {
+	assert.equal(typeof scheduleDeadlineChangeAlert, "function");
+	const result = await scheduleDeadlineChangeAlert({
+		scholarshipId: "fake-123",
+		scholarshipTitle: "NSP Post-Matric",
+		changeType: "DEADLINE_EXTENSION",
+		summary: "Extended by 14 days",
+		oldClosesAt: "2026-10-15T00:00:00.000Z",
+		newClosesAt: "2026-10-31T00:00:00.000Z",
+	});
+	// In test environment without live Redis, should safely fail-open returning null or job
+	assert.ok(result === null || typeof result === "object");
+});
+
 import { closeRedisClient } from "../../src/config/redis.js";
 
 after(async () => {
+	await closeReminderQueue();
 	await closeRedisClient();
 });

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import {
 	CheckCircle2,
@@ -287,6 +288,7 @@ function ResultCard({ s, tone, index, onWhy }) {
 }
 
 export default function EligibilityPage() {
+	const location = useLocation();
 	const [formData, setFormData] = useState({
 		fullName: "",
 		educationLevel: "UG",
@@ -299,6 +301,7 @@ export default function EligibilityPage() {
 		hasDisability: false,
 	});
 	const [documentsHeld, setDocumentsHeld] = useState(["MARKSHEET", "AADHAAR", "BANK_PASSBOOK"]);
+	const [syncedBanner, setSyncedBanner] = useState(null);
 
 	const [step, setStep] = useState(0);
 	const [dir, setDir] = useState(1);
@@ -320,6 +323,42 @@ export default function EligibilityPage() {
 	const formRef = useRef(null);
 	const headingRef = useRef(null);
 	const moved = useRef(false);
+
+	const handleCheckEligibility = async (customFormData = null, customDocs = null) => {
+		setIsSubmitting(true);
+		setResultsVisible(false);
+		try {
+			const activeForm = customFormData || formData;
+			const activeDocs = customDocs || documentsHeld;
+			const payload = {
+				...activeForm,
+				familyIncome: Number(activeForm.familyIncome),
+				cgpa: Number(activeForm.cgpa),
+				documentsHeld: activeDocs,
+			};
+			const response = await evaluateProfile(payload);
+			if (response.success) {
+				const matched = response.data.matched || [];
+				setEvaluationData({
+					matched,
+					ineligible: response.data.ineligible || [],
+					missing: response.data.missingProfileData || [],
+					summary: response.summary || {},
+				});
+				setActiveTab(matched.length ? "eligible" : response.data.missingProfileData?.length ? "missing" : "ineligible");
+				setResultsVisible(true);
+				if (matched.length) setBurst((b) => b + 1);
+				setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+			} else {
+				toast.error("We couldn't run the check. Please try again.");
+			}
+		} catch (err) {
+			console.error("Eligibility evaluation failed:", err);
+			toast.error("The eligibility service didn't respond. Please try again.");
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -352,6 +391,52 @@ export default function EligibilityPage() {
 			.catch(() => {});
 	}, []);
 
+	// Handle pre-fill from Document Health Scanner bridge
+	useEffect(() => {
+		const prefill = location.state?.prefill;
+		if (!prefill) return;
+
+		let updatedDocs = documentsHeld;
+		if (Array.isArray(prefill.documentsHeld) && prefill.documentsHeld.length > 0) {
+			updatedDocs = Array.from(new Set([...documentsHeld, ...prefill.documentsHeld]));
+			setDocumentsHeld(updatedDocs);
+		}
+
+		const updatedFormData = {
+			...formData,
+			...(prefill.familyIncome !== undefined && { familyIncome: prefill.familyIncome }),
+			...(prefill.casteCategory && { casteCategory: prefill.casteCategory }),
+			...(prefill.educationLevel && { educationLevel: prefill.educationLevel }),
+		};
+		setFormData(updatedFormData);
+
+		const detailsParts = [];
+		if (prefill.familyIncome !== undefined) detailsParts.push(`Income: ${inr(prefill.familyIncome)}`);
+		if (prefill.casteCategory) detailsParts.push(`Category: ${prefill.casteCategory}`);
+		if (prefill.educationLevel) detailsParts.push(`Level: ${prefill.educationLevel}`);
+		if (prefill.documentsHeld?.length) {
+			const docNames = prefill.documentsHeld
+				.map((c) => COMMON_DOCUMENTS.find((d) => d.code === c)?.name || c)
+				.join(", ");
+			detailsParts.push(`Verified doc added: ${docNames}`);
+		}
+
+		setSyncedBanner({
+			sourceDocLabel: location.state.sourceDocLabel || "Document Scanner",
+			details: detailsParts.join(" · "),
+		});
+
+		toast.success(
+			location.state.sourceDocLabel
+				? `Pre-filled from ${location.state.sourceDocLabel}!`
+				: "Document details synced to your eligibility profile!"
+		);
+
+		if (location.state.autoEvaluate) {
+			handleCheckEligibility(updatedFormData, updatedDocs);
+		}
+	}, [location.state]);
+
 	// Move focus to the new step's heading so keyboard and screen-reader users follow along.
 	useEffect(() => {
 		if (!moved.current) return;
@@ -370,40 +455,6 @@ export default function EligibilityPage() {
 	const toggleDocument = (code) =>
 		setDocumentsHeld((prev) => (prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]));
 	const set = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
-
-	const handleCheckEligibility = async () => {
-		setIsSubmitting(true);
-		setResultsVisible(false);
-		try {
-			const payload = {
-				...formData,
-				familyIncome: Number(formData.familyIncome),
-				cgpa: Number(formData.cgpa),
-				documentsHeld,
-			};
-			const response = await evaluateProfile(payload);
-			if (response.success) {
-				const matched = response.data.matched || [];
-				setEvaluationData({
-					matched,
-					ineligible: response.data.ineligible || [],
-					missing: response.data.missingProfileData || [],
-					summary: response.summary || {},
-				});
-				setActiveTab(matched.length ? "eligible" : response.data.missingProfileData?.length ? "missing" : "ineligible");
-				setResultsVisible(true);
-				if (matched.length) setBurst((b) => b + 1);
-				setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
-			} else {
-				toast.error("We couldn't run the check. Please try again.");
-			}
-		} catch (err) {
-			console.error("Eligibility evaluation failed:", err);
-			toast.error("The eligibility service didn't respond. Please try again.");
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
 
 	const last = STEPS.length - 1;
 	const onSubmit = (e) => {
@@ -464,6 +515,25 @@ export default function EligibilityPage() {
 					className="grid overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white shadow-[5px_5px_0_0_#022c22] lg:grid-cols-[minmax(0,1fr)_340px]"
 				>
 					<div className="flex min-w-0 flex-col p-5 sm:p-8">
+						{syncedBanner && (
+							<div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-800/25 bg-emerald-50/90 px-4 py-3.5 text-sm text-emerald-950 shadow-sm">
+								<div className="flex items-center gap-2.5">
+									<Sparkles size={18} className="shrink-0 text-emerald-700" />
+									<div>
+										<p className="font-bold text-emerald-900">
+											Synced from {syncedBanner.sourceDocLabel}
+										</p>
+										<p className="text-xs text-emerald-950/70">
+											{syncedBanner.details}
+										</p>
+									</div>
+								</div>
+								<span className="rounded-full bg-emerald-200/90 px-3 py-1 text-xs font-bold text-emerald-950">
+									Instant Match Evaluated
+								</span>
+							</div>
+						)}
+
 						{/* Progress */}
 						<ol className="grid grid-cols-4 gap-2" aria-label="Progress">
 							{STEPS.map((st, i) => {

@@ -63,7 +63,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 15px;
-	padding: 0 0 30px;
+	padding: 0 0 5px;
 }
 .scanner-brand-label {
 	display: inline-flex;
@@ -75,8 +75,8 @@
 	font-weight: 800;
 }
 .scanner-brand-symbol {
-	width: 30px;
-	height: 30px;
+	width: 28px;
+	height: 28px;
 	display: grid;
 	place-items: center;
 	border-radius: 9px;
@@ -335,6 +335,7 @@
 	display: flex;
 	align-items: center;
 	gap: 16px;
+
 	border-radius: 13px;
 	padding: 17px 21px;
 	background: #eaf3e9;
@@ -353,11 +354,11 @@
 }
 .scanner-privacy strong {
 	color: #214b35;
-	font-size: 13px;
+	font-size: 14.5px;
 }
 .scanner-privacy p {
 	color: #5b7560;
-	font-size: 12px;
+	font-size: 13.5px;
 	line-height: 1.6;
 	margin: 3px 0 0;
 }
@@ -505,12 +506,12 @@
 }
 .scanner-type-copy strong {
 	display: block;
-	font-size: 12px;
+	font-size: 13px;
 	line-height: 1.45;
 }
 .scanner-type-copy small {
 	display: block;
-	font-size: 10px;
+	font-size: 12px;
 	line-height: 1.5;
 	margin-top: 4px;
 	color: #839187;
@@ -590,7 +591,7 @@
 	color: #78a181;
 }
 .scanner-context-tip p {
-	font-size: 11px;
+	font-size: 12px;
 	line-height: 1.6;
 	margin: 0;
 	color: #768678;
@@ -665,7 +666,7 @@
 	gap: 15px;
 	align-items: center;
 	margin-bottom: 17px;
-	font-size: 10px;
+	font-size: 10.5px;
 	letter-spacing: 0.12em;
 	color: #839b84;
 	font-weight: 850;
@@ -688,7 +689,7 @@
 	gap: 10px;
 	align-items: center;
 	color: #97a69a;
-	font-size: 12px;
+	font-size: 16px;
 	font-weight: 700;
 	min-width: 0;
 }
@@ -714,7 +715,7 @@
 	background: #f9fbf7;
 	color: #a0b0a2;
 	border-radius: 50%;
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: 850;
 }
 .scanner-step.is-complete {
@@ -749,7 +750,7 @@
 	background: #fff;
 	color: #496b52;
 	padding: 9px 12px;
-	font-size: 12px;
+	font-size: 10px;
 	font-weight: 750;
 	transition: background 0.2s;
 }
@@ -877,12 +878,12 @@
 .scanner-manual-copy strong {
 	display: block;
 	color: #375440;
-	font-size: 12px;
+	font-size: 14px;
 }
 .scanner-manual-copy p {
 	margin: 3px 0 0;
-	font-size: 11px;
-	color: #8a968b;
+	font-size: 13px;
+	color: #788279;
 }
 .scanner-secondary {
 	display: inline-flex;
@@ -895,7 +896,7 @@
 	border-radius: 8px;
 	padding: 11px 14px;
 	font-weight: 750;
-	font-size: 12px;
+	font-size: 10 + px;
 	transition: background 0.2s;
 }
 .scanner-secondary:hover {
@@ -1116,6 +1117,123 @@
 .scanner-primary:hover {
 	background: #174c35;
 	transform: translateY(-1px);
+}
+.scanner-review-buttons {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+.scanner-bridge-quick-btn {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 18px;
+	border: 1.5px solid #205e43;
+	border-radius: 8px;
+	color: #174c35;
+	background: #ebf5ee;
+	font-weight: 800;
+	font-size: 12px;
+	transition:
+		background 0.2s,
+		transform 0.2s;
+}
+.scanner-bridge-quick-btn:hover {
+	background: #ddede2;
+	transform: translateY(-1px);
+}
+
+/* 1-Click Eligibility Bridge Card */
+.scanner-bridge-card {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	gap: 20px;
+	background: linear-gradient(135deg, #eaf5ee 0%, #f4faf6 55%, #e6f3eb 100%);
+	border: 1.5px solid #287353;
+	border-radius: 16px;
+	padding: 22px 24px;
+	margin: 24px 0 28px;
+	box-shadow: 0 4px 18px rgba(22, 75, 56, 0.07);
+}
+.scanner-bridge-symbol {
+	width: 46px;
+	height: 46px;
+	border-radius: 12px;
+	background: #1b533c;
+	color: #ffffff;
+	display: grid;
+	place-items: center;
+	box-shadow: 0 2px 8px rgba(27, 83, 60, 0.25);
+}
+.scanner-bridge-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 10px;
+	border-radius: 999px;
+	background: rgba(27, 83, 60, 0.12);
+	color: #164b38;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	margin-bottom: 6px;
+}
+.scanner-bridge-content h3 {
+	margin: 0 0 5px;
+	font-size: 16px;
+	font-weight: 800;
+	color: #12382c;
+}
+.scanner-bridge-content p {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: #4a6659;
+}
+.scanner-bridge-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	background: #174c35;
+	color: #ffffff;
+	padding: 12px 22px;
+	border: 1px solid #103827;
+	border-radius: 10px;
+	font-size: 13.5px;
+	font-weight: 800;
+	cursor: pointer;
+	white-space: nowrap;
+	box-shadow: 0 2px 8px rgba(23, 76, 53, 0.25);
+	transition:
+		background 0.2s,
+		transform 0.2s;
+}
+.scanner-bridge-btn:hover {
+	background: #0f3525;
+	transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+	.scanner-bridge-card {
+		grid-template-columns: 1fr;
+		gap: 16px;
+		padding: 18px;
+	}
+	.scanner-bridge-action-col {
+		width: 100%;
+	}
+	.scanner-bridge-btn {
+		width: 100%;
+		justify-content: center;
+	}
+	.scanner-review-buttons {
+		width: 100%;
+	}
+	.scanner-review-buttons button {
+		width: 100%;
+	}
 }
 
 /* Source evidence */
@@ -1425,14 +1543,14 @@
 	justify-content: center;
 	gap: 9px;
 	padding: 16px 12px 3px;
-	color: #8c9a8d;
+	color: #768277;
 }
 .scanner-disclaimer svg {
 	flex: 0 0 auto;
 	margin-top: 1px;
 }
 .scanner-disclaimer p {
-	font-size: 11px;
+	font-size: 13px;
 	line-height: 1.65;
 	max-width: 750px;
 	margin: 0;

@@ -117,6 +117,64 @@ export async function scheduleDeadlineReminder({
 }
 
 /**
+ * Enqueue an asynchronous fan-out job when crawler detects a deadline extension or reopen event
+ *
+ * @param {Object} params
+ * @param {string} params.scholarshipId - Mongo ObjectId or scheme identifier
+ * @param {string} params.scholarshipTitle - Scheme title
+ * @param {string} params.changeType - DEADLINE_EXTENSION | STATUS_OPENED | CYCLE_DATES_CHANGED
+ * @param {string} [params.summary] - Human-readable summary
+ * @param {string|Date} [params.oldClosesAt] - Prior deadline cutoff
+ * @param {string|Date} [params.newClosesAt] - Newly observed deadline cutoff
+ * @returns {Promise<Object|null>} Enqueued BullMQ job or null on fail-open
+ */
+export async function scheduleDeadlineChangeAlert({
+	scholarshipId,
+	scholarshipTitle,
+	changeType = "DEADLINE_EXTENSION",
+	summary = "",
+	oldClosesAt = null,
+	newClosesAt = null,
+}) {
+	if (!isRedisAvailable()) {
+		console.warn(`[ReminderQueue] Redis unavailable. Operating in fail-open mode, skipping change alert enqueue.`);
+		return null;
+	}
+
+	const newDeadlineIso = newClosesAt ? new Date(newClosesAt).toISOString().slice(0, 10) : "open";
+	const jobId = `deadline_change_${scholarshipId}_${newDeadlineIso}_${changeType}`;
+
+	const jobPayload = {
+		scholarshipId,
+		scholarshipTitle,
+		changeType,
+		summary,
+		oldClosesAt: oldClosesAt ? new Date(oldClosesAt).toISOString() : null,
+		newClosesAt: newClosesAt ? new Date(newClosesAt).toISOString() : null,
+		enqueuedAt: new Date().toISOString(),
+	};
+
+	try {
+		const job = await reminderQueue.add("handleDeadlineChangeAlert", jobPayload, {
+			jobId,
+			attempts: 3,
+			backoff: {
+				type: "exponential",
+				delay: 5000,
+			},
+		});
+
+		console.log(
+			`[ReminderQueue] Enqueued deadline change alert for '${scholarshipTitle}' (${changeType}, Job ID: ${job.id}).`,
+		);
+		return job;
+	} catch (err) {
+		console.warn(`[ReminderQueue] Failed enqueuing deadline change job (${err.message}). Continuing in fail-open mode.`);
+		return null;
+	}
+}
+
+/**
  * Gracefully close reminder queue
  */
 export async function closeReminderQueue() {

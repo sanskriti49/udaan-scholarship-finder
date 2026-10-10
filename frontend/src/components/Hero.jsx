@@ -36,7 +36,7 @@ const PLACEHOLDERS = [
 // Existing public-facing claims are retained, not independently verified here.
 const PROOF_POINTS = [
 	{
-		stat: "55+",
+		stat: "50+",
 		title: "Verified schemes",
 		desc: "NSP, AICTE, state and CSR",
 		icon: "government",
