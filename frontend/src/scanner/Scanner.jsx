@@ -1,887 +1,588 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
 	ArrowRight,
 	ArrowUpRight,
-	BadgeCheck,
-	Check,
-	CheckCircle2,
-	ChevronDown,
-	CircleAlert,
-	FileCheck2,
+	Download,
 	FileText,
-	GraduationCap,
 	Info,
 	LockKeyhole,
-	PencilLine,
 	RotateCcw,
-	ScanLine,
-	ShieldCheck,
-	Sparkles,
 	Upload,
-	Wallet,
 } from "lucide-react";
-import { schemas, parseMoney } from "./extract";
+import { schemas } from "./extract";
 import { evaluate } from "./rules";
+import { eligiblePrefill } from "./prefill";
 import { loadScholarships } from "./scholarships";
 import { useScanner } from "./useScanner";
+import { stageEligibilityDraft } from "../utils/eligibilityDraft";
 import "./scanner.css";
 
 const origins = {
-	ocr: "OCR-extracted",
-	pdf: "PDF text",
-	manual: "Manually supplied",
+	ocr: "Read by OCR",
+	pdf: "Read from PDF",
+	manual: "Edited by you",
 	missing: "Not detected",
 };
-
-// Presentation metadata only. Document types still come from schemas.
-const documentMeta = {
-	income: { icon: Wallet, description: "Annual family income" },
-	bonafide: {
-		icon: GraduationCap,
-		description: "Student & institution details",
-	},
-	caste: { icon: BadgeCheck, description: "Category & certificate details" },
-};
-
-const steps = [
-	{ number: 1, label: "Choose" },
-	{ number: 2, label: "Upload" },
-	{ number: 3, label: "Review" },
-	{ number: 4, label: "Results" },
-];
-
 export default function Scanner() {
-	const [type, setType] = useState("income");
+	const [params, setParams] = useSearchParams();
+	const type = Object.hasOwn(schemas, params.get("type"))
+		? params.get("type")
+		: "income";
+	function setType(value) {
+		const next = new URLSearchParams(params);
+		next.set("type", value);
+		setParams(next);
+	}
+	const selected = params.get("scholarship") || "";
 	const [schemes, setSchemes] = useState([]);
-	const [schemeStatus, setSchemeStatus] = useState(
-		"Loading public scholarship list…",
-	);
-	const [selected, setSelected] = useState(
-		() => new URLSearchParams(location.search).get("scholarship") || "",
-	);
-
-	// Existing scholarship-loading logic: unchanged.
+	const [metadataError, setMetadataError] = useState(false);
 	useEffect(() => {
 		const controller = new AbortController();
-		loadScholarships(
-			controller.signal,
-			new URLSearchParams(location.search).get("scholarship"),
-		).then(
+		loadScholarships(controller.signal, selected).then(
 			(data) => {
-				setSchemes(data);
-				setSchemeStatus(
-					data.length
-						? ""
-						: "No scholarship metadata available. General checks still work.",
-				);
+				if (!controller.signal.aborted) {
+					setSchemes(data);
+					setMetadataError(false);
+				}
 			},
 			() => {
-				if (!controller.signal.aborted)
-					setSchemeStatus(
-						"Scholarship list unavailable. General checks still work.",
-					);
+				if (!controller.signal.aborted) setMetadataError(true);
 			},
 		);
 		return () => controller.abort();
-	}, []);
-
-	const scheme = schemes.find((s) => s.id === selected);
-
+	}, [selected]);
+	const scheme = schemes.find((item) => item.id === selected);
 	return (
 		<div className="scanner-shell">
-			<main id="main-content">
-				<div className="scanner-topline">
-					<div className="scanner-brand-label">
-						<span className="scanner-brand-symbol" aria-hidden="true">
-							<ScanLine size={17} strokeWidth={2.2} />
-						</span>
-						DOCUMENT TOOLS
-					</div>
-				</div>
-
+			<main className="scanner-main">
 				<header className="scanner-hero">
-					<div className="scanner-hero-copy">
-						<h1 className="font-georgia">
-							Every detail matters.
-							<br />
-							<em>Check yours first.</em>
-						</h1>
-						<p className="scanner-hero-description">
-							Give your Income, Bonafide, or Caste Certificate a careful review
-							before applying. Spot missing details, review extracted text, and
-							check applicable scholarship requirements — all on your device.
-						</p>
-						<div
-							className="scanner-hero-benefits"
-							aria-label="Scanner benefits"
-						>
-							<span>
-								<LockKeyhole size={15} /> No uploads
-							</span>
-							<span>
-								<FileCheck2 size={15} /> PDF & images
-							</span>
-							<span>
-								<CheckCircle2 size={15} /> No sign-in
-							</span>
-						</div>
-					</div>
-
-					<div className="scanner-hero-visual" aria-hidden="true">
-						<div className="scanner-visual-orbit scanner-visual-orbit-one" />
-						<div className="scanner-visual-orbit scanner-visual-orbit-two" />
-						<div className="scanner-mock-document">
-							<div className="scanner-mock-document-header">
-								<span className="scanner-mock-icon">
-									<FileText size={20} />
-								</span>
-								<span className="scanner-mock-small-text">DOCUMENT REVIEW</span>
-							</div>
-							<div className="scanner-mock-heading" />
-							<div className="scanner-mock-line scanner-mock-line-long" />
-							<div className="scanner-mock-line scanner-mock-line-short" />
-							<div className="scanner-mock-divider" />
-							<div className="scanner-mock-check">
-								<Check size={14} />
-								<span />
-							</div>
-							<div className="scanner-mock-check">
-								<Check size={14} />
-								<span />
-							</div>
-							<div className="scanner-mock-check">
-								<Check size={14} />
-								<span />
-							</div>
-							<div className="scanner-mock-stamp">
-								<ShieldCheck size={25} />
-							</div>
-						</div>
-						<div className="scanner-mock-floating">
-							<span className="scanner-mock-floating-icon">
-								<LockKeyhole size={18} />
-							</span>
-							<span>
-								<strong>On your device</strong>
-								<small>Files stay private</small>
-							</span>
-						</div>
-					</div>
-				</header>
-
-				<aside className="scanner-privacy">
-					<div className="scanner-privacy-icon">
-						<ShieldCheck size={22} aria-hidden="true" />
-					</div>
 					<div>
-						<strong>Your documents stay on your device.</strong>
+						<p className="scanner-eyebrow">
+							YOUR APPLICATION PAPERS, A LITTLE CLEARER
+						</p>
+						<h1 className="font-bricolage-grotesque">
+							Read your document.
+							<br />
+							<em>Know your next step.</em>
+						</h1>
 						<p>
-							Udaan does not upload or store them. English documents only; no
-							sign-in needed. Details remain in this page until you reset or
-							leave. Clearing browser memory is best-effort.
+							Check the details in your certificate, spot reading or date
+							issues, and leave with a review summary for your next application.
 						</p>
 					</div>
-					<span className="scanner-privacy-label">LOCAL PROCESSING</span>
-				</aside>
-
-				<section
-					className="scanner-panel scanner-context-panel"
-					aria-labelledby="context-title"
-				>
-					<div className="scanner-section-heading">
-						<div className="scanner-section-number">01</div>
-						<div className="scanner-section-heading-copy">
-							<span className="scanner-section-kicker">LET'S GET STARTED</span>
-							<h2 id="context-title">What would you like to check?</h2>
-							<p>
-								Start with your document type, then optionally choose a
-								scholarship.
-							</p>
-						</div>
+					<aside className="scanner-purpose">
+						<FileText size={27} />
+						<strong>What you’ll leave with</strong>
+						<ul>
+							<li>Editable details with source text</li>
+							<li>Date and format issues to review</li>
+							<li>A summary you can download</li>
+						</ul>
+						<small>A review aid, not certificate verification.</small>
+					</aside>
+				</header>
+				<p className="scanner-privacy">
+					<LockKeyhole size={19} />
+					<span>
+						Files are read on your device. No upload or account needed. English
+						PDF, PNG and JPG; up to 10 MB and 5 PDF pages.
+					</span>
+				</p>
+				<section className="scanner-context" aria-labelledby="context-title">
+					<div>
+						<h2 id="context-title">Choose your document.</h2>
+						<label htmlFor="document-type">Document type</label>
+						<select
+							id="document-type"
+							value={type}
+							onChange={(event) => setType(event.target.value)}
+						>
+							{Object.entries(schemas).map(([key, schema]) => (
+								<option value={key} key={key}>
+									{schema.label}
+								</option>
+							))}
+						</select>
+						<small>Changing type clears the current review.</small>
 					</div>
-
-					<fieldset className="scanner-type-fieldset">
-						<legend className="scanner-field-label">Document type</legend>
-						<div className="scanner-type-grid">
-							{Object.entries(schemas).map(([key, schema]) => {
-								const meta = documentMeta[key] || {
-									icon: FileText,
-									description: "Review certificate details",
-								};
-								const TypeIcon = meta.icon;
-								return (
-									<button
-										key={key}
-										type="button"
-										className={`scanner-type-option ${type === key ? "is-selected" : ""}`}
-										aria-pressed={type === key}
-										onClick={() => setType(key)}
-									>
-										<span className="scanner-type-icon">
-											<TypeIcon size={21} strokeWidth={1.8} />
-										</span>
-										<span className="scanner-type-copy">
-											<strong>{schema.label}</strong>
-											<small>{meta.description}</small>
-										</span>
-										<span className="scanner-type-radio" aria-hidden="true">
-											{type === key && <Check size={12} strokeWidth={3} />}
-										</span>
-									</button>
-								);
-							})}
-						</div>
-					</fieldset>
-
-					<div className="scanner-context-bottom">
-						<div className="scanner-select-block">
-							<label
-								className="scanner-field-label"
-								htmlFor="scholarship-context"
-							>
-								Scholarship <span className="scanner-optional">OPTIONAL</span>
-							</label>
-							<div className="scanner-select-wrapper">
-								<select
-									id="scholarship-context"
-									value={selected}
-									onChange={(e) => setSelected(e.target.value)}
-								>
-									<option value="">General document readiness</option>
-									{schemes.map((s) => (
-										<option key={s.id} value={s.id}>
-											{s.title}
-										</option>
-									))}
-								</select>
-								<ChevronDown size={18} aria-hidden="true" />
-							</div>
-							<p className="scanner-help">
-								Choose a scheme to apply available verified criteria.
-							</p>
-						</div>
-						<div className="scanner-context-tip">
-							<Info size={18} aria-hidden="true" />
-							<p>
-								Changing document type starts a new check. Choosing a
-								scholarship never sends your document details.
-							</p>
-						</div>
-					</div>
-
-					{scheme && (
-						<div className="scanner-scheme-preview">
-							<div className="scanner-scheme-preview-heading">
-								<span className="scanner-scheme-icon">
-									<GraduationCap size={18} />
-								</span>
-								<div>
-									<small>SELECTED SCHOLARSHIP</small>
-									<strong>{scheme.title}</strong>
-								</div>
-							</div>
-							<div className="scanner-scheme-tags">
-								{scheme.eligibility?.familyIncome?.max && (
-									<span className="scanner-scheme-pill">
-										Income limit: ₹
-										{scheme.eligibility.familyIncome.max.toLocaleString(
-											"en-IN",
-										)}
-									</span>
-								)}
-								{scheme.currentCycle?.academicYear && (
-									<span className="scanner-scheme-pill">
-										Cycle: {scheme.currentCycle.academicYear}
-									</span>
-								)}
-								{scheme.state && (
-									<span className="scanner-scheme-pill">
-										Scope: {scheme.state}
-									</span>
-								)}
-								{scheme.eligibility?.casteCategories?.length > 0 && (
-									<span className="scanner-scheme-pill">
-										Eligible: {scheme.eligibility.casteCategories.join(", ")}
-									</span>
-								)}
-							</div>
-						</div>
-					)}
-					{schemeStatus && (
-						<p className="scanner-scheme-status" role="status">
-							{schemeStatus}
-						</p>
-					)}
+					<details className="scanner-scheme-choice" open={Boolean(scheme)}>
+						<summary>Have a scholarship in mind? (optional)</summary>
+						<label htmlFor="scholarship-context">Scholarship context</label>
+						<select
+							id="scholarship-context"
+							value={scheme ? selected : ""}
+							onChange={(event) =>
+								setParams((previous) => {
+									const next = new URLSearchParams(previous);
+									if (event.target.value)
+										next.set("scholarship", event.target.value);
+									else next.delete("scholarship");
+									return next;
+								})
+							}
+						>
+							<option value="">Just review my document</option>
+							{schemes.map((item) => (
+								<option value={item.id} key={item.id}>
+									{item.title}
+								</option>
+							))}
+						</select>
+						<small>
+							{metadataError
+								? "Scholarship list unavailable. Document review still works."
+								: "This opens the right guidelines; it does not certify compliance."}
+						</small>
+						{scheme?.url && (
+							<a href={scheme.url} target="_blank" rel="noopener noreferrer">
+								Read scheme guidelines <ArrowUpRight size={14} />
+							</a>
+						)}
+					</details>
 				</section>
-
-				{/* Remount on type changes, exactly as in the original implementation. */}
 				<Workflow key={type} type={type} scheme={scheme} />
-
-				<footer className="scanner-disclaimer">
-					<Info size={17} aria-hidden="true" />
-					<p>
-						This check cannot establish document authenticity or guarantee
-						scholarship approval. Always read the current official guidelines
-						before applying.
-					</p>
-				</footer>
+				<p className="scanner-disclaimer">
+					<Info size={17} />
+					OCR can miss text. A missing field does not mean a document is
+					invalid. This tool cannot verify authenticity, signatures, seals or
+					scholarship approval.
+				</p>
 			</main>
 		</div>
 	);
 }
-
 function Workflow({ type, scheme }) {
-	const navigate = useNavigate();
 	const scanner = useScanner(type);
+	const navigate = useNavigate();
 	const [dragging, setDragging] = useState(false);
-	const reviewHeading = useRef(null);
-	const resultHeading = useRef(null);
+	const [approved, setApproved] = useState({});
+	const [consent, setConsent] = useState(false);
+	const reviewHeading = useRef(null),
+		resultHeading = useRef(null);
 	const busy = scanner.stage === "processing";
-	const reviewing = scanner.stage === "review" || scanner.stage === "results";
+	const reviewing = scanner.stage === "review";
 	const report =
 		scanner.stage === "results" ? evaluate(type, scanner.fields, scheme) : null;
-	const currentStep = scanner.stage === "results" ? 4 : reviewing ? 3 : 2;
-
-	const handleSyncToEligibility = () => {
-		const prefill = {};
-		if (type === "income") {
-			const rawIncome = scanner.fields.annualIncome?.value;
-			const num =
-				parseMoney(rawIncome) ??
-				(Number(rawIncome) > 0 ? Number(rawIncome) : null);
-			if (num && !isNaN(num)) {
-				prefill.familyIncome = num;
-			}
-			prefill.documentsHeld = ["INCOME_CERT"];
-		} else if (type === "caste") {
-			const rawCat = (scanner.fields.casteCategory?.value || "")
-				.toUpperCase()
-				.trim();
-			if (rawCat.includes("OBC")) prefill.casteCategory = "OBC";
-			else if (rawCat.includes("SC")) prefill.casteCategory = "SC";
-			else if (rawCat.includes("ST")) prefill.casteCategory = "ST";
-			else if (rawCat.includes("EWS")) prefill.casteCategory = "EWS";
-			else if (rawCat.includes("GEN")) prefill.casteCategory = "General";
-			prefill.documentsHeld = ["CASTE_CERT"];
-		} else if (type === "bonafide") {
-			const study = (scanner.fields.study?.value || "").toLowerCase();
-			if (study.includes("phd") || study.includes("doctor"))
-				prefill.educationLevel = "PhD";
-			else if (
-				study.includes("pg") ||
-				study.includes("post") ||
-				study.includes("master")
-			)
-				prefill.educationLevel = "PG";
-			else if (study.includes("diploma")) prefill.educationLevel = "Diploma";
-			else if (study.includes("12") || study.includes("twelfth"))
-				prefill.educationLevel = "Class 12";
-			else if (study.includes("10") || study.includes("tenth"))
-				prefill.educationLevel = "Class 10";
-			else if (
-				study.includes("ug") ||
-				study.includes("under") ||
-				study.includes("bachelor") ||
-				study.includes("b.tech") ||
-				study.includes("semester")
-			)
-				prefill.educationLevel = "UG";
-			prefill.documentsHeld = ["BONAFIDE_CERT"];
-		}
-
-		navigate("/eligibility", {
-			state: {
-				prefill,
-				autoEvaluate: true,
-				sourceDocLabel: schemas[type]?.label || "Document",
-			},
-		});
+	const prefill = eligiblePrefill(type, scanner.fields);
+	const transferable = Object.entries(prefill);
+	const labels = {
+		familyIncome: "Annual family income",
+		casteCategory: "Category",
+		educationLevel: "Level of study",
 	};
-
+	const currentStep = report ? 3 : reviewing ? 2 : 1;
+	const recorded = Object.values(scanner.fields).filter(
+		(field) => field.value.trim() && !field.ambiguous,
+	).length;
 	useEffect(() => {
 		if (scanner.stage === "review") reviewHeading.current?.focus();
 		if (scanner.stage === "results") resultHeading.current?.focus();
 	}, [scanner.stage]);
-
-	const attentionCount = report
-		? report.results.filter((result) => result.state === "Needs attention")
-				.length
-		: 0;
-	const goodCount = report
-		? report.results.filter((result) => result.state === "Looks good").length
-		: 0;
-
+	const reset = () => {
+		scanner.reset();
+		setApproved({});
+		setConsent(false);
+	};
+	function transfer() {
+		const selected = Object.fromEntries(
+			transferable.filter(([key]) => approved[key]),
+		);
+		if (!consent || !Object.keys(selected).length) return;
+		stageEligibilityDraft(selected, schemas[type].label);
+		navigate("/eligibility");
+	}
+	function download() {
+		const lines = [
+			`Udaan document review: ${schemas[type].label}`,
+			"Self-reviewed details; not certificate verification or an eligibility decision.",
+			scheme
+				? `Scholarship context: ${scheme.title}`
+				: "No scholarship selected",
+			"",
+		];
+		for (const [key, label] of Object.entries(schemas[type].fields))
+			lines.push(
+				`${label}: ${scanner.fields[key].value || "Not recorded"} (${origins[scanner.fields[key].source]})`,
+			);
+		for (const item of report.results)
+			lines.push(`\n${item.label}: ${item.interpretation}\nNext: ${item.next}`);
+		const url = URL.createObjectURL(
+			new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" }),
+		);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = "udaan-document-review.txt";
+		anchor.click();
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
+	}
+	const important =
+		report?.results
+			.filter(
+				(item) =>
+					item.state === "Needs attention" ||
+					(item.state === "Manual review required" && !item.optional),
+			)
+			.sort(
+				(a, b) =>
+					Number(b.state === "Needs attention") -
+					Number(a.state === "Needs attention"),
+			) || [];
+	const other =
+		report?.results.filter((item) => !important.includes(item)) || [];
+	function observation(item) {
+		const value = scanner.fields[item.field];
+		return (
+			<article className="scanner-result" key={item.id}>
+				<div>
+					<h3>{item.label}</h3>
+					<span>
+						{!item.rule && item.optional && !value?.value
+							? "Optional / not recorded"
+							: item.state === "Not verified" && !item.rule
+								? "Recorded"
+								: item.state}
+					</span>
+				</div>
+				{value?.value && <p className="scanner-value">{value.value}</p>}
+				<p>{item.interpretation}</p>
+				<p className="scanner-next">
+					<strong>Next:</strong> {item.next}
+				</p>
+				{item.rule && (
+					<a
+						href={item.rule.sourceUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Official source: {item.rule.excerpt}
+					</a>
+				)}
+				{value && <Evidence field={value} />}
+			</article>
+		);
+	}
 	return (
 		<>
-			<nav
-				className="scanner-progress-container"
-				aria-label="Document check progress"
-			>
-				<div className="scanner-progress-caption">
-					<span>YOUR CHECK</span>
-					<strong>Step {currentStep} of 4</strong>
-				</div>
-				<ol className="scanner-steps">
-					{steps.map((step) => {
-						const completed = step.number < currentStep;
-						const active = step.number === currentStep;
-						return (
-							<li
-								key={step.number}
-								className={`scanner-step ${completed ? "is-complete" : ""} ${active ? "is-current" : ""}`}
-								aria-current={active ? "step" : undefined}
-							>
-								<span className="scanner-step-circle" aria-hidden="true">
-									{completed ? (
-										<Check size={15} strokeWidth={2.8} />
-									) : (
-										step.number.toString().padStart(2, "0")
-									)}
-								</span>
-								<span>{step.label}</span>
-							</li>
-						);
-					})}
-				</ol>
-			</nav>
-
-			<section
-				className="scanner-panel scanner-input-panel"
-				aria-labelledby="input-title"
-			>
-				<div className="scanner-section-heading scanner-section-heading-with-action">
-					<div className="scanner-section-number">02</div>
-					<div className="scanner-section-heading-copy">
-						<span className="scanner-section-kicker">
-							PRIVATE, ON-DEVICE SCANNING
+			<nav className="scanner-steps" aria-label="Document check progress">
+				{["Add a document", "Review details", "Next steps"].map(
+					(label, index) => (
+						<span
+							key={label}
+							aria-current={currentStep === index + 1 ? "step" : undefined}
+						>
+							<b>{index + 1}</b>
+							{label}
 						</span>
-						<h2 id="input-title">Add your certificate</h2>
-						<p>We'll read what's available so you can verify it yourself.</p>
-					</div>
-					<button
-						type="button"
-						className="scanner-reset-button"
-						onClick={scanner.reset}
-					>
-						<RotateCcw size={15} /> Reset check
+					),
+				)}
+			</nav>
+			<section
+				className="scanner-workspace"
+				aria-labelledby={
+					report ? "results-title" : reviewing ? "review-title" : "input-title"
+				}
+			>
+				<div className="scanner-workspace-top">
+					<span>{schemas[type].label}</span>
+					<button type="button" onClick={reset} className="scanner-text-button">
+						<RotateCcw size={14} /> Reset check
 					</button>
 				</div>
-
 				{scanner.error && (
 					<p role="alert" className="scanner-error">
-						<CircleAlert size={19} aria-hidden="true" />
 						{scanner.error}
 					</p>
 				)}
-
-				{!reviewing && !busy && (
+				{!reviewing && !report && !busy && (
 					<>
+						<h2 id="input-title">Add a file, or enter what you can read.</h2>
 						<div
 							className={`scanner-drop ${dragging ? "is-dragging" : ""}`}
-							onDragOver={(e) => {
-								e.preventDefault();
+							onDragOver={(event) => {
+								event.preventDefault();
 								setDragging(true);
 							}}
 							onDragLeave={() => setDragging(false)}
-							onDrop={(e) => {
-								e.preventDefault();
+							onDrop={(event) => {
+								event.preventDefault();
 								setDragging(false);
-								if (e.dataTransfer.files.length === 1)
-									void scanner.scan(e.dataTransfer.files[0]);
+								if (event.dataTransfer.files.length === 1)
+									void scanner.scan(event.dataTransfer.files[0]);
 							}}
 						>
-							<div className="scanner-upload-icon">
-								<Upload size={26} strokeWidth={1.8} aria-hidden="true" />
-							</div>
-							<h3>Drop your document here</h3>
-							<p className="scanner-drop-description">
-								or choose a file from your device
+							<Upload size={27} />
+							<strong>Choose a clear copy of your certificate</strong>
+							<p>
+								Keep all edges visible. Avoid glare, shadows and cropped dates.
 							</p>
 							<input
-								className="scanner-file-input"
 								id="certificate"
 								type="file"
 								accept=".pdf,.png,.jpg,.jpeg"
-								aria-describedby="scanner-upload-restrictions"
-								onChange={(e) => {
-									const file = e.target.files?.[0];
-									e.target.value = "";
+								onChange={(event) => {
+									const file = event.target.files?.[0];
+									event.target.value = "";
 									if (file) void scanner.scan(file);
 								}}
+								aria-label="Choose certificate file"
 							/>
-							<label className="scanner-upload-button" htmlFor="certificate">
-								Browse files <ArrowRight size={16} aria-hidden="true" />
-							</label>
-							<p
-								id="scanner-upload-restrictions"
-								className="scanner-drop-restrictions"
-							>
-								PDF, PNG or JPG <span aria-hidden="true">·</span> Max 10 MB{" "}
-								<span aria-hidden="true">·</span> PDFs up to 5 pages
-							</p>
+							<small>PDF, PNG or JPG · up to 10 MB · 5 PDF pages</small>
 						</div>
-
 						<div className="scanner-manual">
-							<span className="scanner-manual-icon">
-								<PencilLine size={19} aria-hidden="true" />
+							<span>
+								Don’t have a readable file? You can still review its details.
 							</span>
-							<div className="scanner-manual-copy">
-								<strong>Prefer not to open a file?</strong>
-								<p>Skip extraction and fill in the details yourself.</p>
-							</div>
 							<button
 								type="button"
 								onClick={scanner.manual}
 								className="scanner-secondary"
 							>
-								Enter manually <ArrowRight size={16} aria-hidden="true" />
+								Enter details manually <ArrowRight size={16} />
 							</button>
 						</div>
 					</>
 				)}
-
 				{busy && (
 					<div className="scanner-processing">
-						<div className="scanner-processing-icon">
-							<ScanLine size={28} aria-hidden="true" />
-						</div>
-						<h3>Reading your document…</h3>
-						<p role="status" aria-live="polite">
-							{scanner.status}
-						</p>
+						<h2>Reading your document…</h2>
+						<p role="status">{scanner.status}</p>
 						<progress aria-label="Processing document locally" />
-						<p className="scanner-help">
-							The first scan downloads local OCR assets. Keep this page open
-							while processing.
+						<p>
+							The first image scan loads English OCR assets. This can take
+							longer on a phone.
 						</p>
-						<button
-							type="button"
-							className="scanner-secondary"
-							onClick={scanner.reset}
-						>
+						<button type="button" onClick={reset} className="scanner-secondary">
 							Cancel processing
 						</button>
 					</div>
 				)}
-
 				{reviewing && (
-					<div className="scanner-ready-note">
-						<CheckCircle2 size={19} aria-hidden="true" />
-						<div>
-							<strong>Ready for your review</strong>
-							<p>
-								You can adjust the fields below, or use Reset check to start
-								over.
-							</p>
-						</div>
-					</div>
-				)}
-			</section>
-
-			{reviewing && (
-				<section
-					className="scanner-panel scanner-review-panel"
-					aria-labelledby="review-title"
-				>
-					<div className="scanner-section-heading">
-						<div className="scanner-section-number">03</div>
-						<div className="scanner-section-heading-copy">
-							<span className="scanner-section-kicker">YOU'RE IN CONTROL</span>
-							<h2 ref={reviewHeading} tabIndex={-1} id="review-title">
-								Review extracted details
-							</h2>
-							<p>Double-check everything against the original certificate.</p>
-						</div>
-					</div>
-					<div className="scanner-review-tip">
-						<Info size={18} aria-hidden="true" />
-						<p>
-							Correct any mistakes. Leave unknown details blank. Dates use{" "}
-							<strong>YYYY-MM-DD</strong>; income is{" "}
-							<strong>annual family income</strong>, not monthly earnings.
+					<>
+						<h2 id="review-title" ref={reviewHeading} tabIndex={-1}>
+							Check the details we found.
+						</h2>
+						<p className="scanner-help">
+							Compare each value with your original. Correct mistakes and leave
+							unknown details blank. Dates use YYYY-MM-DD; income means annual
+							family income.
 						</p>
-					</div>
-					<form
-						autoComplete="off"
-						onSubmit={(e) => {
-							e.preventDefault();
-							scanner.validate();
-						}}
-					>
-						<div className="scanner-fields-grid">
-							{Object.entries(schemas[type].fields).map(([key, label]) => {
-								const field = scanner.fields[key];
-								return (
-									<div
-										className={`scanner-field ${field.ambiguous ? "has-ambiguity" : ""}`}
-										key={key}
-									>
-										<div className="scanner-field-topline">
-											<label htmlFor={`field-${key}`}>{label}</label>
-											<span
-												className={`scanner-origin scanner-origin-${field.source}`}
-											>
-												{origins[field.source]}
-											</span>
+						<form
+							autoComplete="off"
+							onSubmit={(event) => {
+								event.preventDefault();
+								scanner.validate();
+							}}
+						>
+							<div className="scanner-fields-grid">
+								{Object.entries(schemas[type].fields).map(([key, label]) => {
+									const field = scanner.fields[key];
+									return (
+										<div className="scanner-field" key={key}>
+											<div className="scanner-field-topline">
+												<label htmlFor={`field-${key}`}>{label}</label>
+												<span className="scanner-origin">
+													{origins[field.source]}
+												</span>
+											</div>
+											<input
+												id={`field-${key}`}
+												value={field.value}
+												maxLength={400}
+												autoComplete="off"
+												spellCheck={false}
+												aria-describedby={`help-${key}`}
+												onChange={(event) =>
+													scanner.edit(key, event.target.value)
+												}
+												placeholder={
+													/Date$/.test(key)
+														? "YYYY-MM-DD"
+														: "Enter only if known"
+												}
+											/>
+											<p id={`help-${key}`} className="scanner-field-help">
+												{field.ambiguous
+													? "Different values found. Please resolve this against the original."
+													: field.source === "missing"
+														? "Not detected; this does not make your paper invalid."
+														: "Compare with the original document."}
+											</p>
+											<Evidence field={field} />
 										</div>
-										<input
-											id={`field-${key}`}
-											aria-describedby={`help-${key}`}
-											value={field.value}
-											maxLength={400}
-											spellCheck={false}
-											autoComplete="off"
-											onChange={(e) => scanner.edit(key, e.target.value)}
-											placeholder={
-												/Date$/.test(key)
-													? "YYYY-MM-DD"
-													: "Not identified — enter if known"
-											}
-										/>
-										<p
-											id={`help-${key}`}
-											className={`scanner-field-help ${field.ambiguous ? "is-warning" : ""}`}
-										>
-											{field.ambiguous
-												? "Conflicting values found — please review manually."
-												: field.source === "missing"
-													? "Not detected. Fill in only if known."
-													: "Review against the original document."}
-										</p>
-										<Evidence field={field} />
-									</div>
-								);
-							})}
-						</div>
-						<div className="scanner-review-actions">
-							<div>
-								<strong>All details checked?</strong>
-								<p>You can still return and edit after seeing results.</p>
+									);
+								})}
 							</div>
-							<div className="scanner-review-buttons">
+							<div className="scanner-review-actions">
+								<span>
+									{recorded} details recorded. You can edit them later.
+								</span>
 								<button
-									type="button"
-									className="scanner-bridge-quick-btn"
-									onClick={handleSyncToEligibility}
+									type="submit"
+									disabled={!recorded}
+									className="scanner-primary"
 								>
-									<Sparkles size={16} aria-hidden="true" />
-									<span>Sync to Eligibility</span>
-								</button>
-								<button className="scanner-primary" type="submit">
-									Validate reviewed details{" "}
-									<ArrowRight size={18} aria-hidden="true" />
+									Review next steps <ArrowRight size={17} />
 								</button>
 							</div>
+						</form>
+					</>
+				)}
+				{report && (
+					<>
+						<h2 id="results-title" ref={resultHeading} tabIndex={-1}>
+							Here’s what to do next.
+						</h2>
+						<p className="scanner-help">
+							{recorded} details recorded · {important.length} observations to
+							review. These are reading and format checks, not a certificate
+							pass or fail.
+						</p>
+						<div className="scanner-report-actions">
+							<button
+								type="button"
+								className="scanner-secondary"
+								onClick={scanner.review}
+							>
+								Edit details
+							</button>
+							<button
+								type="button"
+								className="scanner-secondary"
+								onClick={download}
+							>
+								<Download size={16} /> Download review
+							</button>
 						</div>
-					</form>
-				</section>
-			)}
-
-			{report && (
-				<section
-					className="scanner-panel scanner-report-panel"
-					aria-labelledby="results-title"
-				>
-					<div className="scanner-section-heading">
-						<div className="scanner-section-number">04</div>
-						<div className="scanner-section-heading-copy">
-							<span className="scanner-section-kicker">
-								YOUR DOCUMENT REVIEW
-							</span>
-							<h2 id="results-title" tabIndex={-1} ref={resultHeading}>
-								{schemas[type].label} — review complete
-							</h2>
-							<p>Review each observation and recommended next step.</p>
+						<div className="scanner-results">
+							{important.length ? (
+								important.map(observation)
+							) : (
+								<p className="scanner-clear-note">
+									No date or format issues were found in the recorded values.
+									Check the original and the scheme’s requirements before
+									applying.
+								</p>
+							)}
 						</div>
-					</div>
-
-					<div className="scanner-summary-stats" aria-label="Check summary">
-						<div className="scanner-stat">
-							<strong>{report.results.length}</strong>
-							<span>Total observations</span>
-						</div>
-						<div className="scanner-stat scanner-stat-good">
-							<strong>{goodCount}</strong>
-							<span>Look good</span>
-						</div>
-						<div className="scanner-stat scanner-stat-attention">
-							<strong>{attentionCount}</strong>
-							<span>Need attention</span>
-						</div>
-					</div>
-
-					<div className="scanner-notice">
-						<div className="scanner-notice-icon">
-							<Info size={21} aria-hidden="true" />
-						</div>
-						<div>
+						<details className="scanner-recorded">
+							<summary>Recorded and optional details ({other.length})</summary>
+							{other.map(observation)}
+						</details>
+						<div className="scanner-notice">
 							<strong>
 								Scholarship-specific compliance:{" "}
 								{report.schemeVerified
-									? scheme
-										? `Evaluated against official criteria for ${scheme.title}`
-										: "See individual verified checks"
-									: scheme
-										? "No verified criteria configured for this selection"
-										: "Not selected (General document readiness)"}
+									? "See individual sourced checks"
+									: "Not verified"}
 							</strong>
 							<p>
-								{scheme ? scheme.title : "General document readiness"} —{" "}
-								{report.schemeVerified
-									? "Evaluated against verified database eligibility guidelines and statutory cutoff rules."
-									: "General observations below check document formatting and common rejection traps."}{" "}
-								General observations below are not eligibility decisions.
+								Catalogue amounts, academic years and category labels alone do
+								not establish certificate requirements.{" "}
+								{scheme
+									? `Use ${scheme.title}’s current guidelines to confirm what applies.`
+									: "Choose a scholarship above to find its guidelines."}
 							</p>
 							{scheme?.url && (
 								<a href={scheme.url} target="_blank" rel="noopener noreferrer">
-									Read official scheme guidelines{" "}
-									<ArrowUpRight size={15} aria-hidden="true" />
+									Read official guidelines <ArrowUpRight size={14} />
 								</a>
 							)}
 						</div>
-					</div>
-
-					<div className="scanner-bridge-card">
-						<div className="scanner-bridge-icon-col">
-							<div className="scanner-bridge-symbol">
-								<Sparkles size={22} aria-hidden="true" />
-							</div>
-						</div>
-						<div className="scanner-bridge-content">
-							<div className="scanner-bridge-badge">
-								<span>1-CLICK SCHOLARSHIP DISCOVERY</span>
-							</div>
-							<h3>Auto-Fill Profile & Discover All Matching Schemes</h3>
-							<p>
-								We've verified your {schemas[type].label} client-side. Send these values straight to Udaan's official eligibility engine to discover all schemes you qualify for without re-typing.
-							</p>
-						</div>
-						<div className="scanner-bridge-action-col">
-							<button
-								type="button"
-								className="scanner-bridge-btn"
-								onClick={handleSyncToEligibility}
-							>
-								<span>Sync to Profile & Match Schemes</span>
-								<ArrowRight size={17} aria-hidden="true" />
-							</button>
-						</div>
-					</div>
-
-					<div className="scanner-results">
-						{report.results.map((result, index) => {
-							const needsAttention = result.state === "Needs attention";
-							const looksGood = result.state === "Looks good";
-							return (
-								<article key={result.id} className="scanner-result">
-									<div className="scanner-result-header">
-										<span className="scanner-result-index">
-											{String(index + 1).padStart(2, "0")}
-										</span>
-										<h3>{result.label}</h3>
-										<span
-											className={`scanner-badge ${needsAttention ? "attention" : looksGood ? "good" : ""}`}
-										>
-											{needsAttention ? (
-												<CircleAlert size={14} />
-											) : looksGood ? (
-												<CheckCircle2 size={14} />
-											) : (
-												<Info size={14} />
-											)}
-											{result.state}
-										</span>
-									</div>
-									<div className="scanner-result-body">
-										{result.field && scanner.fields[result.field] && (
-											<div className="scanner-reviewed-value">
-												<span className="scanner-result-caption">
-													REVIEWED VALUE
-												</span>
-												<p>
-													{scanner.fields[result.field].value ||
-														"Not identified"}{" "}
-													<span className="scanner-value-origin">
-														({origins[scanner.fields[result.field].source]})
-													</span>
-												</p>
-												<Evidence field={scanner.fields[result.field]} />
-											</div>
-										)}
-										{result.rule && (
-											<div className="scanner-rule">
-												<strong>Verified official requirement</strong>
-												<blockquote>{result.rule.excerpt}</blockquote>
-												<div className="scanner-rule-foot">
-													<a
-														href={result.rule.sourceUrl}
-														target="_blank"
-														rel="noopener noreferrer"
-													>
-														Official guideline{" "}
-														<ArrowUpRight size={13} aria-hidden="true" />
-													</a>
-													<span>Verified {result.rule.verifiedAt}</span>
-												</div>
-											</div>
-										)}
-										<div className="scanner-result-explanation">
-											<span className="scanner-result-caption">
-												WHAT THIS MEANS
+						<section className="scanner-handoff">
+							<h3>Use a reviewed detail to save retyping.</h3>
+							{transferable.length ? (
+								<>
+									<p>
+										Choose what to carry into the eligibility form. We’ll open
+										the form for your review; no match runs automatically.
+									</p>
+									{transferable.map(([key, value]) => (
+										<label className="scanner-check" key={key}>
+											<input
+												type="checkbox"
+												checked={Boolean(approved[key])}
+												onChange={(event) =>
+													setApproved({
+														...approved,
+														[key]: event.target.checked,
+													})
+												}
+											/>
+											<span>
+												{labels[key]}:{" "}
+												<strong>
+													{key === "familyIncome"
+														? `₹${value.toLocaleString("en-IN")}`
+														: value}
+												</strong>
 											</span>
-											<p>{result.interpretation}</p>
-										</div>
-										<div className="scanner-next-step">
-											<span className="scanner-next-step-icon">
-												<ArrowRight size={17} aria-hidden="true" />
-											</span>
-											<div>
-												<strong>Next step</strong>
-												<p>{result.next}</p>
-											</div>
-										</div>
-									</div>
-								</article>
-							);
-						})}
-					</div>
-				</section>
-			)}
+										</label>
+									))}
+									<label className="scanner-check scanner-consent">
+										<input
+											type="checkbox"
+											checked={consent}
+											onChange={(event) => setConsent(event.target.checked)}
+										/>
+										<span>
+											I understand that these values are sent to Udaan when I
+											submit the eligibility form. Signed-in submissions also
+											update my eligibility profile.
+										</span>
+									</label>
+									<button
+										type="button"
+										className="scanner-primary"
+										disabled={
+											!consent || !transferable.some(([key]) => approved[key])
+										}
+										onClick={transfer}
+									>
+										Continue to eligibility <ArrowRight size={16} />
+									</button>
+								</>
+							) : (
+								<p>
+									No usable income, category or explicit study level is
+									recorded. A semester number alone doesn’t identify your course
+									level. You can enter these yourself in the{" "}
+									<Link to="/eligibility">eligibility checker</Link>.
+								</p>
+							)}
+							<Link className="scanner-checklist-link" to="/documents">
+								Keep track of your remaining papers <ArrowUpRight size={14} />
+							</Link>
+						</section>
+					</>
+				)}
+			</section>
 		</>
 	);
 }
-
 function Evidence({ field }) {
 	if (!field.evidence.length)
 		return (
 			<p className="scanner-evidence-empty">
-				Document evidence: none.{" "}
 				{field.source === "manual"
-					? "This value was supplied manually."
-					: "Missing text does not mean the document is invalid."}
+					? "Entered by you; no source text was found."
+					: "No source text found for this field."}
 			</p>
 		);
-
 	return (
 		<details className="scanner-evidence">
 			<summary>
-				<span>View source evidence ({field.evidence.length})</span>
-				{field.source === "manual" && (
-					<small>Original text before correction</small>
-				)}
-				<ChevronDown size={16} aria-hidden="true" />
+				View source evidence ({field.evidence.length})
+				{field.source === "manual" ? " · before your edit" : ""}
 			</summary>
-			<div className="scanner-evidence-content">
-				{field.evidence.map((e, i) => (
-					<blockquote key={i}>
-						<span>
-							{e.method === "ocr" ? "OCR" : "PDF text"} · page {e.page}
-						</span>
-						<p>“{e.text}”</p>
-					</blockquote>
-				))}
-			</div>
+			{field.evidence.map((item, index) => (
+				<blockquote key={index}>
+					<small>
+						{item.method === "ocr" ? "OCR" : "PDF text"} · page {item.page}
+					</small>
+					<p>{item.text}</p>
+				</blockquote>
+			))}
 		</details>
 	);
 }

@@ -1,127 +1,155 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Minus, ArrowRight, MessageSquare } from "lucide-react";
+import { Plus, ArrowUpRight, BookOpen } from "lucide-react";
 import { faqs } from "../utils/faqs";
 import faqIllustration from "../assets/images/faq.webp";
 
-const focusRing =
-	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
+const TOPICS = ["All questions", ...new Set(faqs.map((item) => item.category))];
+const FOCUS =
+	"focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#34634e]";
 
-function FaqItem({ question, answer, isOpen, onClick }) {
-	return (
-		<div
-			className={`border-[1.5px] rounded-2xl overflow-hidden transition-all duration-250 ease-out ${
-				isOpen
-					? "border-emerald-950 bg-white shadow-xs"
-					: "border-emerald-950/15 bg-white hover:border-emerald-950/60"
-			}`}
-		>
-			<button
-				type="button"
-				className={`w-full flex items-start justify-between gap-4 p-5 text-left cursor-pointer ${focusRing}`}
-				onClick={onClick}
-				aria-expanded={isOpen}
-			>
-				<span className="ud-display text-base sm:text-lg font-bold text-emerald-950 leading-snug">
-					{question}
-				</span>
-				<span
-					className={`mt-0.5 w-7 h-7 shrink-0 rounded-full border-[1.5px] border-emerald-950 flex items-center justify-center transition-all duration-200 ${
-						isOpen
-							? "bg-yellow-200 text-emerald-950 rotate-180"
-							: "bg-emerald-50 text-emerald-950 rotate-0"
-					}`}
-				>
-					{isOpen ? <Minus size={14} /> : <Plus size={14} />}
-				</span>
-			</button>
-			<div
-				className={`grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-					isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-				}`}
-			>
-				<div className="overflow-hidden">
-					<p className="px-5 pb-5 text-sm sm:text-[15px] text-emerald-950/75 leading-relaxed font-medium">
-						{answer}
-					</p>
-				</div>
-			</div>
-		</div>
+export default function FAQ() {
+	const baseId = useId();
+	const [topic, setTopic] = useState("All questions");
+	const [openId, setOpenId] = useState("public-access");
+	const visible = faqs.filter(
+		(item) => topic === "All questions" || item.category === topic,
 	);
-}
-
-function FAQ() {
-	const [openIndex, setOpenIndex] = useState(0);
-
-	const toggle = (index) => setOpenIndex(openIndex === index ? null : index);
 
 	return (
-		<section className="py-16 md:py-24 px-5 sm:px-8 bg-[#E9F0EA] border-b-[1.5px] border-emerald-950/15">
-			<div className="max-w-7xl mx-auto">
-				<div className="max-w-2xl mb-12">
-					<span className="text-xs font-bold uppercase tracking-wider text-emerald-950/60">
-						Got Questions?
-					</span>
-					<h2 className="text-3xl sm:text-4xl md:text-5xl font-serif text-emerald-950 mt-1 leading-tight">
-						Frequently Asked{" "}
-						<span className="ud-display font-extrabold underline decoration-yellow-300 decoration-4 underline-offset-4">
-							Questions
-						</span>
-					</h2>
-					<p className="text-emerald-950/70 text-base mt-2 leading-relaxed font-medium">
-						Clear answers on eligibility calculations, verified documents, and
-						how to apply.
+		<section
+			aria-labelledby="faq-heading"
+			className="border-t border-[#193f32]/10 bg-[#faf9f3] px-5 py-14 font-sans text-[#193f32] sm:px-8 lg:py-20"
+		>
+			<div className="mx-auto max-w-7xl">
+				<div className="mb-9 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+					<div>
+						<p className="mb-4 text-[11px] font-bold uppercase tracking-[.15em] text-[#637761]">
+							A few things worth knowing
+						</p>
+						<h2
+							id="faq-heading"
+							className="text-4xl font-semibold leading-[1.08] sm:text-5xl lg:text-6xl"
+						>
+							Good questions.
+							<br />
+							<span className="font-georgia font-normal italic">
+								Straight answers.
+							</span>
+						</h2>
+					</div>
+					<p className="max-w-sm text-sm leading-7 text-[#52675b]">
+						What you can do here, what the checks mean, and where to go next.
 					</p>
 				</div>
-
-				<div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-					<div className="lg:col-span-5 lg:sticky lg:top-24">
-						<div className="rounded-2xl  bg-white p-6 space-y-6 shadow-2xs">
-							<div className="relative rounded-xl overflow-hidden bg-emerald-50/50 p-4 border-[1.5px] border-emerald-950/15 flex items-center justify-center">
-								<img
-									src={faqIllustration}
-									alt="Student asking scholarship questions"
-									className="w-full max-h-96 object-contain"
-									loading="lazy"
-								/>
-							</div>
-
-							<div>
-								<h3 className="ud-display text-lg font-bold text-emerald-950">
-									Need direct assistance?
-								</h3>
-								<p className="text-sm text-emerald-950/70 mt-1 leading-relaxed font-medium">
-									Our team tracks official portal helplines, application
-									windows, and dispute escalation guidelines.
-								</p>
-							</div>
-
-							<Link
-								to="/support"
-								className={`w-full py-3 px-5 rounded-full bg-emerald-800 hover:bg-emerald-900 active:translate-y-px text-white text-sm font-bold flex items-center justify-center gap-2 transition ${focusRing}`}
-							>
-								<MessageSquare size={16} />
-								<span>Visit Help &amp; Support Center</span>
-								<ArrowRight size={14} />
-							</Link>
+				<div className="grid items-start gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-14">
+					<aside className="order-2 rounded-3xl border border-[#193f32]/10 bg-[#edf1e5] p-6 lg:order-1 lg:sticky lg:top-28">
+						<img
+							src={faqIllustration}
+							alt=""
+							loading="lazy"
+							className="mx-auto mb-5 hidden h-48 w-full object-contain mix-blend-multiply lg:block"
+						/>
+						<h3 className="font-display text-2xl font-semibold">
+							One step at a time.
+						</h3>
+						<p className="mt-3 text-sm leading-7 text-[#52675b]">
+							Start with the application guide if you’re figuring out the
+							process. For a specific scheme, its official notice is the place
+							to confirm the details.
+						</p>
+						<Link
+							to="/how-to-apply"
+							className={`mt-5 flex min-h-12 items-center justify-between gap-3 rounded-full bg-[#193f32] px-5 text-sm font-semibold text-[#fffdf5] hover:bg-[#2b5d47] ${FOCUS}`}
+						>
+							<span className="flex items-center gap-2">
+								<BookOpen size={16} aria-hidden="true" /> How to apply
+							</span>
+							<ArrowUpRight size={17} aria-hidden="true" />
+						</Link>
+						<Link
+							to="/support"
+							className={`mt-2 flex min-h-11 items-center justify-between px-3 text-sm font-medium hover:underline hover:underline-offset-4 ${FOCUS}`}
+						>
+							More help & answers <ArrowUpRight size={16} aria-hidden="true" />
+						</Link>
+					</aside>
+					<div className="order-1 min-w-0 lg:order-2">
+						<div
+							aria-label="Filter questions by topic"
+							role="group"
+							className="mb-5 flex flex-wrap gap-2"
+						>
+							{TOPICS.map((label) => (
+								<button
+									key={label}
+									type="button"
+									aria-pressed={topic === label}
+									onClick={() => {
+										setTopic(label);
+										setOpenId(null);
+									}}
+									className={`min-h-11 cursor-pointer rounded-full border px-4 text-xs font-semibold transition-colors ${FOCUS} ${topic === label ? "border-[#193f32] bg-[#193f32] text-white" : "border-[#193f32]/15 bg-transparent text-[#52675b] hover:bg-[#edf1e5]"}`}
+								>
+									{label}
+								</button>
+							))}
 						</div>
-					</div>
 
-					<div className="lg:col-span-7 space-y-3.5">
-						{faqs.map((faq, index) => (
-							<FaqItem
-								key={index}
-								question={faq.question}
-								answer={faq.answer}
-								isOpen={openIndex === index}
-								onClick={() => toggle(index)}
-							/>
-						))}
+						<div className="space-y-3">
+							{visible.map((item) => {
+								const id = `${baseId}-${item.id}`;
+								const isOpen = openId === item.id;
+								return (
+									<div
+										key={item.id}
+										className={`rounded-2xl border transition-colors ${isOpen ? "border-[#b3c5a8] bg-white" : "border-[#193f32]/10 bg-[#fffdf6] hover:border-[#b3c5a8]"}`}
+									>
+										<h3>
+											<button
+												id={`${id}-button`}
+												type="button"
+												aria-expanded={isOpen}
+												aria-controls={`${id}-panel`}
+												onClick={() => setOpenId(isOpen ? null : item.id)}
+												className={`flex min-h-16 w-full cursor-pointer items-center justify-between gap-4 rounded-2xl p-5 text-left sm:px-6 ${FOCUS}`}
+											>
+												<span className="font-sans text-[15px] font-semibold leading-6 sm:text-base">
+													{item.question}
+												</span>
+												<span
+													className={`flex size-8 shrink-0 items-center justify-center rounded-full transition-transform motion-reduce:transition-none ${isOpen ? "rotate-45 bg-[#f4db76]" : "bg-[#edf1e5]"}`}
+													aria-hidden="true"
+												>
+													<Plus size={16} />
+												</span>
+											</button>
+										</h3>
+										<div
+											id={`${id}-panel`}
+											role="region"
+											aria-labelledby={`${id}-button`}
+											hidden={!isOpen}
+											className="px-5 pb-5 sm:px-6"
+										>
+											<p className="max-w-prose text-sm leading-7 text-[#52675b]">
+												{item.answer}
+											</p>
+											<Link
+												to={item.path}
+												className={`mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline decoration-[#b3c5a8] underline-offset-4 hover:decoration-[#193f32] ${FOCUS}`}
+											>
+												{item.linkLabel}
+												<ArrowUpRight size={15} aria-hidden="true" />
+											</Link>
+										</div>
+									</div>
+								);
+							})}
+						</div>
 					</div>
 				</div>
 			</div>
 		</section>
 	);
 }
-
-export default FAQ;

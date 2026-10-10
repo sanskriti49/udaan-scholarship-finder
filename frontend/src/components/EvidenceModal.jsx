@@ -564,7 +564,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 									className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-emerald-950 underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 self-start sm:self-auto"
 								>
 									<FolderCheck size={14} className="text-emerald-800" />
-									<span>Open Document Vault</span>
+									<span>Open document checklist</span>
 									<ArrowUpRight size={12} />
 								</Link>
 							</div>

@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
       const storedUser = localStorage.getItem("user");
-      return storedUser ? JSON.parse(storedUser) : null;
+      return storedUser && localStorage.getItem("token") ? JSON.parse(storedUser) : null;
     } catch {
       return null;
     }
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const syncUser = () => {
       const storedUser = localStorage.getItem("user");
-      if (storedUser) {
+      if (storedUser && localStorage.getItem("token")) {
         try {
           setUser(JSON.parse(storedUser));
         } catch {
@@ -30,7 +30,14 @@ export const AuthProvider = ({ children }) => {
     };
 
     window.addEventListener("auth-changed", syncUser);
-    return () => window.removeEventListener("auth-changed", syncUser);
+    const syncStorage = (event) => {
+      if (event.key === "user" || event.key === "token" || event.key === null) syncUser();
+    };
+    window.addEventListener("storage", syncStorage);
+    return () => {
+      window.removeEventListener("auth-changed", syncUser);
+      window.removeEventListener("storage", syncStorage);
+    };
   }, []);
 
   const login = async (credentials) => {

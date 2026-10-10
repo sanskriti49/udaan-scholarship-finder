@@ -3,13 +3,15 @@
  * and post-authentication intent fulfillment.
  */
 
+import { safeReturnPath } from "./authNavigation.js";
+
 const PENDING_BOOKMARK_KEY = "udaan_pending_bookmark";
 const BOOKMARKS_CHANGED_EVENT = "udaan_bookmarks_changed";
 
 export function getPendingBookmark() {
 	try {
 		return sessionStorage.getItem(PENDING_BOOKMARK_KEY) || null;
-	} catch (_) {
+	} catch {
 		return null;
 	}
 }
@@ -19,13 +21,13 @@ export function setPendingBookmark(scholarshipId) {
 		if (scholarshipId) {
 			sessionStorage.setItem(PENDING_BOOKMARK_KEY, String(scholarshipId));
 		}
-	} catch (_) {}
+	} catch { /* Browser storage or custom events may be unavailable. */ }
 }
 
 export function clearPendingBookmark() {
 	try {
 		sessionStorage.removeItem(PENDING_BOOKMARK_KEY);
-	} catch (_) {}
+	} catch { /* Browser storage or custom events may be unavailable. */ }
 }
 
 /**
@@ -40,7 +42,7 @@ export function emitBookmarkChanged(scholarshipId, isBookmarked) {
 			},
 		});
 		window.dispatchEvent(event);
-	} catch (_) {}
+	} catch { /* Browser storage or custom events may be unavailable. */ }
 }
 
 /**
@@ -63,7 +65,7 @@ export function onBookmarkChanged(callback) {
 export async function fulfillPendingBookmarkAndRedirect(navigate, toggleBookmarkFn, toastFn) {
 	const params = new URLSearchParams(window.location.search);
 	const rawRedirect = params.get("redirect");
-	const redirectUrl = rawRedirect ? decodeURIComponent(rawRedirect) : "/";
+	const redirectUrl = safeReturnPath(rawRedirect);
 
 	const pendingId = getPendingBookmark();
 	if (pendingId) {

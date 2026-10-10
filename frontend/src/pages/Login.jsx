@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { authDestination } from "../utils/authNavigation";
+import AuthReturnNote from "../components/AuthReturnNote";
 import Logo from "../components/Logo";
 import loginIllustration from "../assets/images/login.webp";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { Turnstile } from "react-turnstile";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { ArrowRight, Eye, EyeOff, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { toggleBookmark } from "../services/scholarshipService";
@@ -50,6 +52,9 @@ function GoogleButton({ onClick, loading }) {
 }
 
 export default function Login() {
+  return <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "mock-client-id.apps.googleusercontent.com"}><LoginContent /></GoogleOAuthProvider>;
+}
+function LoginContent() {
 	const containerRef = useRef(null);
 	const [form, setForm] = useState({ email: "", password: "" });
 	const [showPassword, setShowPassword] = useState(false);
@@ -59,6 +64,7 @@ export default function Login() {
 
 	const { login, loginWithGoogle } = useAuth();
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
 
 	useEffect(() => {
 		window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -175,9 +181,9 @@ export default function Login() {
 						Welcome back
 					</h1>
 					<p className="text-xs sm:text-sm text-emerald-950/90 mb-4 sm:mb-5 leading-relaxed">
-						Sign in to access your saved scholarships, eligibility results, and
-						tracked deadlines.
+						Sign in to keep your scholarship shortlist and manage your alerts.
 					</p>
+					<AuthReturnNote />
 
 					<form onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5">
 						<div className="space-y-1">
@@ -200,10 +206,10 @@ export default function Login() {
 									Password
 								</label>
 								<Link
-									to="/forgot-password"
+									to="/support"
 									className="text-[13.5px] text-emerald-700 font-semibold hover:text-emerald-800 hover:underline"
 								>
-									Forgot password?
+									Need sign-in help?
 								</Link>
 							</div>
 							<div className="relative">
@@ -270,7 +276,7 @@ export default function Login() {
 					<p className="text-center text-xs text-forest-900/60 mt-3.5 sm:mt-4">
 						Don't have an account?{" "}
 						<Link
-							to="/signup"
+							to={authDestination("/signup", searchParams.get("redirect"))}
 							className="text-emerald-700 font-semibold hover:text-emerald-800 hover:underline"
 						>
 							Create one free
@@ -317,7 +323,7 @@ export default function Login() {
 
 				<div className="relative flex items-center justify-center gap-2 text-mint-100/50 text-xs">
 					<Sparkles size={13} />
-					<span>Trusted by students across 2,400+ profiles</span>
+					<span>Your shortlist, ready when you are.</span>
 				</div>
 			</div>
 		</div>

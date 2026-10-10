@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
 	ArrowUpRight,
@@ -14,7 +14,6 @@ import {
 	Phone,
 	Plus,
 	Search,
-	Send,
 	ShieldCheck,
 	ThumbsDown,
 	ThumbsUp,
@@ -81,7 +80,7 @@ const QUICK_HELP = [
 	{
 		icon: MessageCircle,
 		title: "Talk to the team",
-		desc: "Still stuck? Write to us and you'll hear back within 24 business hours.",
+		desc: "Still stuck? Prepare a message with the details you need help with.",
 		cta: "Write a message",
 		tab: "message",
 		topic: "Scholarship issue",
@@ -94,8 +93,8 @@ const TAB_INFO = {
 		icon: MessageCircle,
 		short: "Message",
 		long: "Message",
-		title: "Write to the support team",
-		desc: "Tell us what's going on. Include the scheme name if there is one.",
+		title: "Prepare a support message",
+		desc: "Include the scheme name and the details you need help with.",
 	},
 	report: {
 		icon: Flag,
@@ -269,8 +268,8 @@ function SubmitButton({ busy, children }) {
 			disabled={busy}
 			className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-emerald-800 px-6 py-3 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px disabled:cursor-wait disabled:opacity-70"
 		>
-			{busy ? <span className="ud-spin" /> : <Send size={15} />}
-			{busy ? "Sending" : children}
+			{busy ? <span className="ud-spin" /> : <Copy size={15} />}
+			{busy ? "Copying" : children}
 		</button>
 	);
 }
@@ -323,12 +322,15 @@ function TopicSlip({ t, onPick }) {
 }
 
 function FaqRow({ item, query, isOpen, onToggle, vote, onVote, onAsk }) {
+	const id = useId();
 	return (
 		<div className={`transition-colors ${isOpen ? "bg-emerald-50/70" : ""}`}>
 			<button
 				type="button"
+				id={`${id}-button`}
 				onClick={onToggle}
 				aria-expanded={isOpen}
+				aria-controls={`${id}-panel`}
 				className="flex w-full cursor-pointer items-start gap-4 px-5 py-4 text-left hover:bg-emerald-50/70 sm:px-6"
 			>
 				<span className="flex-1 text-[15px] font-semibold leading-snug text-emerald-950 sm:text-base">
@@ -343,13 +345,18 @@ function FaqRow({ item, query, isOpen, onToggle, vote, onVote, onAsk }) {
 				</span>
 			</button>
 			<div
-				className={`grid transition-[grid-template-rows] duration-300 ease-out ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+				id={`${id}-panel`}
+				role="region"
+				aria-labelledby={`${id}-button`}
+				hidden={!isOpen}
+				className={isOpen ? "grid" : "hidden"}
 			>
 				<div className="overflow-hidden">
 					<div className="px-5 pb-5 sm:px-6">
 						<p className="max-w-prose text-sm leading-relaxed text-emerald-950/80 sm:text-[15px]">
 							<Highlight text={item.answer} query={query} />
 						</p>
+						<Link to={item.path} className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-emerald-950 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-800">{item.linkLabel}<ArrowUpRight size={15} aria-hidden="true" /></Link>
 						<div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
 							{!vote && (
 								<>
@@ -385,7 +392,7 @@ function FaqRow({ item, query, isOpen, onToggle, vote, onVote, onAsk }) {
 										onClick={onAsk}
 										className="cursor-pointer rounded-full bg-emerald-800 px-4 py-1.5 text-white hover:bg-emerald-900"
 									>
-										Ask the team about this
+										Prepare a question about this
 									</button>
 								</span>
 							)}
@@ -512,24 +519,13 @@ function Support() {
 		e.preventDefault();
 		setBusy(true);
 		try {
-			await new Promise((r) => setTimeout(r, 700));
-			if (kind === "message") {
-				toast.success("Message sent. We'll reply within 24 business hours.");
-				setSent({ kind, email: contact.email });
-				setContact(BLANK.contact);
-				setEmailTouched(false);
-			} else if (kind === "report") {
-				toast.success("Thank you for helping keep Udaan accurate.");
-				setSent({ kind });
-				setReport(BLANK.report);
-			} else {
-				toast.success("Suggestion sent for verification.");
-				setSent({ kind });
-				setSuggest(BLANK.suggest);
-			}
-		} finally {
-			setBusy(false);
-		}
+			const fields = kind === "message" ? contact : kind === "report" ? report : suggest;
+			const draft = Object.entries(fields).map(([key, value]) => `${key}: ${value}`).join("\n");
+			await navigator.clipboard.writeText(`Udaan ${kind} draft\n\n${draft}`);
+			toast.success("Draft copied. It has not been sent.");
+		} catch {
+			toast.error("Couldn't copy the draft. Your entries are still here.");
+		} finally { setBusy(false); }
 	};
 
 	const info = TAB_INFO[tab];
@@ -684,7 +680,7 @@ function Support() {
 						<div className="flex items-center justify-between gap-3 px-1.5 pb-1 pt-3 text-sm">
 							<span className="font-bold">Udaan support desk</span>
 							<span className="text-emerald-950/60">
-								Replies in 24 business hours
+								Message drafts
 							</span>
 						</div>
 					</div>
@@ -767,6 +763,7 @@ function Support() {
 							key={`${tab}-${sent ? "sent" : "form"}`}
 							className="ud-fade-in p-6 sm:p-8"
 						>
+							<p className="mb-5 rounded-md border border-emerald-950/20 bg-yellow-100 px-4 py-3 text-xs leading-relaxed">Sending messages, reports and suggestions is not connected yet. You can prepare and copy a draft here; your entries stay on this page.</p>
 							{sent ? (
 								<div className="flex flex-col items-start gap-5 py-6">
 									<div className="ud-pop-in flex h-16 w-16 items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-emerald-100">
@@ -882,9 +879,9 @@ function Support() {
 											</Field>
 
 											<div className="flex flex-wrap items-center gap-4">
-												<SubmitButton busy={busy}>Send message</SubmitButton>
+												<SubmitButton busy={busy}>Copy message draft</SubmitButton>
 												<span className="text-sm text-emerald-950/60">
-													Reply within 24 business hours
+													Copies a draft; does not send
 												</span>
 											</div>
 										</form>
@@ -922,7 +919,7 @@ function Support() {
 													className={`${inputCls} resize-none`}
 												/>
 											</Field>
-											<SubmitButton busy={busy}>Send correction</SubmitButton>
+											<SubmitButton busy={busy}>Copy report draft</SubmitButton>
 										</form>
 									)}
 
@@ -977,7 +974,7 @@ function Support() {
 													className={`${inputCls} resize-none`}
 												/>
 											</Field>
-											<SubmitButton busy={busy}>Suggest scheme</SubmitButton>
+											<SubmitButton busy={busy}>Copy suggestion draft</SubmitButton>
 										</form>
 									)}
 								</>
@@ -1152,7 +1149,7 @@ function Support() {
 								</h3>
 								<p className="max-w-md text-[15px] leading-relaxed text-emerald-950/75">
 									Try one word, like “income” instead of “income certificate”,
-									or send us the question and we'll answer it.
+									or prepare a question using the contact draft above.
 								</p>
 								<div className="flex flex-wrap gap-3">
 									<button

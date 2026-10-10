@@ -216,118 +216,19 @@ test("caste extraction detects OBC, Central DoPT OM 36012/22/93 clause, subcaste
   assert.equal(f.authority.value, "tehsildar");
 });
 
-test("real scholarship evaluation verifies statutory income ceiling and April 1 FY boundary", () => {
-  const scheme = {
-    id: "nsp-post-matric",
-    title: "Post Matric Scholarship for OBC Students",
-    state: "All India",
-    sourceType: "Government",
-    currentCycle: { academicYear: "2024-25" },
-    eligibility: {
-      familyIncome: { max: 250000 },
-      casteCategories: ["OBC"],
-    },
-    requiredDocuments: ["Income Certificate", "Caste Certificate"],
-  };
-
-  const validIncome = emptyFields("income");
-  validIncome.annualIncome = editField(validIncome.annualIncome, "180000");
-  validIncome.issueDate = editField(validIncome.issueDate, "2024-06-15");
-
-  const r1 = evaluate("income", validIncome, scheme);
-  assert.equal(r1.schemeVerified, true);
-  const ceilingCheck = r1.results.find((x) => x.id.includes("income-ceiling"));
-  assert.equal(ceilingCheck.state, "Looks good");
-  const fyCheck = r1.results.find((x) => x.id.includes("cycle-fy"));
-  assert.equal(fyCheck.state, "Looks good");
-
-  // Income exceeds ceiling
-  const highIncome = emptyFields("income");
-  highIncome.annualIncome = editField(highIncome.annualIncome, "300000");
-  highIncome.issueDate = editField(highIncome.issueDate, "2024-06-15");
-  const r2 = evaluate("income", highIncome, scheme);
-  assert.equal(
-    r2.results.find((x) => x.id.includes("income-ceiling")).state,
-    "Needs attention",
-  );
-
-  // Outdated issue date (issued prior to April 1 of cycle start year)
-  const outdatedIncome = emptyFields("income");
-  outdatedIncome.annualIncome = editField(outdatedIncome.annualIncome, "150000");
-  outdatedIncome.issueDate = editField(outdatedIncome.issueDate, "2024-02-10");
-  const r3 = evaluate("income", outdatedIncome, scheme);
-  assert.equal(
-    r3.results.find((x) => x.id.includes("cycle-fy")).state,
-    "Needs attention",
-  );
+test("catalogue metadata cannot manufacture certificate compliance", () => {
+ const scheme = {id:'synthetic',currentCycle:{academicYear:'2025-26'},state:'All India',sourceType:'Government',eligibility:{familyIncome:{max:250000},casteCategories:['OBC']},requiredDocuments:['Income Certificate']};
+ const f=emptyFields('income');f.annualIncome=editField(f.annualIncome,'180000');f.issueDate=editField(f.issueDate,'2024-02-10');
+ const result=evaluate('income',f,scheme);
+ assert.equal(result.schemeVerified,false);
+ assert.ok(!result.results.some(item=>item.state==='Looks good'));
+ assert.ok(!result.results.some(item=>/April 1|cut-off|reject/i.test(item.interpretation)));
+ const caste=emptyFields('caste');caste.casteCategory=editField(caste.casteCategory,'OBC');
+ assert.ok(!evaluate('caste',caste,scheme).results.some(item=>/require Non-Creamy|rejected/i.test(item.interpretation)));
+ f.authority=editField(f.authority,'notary public');
+ assert.equal(evaluate('income',f,scheme).results.find(item=>item.field==='authority').state,'Not verified');
 });
-
-test("caste evaluation verifies Central OBC-NCL and category matching on Central schemes", () => {
-  const centralScheme = {
-    id: "central-sector-scheme",
-    title: "Central Sector Scheme of Scholarships for College and University Students",
-    state: "All India",
-    sourceType: "Government",
-    eligibility: { casteCategories: ["OBC", "SC", "ST"] },
-    requiredDocuments: ["Caste Certificate"],
-  };
-
-  const centralOBC = emptyFields("caste");
-  centralOBC.casteCategory = editField(centralOBC.casteCategory, "OBC");
-  centralOBC.nonCreamyLayer = editField(
-    centralOBC.nonCreamyLayer,
-    "Central DoPT OM 36012/22/93 compliant (Non-Creamy Layer)",
-  );
-  const r1 = evaluate("caste", centralOBC, centralScheme);
-  assert.equal(r1.schemeVerified, true);
-  assert.equal(
-    r1.results.find((x) => x.id.includes("caste-category")).state,
-    "Looks good",
-  );
-  assert.equal(
-    r1.results.find((x) => x.id.includes("central-ncl")).state,
-    "Looks good",
-  );
-
-  // State OBC certificate without Central NCL clause flagged as Needs attention
-  const stateOBC = emptyFields("caste");
-  stateOBC.casteCategory = editField(stateOBC.casteCategory, "OBC");
-  const r2 = evaluate("caste", stateOBC, centralScheme);
-  assert.equal(
-    r2.results.find((x) => x.id.includes("central-ncl")).state,
-    "Needs attention",
-  );
+test('explicit labelled course wording has evidence and can support a degree prefill',()=>{
+ const fields=extract('bonafide',page('BONAFIDE CERTIFICATE\nCourse: B.Tech in Computer Science\nSemester: 3'));
+ assert.equal(fields.course.value,'B.Tech in Computer Science');assert.equal(fields.course.evidence[0].page,2);
 });
-
-test("bonafide session matching and notary authority warnings", () => {
-  const scheme = {
-    id: "merit-scheme",
-    title: "Merit Scholarship",
-    currentCycle: { academicYear: "2025-26" },
-  };
-
-  const bonafide = emptyFields("bonafide");
-  bonafide.period = editField(bonafide.period, "2025-2026");
-  const r1 = evaluate("bonafide", bonafide, scheme);
-  assert.equal(
-    r1.results.find((x) => x.id.includes("bonafide-session")).state,
-    "Looks good",
-  );
-
-  bonafide.period = editField(bonafide.period, "2024-2025");
-  const r2 = evaluate("bonafide", bonafide, scheme);
-  assert.equal(
-    r2.results.find((x) => x.id.includes("bonafide-session")).state,
-    "Needs attention",
-  );
-
-  // Notary authority is flagged across certificates
-  const notarized = emptyFields("income");
-  notarized.authority = editField(notarized.authority, "notary public");
-  const r3 = evaluate("income", notarized, null);
-  assert.equal(
-    r3.results.find((x) => x.field === "authority").state,
-    "Needs attention",
-  );
-});
-

@@ -101,7 +101,7 @@ export default function AuthPromptModal({
 							and access it anytime.
 						</>
 					) : (
-						"Save verified opportunities, track application deadlines, and receive automated countdown alerts before portals close."
+						"Keep your scholarship shortlist in your account and choose deadline reminders in Alert preferences."
 					)}
 				</p>
 
@@ -109,15 +109,15 @@ export default function AuthPromptModal({
 				<div className="mt-4 space-y-2 rounded-2xl border-[1.5px] border-emerald-950/15 bg-white p-3.5 text-xs font-medium text-emerald-950/80">
 					<div className="flex items-center gap-2">
 						<Clock size={14} className="text-emerald-800 shrink-0" />
-						<span>Automatic 7-day & 48-hour deadline countdown reminders</span>
+						<span>Choose your deadline reminders in Alert preferences</span>
 					</div>
 					<div className="flex items-center gap-2">
 						<Sparkles size={14} className="text-amber-700 shrink-0" />
-						<span>Curated Saved Scholarships dashboard with live portal links</span>
+						<span>A saved shelf with application statuses and portal links</span>
 					</div>
 					<div className="flex items-center gap-2">
 						<BookmarkCheck size={14} className="text-teal-700 shrink-0" />
-						<span>Seamless synchronization across all your devices</span>
+						<span>Access your shortlist when you sign in again</span>
 					</div>
 				</div>
 

@@ -32,7 +32,7 @@ async function open(page) {
       },
     }),
   );
-  await page.goto("/scanner.html");
+  await page.goto("/scanner");
 }
 function pdf(text, pages = 1) {
   const objects = [
@@ -80,7 +80,7 @@ test("manual review, edit, evidence and reset at mobile width", async ({
     .getByLabel("Annual family income (INR)", { exact: true })
     .fill("250000");
   await page.getByLabel("Issue date", { exact: true }).fill("2030-01-01");
-  await page.getByRole("button", { name: "Validate reviewed details" }).click();
+  await page.getByRole("button", { name: "Review next steps" }).click();
   await expect(
     page.getByText("Scholarship-specific compliance: Not verified"),
   ).toBeVisible();
@@ -107,11 +107,12 @@ test("manual review, edit, evidence and reset at mobile width", async ({
   await page
     .getByLabel("Institution name", { exact: true })
     .fill("Synthetic College");
-  await page.getByRole("button", { name: "Validate reviewed details" }).click();
+  await page.getByRole("button", { name: "Review next steps" }).click();
+  await page.locator(".scanner-recorded > summary").click();
   await expect(
     page.getByText(
-      "Optional; not detected. No universal AISHE requirement applies.",
-    ),
+      "Optional detail not recorded. Check the original and the scheme’s requirements.",
+    ).first(),
   ).toBeVisible();
 });
 test("searchable PDF uses native text; corrections retain evidence; privacy", async ({
@@ -148,7 +149,7 @@ test("searchable PDF uses native text; corrections retain evidence; privacy", as
     .locator("summary")
     .click();
   await expect(
-    page.getByText("“Annual family income: Rs. 2,50,000/-”"),
+    page.getByText("Annual family income: Rs. 2,50,000/-", {exact:true}),
   ).toBeVisible();
   expect(requests.every((r) => r.method === "GET" && !r.body)).toBeTruthy();
   expect(

@@ -37,15 +37,7 @@ export async function loadScholarships(signal, selectedId) {
       id: s._id,
       title: s.title,
       url: safeSource(s.officialLinks?.guidelinesUrl || s.sourceUrl),
-      state: s.state || "All India",
-      sourceType: s.sourceType || "Government",
-      category: s.category || null,
-      level: s.level || null,
-      eligibility: s.eligibility || {},
-      currentCycle: s.currentCycle || null,
-      requiredDocuments: Array.isArray(s.requiredDocuments)
-        ? s.requiredDocuments
-        : [],
+
     }))
     .filter((s) => s.id && s.title);
 }

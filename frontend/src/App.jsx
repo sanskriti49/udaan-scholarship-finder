@@ -11,6 +11,7 @@ import Mainlayout from "./layouts/Mainlayout";
 import HomePage from "./pages/HomePage";
 import FullScreenLoader from "./components/FullScreenLoader";
 import { useAuth } from "./hooks/useAuth";
+import { safeReturnPath } from "./utils/authNavigation";
 
 // Route-level code splitting: secondary routes and heavy libraries (gsap, oauth, turnstile)
 // are loaded on-demand, keeping the initial home page bundle ultra-compact.
@@ -40,7 +41,7 @@ function RequireAuth({ children }) {
 	const { user } = useAuth();
 	const location = useLocation();
 	if (user) return children;
-	const back = encodeURIComponent(location.pathname + location.search);
+	const back = encodeURIComponent(location.pathname + location.search + location.hash);
 	return <Navigate to={`/login?redirect=${back}`} replace />;
 }
 
@@ -50,7 +51,12 @@ function GuestOnly({ children }) {
 	const location = useLocation();
 	if (!user) return children;
 	const to = new URLSearchParams(location.search).get("redirect");
-	return <Navigate to={to && to.startsWith("/") ? to : "/"} replace />;
+	return <Navigate to={safeReturnPath(to)} replace />;
+}
+
+function LegacyScannerRedirect() {
+ const location = useLocation();
+ return <Navigate to={`/scanner${location.search}${location.hash}`} replace />;
 }
 
 const withAuth = (Component) => <RequireAuth>{withSuspense(Component)}</RequireAuth>;
@@ -61,14 +67,14 @@ const router = createBrowserRouter([
 		children: [
 			{ path: "/", element: <HomePage /> },
 			{ path: "support", element: withSuspense(Support) },
-			{ path: "eligibility", element: withAuth(EligibilityPage) },
+			{ path: "eligibility", element: withSuspense(EligibilityPage) },
 			{ path: "scholarships", element: withSuspense(Scholarships) },
 			{ path: "scanner", element: withSuspense(Scanner) },
-			{ path: "scanner.html", element: <Navigate to="/scanner" replace /> },
+			{ path: "scanner.html", element: <LegacyScannerRedirect /> },
 			{ path: "trust-shield", element: withSuspense(TrustShield) },
 			{ path: "verify", element: withSuspense(TrustShield) },
-			{ path: "documents", element: withAuth(DocumentVault) },
-			{ path: "document-vault", element: withAuth(DocumentVault) },
+			{ path: "documents", element: withSuspense(DocumentVault) },
+			{ path: "document-vault", element: withSuspense(DocumentVault) },
 			{ path: "saved", element: withAuth(SavedScholarships) },
 			{ path: "bookmarks", element: withAuth(SavedScholarships) },
 			{ path: "resources", element: withSuspense(Resources) },

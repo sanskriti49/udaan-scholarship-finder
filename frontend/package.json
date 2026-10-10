@@ -7,7 +7,7 @@
     "scanner:assets": "node scripts/scanner-assets.mjs",
     "predev": "npm run scanner:assets",
     "prebuild": "npm run scanner:assets",
-    "test:scanner": "node --test test/scanner.test.mjs",
+    "test:scanner": "node --test test/scanner.test.mjs test/scanner-handoff.test.mjs",
     "test:scanner:ui": "playwright test",
     "dev": "vite",
     "build": "vite build",

@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import Logo from "../components/Logo";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { authDestination } from "../utils/authNavigation";
+import AuthReturnNote from "../components/AuthReturnNote";
 import signupIllustration from "../assets/images/signup.webp";
 import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import { Turnstile } from "react-turnstile";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 import { ArrowRight, Eye, EyeOff, Check, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { toggleBookmark } from "../services/scholarshipService";
@@ -50,6 +52,9 @@ function GoogleButton({ onClick, loading }) {
 }
 
 export default function SignUp() {
+  return <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "mock-client-id.apps.googleusercontent.com"}><SignUpContent /></GoogleOAuthProvider>;
+}
+function SignUpContent() {
 	const containerRef = useRef(null);
 	const [form, setForm] = useState({
 		name: "",
@@ -64,6 +69,7 @@ export default function SignUp() {
 
 	const { signup, loginWithGoogle } = useAuth();
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
 
 	useEffect(() => {
 		window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -213,11 +219,11 @@ export default function SignUp() {
 
 					<div className="mt-4 text-center space-y-1">
 						<h2 className="font-georgia text-2xl xl:text-[1.75rem] leading-snug text-white">
-							Join over 2,400 students already ahead.
+							Keep your next opportunity close.
 						</h2>
 						<p className="text-xs xl:text-sm text-mint-100/70 leading-relaxed max-w-xs mx-auto">
-							Build your profile once. Udaan checks it against 37+ central,
-							state, and corporate schemes automatically.
+							Save your shortlist, track your applications, and choose the
+							reminders you want to receive.
 						</p>
 					</div>
 				</div>
@@ -241,6 +247,7 @@ export default function SignUp() {
 						Free forever for students: no subscription fees, no hidden costs.
 					</p>
 
+					<AuthReturnNote />
 					<form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-3">
 						<div className="space-y-0.5">
 							<label className="text-xs font-semibold text-emerald-900/95">
@@ -388,7 +395,7 @@ export default function SignUp() {
 					<p className="text-center text-xs text-forest-900/60 mt-2.5 sm:mt-3">
 						Already have an account?{" "}
 						<Link
-							to="/login"
+							to={authDestination("/login", searchParams.get("redirect"))}
 							className="text-emerald-700 font-semibold hover:text-emerald-800 hover:underline"
 						>
 							Log in

@@ -17,6 +17,7 @@ export const schemas = {
       documentLabel: "Enrollment / document wording",
       institution: "Institution name",
       period: "Academic year / session",
+      course: "Course / degree (if stated)",
       study: "Semester / year of study",
       issueDate: "Issue date",
       aishe: "AISHE code (optional)",
@@ -196,6 +197,8 @@ export function extract(type, pages) {
           add("institution", line, line, page);
         if (/academic (?:year|session)|session/i.test(line))
           add("period", parsePeriod(line), line, page);
+        const course = line.match(/^(?:course|programme|program|degree)\s*[:-]\s*(.{2,100})$/i);
+        if (course) add("course", course[1], line, page);
         const study = line.match(
           /\b(?:semester|year of study)\s*[:-]?\s*(?:[1-8]|[IVX]{1,5})\b|\b(?:[1-8](?:st|nd|rd|th)?|first|second|third|fourth)\s+(?:semester|year)\b/gi,
         );
@@ -229,7 +232,7 @@ export function extract(type, pages) {
           add("subCaste", matchedCaste.trim(), line, page);
 
         if (/36012\/22\/93/i.test(line))
-          add("nonCreamyLayer", "Central DoPT OM 36012/22/93 compliant (Non-Creamy Layer)", line, page);
+          add("nonCreamyLayer", "DoPT OM 36012/22/93 reference detected; review NCL wording", line, page);
         else if (/(?:does not belong to the persons\/sections|non[- ]creamy layer|creamy layer column 3)/i.test(line))
           add("nonCreamyLayer", "Non-Creamy Layer clause present", line, page);
         else if (/belongs to (?:the )?creamy layer/i.test(line) && !/does not/i.test(line))

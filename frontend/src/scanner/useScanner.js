@@ -17,13 +17,22 @@ export function useScanner(type) {
     setStatus("");
     setError("");
   }
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    const leave = () => {
       version.current++;
       active.current?.abort();
-    },
-    [],
-  );
+      active.current = null;
+      setFields(emptyFields(type));
+      setStage("choose");
+      setError("");
+      setStatus("");
+    };
+    window.addEventListener("pagehide", leave);
+    return () => {
+      window.removeEventListener("pagehide", leave);
+      leave();
+    };
+  }, [type]);
   async function scan(file) {
     if (active.current) return;
     const controller = new AbortController();
@@ -33,7 +42,7 @@ export function useScanner(type) {
     setError("");
     setFields(emptyFields(type));
     setStage("processing");
-    setStatus("Checking file…");
+    setStatus("Checking fileÃ¢â‚¬Â¦");
     try {
       const pages = await processDocument(file, {
         signal: controller.signal,
@@ -79,5 +88,6 @@ export function useScanner(type) {
     manual,
     edit,
     validate: () => setStage("results"),
+    review: () => setStage("review"),
   };
 }

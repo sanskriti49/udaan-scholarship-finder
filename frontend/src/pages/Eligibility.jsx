@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import {
+	clearEligibilityDraft,
+	readEligibilityDraft,
+} from "../utils/eligibilityDraft";
+import { useAuth } from "../hooks/useAuth";
 import { toast } from "sonner";
 import {
 	CheckCircle2,
@@ -13,13 +17,28 @@ import {
 	AlertCircle,
 	Pencil,
 } from "lucide-react";
-import { evaluateProfile, getUserProfile } from "../services/scholarshipService";
+import {
+	evaluateProfile,
+	getUserProfile,
+} from "../services/scholarshipService";
 import EvidenceModal from "../components/EvidenceModal";
 import { cleanOfficialUrl } from "../utils/formatEvidence";
 import { PageStyles, Stamp, Confetti } from "../components/PageKit";
-import { MotionStyles, CountUp, ProgressRing, VerifyingCard } from "../components/MotionKit";
-import { GrantAmount, DeadlineMeter, focusRing } from "../components/ScholarshipKit";
-import { CheeringStudent, ConfusedDetective } from "../components/AnimatedIllustrations";
+import {
+	MotionStyles,
+	CountUp,
+	ProgressRing,
+	VerifyingCard,
+} from "../components/MotionKit";
+import {
+	GrantAmount,
+	DeadlineMeter,
+	focusRing,
+} from "../components/ScholarshipKit";
+import {
+	CheeringStudent,
+	ConfusedDetective,
+} from "../components/AnimatedIllustrations";
 import headerImg from "../assets/images/edu.jpg";
 
 const COMMON_DOCUMENTS = [
@@ -73,10 +92,30 @@ const STATES = [
 ];
 
 const STEPS = [
-	{ id: "study", label: "Studies", title: "What are you studying?", sub: "Most schemes are tied to a course level." },
-	{ id: "you", label: "About you", title: "A little about you", sub: "Some schemes reserve seats by gender, category or state." },
-	{ id: "money", label: "Income & marks", title: "Family income and marks", sub: "The two numbers that decide most schemes. We never store them without an account." },
-	{ id: "docs", label: "Papers", title: "Which certificates do you already have?", sub: "We'll tell you exactly what's still missing for each scheme." },
+	{
+		id: "study",
+		label: "Studies",
+		title: "What are you studying?",
+		sub: "Most schemes are tied to a course level.",
+	},
+	{
+		id: "you",
+		label: "About you",
+		title: "A little about you",
+		sub: "Some schemes reserve seats by gender, category or state.",
+	},
+	{
+		id: "money",
+		label: "Income & marks",
+		title: "Family income and marks",
+		sub: "These help compare your details with the scheme criteria.",
+	},
+	{
+		id: "docs",
+		label: "Papers",
+		title: "Which certificates do you already have?",
+		sub: "We'll tell you exactly what's still missing for each scheme.",
+	},
 ];
 
 const inr = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
@@ -101,12 +140,18 @@ function Chip({ active, onClick, children }) {
 function ChipGroup({ label, options, value, onChange }) {
 	return (
 		<fieldset>
-			<legend className="mb-2.5 text-sm font-bold text-emerald-950">{label}</legend>
+			<legend className="mb-2.5 text-sm font-bold text-emerald-950">
+				{label}
+			</legend>
 			<div className="flex flex-wrap gap-2">
 				{options.map((o) => {
 					const opt = typeof o === "string" ? { value: o, label: o } : o;
 					return (
-						<Chip key={opt.value} active={value === opt.value} onClick={() => onChange(opt.value)}>
+						<Chip
+							key={opt.value}
+							active={value === opt.value}
+							onClick={() => onChange(opt.value)}
+						>
 							{opt.label}
 						</Chip>
 					);
@@ -141,7 +186,17 @@ function CheckTile({ checked, onToggle, children }) {
 }
 
 /* Slider + exact-number input for the same value. */
-function DualNumber({ id, label, value, onChange, min, max, step, display, hint }) {
+function DualNumber({
+	id,
+	label,
+	value,
+	onChange,
+	min,
+	max,
+	step,
+	display,
+	hint,
+}) {
 	const pct = Math.min(100, (Number(value) / max) * 100);
 	return (
 		<div>
@@ -149,8 +204,11 @@ function DualNumber({ id, label, value, onChange, min, max, step, display, hint 
 				<label htmlFor={id} className="text-sm font-bold">
 					{label}
 				</label>
-				<span key={value} className="ud-display sk-pop rounded-full bg-emerald-950 px-3 py-1 text-lg font-extrabold text-white">
-					{display(value)}
+				<span
+					key={value}
+					className="ud-display sk-pop rounded-full bg-emerald-950 px-3 py-1 text-lg font-extrabold text-white"
+				>
+					{value === "" ? "Not entered" : display(value)}
 				</span>
 			</div>
 			<input
@@ -162,10 +220,14 @@ function DualNumber({ id, label, value, onChange, min, max, step, display, hint 
 				value={Math.min(Number(value) || 0, max)}
 				onChange={(e) => onChange(e.target.value)}
 				className="hs-range mt-4"
-				style={{ background: `linear-gradient(to right,#95d5b2 0 ${pct}%,#fff ${pct}% 100%)` }}
+				style={{
+					background: `linear-gradient(to right,#95d5b2 0 ${pct}%,#fff ${pct}% 100%)`,
+				}}
 			/>
 			<div className="mt-3 flex items-center gap-2">
-				<span className="text-xs font-semibold text-emerald-950/55">Exact:</span>
+				<span className="text-xs font-semibold text-emerald-950/55">
+					Exact:
+				</span>
 				<input
 					type="number"
 					inputMode="decimal"
@@ -192,8 +254,16 @@ function ResultCard({ s, tone, index, onWhy }) {
 	const firstUnknown = ev.unknownRules?.[0];
 	const stamp = {
 		good: { text: "Eligible", tilt: -4, cls: "text-sm" },
-		bad: { text: "Not this time", tilt: 3, cls: "border-rose-700 bg-white/70 text-sm text-rose-700" },
-		unknown: { text: "Need info", tilt: -2, cls: "border-amber-700 bg-white/70 text-sm text-amber-800" },
+		bad: {
+			text: "Not this time",
+			tilt: 3,
+			cls: "border-rose-700 bg-white/70 text-sm text-rose-700",
+		},
+		unknown: {
+			text: "Need info",
+			tilt: -2,
+			cls: "border-amber-700 bg-white/70 text-sm text-amber-800",
+		},
 	}[tone];
 
 	return (
@@ -206,13 +276,26 @@ function ResultCard({ s, tone, index, onWhy }) {
 			<span className="ud-fold" aria-hidden />
 			<div className="min-w-0">
 				<div className="flex flex-wrap items-center gap-3">
-					<Stamp slam delay={0.1 + Math.min(index, 8) * 0.06} tilt={stamp.tilt} className={stamp.cls}>
+					<Stamp
+						slam
+						delay={0.1 + Math.min(index, 8) * 0.06}
+						tilt={stamp.tilt}
+						className={stamp.cls}
+					>
 						{stamp.text}
 					</Stamp>
-					{s.category && <span className="text-xs font-bold text-emerald-950/55">{s.category}</span>}
+					{s.category && (
+						<span className="text-xs font-bold text-emerald-950/55">
+							{s.category}
+						</span>
+					)}
 				</div>
-				<h3 className="ud-display mt-3 pr-8 text-xl font-bold leading-tight">{s.title || s.name}</h3>
-				{s.organization && <p className="mt-1 text-sm text-emerald-950/60">{s.organization}</p>}
+				<h3 className="ud-display mt-3 pr-8 text-xl font-bold leading-tight">
+					{s.title || s.name}
+				</h3>
+				{s.organization && (
+					<p className="mt-1 text-sm text-emerald-950/60">{s.organization}</p>
+				)}
 
 				<div className="mt-4 grid gap-4 sm:grid-cols-2">
 					<GrantAmount amount={s.amount} />
@@ -226,15 +309,21 @@ function ResultCard({ s, tone, index, onWhy }) {
 				)}
 				{tone === "unknown" && firstUnknown && (
 					<p className="mt-4 rounded-lg border-l-4 border-amber-400 bg-amber-50 px-3 py-2 text-sm leading-snug text-amber-900">
-						We couldn't check: {firstUnknown.description || firstUnknown.required}
+						We couldn't check:{" "}
+						{firstUnknown.description || firstUnknown.required}
 					</p>
 				)}
 				{tone === "good" && missing.length > 0 && (
 					<div className="mt-4">
-						<p className="text-xs font-bold text-emerald-950/60">Still to arrange</p>
+						<p className="text-xs font-bold text-emerald-950/60">
+							Still to arrange
+						</p>
 						<ul className="mt-1.5 flex flex-wrap gap-1.5">
 							{missing.map((d) => (
-								<li key={d.code || d.name} className="rounded-md border border-dashed border-emerald-950/30 bg-[#FAF9F6] px-2 py-0.5 text-xs font-semibold">
+								<li
+									key={d.code || d.name}
+									className="rounded-md border border-dashed border-emerald-950/30 bg-[#FAF9F6] px-2 py-0.5 text-xs font-semibold"
+								>
 									{d.name}
 								</li>
 							))}
@@ -248,7 +337,8 @@ function ResultCard({ s, tone, index, onWhy }) {
 						onClick={onWhy}
 						className={`inline-flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 px-4 text-sm font-bold hover:bg-yellow-200 ${focusRing}`}
 					>
-						<HelpCircle size={15} /> {tone === "good" ? "Why am I eligible?" : "See the rules"}
+						<HelpCircle size={15} />{" "}
+						{tone === "good" ? "Why am I eligible?" : "See the rules"}
 					</button>
 					{tone === "good" && link && (
 						<a
@@ -279,7 +369,9 @@ function ResultCard({ s, tone, index, onWhy }) {
 			)}
 			{tone === "bad" && typeof ev.matchConfidence === "number" && (
 				<p className="self-center text-sm font-semibold text-emerald-950/60 sm:text-right">
-					<span className="ud-display block text-3xl font-extrabold text-emerald-950/80">{ev.matchConfidence}%</span>
+					<span className="ud-display block text-3xl font-extrabold text-emerald-950/80">
+						{ev.matchConfidence}%
+					</span>
 					of rules met
 				</p>
 			)}
@@ -288,20 +380,33 @@ function ResultCard({ s, tone, index, onWhy }) {
 }
 
 export default function EligibilityPage() {
-	const location = useLocation();
+	const { user } = useAuth();
+	const [scannerDraft] = useState(readEligibilityDraft);
+	useEffect(() => {
+		clearEligibilityDraft();
+	}, []);
 	const [formData, setFormData] = useState({
 		fullName: "",
-		educationLevel: "UG",
-		courseStream: "Engineering",
-		familyIncome: 250000,
-		gender: "Female",
-		casteCategory: "General",
-		state: "All India",
-		cgpa: 8.0,
+		educationLevel: "",
+		courseStream: "",
+		familyIncome: "",
+		gender: "",
+		casteCategory: "",
+		state: "",
+		cgpa: "",
 		hasDisability: false,
+		...scannerDraft?.prefill,
 	});
-	const [documentsHeld, setDocumentsHeld] = useState(["MARKSHEET", "AADHAAR", "BANK_PASSBOOK"]);
-	const [syncedBanner, setSyncedBanner] = useState(null);
+	const [documentsHeld, setDocumentsHeld] = useState([]);
+	const [syncedBanner] = useState(() =>
+		scannerDraft
+			? {
+					sourceDocLabel: scannerDraft.sourceDocLabel,
+					details:
+						"Only the details you selected were carried over. Review the rest before checking eligibility.",
+				}
+			: null,
+	);
 
 	const [step, setStep] = useState(0);
 	const [dir, setDir] = useState(1);
@@ -324,7 +429,10 @@ export default function EligibilityPage() {
 	const headingRef = useRef(null);
 	const moved = useRef(false);
 
-	const handleCheckEligibility = async (customFormData = null, customDocs = null) => {
+	const handleCheckEligibility = async (
+		customFormData = null,
+		customDocs = null,
+	) => {
 		setIsSubmitting(true);
 		setResultsVisible(false);
 		try {
@@ -345,10 +453,23 @@ export default function EligibilityPage() {
 					missing: response.data.missingProfileData || [],
 					summary: response.summary || {},
 				});
-				setActiveTab(matched.length ? "eligible" : response.data.missingProfileData?.length ? "missing" : "ineligible");
+				setActiveTab(
+					matched.length
+						? "eligible"
+						: response.data.missingProfileData?.length
+							? "missing"
+							: "ineligible",
+				);
 				setResultsVisible(true);
 				if (matched.length) setBurst((b) => b + 1);
-				setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+				setTimeout(
+					() =>
+						resultsRef.current?.scrollIntoView({
+							behavior: "smooth",
+							block: "start",
+						}),
+					120,
+				);
 			} else {
 				toast.error("We couldn't run the check. Please try again.");
 			}
@@ -378,10 +499,15 @@ export default function EligibilityPage() {
 									? p.income
 									: prev.familyIncome,
 						gender: p.gender || prev.gender,
-						casteCategory: p.casteCategory || p.caste_category || prev.casteCategory,
+						casteCategory:
+							p.casteCategory || p.caste_category || prev.casteCategory,
 						state: p.state || prev.state,
 						cgpa: p.cgpa !== undefined ? p.cgpa : prev.cgpa,
-						hasDisability: p.hasDisability !== undefined ? p.hasDisability : prev.hasDisability,
+						hasDisability:
+							p.hasDisability !== undefined
+								? p.hasDisability
+								: prev.hasDisability,
+						...scannerDraft?.prefill,
 					}));
 					if (Array.isArray(p.documentsHeld) && p.documentsHeld.length > 0) {
 						setDocumentsHeld(p.documentsHeld);
@@ -389,53 +515,7 @@ export default function EligibilityPage() {
 				}
 			})
 			.catch(() => {});
-	}, []);
-
-	// Handle pre-fill from Document Health Scanner bridge
-	useEffect(() => {
-		const prefill = location.state?.prefill;
-		if (!prefill) return;
-
-		let updatedDocs = documentsHeld;
-		if (Array.isArray(prefill.documentsHeld) && prefill.documentsHeld.length > 0) {
-			updatedDocs = Array.from(new Set([...documentsHeld, ...prefill.documentsHeld]));
-			setDocumentsHeld(updatedDocs);
-		}
-
-		const updatedFormData = {
-			...formData,
-			...(prefill.familyIncome !== undefined && { familyIncome: prefill.familyIncome }),
-			...(prefill.casteCategory && { casteCategory: prefill.casteCategory }),
-			...(prefill.educationLevel && { educationLevel: prefill.educationLevel }),
-		};
-		setFormData(updatedFormData);
-
-		const detailsParts = [];
-		if (prefill.familyIncome !== undefined) detailsParts.push(`Income: ${inr(prefill.familyIncome)}`);
-		if (prefill.casteCategory) detailsParts.push(`Category: ${prefill.casteCategory}`);
-		if (prefill.educationLevel) detailsParts.push(`Level: ${prefill.educationLevel}`);
-		if (prefill.documentsHeld?.length) {
-			const docNames = prefill.documentsHeld
-				.map((c) => COMMON_DOCUMENTS.find((d) => d.code === c)?.name || c)
-				.join(", ");
-			detailsParts.push(`Verified doc added: ${docNames}`);
-		}
-
-		setSyncedBanner({
-			sourceDocLabel: location.state.sourceDocLabel || "Document Scanner",
-			details: detailsParts.join(" · "),
-		});
-
-		toast.success(
-			location.state.sourceDocLabel
-				? `Pre-filled from ${location.state.sourceDocLabel}!`
-				: "Document details synced to your eligibility profile!"
-		);
-
-		if (location.state.autoEvaluate) {
-			handleCheckEligibility(updatedFormData, updatedDocs);
-		}
-	}, [location.state]);
+	}, [scannerDraft]);
 
 	// Move focus to the new step's heading so keyboard and screen-reader users follow along.
 	useEffect(() => {
@@ -453,29 +533,84 @@ export default function EligibilityPage() {
 	};
 
 	const toggleDocument = (code) =>
-		setDocumentsHeld((prev) => (prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]));
-	const set = (field, value) => setFormData((prev) => ({ ...prev, [field]: value }));
+		setDocumentsHeld((prev) =>
+			prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code],
+		);
+	const set = (field, value) =>
+		setFormData((prev) => ({ ...prev, [field]: value }));
 
 	const last = STEPS.length - 1;
 	const onSubmit = (e) => {
 		e.preventDefault();
+		if (step === 0 && (!formData.educationLevel || !formData.courseStream)) {
+			toast.info("Choose your study level and field before continuing.");
+			return;
+		}
+		if (
+			step === 1 &&
+			(!formData.gender || !formData.casteCategory || !formData.state)
+		) {
+			toast.info(
+				"Choose your gender, category and home state before continuing.",
+			);
+			return;
+		}
+		if (
+			step === 2 &&
+			(formData.familyIncome === "" ||
+				formData.cgpa === "" ||
+				!Number.isFinite(Number(formData.familyIncome)) ||
+				Number(formData.familyIncome) < 0 ||
+				!Number.isFinite(Number(formData.cgpa)) ||
+				Number(formData.cgpa) < 0 ||
+				Number(formData.cgpa) > 10)
+		) {
+			toast.info("Enter your annual family income and CGPA (0 to 10).");
+			return;
+		}
 		if (step < last) goTo(step + 1);
 		else handleCheckEligibility();
 	};
 
-	const levelLabel = EDUCATION_LEVELS.find((l) => l.value === formData.educationLevel)?.label;
+	const levelLabel = EDUCATION_LEVELS.find(
+		(l) => l.value === formData.educationLevel,
+	)?.label;
 	const stateLabel = STATES.find((l) => l.value === formData.state)?.label;
 	const profileLines = [
-		[0, `${levelLabel || formData.educationLevel} · ${formData.courseStream}`],
-		[1, `${formData.gender} · ${formData.casteCategory} · ${stateLabel || formData.state}${formData.hasDisability ? " · PwD" : ""}`],
-		[2, `${inr(formData.familyIncome)} / yr · CGPA ${formData.cgpa}`],
+		[
+			0,
+			`${levelLabel || "Level not chosen"} · ${formData.courseStream || "Field not chosen"}`,
+		],
+		[
+			1,
+			`${formData.gender || "Gender not chosen"} · ${formData.casteCategory || "Category not chosen"} · ${stateLabel || "State not chosen"}${formData.hasDisability ? " · PwD" : ""}`,
+		],
+		[
+			2,
+			`${formData.familyIncome === "" ? "Income not entered" : `${inr(formData.familyIncome)} / yr`} · ${formData.cgpa === "" ? "CGPA not entered" : `CGPA ${formData.cgpa}`}`,
+		],
 		[3, `${documentsHeld.length} of ${COMMON_DOCUMENTS.length} certificates`],
 	];
 
 	const tabs = [
-		{ id: "eligible", label: "Eligible", list: evaluationData.matched, tone: "good" },
-		{ id: "missing", label: "Need more info", list: evaluationData.missing, tone: "unknown" },
-		{ id: "ineligible", label: "Not eligible", list: evaluationData.ineligible, tone: "bad" },
+		{
+			id: "eligible",
+			label: "Eligible",
+			list: evaluationData.matched,
+			tone: "good",
+		},
+		{
+			id: "missing",
+			label: "Need more info",
+			list: evaluationData.missing,
+			tone: "unknown",
+		},
+		{
+			id: "ineligible",
+			label: "Not eligible",
+			list: evaluationData.ineligible,
+			tone: "bad",
+		},
 	].filter((t) => t.id !== "missing" || t.list.length > 0);
 	const current = tabs.find((t) => t.id === activeTab) || tabs[0];
 	const eligibleCount = evaluationData.matched.length;
@@ -490,26 +625,45 @@ export default function EligibilityPage() {
 			<section className="mx-auto max-w-7xl px-5 pb-8 pt-10 sm:px-8 md:pt-14">
 				<div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-12">
 					<div>
-						<h1 className="font-georgia max-w-2xl text-[2.6rem] font-medium leading-[0.98] sm:text-6xl md:text-7xl">
+						<h1 className="font-bricolage-grotesque max-w-2xl text-[2.6rem] font-medium leading-[0.98] sm:text-6xl md:text-7xl">
 							Find out what you actually qualify for.
 						</h1>
 						<p className="mt-5 max-w-xl text-base leading-relaxed text-emerald-950/75 sm:text-lg">
-							Four quick steps. We compare your answers against each scheme's official rules and show
-							which clause decided every result.
+							Four quick steps. We compare your answers against each scheme's
+							official rules and show which clause decided every result.
+						</p>
+						<p className="mt-4 max-w-xl rounded-md border border-emerald-950/15 bg-white/70 px-4 py-3 text-xs leading-relaxed text-emerald-950/75">
+							No account needed. Your answers are sent to Udaan to calculate
+							results.{" "}
+							{user
+								? "Signed-in checks also update your saved eligibility profile."
+								: "Guest checks do not create an account profile."}
 						</p>
 					</div>
 					<div className="relative mx-auto hidden w-full max-w-sm lg:block">
 						<div className="overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white p-3 shadow-[4px_4px_0_0_#022c22]">
-							<img src={headerImg} alt="" className="w-full rounded-lg object-cover" />
+							<img
+								src={headerImg}
+								alt=""
+								className="w-full rounded-lg object-cover"
+							/>
 						</div>
-						<Stamp slam delay={0.5} tilt={-8} className="absolute -bottom-3 -left-5 border-emerald-700 bg-white/70 text-2xl text-emerald-700">
+						<Stamp
+							slam
+							delay={0.5}
+							tilt={-8}
+							className="absolute -bottom-3 -left-5 border-emerald-700 bg-white/70 text-2xl text-emerald-700"
+						>
 							Verified
 						</Stamp>
 					</div>
 				</div>
 			</section>
 
-			<section className="mx-auto max-w-7xl scroll-mt-24 px-5 pb-16 sm:px-8" ref={formRef}>
+			<section
+				className="mx-auto max-w-7xl scroll-mt-24 px-5 pb-16 sm:px-8"
+				ref={formRef}
+			>
 				<form
 					onSubmit={onSubmit}
 					className="grid overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white shadow-[5px_5px_0_0_#022c22] lg:grid-cols-[minmax(0,1fr)_340px]"
@@ -521,7 +675,7 @@ export default function EligibilityPage() {
 									<Sparkles size={18} className="shrink-0 text-emerald-700" />
 									<div>
 										<p className="font-bold text-emerald-900">
-											Synced from {syncedBanner.sourceDocLabel}
+											Reviewed details from {syncedBanner.sourceDocLabel}
 										</p>
 										<p className="text-xs text-emerald-950/70">
 											{syncedBanner.details}
@@ -553,9 +707,15 @@ export default function EligibilityPage() {
 													style={{ width: state === "todo" ? "0%" : "100%" }}
 												/>
 											</span>
-											<span className={`mt-2 flex items-center gap-1.5 text-xs font-bold ${state === "todo" ? "text-emerald-950/40" : "text-emerald-950"}`}>
+											<span
+												className={`mt-2 flex items-center gap-1.5 text-xs font-bold ${state === "todo" ? "text-emerald-950/40" : "text-emerald-950"}`}
+											>
 												{state === "done" ? (
-													<Check size={13} strokeWidth={3} className="sk-pop text-emerald-700" />
+													<Check
+														size={13}
+														strokeWidth={3}
+														className="sk-pop text-emerald-700"
+													/>
 												) : (
 													<span>{i + 1}</span>
 												)}
@@ -567,28 +727,68 @@ export default function EligibilityPage() {
 							})}
 						</ol>
 
-						<div key={step} className="sk-step mt-8 flex-1" style={{ "--dir": dir }}>
+						<div
+							key={step}
+							className="sk-step mt-8 flex-1"
+							style={{ "--dir": dir }}
+						>
 							<p className="text-xs font-bold uppercase tracking-wider text-emerald-950/50">
 								Step {step + 1} of {STEPS.length}
 							</p>
-							<h2 ref={headingRef} tabIndex={-1} className="ud-display mt-1 text-2xl font-bold leading-tight outline-none sm:text-3xl">
+							<h2
+								ref={headingRef}
+								tabIndex={-1}
+								className="ud-display mt-1 text-2xl font-bold leading-tight outline-none sm:text-3xl"
+							>
 								{cur.title}
 							</h2>
-							<p className="mt-1.5 text-sm leading-relaxed text-emerald-950/65">{cur.sub}</p>
+							<p className="mt-1.5 text-sm leading-relaxed text-emerald-950/65">
+								{cur.sub}
+							</p>
 
 							<div className="mt-7 space-y-7">
 								{step === 0 && (
 									<>
-										<ChipGroup label="Current level of study" options={EDUCATION_LEVELS} value={formData.educationLevel} onChange={(v) => set("educationLevel", v)} />
-										<ChipGroup label="Field / stream" options={STREAMS} value={formData.courseStream} onChange={(v) => set("courseStream", v)} />
+										<ChipGroup
+											label="Current level of study"
+											options={EDUCATION_LEVELS}
+											value={formData.educationLevel}
+											onChange={(v) => set("educationLevel", v)}
+										/>
+										<ChipGroup
+											label="Field / stream"
+											options={STREAMS}
+											value={formData.courseStream}
+											onChange={(v) => set("courseStream", v)}
+										/>
 									</>
 								)}
 								{step === 1 && (
 									<>
-										<ChipGroup label="Gender" options={GENDERS} value={formData.gender} onChange={(v) => set("gender", v)} />
-										<ChipGroup label="Social category" options={CATEGORIES} value={formData.casteCategory} onChange={(v) => set("casteCategory", v)} />
-										<ChipGroup label="Home state" options={STATES} value={formData.state} onChange={(v) => set("state", v)} />
-										<CheckTile checked={formData.hasDisability} onToggle={() => set("hasDisability", !formData.hasDisability)}>
+										<ChipGroup
+											label="Gender"
+											options={GENDERS}
+											value={formData.gender}
+											onChange={(v) => set("gender", v)}
+										/>
+										<ChipGroup
+											label="Social category"
+											options={CATEGORIES}
+											value={formData.casteCategory}
+											onChange={(v) => set("casteCategory", v)}
+										/>
+										<ChipGroup
+											label="Home state"
+											options={STATES}
+											value={formData.state}
+											onChange={(v) => set("state", v)}
+										/>
+										<CheckTile
+											checked={formData.hasDisability}
+											onToggle={() =>
+												set("hasDisability", !formData.hasDisability)
+											}
+										>
 											I have a PwD disability certificate (40% or more)
 										</CheckTile>
 									</>
@@ -603,7 +803,9 @@ export default function EligibilityPage() {
 											min={0}
 											max={2000000}
 											step={10000}
-											display={(v) => (Number(v) >= 2000000 ? "₹20L+" : `${inr(v)}`)}
+											display={(v) =>
+												Number(v) >= 2000000 ? "₹20L+" : `${inr(v)}`
+											}
 											hint="As on your income certificate"
 										/>
 										<DualNumber
@@ -622,7 +824,11 @@ export default function EligibilityPage() {
 								{step === 3 && (
 									<div className="grid gap-2.5 sm:grid-cols-2">
 										{COMMON_DOCUMENTS.map((doc) => (
-											<CheckTile key={doc.code} checked={documentsHeld.includes(doc.code)} onToggle={() => toggleDocument(doc.code)}>
+											<CheckTile
+												key={doc.code}
+												checked={documentsHeld.includes(doc.code)}
+												onToggle={() => toggleDocument(doc.code)}
+											>
 												{doc.name}
 											</CheckTile>
 										))}
@@ -647,7 +853,9 @@ export default function EligibilityPage() {
 								type="submit"
 								disabled={isSubmitting}
 								className={`sk-chip ml-auto inline-flex min-h-[48px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-full border-[1.5px] border-emerald-950 px-6 text-sm font-bold shadow-[0_3px_0_0_#022c22] disabled:cursor-wait disabled:opacity-70 sm:flex-none ${focusRing} ${
-									step === last ? "bg-yellow-200 text-emerald-950" : "bg-emerald-800 text-white"
+									step === last
+										? "bg-yellow-200 text-emerald-950"
+										: "bg-emerald-800 text-white"
 								}`}
 							>
 								{isSubmitting ? (
@@ -669,22 +877,40 @@ export default function EligibilityPage() {
 
 					{/* Live profile ticket */}
 					<aside className="relative hidden border-l-[1.5px] border-dashed border-emerald-950 bg-emerald-50 p-8 lg:block">
-						<span aria-hidden className="absolute -left-3 -top-3 h-6 w-6 rounded-full border-[1.5px] border-emerald-950 bg-[#E9F0EA]" />
-						<span aria-hidden className="absolute -bottom-3 -left-3 h-6 w-6 rounded-full border-[1.5px] border-emerald-950 bg-[#E9F0EA]" />
+						<span
+							aria-hidden
+							className="absolute -left-3 -top-3 h-6 w-6 rounded-full border-[1.5px] border-emerald-950 bg-[#E9F0EA]"
+						/>
+						<span
+							aria-hidden
+							className="absolute -bottom-3 -left-3 h-6 w-6 rounded-full border-[1.5px] border-emerald-950 bg-[#E9F0EA]"
+						/>
 						<p className="ud-display text-lg font-bold">Your profile so far</p>
 						<ul className="mt-5 space-y-4">
 							{profileLines.map(([i, text]) => (
-								<li key={i} className={`flex items-start gap-3 transition-opacity ${i > step ? "opacity-35" : ""}`}>
+								<li
+									key={i}
+									className={`flex items-start gap-3 transition-opacity ${i > step ? "opacity-35" : ""}`}
+								>
 									<span
 										className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-[1.5px] border-emerald-950 text-xs font-bold ${
-											i < step ? "bg-emerald-900 text-white" : i === step ? "bg-yellow-200" : "bg-white"
+											i < step
+												? "bg-emerald-900 text-white"
+												: i === step
+													? "bg-yellow-200"
+													: "bg-white"
 										}`}
 									>
 										{i < step ? <Check size={12} strokeWidth={3.5} /> : i + 1}
 									</span>
 									<span>
-										<span className="block text-xs font-bold text-emerald-950/55">{STEPS[i].label}</span>
-										<span key={text} className="ud-fade-in block text-sm font-semibold leading-snug">
+										<span className="block text-xs font-bold text-emerald-950/55">
+											{STEPS[i].label}
+										</span>
+										<span
+											key={text}
+											className="ud-fade-in block text-sm font-semibold leading-snug"
+										>
 											{text}
 										</span>
 									</span>
@@ -698,15 +924,24 @@ export default function EligibilityPage() {
 				</form>
 			</section>
 
-			<section ref={resultsRef} className="mx-auto max-w-7xl scroll-mt-24 px-5 pb-24 sm:px-8 md:pb-32">
+			<section
+				ref={resultsRef}
+				className="mx-auto max-w-7xl scroll-mt-24 px-5 pb-24 sm:px-8 md:pb-32"
+			>
 				{resultsVisible && (
 					<div className="ud-fade-in">
 						<div className="flex flex-col items-start gap-6 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-6 sm:flex-row sm:items-center sm:p-8">
 							<div className="shrink-0">
-								{eligibleCount > 0 ? <CheeringStudent size={96} /> : <ConfusedDetective size={96} />}
+								{eligibleCount > 0 ? (
+									<CheeringStudent size={96} />
+								) : (
+									<ConfusedDetective size={96} />
+								)}
 							</div>
 							<div className="min-w-0 flex-1" aria-live="polite">
-								<p className="text-sm font-bold text-emerald-950/60">Your eligibility report</p>
+								<p className="text-sm font-bold text-emerald-950/60">
+									Your eligibility report
+								</p>
 								<h2 className="ud-display mt-1 text-3xl font-extrabold leading-[1.05] sm:text-5xl">
 									{eligibleCount > 0 ? (
 										<>
@@ -721,10 +956,12 @@ export default function EligibilityPage() {
 									)}
 								</h2>
 								<p className="mt-3 max-w-xl text-sm leading-relaxed text-emerald-950/70 sm:text-base">
-									Checked against {evaluationData.summary.totalEvaluated || 0} open, verified schemes.
+									Checked against {evaluationData.summary.totalEvaluated || 0}{" "}
+									open, verified schemes.
 									{evaluationData.missing.length > 0 &&
 										` ${evaluationData.missing.length} more need a detail we couldn't check.`}
-									{eligibleCount === 0 && " The 'Not eligible' tab shows how close you came and which rule stopped each one."}
+									{eligibleCount === 0 &&
+										" The 'Not eligible' tab shows how close you came and which rule stopped each one."}
 								</p>
 							</div>
 							<button
@@ -736,7 +973,11 @@ export default function EligibilityPage() {
 							</button>
 						</div>
 
-						<div role="tablist" aria-label="Results" className="no-scrollbar mt-8 flex gap-2 overflow-x-auto pb-1">
+						<div
+							role="tablist"
+							aria-label="Results"
+							className="no-scrollbar mt-8 flex gap-2 overflow-x-auto pb-1"
+						>
 							{tabs.map((t) => (
 								<button
 									key={t.id}
@@ -745,12 +986,22 @@ export default function EligibilityPage() {
 									aria-selected={current.id === t.id}
 									onClick={() => setActiveTab(t.id)}
 									className={`sk-chip inline-flex min-h-[44px] shrink-0 cursor-pointer items-center gap-2 rounded-full border-[1.5px] px-4 text-sm font-bold ${focusRing} ${
-										current.id === t.id ? "border-emerald-950 bg-emerald-950 text-white" : "border-emerald-950/25 bg-white"
+										current.id === t.id
+											? "border-emerald-950 bg-emerald-950 text-white"
+											: "border-emerald-950/25 bg-white"
 									}`}
 								>
-									{t.id === "eligible" ? <CheckCircle2 size={16} /> : t.id === "missing" ? <AlertCircle size={16} /> : <XCircle size={16} />}
+									{t.id === "eligible" ? (
+										<CheckCircle2 size={16} />
+									) : t.id === "missing" ? (
+										<AlertCircle size={16} />
+									) : (
+										<XCircle size={16} />
+									)}
 									{t.label}
-									<span className="rounded-full bg-white/20 px-1.5 text-xs">{t.list.length}</span>
+									<span className="rounded-full bg-white/20 px-1.5 text-xs">
+										{t.list.length}
+									</span>
 								</button>
 							))}
 						</div>
@@ -782,7 +1033,11 @@ export default function EligibilityPage() {
 			</section>
 
 			{isEvidenceOpen && (
-				<EvidenceModal isOpen={isEvidenceOpen} onClose={() => setIsEvidenceOpen(false)} scholarship={evidenceScholarship} />
+				<EvidenceModal
+					isOpen={isEvidenceOpen}
+					onClose={() => setIsEvidenceOpen(false)}
+					scholarship={evidenceScholarship}
+				/>
 			)}
 		</main>
 	);

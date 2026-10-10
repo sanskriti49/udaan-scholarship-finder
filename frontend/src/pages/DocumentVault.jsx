@@ -1,10 +1,7 @@
 import { useState } from "react";
 import {
-	CheckCircle2,
 	Clock,
-	ExternalLink,
 	Printer,
-	ShieldCheck,
 	Lock,
 	HelpCircle,
 	Calendar,
@@ -16,13 +13,7 @@ import {
 import { toast } from "sonner";
 //import { PageStyles, Stamp } from "../components/PageKit";
 import { PageStyles, Stamp, Confetti } from "../components/PageKit";
-import {
-	MotionStyles,
-	Reveal,
-	CountUp,
-	ProgressRing,
-	VerifyingCard,
-} from "../components/MotionKit";
+import { MotionStyles, Reveal, ProgressRing } from "../components/MotionKit";
 import documentImg from "../assets/images/document.png";
 
 function getFY(date) {
@@ -303,10 +294,14 @@ export default function DocumentVault() {
 		setDocStatuses(updated);
 		try {
 			localStorage.setItem("udaan_doc_vault", JSON.stringify(updated));
-		} catch {}
+		} catch {
+			/* Keep the checklist usable when browser storage is blocked. */
+		}
 
 		if (nextStatus === "ready")
-			toast.success("Document marked as verified and ready.");
+			toast.success(
+				"Marked ready by you. Check the scheme’s requirements before applying.",
+			);
 		const allReady = DOCUMENT_REGISTRY.every((d) => updated[d.id] === "ready");
 		if (allReady) setBurst((b) => b + 1); // confetti only when the whole list is done
 	};
@@ -393,7 +388,9 @@ export default function DocumentVault() {
 									Nothing is uploaded.
 								</strong>{" "}
 								We never ask for or store your Aadhaar, certificate files or
-								bank details. Your ticks live only in this browser.
+								bank details. Your ticks live only in this browser, even when
+								signed in. No account is needed. Marking a paper ready is your
+								own checklist status, not document verification.
 							</p>
 						</div>
 					</div>
@@ -427,7 +424,11 @@ export default function DocumentVault() {
 							Tap a status to move it from not started, to in progress, to
 							ready.
 						</p>
-						<p key={readyCount} className="ud-fade-in mt-2 text-sm font-bold text-emerald-800" aria-live="polite">
+						<p
+							key={readyCount}
+							className="ud-fade-in mt-2 text-sm font-bold text-emerald-800"
+							aria-live="polite"
+						>
 							{progressPercent === 100
 								? "Every paper is in the folder. You're application-ready."
 								: readyCount === 0

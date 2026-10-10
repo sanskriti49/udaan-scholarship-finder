@@ -1,62 +1,60 @@
-# Document Health Scanner
+# Document review scanner
 
-Open `/scanner.html` from the desktop/mobile **Scanner** navigation link or a scholarship detail's **Check document readiness** link. No login is needed. This is a second Vite entry point, not a replacement application.
+## Purpose and access
 
-## Architecture and privacy boundary
+`/scanner` is a public application page; `/scanner.html` is a legacy route alias.
+The three stages are add a document, review editable details, and act on the
+observations. It helps students find unreadable fields and date/format issues,
+keep an explicitly downloaded review, and optionally reuse a reviewed field in
+the eligibility form. It does not certify authenticity, legal validity or approval.
 
-The main application mounts Google OAuth globally and loads Google Fonts. The scanner deliberately performs a full-page navigation to its own entry point, with the existing local fonts/styles, React and Lucide icons. It imports neither the authentication provider nor the authenticated API client. No analytics, remote fonts, OAuth, captcha or error reporting scripts run in this entry. Keep future telemetry/session replay out of it.
+## Processing and privacy
 
-`scanner.html` has a restrictive CSP: same-origin scripts, fonts and workers, WASM compilation, no frames/objects/forms. Only the configured public API origin is additionally allowed for connections. Vite gives development scripts a per-server nonce for React refresh; production needs no inline script exception. Deploy the generated `dist/scanner.html` as a real file (serve existing files before your SPA fallback), together with all of `dist/scanner-assets` and `dist/assets`. Do not override this page with `index.html` or add hosting-provider tracking scripts. CSP does not defend against malicious first-party code or browser extensions.
+PDF.js extracts searchable text first. Sparse/scanned pages and PNG/JPG files
+use English Tesseract OCR locally. Workers, WASM, fonts and OCR language assets
+come from this app. Limits: 10 MB, 5 PDF pages, 20 MP source images, 4 MP rendering,
+100,000 characters per page and two minutes per scan. Handwriting, other languages,
+complex layouts and mixed text/image PDFs may need manual entry.
 
-Public scholarship metadata is requested with credentials omitted and no referrer. Document bytes, file names, OCR text and reviewed fields are never request arguments. The first 100 public scholarships are offered by the MVP adapter, plus a linked scholarship fetched by its public ID if it is outside that list. The scanner does not import MongoDB/Redis clients or use browser storage, cookies, analytics or document-upload endpoints. Tesseract's IndexedDB language cache is explicitly disabled. Static OCR assets can be HTTP-cached; document contents are not persisted.
+The server only supplies public scholarship metadata, fetched without credentials.
+Files, names, OCR text and editable fields are never API arguments. No document
+upload endpoint is used. Tesseract persistence is disabled. Google OAuth is now
+mounted only on sign-in/sign-up pages, not on the scanner. Application fonts are self-hosted with their licenses, preserving the existing typefaces without remote font requests. Reset, type changes,
+unmount and pagehide cancel processing and clear scanner state. Worker cleanup
+and memory reclamation are best effort, not secure erasure.
 
-All processing state is held in React/worker memory. Type changes, reset, cancellation and unmount invalidate pending results. Pagehide unmounts React, including on back/forward-cache navigation. Canvases are zero-sized, image bitmaps closed, PDF tasks destroyed, and workers terminated. No object URLs are created. Memory reclamation is best-effort, not secure erasure.
+## Decisions and provenance
 
-Tesseract 7 exposes the native worker only after initialization completes. `startOCR` captures its synchronous construction using a narrowly scoped constructor wrapper restored in `finally`, without awaiting or changing dependency files. This permits immediate termination on cancellation and failed/stalled asset downloads, including before initialization. Versions are pinned; rerun the worker-lifecycle tests on upgrades. Library errors are deliberately replaced with fixed user messages without retaining their potentially sensitive `cause`.
+General observations check format, conflicting values, future issue dates and
+explicit expiry dates. Optional fields are not universal document requirements.
+Catalogue amounts, application years, category names and document lists do not
+establish legal certificate requirements. Removed the inferred April 1, universal
+notary/NCL and approval/rejection assertions. Production `verifiedRules` remains
+empty until explicit, reviewed source excerpts and scoped requirements exist.
+Only valid sourced rules can produce scholarship-specific results.
 
-## Processing and extraction
+## Eligibility handoff
 
-- `src/scanner/process.js`: signature/extension checks; 10 MB, 5 PDF pages, 20 MP source image, 4 MP rendering, 100,000 characters/page, one sequential OCR worker, two-minute timeout. Image headers are checked before decoding. Modern browsers with WebAssembly, workers and `createImageBitmap` are required.
-- Searchable PDF pages use PDF.js text extraction. Sparse pages use PDF.js canvas rendering and English Tesseract OCR. The OCR worker is reused across pages and closed after the file. Heavy libraries are dynamically imported. All workers/WASM/font/CMap/language files come from the application origin.
-- `extract.js`: explicit labels for issue/expiry dates; strict Indian dates, currency and adjacent year ranges; annual **family** income only; institution names, study year/semester, enrollment wording, optional AISHE and designations; Caste / Category extraction (OBC, SC, ST, EWS, Central DoPT OM 36012/22/93 Non-Creamy Layer clause, sub-caste, and bilingual authority labels). Multiple differing candidates remain unresolved. Raw supporting lines and page/method references accompany candidates; manually edited values retain the original evidence and are labeled separately.
-- `useScanner.js`, `Scanner.jsx`, `scanner.css`: transient state, accessible review, evidence details, active scheme criteria preview, general observations, and evidence-backed compliance reports. Editing never reruns OCR.
+Only unambiguous, valid annual income, exact category codes and explicit degree
+wording can be offered. Semester/year numbers never imply undergraduate status.
+The visitor selects a field and acknowledges server use before continuing. No
+certificate possession is inferred and no evaluation runs automatically.
 
-## Rules and evidence
+The selection lives in a transient JavaScript module, not history state, storage
+or query parameters. The eligibility form reads and clears it on mount; unused transfers expire after one minute and are cleared on pagehide. The
+eligibility form starts without invented profile answers or assumed certificates. The user reviews the remaining questions before submitting to the evaluation API;
+signed-in submission also updates their eligibility profile, as stated in the UI.
+Downloading a text review saves an explicit user-requested snapshot on their device.
 
-`rules.js` performs deterministic evaluation combining:
-1. **General Document Health:** format validation, future issue dates, expired validity dates, and high-risk rejection warnings (e.g., Notary/affidavit attestation instead of competent revenue officers).
-2. **Real Scheme Criteria Compliance:** Grounded directly in Udaan's verified MongoDB scholarship records:
-   - **Statutory Income Ceiling:** evaluates extracted `annualIncome` against `scheme.eligibility.familyIncome.max`.
-   - **Academic Year & April 1 Boundary:** validates that income/caste certificates were issued on or after April 1 of the scheme cycle start year (`YYYY-04-01`), preventing previous financial year portal rejections.
-   - **Central vs State OBC-NCL Resolution:** checks for Central Government DoPT OM 36012/22/93 non-creamy layer compliance on All-India/Central government schemes.
-   - **Bonafide Session Matching:** ensures enrollment session aligns with `scheme.currentCycle.academicYear`.
-   - **Mandatory Document Checklist:** confirms document prerequisite against `scheme.requiredDocuments`.
-3. **Registry Override Rules:** allows custom cycle-scoped rules with official guidelines excerpts and verification timestamps. Synthetic test rules remain strictly isolated to unit tests.
+## Verification
 
-## Run and verify
+`npm run test:scanner`
+`node --test test/scanner-handoff.test.mjs`
+`PLAYWRIGHT_CHANNEL=msedge npm run test:scanner:ui`
+`npx eslint src/scanner src/pages/Eligibility.jsx src/utils/eligibilityDraft.js`
+`npm run build`
 
-```sh
-npm ci
-npm run dev
-npm run test:scanner
-npm run build
-npx playwright install chromium
-npm run test:scanner:ui
-npx eslint src/scanner vite.config.js
-```
-
-Use `PLAYWRIGHT_CHANNEL=chrome` (PowerShell: `$env:PLAYWRIGHT_CHANNEL='chrome'`) to use installed Chrome instead of downloading Chromium. Browser tests run against the production build, with only synthetic data and mocked public scholarship metadata. They exercise real local OCR, native and scanned PDF processing, PNG/JPEG, manual edits, evidence, mobile layout, drops, invalid/large/empty files, cancellation, asset-load failure, worker cleanup, network methods/origins and empty browser storage. Screenshots are synthetic test artifacts only. `predev` and `prebuild` copy assets from lockfile-pinned npm packages; generated assets are ignored by Git.
-
-## Limitations
-
-English only; handwriting, unusual layouts, complex tables and OCR errors require manual review. Mixed text/image PDF pages with a substantial text layer may omit image-only fields. No region overlays or document preview are retained: evidence is line text with page references. Date/validity extraction does not infer a legal expiration date from a stated duration. Institution names without a reliable label/header may remain blank. No authenticity, signature, Aadhaar, legal-compliance or approval checks. Real verified scheme rules must be reviewed before enabling scheme-specific decisions.
-
-## Verification record (9 October 2026)
-
-- 10 Node extraction/rule/file/privacy tests passed.
-- 6 Playwright browser tests passed using installed Chrome, including real OCR and worker cleanup on success, cancellation and language-asset failure.
-- Production build and scanner-specific ESLint passed; desktop/mobile synthetic screenshots were inspected.
-- Development-mode manual-entry smoke check passed with no page errors or CSP violations.
-- Repository-wide lint reports 74 errors and 8 warnings in existing code. `npm audit` reports one pre-existing high-severity `source-map-js` advisory; version 1.2.1 was already present in the original lockfile. Neither unrelated issue was modified.
-
-Libraries: [Tesseract local installation](https://github.com/naptha/tesseract.js/blob/master/docs/local-installation.md), [Tesseract API](https://github.com/naptha/tesseract.js/blob/master/docs/api.md), [PDF.js API](https://mozilla.github.io/pdf.js/api/).
+Browser tests use synthetic documents and public metadata mocks, exercise real
+PDF/OCR processing, errors, cancellation and cleanup, and check network/storage
+privacy. Additional mobile/handoff checks cover 320/390/768/1440 widths, consent,
+no auto-evaluation, no fields in history state and downloadable results.

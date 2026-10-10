@@ -1,429 +1,382 @@
-import { useState, useEffect, useRef } from "react";
-import Logo from "./Logo";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import {
-	LogOut,
+	ArrowUpRight,
 	ChevronDown,
-	Settings as SettingsIcon,
-	Compass,
-	CheckCircle2,
-	BookmarkCheck,
-	ArrowRight,
+	LogOut,
+	Menu,
 	Search,
 	X,
+	LockKeyhole,
+	Bookmark,
+	Settings,
+	Bell,
+	ScanLine,
+	ClipboardCheck,
 	ShieldCheck,
-	FileText,
+	SlidersHorizontal,
 } from "lucide-react";
-import { Squash as Hamburger } from "hamburger-react";
-import { useAuth } from "../hooks/useAuth";
-import { toast } from "sonner";
+import Logo from "./Logo";
 import NotificationCenter from "./NotificationCenter";
+import { useAuth } from "../hooks/useAuth";
+import { PUBLIC_TOOLS, ACCOUNT_FEATURES } from "../config/navigation";
+import { authDestination } from "../utils/authNavigation";
+import "./navigation.css";
 
-const Navbar = () => {
-	const location = useLocation();
-	const [isOpen, setIsOpen] = useState(false);
-	const [isScrolled, setIsScrolled] = useState(false);
-	const [isProfileOpen, setIsProfileOpen] = useState(false);
-	const [navSearch, setNavSearch] = useState("");
-	const [isSearchOpen, setIsSearchOpen] = useState(false);
+const MAIN_LINKS = [
+	{ label: "Home", path: "/" },
+	{ label: "Scholarships", path: "/scholarships" },
+	{ label: "Resources", path: "/resources" },
+];
+const TOOL_ICONS = [SlidersHorizontal, ScanLine, ClipboardCheck, ShieldCheck];
+const ACCOUNT_ICONS = [Bookmark, Bell, Settings];
+
+export default function Navbar() {
 	const { user, logout } = useAuth();
+	const location = useLocation();
 	const navigate = useNavigate();
-	const profileRef = useRef(null);
+	const [disclosure, setDisclosure] = useState(null);
+	const [search, setSearch] = useState("");
+	const [scrolled, setScrolled] = useState(false);
+	const headerRef = useRef(null);
+	const triggerRef = useRef(null);
 
-	const handleNavSearch = (e) => {
-		e.preventDefault();
-		if (navSearch.trim()) {
-			navigate(`/scholarships?search=${encodeURIComponent(navSearch.trim())}`);
-			setIsSearchOpen(false);
-			setIsOpen(false);
-			setNavSearch("");
-		}
+	// A route change closes every disclosure, including browser back/forward.
+	const open = disclosure?.key === location.key ? disclosure.type : null;
+	const close = () => setDisclosure(null);
+	const toggle = (type, event) => {
+		triggerRef.current = event.currentTarget;
+		setDisclosure(open === type ? null : { type, key: location.key });
 	};
 
+	// The bar gains a hairline and soft shadow once the page scrolls under it.
 	useEffect(() => {
-		const handleScroll = () => setIsScrolled(window.scrollY > 15);
-		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
+		const onScroll = () => setScrolled(window.scrollY > 8);
+		onScroll();
+		window.addEventListener("scroll", onScroll, { passive: true });
+		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
 
 	useEffect(() => {
-		setIsOpen(false);
-		setIsProfileOpen(false);
-	}, [location.pathname]);
-
-	useEffect(() => {
-		const handleClickOutside = (e) => {
-			if (profileRef.current && !profileRef.current.contains(e.target)) {
-				setIsProfileOpen(false);
+		if (!open) return;
+		const dismiss = (event) => {
+			if (event.type === "keydown" && event.key === "Escape") {
+				setDisclosure(null);
+				triggerRef.current?.focus();
+			} else if (
+				(event.type === "pointerdown" || event.type === "focusin") &&
+				!headerRef.current?.contains(event.target)
+			) {
+				setDisclosure(null);
 			}
 		};
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, []);
+		const resize = () => setDisclosure(null);
+		document.addEventListener("pointerdown", dismiss);
+		document.addEventListener("keydown", dismiss);
+		document.addEventListener("focusin", dismiss);
+		window.addEventListener("resize", resize);
+		return () => {
+			document.removeEventListener("pointerdown", dismiss);
+			document.removeEventListener("keydown", dismiss);
+			document.removeEventListener("focusin", dismiss);
+			window.removeEventListener("resize", resize);
+		};
+	}, [open]);
 
-	const guestLinks = [
-		{ name: "Home", path: "/" },
-		{ name: "Scholarships", path: "/scholarships" },
-		{ name: "Trust Shield", path: "/trust-shield" },
-
-		{ name: "Resources", path: "/resources" },
-	];
-
-	const loggedInLinks = [
-		{ name: "Home", path: "/" },
-		{ name: "Scholarships", path: "/scholarships" },
-		{ name: "Eligibility", path: "/eligibility" },
-
-		{ name: "Scanner", path: "/scanner" },
-		{ name: "Documents", path: "/documents" },
-		{ name: "Resources", path: "/resources" },
-	];
-
-	const activeNavLinks = user ? loggedInLinks : guestLinks;
-
-	const handleLogout = async () => {
+	function submitSearch(event) {
+		event.preventDefault();
+		navigate(
+			`/scholarships${search.trim() ? `?${new URLSearchParams({ search: search.trim() })}` : ""}`,
+		);
+		close();
+		setSearch("");
+	}
+	async function signOut() {
 		await logout();
-		toast.success("Logged out successfully");
-		setIsProfileOpen(false);
-		setIsOpen(false);
+		close();
 		navigate("/");
-	};
+	}
 
-	const initials = user?.name
-		? user.name
-				.split(" ")
-				.map((n) => n[0])
-				.slice(0, 2)
-				.join("")
-				.toUpperCase()
-		: "U";
+	const returnPath = location.pathname + location.search + location.hash;
+	const initials =
+		user?.name
+			?.trim()
+			.split(/\s+/)
+			.slice(0, 2)
+			.map((p) => p[0])
+			.join("")
+			.toUpperCase() || "U";
+
+	const searchForm = (
+		<form onSubmit={submitSearch} className="site-nav-search-form">
+			<label htmlFor="site-nav-search">Search scholarships</label>
+			<div>
+				<input
+					id="site-nav-search"
+					type="search"
+					placeholder="Name or keyword"
+					value={search}
+					onChange={(event) => setSearch(event.target.value)}
+					autoFocus={open === "search"}
+				/>
+				<button type="submit" aria-label="Submit scholarship search">
+					<Search size={17} />
+				</button>
+			</div>
+		</form>
+	);
+
+	const createAccount = (extraProps = {}) => (
+		<Link
+			className="site-nav-create"
+			to={authDestination("/signup", returnPath)}
+			{...extraProps}
+		>
+			Create account
+			<span className="site-nav-create-arrow">
+				<ArrowUpRight size={14} />
+			</span>
+		</Link>
+	);
 
 	return (
 		<>
-			<header
-				className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-					isScrolled
-						? "py-2.5 px-4 sm:px-6 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs"
-						: "py-3.5 px-4 sm:px-8 bg-transparent"
-				}`}
-			>
-				<div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-					<Logo
-						size="md"
-						tagline="Scholarship Intelligence"
-						taglineClassName="hidden sm:inline-block"
-					/>
+			<header ref={headerRef} className="site-header" data-scrolled={scrolled}>
+				<div className="site-nav-inner">
+					<Logo size="md" tagline="Find your way forward" />
 
-					<nav className="hidden lg:flex items-center bg-white/95 backdrop-blur-xs border border-slate-200/80 rounded-full p-1 shadow-2xs">
-						{activeNavLinks.map((link) => (
+					<nav aria-label="Main navigation" className="site-nav-main">
+						{MAIN_LINKS.map((link) => (
 							<NavLink
-								key={link.name}
+								key={link.path}
 								to={link.path}
-								reloadDocument={link.external}
-								className={({ isActive }) =>
-									`px-4 py-1.5 text-sm rounded-full transition-all duration-150 font-medium ${
-										isActive
-											? "bg-slate-900 text-white font-semibold shadow-2xs"
-											: "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-									}`
-								}
+								end={link.path === "/"}
+								onClick={close}
 							>
-								{link.name}
+								{link.label}
 							</NavLink>
 						))}
+
+						<div className="site-nav-anchor">
+							<button
+								type="button"
+								className={
+									PUBLIC_TOOLS.some((item) => item.path === location.pathname)
+										? "site-nav-tool-active"
+										: ""
+								}
+								aria-expanded={open === "tools"}
+								aria-controls="site-nav-tools"
+								onClick={(event) => toggle("tools", event)}
+							>
+								Tools <ChevronDown size={14} />
+							</button>
+							{open === "tools" && (
+								<nav
+									id="site-nav-tools"
+									aria-label="Public tools"
+									className="site-nav-panel site-nav-tools"
+								>
+									<p className="site-nav-panel-label">
+										Tools for everyone <span>No sign-in needed</span>
+									</p>
+									{PUBLIC_TOOLS.map((tool, index) => {
+										const Icon = TOOL_ICONS[index];
+										return (
+											<Link key={tool.path} to={tool.path} onClick={close}>
+												<span className="site-nav-item-icon">
+													<Icon size={18} />
+												</span>
+												<span className="site-nav-item-copy">
+													<strong>{tool.label}</strong>
+													<small>{tool.description}</small>
+												</span>
+												<ArrowUpRight size={15} />
+											</Link>
+										);
+									})}
+								</nav>
+							)}
+						</div>
+
+						{user && (
+							<NavLink to="/saved" onClick={close}>
+								Saved
+							</NavLink>
+						)}
 					</nav>
 
-					<div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-						<form
-							onSubmit={handleNavSearch}
-							className="relative hidden md:flex items-center"
-						>
-							<div
-								className={`flex items-center transition-all duration-200 ${
-									isSearchOpen
-										? "w-56 sm:w-64 bg-white border border-slate-300 shadow-2xs"
-										: "w-9 sm:w-36 bg-white/80 border border-slate-200/90 hover:border-slate-300 hover:bg-white"
-								} rounded-full px-2.5 py-1`}
+					<div className="site-nav-actions">
+						<div className="site-nav-anchor site-nav-search">
+							<button
+								type="button"
+								className="site-nav-icon"
+								aria-label="Search scholarships"
+								aria-expanded={open === "search"}
+								aria-controls="site-nav-search-panel"
+								onClick={(event) => toggle("search", event)}
 							>
-								<Search
-									size={14}
-									className="text-slate-400 shrink-0 cursor-pointer hover:text-emerald-700"
-									onClick={() => setIsSearchOpen(true)}
-								/>
-								<input
-									type="text"
-									value={navSearch}
-									onChange={(e) => setNavSearch(e.target.value)}
-									onFocus={() => setIsSearchOpen(true)}
-									onBlur={() => {
-										if (!navSearch) setIsSearchOpen(false);
-									}}
-									placeholder="Quick search..."
-									className="w-full bg-transparent border-none text-xs outline-none ml-2 text-slate-800 placeholder:text-slate-400 font-sans"
-								/>
-								{navSearch && (
-									<button
-										type="button"
-										onClick={() => {
-											setNavSearch("");
-											setIsSearchOpen(false);
-										}}
-										className="text-slate-400 hover:text-slate-600 cursor-pointer ml-1"
-										title="Clear input"
-									>
-										<X size={12} />
-									</button>
-								)}
-							</div>
-						</form>
+								<Search size={18} />
+							</button>
+							{open === "search" && (
+								<div
+									id="site-nav-search-panel"
+									className="site-nav-panel site-nav-search-panel"
+								>
+									{searchForm}
+								</div>
+							)}
+						</div>
 
 						{user ? (
 							<>
 								<NotificationCenter />
-								<div className="relative" ref={profileRef}>
+								<div className="site-nav-anchor">
 									<button
-										onClick={() => setIsProfileOpen((prev) => !prev)}
-										className="cursor-pointer flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 bg-white hover:border-slate-300 transition-all duration-200 active:scale-95 shadow-2xs"
+										type="button"
+										className="site-nav-account"
+										aria-label="Your account"
+										aria-expanded={open === "account"}
+										aria-controls="site-nav-account-panel"
+										onClick={(event) => toggle("account", event)}
 									>
-										<div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-800 to-emerald-950 text-white text-xs font-bold flex items-center justify-center shrink-0 shadow-2xs">
-											{initials}
-										</div>
-										<span className="text-xs font-semibold text-slate-800 max-w-24 truncate hidden sm:inline-block">
+										<span className="site-nav-avatar">{initials}</span>
+										<span className="site-nav-name">
 											{user.name?.split(" ")[0] || "Account"}
 										</span>
-										<ChevronDown
-											size={13}
-											className={`text-slate-400 transition-transform duration-250 ease-out ${
-												isProfileOpen ? "rotate-180" : ""
-											}`}
-										/>
+										<ChevronDown size={13} />
 									</button>
-
-									<div
-										className={`absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top-right z-50 ${
-											isProfileOpen
-												? "opacity-100 scale-100 pointer-events-auto"
-												: "opacity-0 scale-95 pointer-events-none"
-										}`}
-									>
-										<div className="px-4 py-3 border-b border-slate-100 bg-slate-50/60">
-											<p className="text-xs font-bold text-slate-900 truncate">
-												{user.name}
-											</p>
-											<p className="text-[11px] text-slate-500 truncate mt-0.5">
-												{user.email}
-											</p>
-										</div>
-
-										<div className="py-1">
-											<NavLink
-												to="/eligibility"
-												onClick={() => setIsProfileOpen(false)}
-												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-											>
-												<CheckCircle2 size={14} className="text-emerald-600" />
-												Check Eligibility
-											</NavLink>
-											<NavLink
-												to="/saved"
-												onClick={() => setIsProfileOpen(false)}
-												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-											>
-												<BookmarkCheck size={14} className="text-emerald-700" />
-												Saved Scholarships
-											</NavLink>
-											<NavLink
-												to="/scholarships"
-												onClick={() => setIsProfileOpen(false)}
-												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-											>
-												<Compass size={14} className="text-slate-400" />
-												Explore Catalog
-											</NavLink>
-											<NavLink
-												to="/documents"
-												onClick={() => setIsProfileOpen(false)}
-												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-											>
-												<FileText size={14} className="text-slate-400" />
-												Document Vault
-											</NavLink>
-											<NavLink
-												to="/trust-shield"
-												onClick={() => setIsProfileOpen(false)}
-												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-											>
-												<ShieldCheck size={14} className="text-slate-400" />
-												Trust Shield
-											</NavLink>
-											<NavLink
-												to="/settings"
-												onClick={() => setIsProfileOpen(false)}
-												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-800 transition-colors"
-											>
-												<SettingsIcon size={14} className="text-slate-400" />
-												Account Settings
-											</NavLink>
-										</div>
-
-										<div className="border-t border-slate-100 py-1 bg-slate-50/30">
+									{open === "account" && (
+										<nav
+											id="site-nav-account-panel"
+											aria-label="Your account"
+											className="site-nav-panel site-nav-account-panel"
+										>
+											<div className="site-nav-user">
+												<span className="site-nav-avatar" aria-hidden="true">
+													{initials}
+												</span>
+												<div>
+													<strong>{user.name || "Your account"}</strong>
+													<span>{user.email}</span>
+												</div>
+											</div>
+											{ACCOUNT_FEATURES.map((item, index) => {
+												const Icon = ACCOUNT_ICONS[index];
+												return (
+													<Link to={item.path} key={item.path} onClick={close}>
+														<span className="site-nav-item-icon">
+															<Icon size={16} />
+														</span>
+														<span className="site-nav-item-copy">
+															{item.label}
+														</span>
+														<ArrowUpRight size={14} />
+													</Link>
+												);
+											})}
 											<button
-												onClick={handleLogout}
-												className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50/60 transition-colors text-left"
+												type="button"
+												className="site-nav-logout"
+												onClick={signOut}
 											>
-												<LogOut size={14} />
-												Log Out
+												<LogOut size={15} /> Sign out
 											</button>
-										</div>
-									</div>
+										</nav>
+									)}
 								</div>
 							</>
 						) : (
-							<div className="hidden sm:flex items-center gap-2 font-serif">
-								<NavLink
-									to="/login"
-									className="px-3.5 py-1.5 text-sm font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+							<>
+								<Link
+									className="site-nav-signin"
+									to={authDestination("/login", returnPath)}
 								>
-									Log in
-								</NavLink>
-								<NavLink
-									to="/signup"
-									className="px-4 py-2 text-sm font-semibold rounded-full bg-emerald-800 hover:bg-emerald-900 text-white transition-all duration-150 shadow-2xs hover:shadow-xs flex items-center gap-1.5"
-								>
-									<span>Get Started</span>
-									<ArrowRight size={13} />
-								</NavLink>
-							</div>
+									Sign in
+								</Link>
+								{createAccount()}
+							</>
 						)}
 
-						<div className="lg:hidden">
-							<Hamburger
-								toggled={isOpen}
-								toggle={setIsOpen}
-								size={20}
-								rounded
-								color="#0f172a"
-								duration={0.25}
-							/>
-						</div>
+						<button
+							type="button"
+							className="site-nav-mobile-toggle site-nav-icon"
+							aria-label={
+								open === "mobile" ? "Close navigation" : "Open navigation"
+							}
+							aria-expanded={open === "mobile"}
+							aria-controls="site-nav-mobile"
+							onClick={(event) => toggle("mobile", event)}
+						>
+							{open === "mobile" ? <X size={21} /> : <Menu size={21} />}
+						</button>
 					</div>
 				</div>
 
-				<div
-					className={`fixed top-[58px] left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xl transition-all duration-200 lg:hidden ${
-						isOpen
-							? "opacity-100 translate-y-0 pointer-events-auto"
-							: "opacity-0 -translate-y-3 pointer-events-none"
-					}`}
-				>
-					<div className="p-4 sm:p-5 flex flex-col gap-1 max-w-lg mx-auto">
-						{user && (
-							<div className="flex items-center gap-3 p-3 mb-2 bg-slate-50 rounded-2xl border border-slate-200/80">
-								<div className="w-9 h-9 rounded-full bg-emerald-800 text-white text-xs font-bold flex items-center justify-center shrink-0">
-									{initials}
-								</div>
-								<div className="flex flex-col min-w-0">
-									<span className="text-sm font-bold text-slate-900 truncate">
-										{user.name}
-									</span>
-									<span className="text-xs text-slate-500 truncate">
-										{user.email}
-									</span>
-								</div>
-							</div>
-						)}
-
-						<form onSubmit={handleNavSearch} className="relative mb-2.5">
-							<Search
-								size={15}
-								className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
-							/>
-							<input
-								type="text"
-								value={navSearch}
-								onChange={(e) => setNavSearch(e.target.value)}
-								placeholder="Search scholarships..."
-								className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-9 py-2 text-xs outline-none focus:bg-white focus:border-emerald-700 text-slate-800 font-sans"
-							/>
-							{navSearch && (
-								<button
-									type="button"
-									onClick={() => setNavSearch("")}
-									className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-								>
-									<X size={13} />
-								</button>
-							)}
-						</form>
-
-						{activeNavLinks.map((link) => (
+				{open === "mobile" && (
+					<nav
+						id="site-nav-mobile"
+						className="site-nav-mobile"
+						aria-label="Mobile navigation"
+					>
+						{searchForm}
+						{MAIN_LINKS.map((link) => (
 							<NavLink
-								key={link.name}
+								key={link.path}
 								to={link.path}
-								reloadDocument={link.external}
-								onClick={() => setIsOpen(false)}
-								className={({ isActive }) =>
-									`px-4 py-2.5 text-sm rounded-xl font-medium transition-colors ${
-										isActive
-											? "bg-slate-900 text-white font-semibold"
-											: "text-slate-700 hover:bg-slate-50"
-									}`
-								}
+								end={link.path === "/"}
+								className="site-nav-mobile-primary"
+								onClick={close}
 							>
-								{link.name}
+								{link.label}
+								<ArrowUpRight size={16} />
 							</NavLink>
 						))}
 
-						<div className="pt-3 border-t border-slate-100 mt-2 flex flex-col gap-2">
-							{user ? (
-								<>
-									<NavLink
-										to="/saved"
-										onClick={() => setIsOpen(false)}
-										className="px-4 py-2.5 text-sm text-slate-700 font-medium flex items-center gap-2 rounded-xl hover:bg-slate-50"
-									>
-										<BookmarkCheck size={16} className="text-emerald-700" />{" "}
-										Saved Scholarships
-									</NavLink>
-									<NavLink
-										to="/settings"
-										onClick={() => setIsOpen(false)}
-										className="px-4 py-2.5 text-sm text-slate-700 font-medium flex items-center gap-2 rounded-xl hover:bg-slate-50"
-									>
-										<SettingsIcon size={16} className="text-slate-500" />{" "}
-										Account Settings
-									</NavLink>
-									<button
-										onClick={handleLogout}
-										className="px-4 py-2.5 text-sm text-rose-600 font-semibold flex items-center gap-2 text-left rounded-xl hover:bg-rose-50/50"
-									>
-										<LogOut size={16} /> Log Out
-									</button>
-								</>
-							) : (
-								<div className="grid grid-cols-2 gap-2 pt-1 font-serif">
-									<NavLink
-										to="/login"
-										className="text-center py-2.5 text-sm font-semibold rounded-xl border border-slate-200 text-slate-800 bg-white"
-									>
-										Log In
-									</NavLink>
-									<NavLink
-										to="/signup"
-										className="text-center py-2.5 text-sm font-semibold rounded-xl bg-emerald-800 text-white"
-									>
-										Sign Up
-									</NavLink>
-								</div>
-							)}
-						</div>
-					</div>
-				</div>
-			</header>
+						<p className="site-nav-panel-label">
+							Tools <span>No sign-in needed</span>
+						</p>
+						{PUBLIC_TOOLS.map((item) => (
+							<NavLink key={item.path} to={item.path} onClick={close}>
+								{item.label}
+								<ArrowUpRight size={15} />
+							</NavLink>
+						))}
 
-			<div className="h-16 sm:h-18" />
+						<p className="site-nav-panel-label">
+							{user ? "Your account" : "With an account"}
+							{!user && <span>Sign in to use these</span>}
+						</p>
+						{ACCOUNT_FEATURES.map((item) => (
+							<Link
+								key={item.path}
+								to={user ? item.path : authDestination("/login", item.path)}
+								onClick={close}
+							>
+								{item.label}
+								{user ? <ArrowUpRight size={15} /> : <LockKeyhole size={13} />}
+							</Link>
+						))}
+						<Link to="/support" onClick={close}>
+							Help & support
+							<ArrowUpRight size={15} />
+						</Link>
+
+						{user ? (
+							<button
+								className="site-nav-logout"
+								type="button"
+								onClick={signOut}
+							>
+								<LogOut size={15} /> Sign out
+							</button>
+						) : (
+							createAccount({ onClick: close })
+						)}
+					</nav>
+				)}
+			</header>
+			<div className="site-header-space" />
 		</>
 	);
-};
-
-export default Navbar;
+}

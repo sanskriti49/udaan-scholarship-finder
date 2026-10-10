@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ArrowUpRight, BookOpen, Search } from "lucide-react";
-import { useAuth } from "../hooks/useAuth";
 import { ShockedStudent } from "./AnimatedIllustrations";
 import "./home-hero.css";
 
@@ -18,7 +17,6 @@ const STATES = [
 
 export default function Hero() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [mode, setMode] = useState("studies");
   const [level, setLevel] = useState("");
   const [state, setState] = useState("");
@@ -98,7 +96,7 @@ export default function Hero() {
               </div>
               </div>
               <div className="home-finder-bottom"><p className="home-finder-footnote">Browse without an account. Always check the scheme’s rules.</p>
-              <div className="home-finder-eligibility"><span>Want to check your eligibility?</span><Link to="/eligibility">{user ? "Try the eligibility checker" : "Sign in to check"} <ArrowUpRight size={15} aria-hidden="true" /></Link></div>
+              <div className="home-finder-eligibility"><span>Want to check your eligibility?</span><Link to="/eligibility">Try the eligibility checker <ArrowUpRight size={15} aria-hidden="true" /></Link></div>
               </div>
             </form>
           </div>

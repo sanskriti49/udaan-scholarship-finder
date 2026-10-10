@@ -120,7 +120,8 @@ function FilterGroup({
 	defaultOption = "All",
 	onChange,
 }) {
-	const isDefaultActive = selected.length === 0 || selected.includes(defaultOption);
+	const isDefaultActive =
+		selected.length === 0 || selected.includes(defaultOption);
 
 	return (
 		<div>
@@ -549,12 +550,14 @@ export default function Scholarships() {
 				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.75fr)] lg:gap-16">
 					<div>
 						<p className="sd-eyebrow mb-5">The scholarship finder</p>
-						<h1 className="font-georgia text-[2.75rem] font-medium leading-[1.05] sm:text-6xl lg:text-[4.25rem]">
-							Let’s find a scholarship<br /> <span className="sd-highlight">that works for you.</span>
+						<h1 className="font-bricolage-grotesque text-[2.75rem] font-medium leading-[1.05] sm:text-6xl lg:text-[4.25rem]">
+							Let’s find a scholarship
+							<br /> <span className="sd-highlight">that works for you.</span>
 						</h1>
 						<p className="mt-5 max-w-[52ch] text-base leading-relaxed text-emerald-950/70 sm:text-lg">
 							Find support for your next chapter. Explore schemes, check the
-							criteria, and keep the ones worth applying for on your saved shelf.
+							criteria, and keep the ones worth applying for on your saved
+							shelf.
 						</p>
 
 						<div className="mt-8" ref={searchContainerRef}>
@@ -652,13 +655,26 @@ export default function Scholarships() {
 					</div>
 
 					<div className="flex justify-center py-4 lg:py-0">
-						<ScholarshipDiscoveryDesk items={scholarships} loading={loading} error={error} onOpen={openDetails} />
+						<ScholarshipDiscoveryDesk
+							items={scholarships}
+							loading={loading}
+							error={error}
+							onOpen={openDetails}
+						/>
 					</div>
 				</div>
 				<nav className="sd-workflow" aria-label="Scholarship journey">
-					<a href="#catalog"><span>01</span> Find your opportunities</a>
-					<Link to="/resources#roadmap"><span>02</span> Get application-ready</Link>
-					<Link to="/saved"><span>03</span> Build your saved shelf <ArrowUpRight size={14} /></Link>
+					<a href="#catalog">
+						<span>01</span> Find your opportunities
+					</a>
+					<Link to="/resources#roadmap">
+						<span>02</span> Get application-ready
+					</Link>
+					<Link to="/saved">
+						<span>03</span>{" "}
+						{user ? "Build your saved shelf" : "Sign in to save your shortlist"}{" "}
+						<ArrowUpRight size={14} />
+					</Link>
 				</nav>
 			</section>
 
@@ -668,8 +684,16 @@ export default function Scholarships() {
 				className="mx-auto max-w-7xl scroll-mt-24 border-t-[1.5px] border-emerald-950/15 px-5 pt-10 sm:px-8"
 			>
 				<div className="sd-catalog-header">
-					<div><p className="sd-eyebrow mb-3">The opportunity collection</p><h2 className="font-georgia text-4xl sm:text-5xl">Find your starting point.</h2></div>
-					<p className="sd-catalog-note">Start with your course and home state. Then open a file to check its rules before you apply.</p>
+					<div>
+						<p className="sd-eyebrow mb-3">The opportunity collection</p>
+						<h2 className="font-georgia text-4xl sm:text-5xl">
+							Find your starting point.
+						</h2>
+					</div>
+					<p className="sd-catalog-note">
+						Start with your course and home state. Then open a file to check its
+						rules before you apply.
+					</p>
 				</div>
 				<div className="flex flex-col items-start gap-8 lg:flex-row lg:gap-10">
 					<aside
@@ -746,7 +770,14 @@ export default function Scholarships() {
 										Reset
 									</button>
 								)}
-								<button type="button" onClick={() => setFiltersOpen(false)} aria-label="Close filters" className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-emerald-950 bg-white lg:hidden ${focusRing}`}><X size={17} /></button>
+								<button
+									type="button"
+									onClick={() => setFiltersOpen(false)}
+									aria-label="Close filters"
+									className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-emerald-950 bg-white lg:hidden ${focusRing}`}
+								>
+									<X size={17} />
+								</button>
 							</div>
 
 							<div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 lg:overflow-visible">

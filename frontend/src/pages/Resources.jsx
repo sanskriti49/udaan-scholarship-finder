@@ -226,15 +226,16 @@ function usePersisted(key, initial) {
 	return [value, setValue];
 }
 
-const goTo = (id) =>
-	{
-		const target = document.getElementById(id);
-		target?.scrollIntoView({
-			behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-			block: "start",
-		});
-		target?.focus({ preventScroll: true });
-	};
+const goTo = (id) => {
+	const target = document.getElementById(id);
+	target?.scrollIntoView({
+		behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+			? "instant"
+			: "smooth",
+		block: "start",
+	});
+	target?.focus({ preventScroll: true });
+};
 
 /* ------------------------------------------------------------------ */
 /* Small pieces                                                        */
@@ -459,7 +460,10 @@ export default function Resources() {
 	}, [hash]);
 	const [checked, setChecked] = usePersisted("checkedDocs", []);
 	const [doneSteps, setDoneSteps] = usePersisted("doneRoadmapSteps", []);
-	const [skippedSteps, setSkippedSteps] = usePersisted("skippedRoadmapSteps", []);
+	const [skippedSteps, setSkippedSteps] = usePersisted(
+		"skippedRoadmapSteps",
+		[],
+	);
 	const [deadline, setDeadline] = usePersisted("applicationDeadline", "");
 	// null = default (first unfinished step open), -1 = everything closed
 	const [active, setActive] = useState(null);
@@ -469,7 +473,8 @@ export default function Resources() {
 
 	const isReady = (name) => checked.includes(name);
 	const docCount = DOCUMENTS.filter((d) => isReady(d.name)).length;
-	const isStepComplete = (step) => doneSteps.includes(step.step) ||
+	const isStepComplete = (step) =>
+		doneSteps.includes(step.step) ||
 		(step.optional && skippedSteps.includes(step.step));
 	const stepCount = ROADMAP_STEPS.filter(isStepComplete).length;
 	const readiness = Math.round(
@@ -481,9 +486,7 @@ export default function Resources() {
 	const allDocs = docCount === DOCUMENTS.length;
 	const allSteps = stepCount === ROADMAP_STEPS.length;
 
-	const firstUnfinished = ROADMAP_STEPS.findIndex(
-		(s) => !isStepComplete(s),
-	);
+	const firstUnfinished = ROADMAP_STEPS.findIndex((s) => !isStepComplete(s));
 	const openIdx = active ?? firstUnfinished;
 
 	const prev = useRef({ allDocs, allSteps });
@@ -514,7 +517,9 @@ export default function Resources() {
 	const toggleSkippedStep = (stepId, idx) => {
 		const wasSkipped = skippedSteps.includes(stepId);
 		setDoneSteps((list) => list.filter((s) => s !== stepId));
-		setSkippedSteps((list) => wasSkipped ? list.filter((s) => s !== stepId) : [...list, stepId]);
+		setSkippedSteps((list) =>
+			wasSkipped ? list.filter((s) => s !== stepId) : [...list, stepId],
+		);
 		if (!wasSkipped && idx < ROADMAP_STEPS.length - 1) setActive(idx + 1);
 	};
 
@@ -586,7 +591,7 @@ export default function Resources() {
 			<section className="mx-auto grid max-w-7xl items-center gap-14 px-5 pb-24 pt-12 sm:px-8 md:pt-20 lg:grid-cols-12">
 				<div className="lg:col-span-6">
 					<h1
-						className="font-georgia text-5xl font-medium leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
+						className="font-bricolage-grotesque text-5xl font-medium leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
 						style={{ textWrap: "balance" }}
 					>
 						Get your paperwork ready before the deadline does.
@@ -761,7 +766,9 @@ export default function Resources() {
 												onClick={() => toggleSkippedStep(st.step, idx)}
 												className={`mt-3 ml-4 cursor-pointer text-sm font-semibold underline underline-offset-4 ${focusRing}`}
 											>
-												{skipped ? "Not required — undo" : "Not required for my scholarship"}
+												{skipped
+													? "Not required — undo"
+													: "Not required for my scholarship"}
 											</button>
 										)}
 									</div>
@@ -789,16 +796,21 @@ export default function Resources() {
 											</ul>
 
 											{st.target ? (
-												<button type="button" onClick={() => goTo(st.target)}
-													className={`mt-6 inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}>
+												<button
+													type="button"
+													onClick={() => goTo(st.target)}
+													className={`mt-6 inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
+												>
 													{st.linkLabel} <ArrowRight size={14} />
 												</button>
-											) : <Link
-												to={st.path}
-												className={`mt-6 inline-flex items-center gap-1.5 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
-											>
-												{st.linkLabel} <ArrowRight size={14} />
-											</Link>}
+											) : (
+												<Link
+													to={st.path}
+													className={`mt-6 inline-flex items-center gap-1.5 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950 ${focusRing}`}
+												>
+													{st.linkLabel} <ArrowRight size={14} />
+												</Link>
+											)}
 										</div>
 									</Collapse>
 								</li>
