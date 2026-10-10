@@ -1,295 +1,108 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, ArrowUpRight, BookOpen, Search } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import {
-	Search,
-	ArrowRight,
-	ArrowUpRight,
-	Sparkles,
-	Compass,
-	ShieldCheck,
-	BookOpen,
-} from "lucide-react";
-import { CategoryMotifIcon } from "./CategoryMotif";
 import { ShockedStudent } from "./AnimatedIllustrations";
-import { SecretCornerKnock } from "./SignatureInteractions";
-import HeroSchemeCard from "./HeroSchemeCard";
-import "./hero.css";
+import "./home-hero.css";
 
-const FLAGSHIP_DEADLINE = "2026-10-31";
-
-const QUICK_TAGS = [
-	{ label: "AICTE Pragati", query: "Pragati", category: "Women & Girls" },
-	{ label: "Central Sector CSSS", query: "CSSS", category: "Merit-Based" },
-	{ label: "Post-Matric", query: "Post-Matric", category: "Government" },
-	{ label: "STEM grants", query: "STEM", category: "STEM & Tech Grants" },
+// Use the same filter values as the scholarship catalogue.
+const LEVELS = [
+  ["Class 10", "Class 10"], ["Class 12", "Class 12"],
+  ["UG", "Undergraduate"], ["PG", "Postgraduate"], ["PhD", "PhD / research"],
+];
+const STATES = [
+  ["UP", "Uttar Pradesh"], ["Bihar", "Bihar"], ["Maharashtra", "Maharashtra"],
+  ["Karnataka", "Karnataka"], ["West Bengal", "West Bengal"],
+  ["Delhi", "Delhi"], ["Tamil Nadu", "Tamil Nadu"],
 ];
 
-const PLACEHOLDERS = [
-	"Pragati",
-	"B.Tech scholarship in UP",
-	"girls in STEM",
-	"Post-Matric",
-	"PwD scholarships",
-];
+export default function Hero() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [mode, setMode] = useState("studies");
+  const [level, setLevel] = useState("");
+  const [state, setState] = useState("");
+  const [search, setSearch] = useState("");
 
-// Existing public-facing claims are retained, not independently verified here.
-const PROOF_POINTS = [
-	{
-		stat: "50+",
-		title: "Verified schemes",
-		desc: "NSP, AICTE, state and CSR",
-		icon: "government",
-	},
-	{
-		stat: "100%",
-		title: "Official links only",
-		desc: "No third-party redirects",
-		icon: "stem",
-	},
-	{
-		stat: "₹0",
-		title: "Free, always",
-		desc: "No paywalls or sponsored ads",
-		icon: "merit",
-	},
-	{
-		stat: "Live",
-		title: "Checked daily",
-		desc: "Deadlines verified at source",
-		icon: "need",
-		live: true,
-	},
-];
+  function explore(event) {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    if (mode === "name") {
+      if (search.trim()) params.set("search", search.trim());
+    } else {
+      if (level) params.set("level", level);
+      if (state) params.set("state", state);
+    }
+    navigate(`/scholarships${params.size ? `?${params}` : ""}`);
+  }
 
-function useRotatingPlaceholder(list, paused) {
-	const [i, setI] = useState(0);
-
-	useEffect(() => {
-		if (
-			paused ||
-			(typeof window !== "undefined" &&
-				window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)
-		)
-			return;
-
-		const id = setInterval(() => setI((n) => (n + 1) % list.length), 2400);
-		return () => clearInterval(id);
-	}, [paused, list.length]);
-
-	return `Try “${list[i]}”`;
+  return (
+    <section className="home-hero" aria-labelledby="home-hero-title">
+      <div className="home-hero-inner">
+        <div className="home-hero-layout">
+          <div className="home-hero-copy">
+            <p className="home-hero-kicker">FOR THE “WHAT IF I COULD?” IN YOU</p>
+            <h1 id="home-hero-title">Got big plans?<br />Let’s find the<br /><em>funding.</em></h1>
+            <p className="home-hero-intro">That course you keep thinking about? Start here. Explore scholarships, make sense of the rules, and give your next step a chance.</p>
+            <div className="home-hero-actions">
+              <Link className="home-hero-browse" to="/scholarships">Find my scholarship <ArrowUpRight size={20} aria-hidden="true" /></Link>
+              <Link className="home-hero-guide" to="/resources"><BookOpen size={18} aria-hidden="true" /> Application guides</Link>
+            </div>
+          </div>
+          <div className="home-hero-scene" aria-hidden="true">
+            <div className="home-scene-orbit" />
+            <svg className="home-scene-spark" viewBox="0 0 64 64"><path d="M32 4L36 25L58 18L40 32L58 46L36 39L32 60L27 39L6 46L24 32L6 18L27 25Z" /></svg>
+            <div className="home-scene-sheet">
+              <span className="home-scene-tape" />
+              <p className="home-scene-sheet-label">YOUR NEXT CHAPTER</p>
+              <p className="home-scene-sheet-title">A place for<br />your big ideas.</p>
+              <div className="home-scene-lines"><span>College fees</span><span>Course books</span><span>Something bigger</span></div>
+              <span className="home-scene-sheet-footer">LET’S SEE WHAT’S POSSIBLE ↗</span>
+            </div>
+            <div className="home-scene-sticker">Dream big.<br /><em>Start small.</em></div>
+            <div className="home-scene-boy"><ShockedStudent size={245} showBubble={false} /></div>
+            <div className="home-scene-bubble">Wait…<br /><strong>there’s a scholarship<br />for that?</strong></div>
+            <svg className="home-scene-arrow" viewBox="0 0 120 80"><path d="M6 10C74-5 112 23 78 61M78 61L80 40M78 61L100 54" /></svg>
+          </div>
+        </div>
+          <div className="home-finder-wrap">
+            <form className="home-finder" onSubmit={explore} aria-labelledby="home-finder-title">
+              <div className="home-finder-heading"><span className="home-finder-eyebrow">LET’S NARROW IT DOWN</span><h2 id="home-finder-title">Got a starting point?</h2></div>
+              <div className="home-finder-controls">
+              <div className="home-finder-modes" role="group" aria-label="Find scholarships by">
+                <button type="button" aria-pressed={mode === "studies"} onClick={() => setMode("studies")}>My studies</button>
+                <button type="button" aria-pressed={mode === "name"} onClick={() => setMode("name")}>Scholarship name</button>
+              </div>
+              <div className="home-finder-fields">
+                {mode === "studies" ? <>
+                  <div className="home-finder-field">
+                  <label htmlFor="home-study-level">What are you studying?</label>
+                  <select id="home-study-level" value={level} onChange={(event) => setLevel(event.target.value)}>
+                    <option value="">Any level of study</option>
+                    {LEVELS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                  </div><div className="home-finder-field">
+                  <label htmlFor="home-study-state">Your home state</label>
+                  <select id="home-study-state" value={state} onChange={(event) => setState(event.target.value)}>
+                    <option value="">All states</option>
+                    {STATES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                  </div>
+                </> : <>
+                  <div className="home-finder-field home-finder-name">
+                  <label htmlFor="home-scholarship-search">Have a scholarship in mind?</label>
+                  <div className="home-finder-search"><Search size={19} aria-hidden="true" /><input id="home-scholarship-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="e.g. Pragati or Post-Matric" /></div>
+                  </div>
+                </>}
+                <button type="submit" className="home-finder-submit">Explore <ArrowRight size={19} aria-hidden="true" /></button>
+              </div>
+              </div>
+              <div className="home-finder-bottom"><p className="home-finder-footnote">Browse without an account. Always check the scheme’s rules.</p>
+              <div className="home-finder-eligibility"><span>Want to check your eligibility?</span><Link to="/eligibility">{user ? "Try the eligibility checker" : "Sign in to check"} <ArrowUpRight size={15} aria-hidden="true" /></Link></div>
+              </div>
+            </form>
+          </div>
+      </div>
+    </section>
+  );
 }
-
-function Hero() {
-	const [searchQuery, setSearchQuery] = useState("");
-	const [focused, setFocused] = useState(false);
-	const navigate = useNavigate();
-	const { user } = useAuth();
-	const placeholder = useRotatingPlaceholder(
-		PLACEHOLDERS,
-		focused || searchQuery !== "",
-	);
-
-	// All navigation behavior and query encoding are unchanged.
-	const go = (q) =>
-		navigate(
-			q ? `/scholarships?search=${encodeURIComponent(q)}` : "/scholarships",
-		);
-
-	const handleSearch = (e) => {
-		e.preventDefault();
-		go(searchQuery.trim());
-	};
-
-	return (
-		<section className="uh-hero" aria-labelledby="uh-hero-heading">
-			<div className="uh-grid-texture" aria-hidden="true" />
-			<div className="uh-orbit uh-orbit-one" aria-hidden="true" />
-			<div className="uh-orbit uh-orbit-two" aria-hidden="true" />
-
-			<div className="uh-container">
-				<div className="uh-topnote">
-					<span className="uh-topnote-symbol" aria-hidden="true">
-						<Sparkles size={14} strokeWidth={2.2} />
-					</span>
-					<span>Scholarships shouldn't feel like a treasure hunt.</span>
-					<span className="uh-topnote-line" aria-hidden="true" />
-					<span className="uh-topnote-aside">DISCOVER • CHECK • APPLY</span>
-				</div>
-
-				<div className="uh-layout">
-					<div className="uh-copy">
-						<div className="uh-headline-wrap">
-							<h1 id="uh-hero-heading" className="uh-headline font-georgia">
-								Big dreams.
-								<br />
-								<span className="uh-headline-highlight">Less digging.</span>
-								<br />
-								More possibilities.
-							</h1>
-							<div className="uh-headline-doodle" aria-hidden="true">
-								<ShockedStudent
-									size={70}
-									showBubble
-									bubbleText="Wait... ME?!"
-								/>
-							</div>
-						</div>
-
-						<p className="uh-description">
-							Great scholarships shouldn't be hidden in endless PDFs. Discover
-							options for your course, category, marks and family income and
-							spend less time searching, more time applying.
-						</p>
-
-						<div className="uh-action-stack">
-							<form
-								className="uh-search-panel"
-								onSubmit={handleSearch}
-								role="search"
-							>
-								<div className="uh-search-panel-top">
-									<span className="uh-mini-label">
-										01 / SEARCH SCHOLARSHIPS
-									</span>
-									<span className="uh-mini-hint">
-										Names, courses, states & more
-									</span>
-								</div>
-								<div className="uh-search-controls">
-									<label
-										htmlFor="uh-scholarship-search"
-										className="uh-search-input-wrap"
-									>
-										<Search size={20} strokeWidth={2} aria-hidden="true" />
-										<span className="sr-only">
-											Search scholarships by scheme, course or state
-										</span>
-										<input
-											id="uh-scholarship-search"
-											type="search"
-											enterKeyHint="search"
-											autoComplete="off"
-											value={searchQuery}
-											onChange={(e) => setSearchQuery(e.target.value)}
-											onFocus={() => setFocused(true)}
-											onBlur={() => setFocused(false)}
-											placeholder={placeholder}
-										/>
-									</label>
-									<button className="uh-search-button" type="submit">
-										<span>Find scholarships</span>
-										<ArrowRight size={19} aria-hidden="true" />
-									</button>
-								</div>
-							</form>
-
-							<div className="uh-assist-row">
-								<div className="uh-assist-icon" aria-hidden="true">
-									<Sparkles size={20} strokeWidth={1.9} />
-								</div>
-								<div className="uh-assist-copy">
-									<strong>Don't know where to start?</strong>
-									<span>
-										{user
-											? "Answer four quick questions. No Aadhaar number."
-											: "Create a free account, then answer four quick questions."}
-									</span>
-								</div>
-								<button
-									type="button"
-									className="uh-assist-button"
-									onClick={() => navigate("/eligibility")}
-								>
-									<span>
-										{user ? "Check my eligibility" : "Log in & check"}
-									</span>
-									<ArrowUpRight size={17} aria-hidden="true" />
-								</button>
-							</div>
-						</div>
-
-						<div
-							className="uh-popular"
-							role="group"
-							aria-label="Popular scholarship searches"
-						>
-							<span className="uh-popular-label">POPULAR RIGHT NOW</span>
-							<div className="uh-popular-list">
-								{QUICK_TAGS.map((t) => (
-									<button
-										type="button"
-										key={t.label}
-										onClick={() => go(t.query)}
-										className="uh-popular-tag"
-									>
-										<CategoryMotifIcon category={t.category} size={15} />
-										<span>{t.label}</span>
-										<ArrowUpRight size={13} aria-hidden="true" />
-									</button>
-								))}
-								<div className="uh-secret-interaction">
-									<SecretCornerKnock />
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div className="uh-showcase">
-						<HeroSchemeCard
-							deadline={FLAGSHIP_DEADLINE}
-							onView={(scheme) => {
-								const q =
-									typeof scheme === "string"
-										? scheme
-										: scheme?.searchQuery || "Central Sector";
-								go(q);
-							}}
-						/>
-						<div className="uh-showcase-foot">
-							<span className="uh-foot-icon" aria-hidden="true">
-								<ShieldCheck size={16} />
-							</span>
-							<span>
-								Play with the income slider. It's a preview, not a final
-								eligibility decision.
-							</span>
-						</div>
-					</div>
-				</div>
-
-				<div className="uh-proof-section">
-					<div className="uh-proof-heading">
-						<div>
-							<span className="uh-proof-eyebrow">WHY UDAAN?</span>
-							<h2>Made to take the guesswork out.</h2>
-						</div>
-						<span className="uh-proof-aside">
-							<BookOpen size={16} /> Better information. Better decisions.
-						</span>
-					</div>
-					<ul className="uh-proof-grid" aria-label="Why students trust Udaan">
-						{PROOF_POINTS.map((item, idx) => (
-							<li className="uh-proof-item" key={item.title}>
-								<div className="uh-proof-icon" aria-hidden="true">
-									<CategoryMotifIcon category={item.icon} size={23} />
-								</div>
-								<div className="uh-proof-content">
-									<div className="uh-proof-top">
-										<span className="uh-proof-number">{item.stat}</span>
-
-										<span className="uh-proof-ordinal">0{idx + 1}</span>
-									</div>
-									<strong>{item.title}</strong>
-									<p>{item.desc}</p>
-								</div>
-							</li>
-						))}
-					</ul>
-				</div>
-			</div>
-		</section>
-	);
-}
-
-export default Hero;

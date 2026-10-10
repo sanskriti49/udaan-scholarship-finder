@@ -126,7 +126,7 @@ function Footer() {
 							</li>
 							<li>
 								<Link
-									to="/settings"
+                                    to="/settings?tab=notifications"
 									className="hover:text-emerald-800 transition-colors"
 								>
 									Alerts Setup
@@ -293,4 +293,3 @@ function Footer() {
 }
 
 export default Footer;
-

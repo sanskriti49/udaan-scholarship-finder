@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import {
@@ -31,6 +31,10 @@ import {
 } from "../utils/bookmarkSync";
 import { formatGrant } from "../utils/formatGrant";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
+import useDialogFocus from "../hooks/useDialogFocus";
+import { deadlineInfo } from "../utils/scholarshipMeta";
+import ScholarshipDiscoveryDesk from "../components/ScholarshipDiscoveryDesk";
+import "./scholarships.css";
 import {
 	formatClauseTitle,
 	formatEvidenceText,
@@ -50,7 +54,6 @@ import {
 } from "../components/ScholarshipKit";
 import {
 	CategoryMotifIcon,
-	ScholarshipsHeroCluster,
 	getCategoryTheme,
 } from "../components/CategoryMotif";
 import {
@@ -107,24 +110,6 @@ const CATALOG_ID = "catalog";
 // Height of your fixed site header. Sticky sidebar + scroll anchors read from this.
 const HEADER_OFFSET = "lg:top-24";
 
-function daysUntil(deadline) {
-	if (!deadline) return null;
-	return Math.max(
-		0,
-		Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24)),
-	);
-}
-
-function deadlineMeta(deadline) {
-	const days = daysUntil(deadline);
-	if (days === null) return { text: "No fixed date", tone: "quiet" };
-	if (days === 0) return { text: "Closes today", tone: "urgent" };
-	if (days <= 10)
-		return { text: `${days} day${days === 1 ? "" : "s"} left`, tone: "urgent" };
-	if (days <= 30) return { text: `${days} days left`, tone: "soon" };
-	return { text: `${days} days left`, tone: "quiet" };
-}
-
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
 
@@ -135,7 +120,7 @@ function FilterGroup({
 	defaultOption = "All",
 	onChange,
 }) {
-	const isDefaultActive = selected.length === 0;
+	const isDefaultActive = selected.length === 0 || selected.includes(defaultOption);
 
 	return (
 		<div>
@@ -168,12 +153,14 @@ function FilterGroup({
 	);
 }
 
-function DeadlineChip({ deadline }) {
-	const { text, tone } = deadlineMeta(deadline);
+function DeadlineChip({ deadline, status }) {
+	const { text, tone } = deadlineInfo(deadline, status);
 	const tones = {
 		urgent: "border-rose-300 bg-rose-50 text-rose-800",
 		soon: "border-emerald-950/20 bg-yellow-200 text-emerald-950",
 		quiet: "border-emerald-950/15 bg-emerald-50 text-emerald-950/70",
+		calm: "border-emerald-950/15 bg-emerald-50 text-emerald-950/70",
+		closed: "border-emerald-950/15 bg-white text-emerald-950/60",
 	};
 	return (
 		<span
@@ -217,7 +204,6 @@ function DrawerSection({ title, aside, children }) {
 export default function Scholarships() {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const { user } = useAuth();
-	const navigate = useNavigate();
 
 	const [authPrompt, setAuthPrompt] = useState({
 		isOpen: false,
@@ -244,7 +230,8 @@ export default function Scholarships() {
 	const hasChangesOnly = searchParams.get("hasChanges") === "true";
 	const status = searchParams.get("status") || "active";
 
-	const [search, setSearch] = useState(() => searchParams.get("search") || "");
+	const urlSearch = searchParams.get("search") || "";
+	const [search, setSearch] = useState(urlSearch);
 
 	const [scholarships, setScholarships] = useState([]);
 	const [recentUpdatesCount, setRecentUpdatesCount] = useState(0);
@@ -260,11 +247,14 @@ export default function Scholarships() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
 	const [filtersOpen, setFiltersOpen] = useState(false);
+	const detailTriggerRef = useRef(null);
+	const drawerRef = useDialogFocus(isModalOpen);
+	const filterRef = useDialogFocus(filtersOpen);
 
 	useEffect(() => {
-		const qSearch = searchParams.get("search") || "";
-		if (qSearch !== search) setSearch(qSearch);
-	}, [searchParams]);
+		// Changing a filter or sort must not overwrite a search still being typed.
+		setSearch(urlSearch);
+	}, [urlSearch]);
 
 	const updateMultiParam = (key, option, defaultOption) => {
 		const currentParam = searchParams.get(key);
@@ -402,6 +392,7 @@ export default function Scholarships() {
 	}, [searchParams]);
 
 	const openDetails = (s) => {
+		detailTriggerRef.current = document.activeElement;
 		setSelectedScholarship(s);
 		setIsModalOpen(true);
 	};
@@ -412,13 +403,13 @@ export default function Scholarships() {
 	};
 
 	useEffect(() => {
-		if (!isModalOpen) return;
+		if (!isModalOpen || authPrompt.isOpen) return;
 		const handleKeyDown = (e) => {
 			if (e.key === "Escape") closeDrawer();
 		};
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [isModalOpen]);
+	}, [isModalOpen, authPrompt.isOpen]);
 
 	// Lock for both surfaces, otherwise the page scrolls behind the evidence modal.
 	useBodyScrollLock(isModalOpen || isEvidenceModalOpen || filtersOpen);
@@ -470,17 +461,6 @@ export default function Scholarships() {
 			setAuthPrompt({
 				isOpen: true,
 				scholarship: scholarshipObj,
-			});
-			toast.info("Log in to save scholarships and access them later.", {
-				action: {
-					label: "Log In",
-					onClick: () => {
-						const currentPath = encodeURIComponent(
-							window.location.pathname + window.location.search,
-						);
-						navigate(`/login?redirect=${currentPath}`);
-					},
-				},
 			});
 			return;
 		}
@@ -544,6 +524,7 @@ export default function Scholarships() {
 			"search",
 			"hasChanges",
 			"sort",
+			"status",
 		].forEach((k) => next.delete(k));
 		setSearch("");
 		setIsSuggestionsOpen(false);
@@ -560,20 +541,20 @@ export default function Scholarships() {
 	const hasAnyFilter = activeCount > 0 || !!search;
 
 	return (
-		<div className="ud-root min-h-screen bg-[#E9F0EA] pb-24 font-sans text-emerald-950">
+		<div className="ud-root scholarship-page min-h-screen bg-[#E9F0EA] pb-24 font-sans text-emerald-950">
 			<PageStyles />
 
 			{/* ---------- Hero ---------- */}
 			<section className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 md:pb-16 md:pt-16">
 				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.75fr)] lg:gap-16">
 					<div>
-						<h1 className="font-georgia text-[2.75rem] font-medium leading-[1.02] sm:text-6xl">
-							Scholarships hiding in plain sight? Not anymore.
+						<p className="sd-eyebrow mb-5">The scholarship finder</p>
+						<h1 className="font-georgia text-[2.75rem] font-medium leading-[1.05] sm:text-6xl lg:text-[4.25rem]">
+							Let’s find a scholarship<br /> <span className="sd-highlight">that works for you.</span>
 						</h1>
 						<p className="mt-5 max-w-[52ch] text-base leading-relaxed text-emerald-950/70 sm:text-lg">
-							Government, state, university and trust schemes. Every deadline is
-							checked against the official notice, and the clauses that decide
-							who qualifies sit right on the card.
+							Find support for your next chapter. Explore schemes, check the
+							criteria, and keep the ones worth applying for on your saved shelf.
 						</p>
 
 						<div className="mt-8" ref={searchContainerRef}>
@@ -583,7 +564,7 @@ export default function Scholarships() {
 										e.preventDefault();
 										scrollToCatalog();
 									}}
-									className="flex items-center gap-2 rounded-2xl border-[1.5px] border-emerald-950 bg-white p-2 pl-4 focus-within:ring-4 focus-within:ring-yellow-200"
+									className="sd-search flex items-center gap-2 border-[1.5px] border-emerald-950 bg-white p-2 pl-4 focus-within:ring-4 focus-within:ring-yellow-200"
 								>
 									<Search size={20} className="shrink-0 text-emerald-950/50" />
 									<input
@@ -670,10 +651,15 @@ export default function Scholarships() {
 						</div>
 					</div>
 
-					<div className="order-first lg:order-none flex justify-center py-4 lg:py-0">
-						<ScholarshipsHeroCluster />
+					<div className="flex justify-center py-4 lg:py-0">
+						<ScholarshipDiscoveryDesk items={scholarships} loading={loading} error={error} onOpen={openDetails} />
 					</div>
 				</div>
+				<nav className="sd-workflow" aria-label="Scholarship journey">
+					<a href="#catalog"><span>01</span> Find your opportunities</a>
+					<Link to="/resources#roadmap"><span>02</span> Get application-ready</Link>
+					<Link to="/saved"><span>03</span> Build your saved shelf <ArrowUpRight size={14} /></Link>
+				</nav>
 			</section>
 
 			{/* ---------- Catalog ---------- */}
@@ -681,6 +667,10 @@ export default function Scholarships() {
 				id={CATALOG_ID}
 				className="mx-auto max-w-7xl scroll-mt-24 border-t-[1.5px] border-emerald-950/15 px-5 pt-10 sm:px-8"
 			>
+				<div className="sd-catalog-header">
+					<div><p className="sd-eyebrow mb-3">The opportunity collection</p><h2 className="font-georgia text-4xl sm:text-5xl">Find your starting point.</h2></div>
+					<p className="sd-catalog-note">Start with your course and home state. Then open a file to check its rules before you apply.</p>
+				</div>
 				<div className="flex flex-col items-start gap-8 lg:flex-row lg:gap-10">
 					<aside
 						className={`sticky top-16 ${filtersOpen ? "z-[70]" : "z-30"} w-full shrink-0 bg-[#E9F0EA] py-2 lg:w-72 lg:self-start lg:bg-transparent lg:py-0 ${HEADER_OFFSET}`}
@@ -733,6 +723,8 @@ export default function Scholarships() {
 						)}
 						<div
 							id="filter-panel"
+							ref={filterRef}
+							tabIndex={-1}
 							role={filtersOpen ? "dialog" : undefined}
 							aria-modal={filtersOpen ? "true" : undefined}
 							aria-label="Filters"
@@ -742,8 +734,8 @@ export default function Scholarships() {
 								aria-hidden
 								className="mx-auto mt-2 block h-1.5 w-12 shrink-0 rounded-full bg-emerald-950/20 lg:hidden"
 							/>
-							<div className="sticky top-0 z-10 flex items-center justify-between border-b-[1.5px] border-emerald-950 bg-emerald-50 px-5 py-3.5">
-								<span className="ud-display text-lg font-bold">Filters</span>
+							<div className="sd-filter-header sticky top-0 z-10 flex items-center justify-between gap-2 border-b-[1.5px] border-emerald-950 px-5 py-3.5">
+								<span className="font-georgia text-2xl">Finder sheet</span>
 								{activeCount > 0 && (
 									<button
 										type="button"
@@ -754,6 +746,7 @@ export default function Scholarships() {
 										Reset
 									</button>
 								)}
+								<button type="button" onClick={() => setFiltersOpen(false)} aria-label="Close filters" className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-emerald-950 bg-white lg:hidden ${focusRing}`}><X size={17} /></button>
 							</div>
 
 							<div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 lg:overflow-visible">
@@ -1045,12 +1038,13 @@ export default function Scholarships() {
 									</div>
 								</div>
 							) : (
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+								<div className="grid grid-cols-1 gap-7 md:grid-cols-2">
 									{scholarships.map((s, idx) => (
 										<ScholarshipCard
 											key={s._id || s.slug}
 											s={s}
 											index={idx}
+											className="sd-paper-card"
 											saved={saved.has(s._id || s.id)}
 											saving={savingSet.has(s._id || s.id)}
 											onSave={toggleSave}
@@ -1069,7 +1063,7 @@ export default function Scholarships() {
 				selectedScholarship &&
 				createPortal(
 					<div
-						className="fixed inset-0 z-50 overflow-hidden"
+						className="sd-dialog fixed inset-0 z-[65] overflow-hidden"
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="scholarship-drawer-title"
@@ -1081,8 +1075,10 @@ export default function Scholarships() {
 						/>
 
 						<div
-							className="animate-slide-in-right fixed inset-y-0 right-0 z-50 flex h-screen max-h-screen flex-col border-l-[1.5px] border-emerald-950 bg-white text-emerald-950"
-							style={{ width: "min(580px, 100vw)" }}
+							ref={drawerRef}
+							tabIndex={-1}
+							className="sd-dialog-panel animate-slide-in-right fixed inset-y-0 right-0 flex flex-col border-l-[1.5px] border-emerald-950 text-emerald-950"
+							style={{ width: "min(640px, 100vw)" }}
 						>
 							{(() => {
 								const drawerTheme = getCategoryTheme(
@@ -1090,7 +1086,7 @@ export default function Scholarships() {
 								);
 								return (
 									<div
-										className="relative overflow-hidden shrink-0 border-b-[1.5px] border-emerald-950 px-6 py-5"
+										className="sd-dialog-header relative overflow-hidden shrink-0 border-b-[1.5px] border-emerald-950 px-6 py-5"
 										style={{ background: drawerTheme.colors.headerBg }}
 									>
 										{/* Watermark in background */}
@@ -1101,7 +1097,7 @@ export default function Scholarships() {
 											/>
 										</div>
 
-										<div className="relative z-10 flex items-start justify-between gap-4">
+										<div className="sd-dialog-toolbar relative z-10 flex items-start justify-between gap-4">
 											<div className="min-w-0 flex-1">
 												<div className="flex flex-wrap items-center gap-2 mb-2">
 													<span
@@ -1155,6 +1151,7 @@ export default function Scholarships() {
 													</p>
 													<DeadlineChip
 														deadline={selectedScholarship.deadline}
+														status={selectedScholarship.status}
 													/>
 												</div>
 											</div>
@@ -1194,7 +1191,7 @@ export default function Scholarships() {
 								);
 							})()}
 
-							<div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-6 py-6 text-sm sm:px-8">
+							<div className="sd-dialog-content min-h-0 flex-1 space-y-6 overflow-y-auto px-5 py-6 text-sm sm:px-8">
 								{selectedScholarship.latestChangeSummary &&
 									formatChangeNotice(
 										selectedScholarship.latestChangeSummary,
@@ -1215,7 +1212,7 @@ export default function Scholarships() {
 								{(() => {
 									const g = formatGrant(selectedScholarship.amount);
 									return (
-										<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-[#FAF9F6] p-5 shadow-xs">
+										<div className="sd-award-note">
 											<div className="flex items-center justify-between border-b border-dashed border-emerald-950/15 pb-2.5 mb-3">
 												<span className="text-xs font-extrabold uppercase tracking-wider text-emerald-950/60">
 													Award amount
@@ -1290,7 +1287,7 @@ export default function Scholarships() {
 												{selectedScholarship.rules.map((r, idx) => (
 													<li
 														key={idx}
-														className="flex items-start justify-between gap-4 px-4 py-3"
+														className="sd-rule-row flex items-start justify-between gap-4 px-4 py-3"
 													>
 														<span className="text-[15px] font-semibold leading-snug">
 															{r.description || formatFieldLabel(r.field)}
@@ -1396,7 +1393,7 @@ export default function Scholarships() {
 								<PreFlightChecklist scholarship={selectedScholarship} />
 							</div>
 
-							<div className="flex shrink-0 flex-wrap items-center gap-2 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
+							<div className="sd-dialog-actions flex shrink-0 flex-wrap items-center gap-2 border-t-[1.5px] border-emerald-950 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
 								{selectedScholarship.applicationLink && (
 									<a
 										href={cleanOfficialUrl(selectedScholarship.applicationLink)}
@@ -1467,12 +1464,15 @@ export default function Scholarships() {
 				)}
 
 			<EvidenceModal
+				appearance="paper"
+				returnFocusRef={detailTriggerRef}
 				isOpen={isEvidenceModalOpen}
 				onClose={() => setIsEvidenceModalOpen(false)}
 				scholarship={selectedScholarship}
 			/>
 
 			<AuthPromptModal
+				appearance="paper"
 				isOpen={authPrompt.isOpen}
 				onClose={() => setAuthPrompt({ isOpen: false, scholarship: null })}
 				scholarshipTitle={authPrompt.scholarship?.title}

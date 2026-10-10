@@ -322,7 +322,7 @@
 	color: var(--uh-ink);
 }
 .uh-assist-copy span {
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 500;
 	line-height: 1.45;
 	color: #688073;
@@ -339,7 +339,7 @@
 	border-radius: 11px;
 	color: #1b583f;
 	background: #eff7ed;
-	font-size: 12px;
+	font-size: 10px;
 	font-weight: 800;
 	transition:
 		background 0.2s,

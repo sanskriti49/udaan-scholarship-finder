@@ -1,0 +1,85 @@
+.scholarship-page { --sd-ink: #022c22; --sd-paper: #fffef9; }
+.sd-eyebrow { display: flex; align-items: center; gap: .6rem; font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.sd-eyebrow::before { content: ''; width: 1.5rem; height: 2px; background: currentColor; }
+.sd-highlight { background: linear-gradient(transparent 68%, #fde047 68%); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.sd-search { border-radius: 5px; box-shadow: 4px 4px 0 var(--sd-ink); }
+.sd-search button[type=submit] { border-radius: 3px; background: #fde047; color: var(--sd-ink); border: 1.5px solid var(--sd-ink); }
+.sd-search button[type=submit]:hover { background: #facc15; }
+.sd-desk { position: relative; width: 100%; max-width: 410px; padding: 0 12px 0 0; isolation: isolate; }
+.sd-desk::before { content: ''; position: absolute; inset: 42px 0 18px 16px; background: #b7cabc; border: 1.5px solid var(--sd-ink); transform: rotate(3deg); z-index: -1; }
+.sd-desk-label { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--sd-ink); border-bottom: 0; border-radius: 6px 16px 0 0; background: #065f46; color: #fde047; padding: 10px 18px; font-size: .75rem; font-weight: 700; }
+.sd-preview-sheet { position: relative; min-height: 325px; padding: 22px; border: 1.5px solid var(--sd-ink); border-radius: 0 4px 4px 4px; background: #fffef9; box-shadow: 4px 4px 0 var(--sd-ink); }
+.sd-preview-sheet::after { content: ''; position: absolute; top: -8px; right: 110px; height: 25px; width: 70px; background: #ffffffb3; border: 1px solid #022c2210; transform: rotate(-6deg); pointer-events: none; }
+.sd-folder-caption { margin: 16px 0 0 14px; font-size: .75rem; font-weight: 600; color: #022c2299; }
+.sd-text-link { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: .8rem; font-weight: 700; text-decoration: underline; text-decoration-color: #fde047; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.sd-file-tab { min-height: 38px; min-width: 38px; border: 1.5px solid var(--sd-ink); border-radius: 3px; background: #e9f0ea; cursor: pointer; font-size: .75rem; font-weight: 800; transition: background .2s, transform .2s; }
+.sd-file-tab-active { background: #fde047; box-shadow: 0 2px 0 var(--sd-ink); transform: translateY(-2px); }
+.sd-workflow { display: flex; flex-wrap: wrap; gap: 20px 36px; margin-top: 40px; padding-top: 22px; border-top: 1px solid #022c2230; }
+.sd-workflow a { display: flex; align-items: center; gap: 10px; font-size: .8rem; font-weight: 600; }
+.sd-workflow span { font-family: Georgia, serif; font-size: 1.4rem; color: #022c2270; }
+.sd-workflow a:hover { text-decoration: underline; text-decoration-color: #fde047; text-underline-offset: 4px; }
+.sd-catalog-header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 24px; padding-bottom: 28px; }
+.sd-catalog-note { max-width: 290px; padding: 14px 18px; background: #fde68a; border-left: 3px solid #022c22; font-size: .8rem; line-height: 1.6; }
+.scholarship-page #filter-panel { border-radius: 4px; box-shadow: 4px 4px 0 #022c2233; background: #fffef9; }
+.sd-filter-header { background: #fde047; }
+.scholarship-page #filter-panel .sk-chip { border-radius: 4px; }
+.scholarship-page #filter-panel > div:nth-last-child(2) > div { padding-top: 16px; border-top: 1px dashed #022c2230; }
+.scholarship-page .sd-paper-card { border-radius: 4px; border-color: #022c2259; box-shadow: 3px 3px 0 #022c2226; background: #fffef9; }
+.sd-paper-card h3 button { font-family: Georgia, serif; font-weight: 500; font-size: 1.5rem; letter-spacing: -.025em; }
+.sd-paper-card .sk-reveal { display: block; }
+.sd-paper-card .sk-reveal .sk-sum { display: block; opacity: 1 !important; }
+.sd-paper-card .sk-reveal .sk-why { opacity: 1; transform: none; margin-top: 14px; padding: 12px 14px; border-left: 3px solid #eab308; background: #fef9c3; }
+.sd-paper-card .sk-reveal > * { grid-area: auto; }
+.sd-paper-card .ud-display { font-family: Georgia, serif; font-weight: 500; }
+.sd-paper-card a { border-radius: 4px; }
+.sd-paper-card .sk-meter { height: 4px; }
+.sd-dialog { --sd-ink: #022c22; font-family: inherit; }
+.sd-dialog :is(h2, h3, h4, .ud-display) { font-family: Georgia, serif; letter-spacing: -.02em; font-weight: 500; }
+.sd-dialog :is(button, a):focus-visible { outline: 3px solid #065f46; outline-offset: 3px; }
+.sd-dialog-panel { background: #fffef9; box-shadow: -8px 0 0 #022c2214; height: 100dvh; max-height: 100dvh; }
+.sd-dialog-header { background: #e9f0ea !important; }
+.sd-dialog-header::before { content: 'SCHOLARSHIP FILE / OVERVIEW'; display: block; margin-bottom: 16px; color: #022c2299; font-size: .65rem; font-weight: 800; letter-spacing: .15em; }
+.sd-dialog-content { background: #fffef9; }
+.sd-dialog-content > section { padding-top: 25px; }
+.sd-dialog-content blockquote { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 27px, #022c2210 27px, #022c2210 28px); line-height: 28px; }
+.sd-award-note { border: 1.5px solid #022c22; border-radius: 3px; background: #fde68a; padding: 20px; box-shadow: 3px 3px 0 #022c2233; }
+.sd-dialog-actions { background: #e9f0ea; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+.sd-dialog-actions :is(button, a) { border-radius: 4px; }
+.sd-dialog-actions > a:first-child { background: #fde047; color: #022c22; border: 1.5px solid #022c22; }
+.sd-evidence-panel { background: #fffef9; }
+.sd-evidence-panel .sd-evidence-header { background: #e9f0ea; }
+.sd-evidence-panel .sd-evidence-tabs { background: #e9f0ea; padding-bottom: 0; }
+.sd-evidence-panel .sd-evidence-tabs button { border-radius: 5px 5px 0 0; min-height: 42px; border-bottom: 0; }
+.sd-evidence-panel .sd-evidence-tabs button[aria-pressed=true] { background: #fde047; color: #022c22; }
+.sd-evidence-panel .sd-evidence-tabs button[aria-pressed=true] svg { color: #022c22; }
+.sd-evidence-panel .sd-evidence-content { background: #fffef9; }
+.sd-evidence-panel .sd-evidence-actions { background: #e9f0ea; }
+.sd-evidence-panel .sd-evidence-actions :is(button, a) { border-radius: 4px; }
+.sd-evidence-panel :is(.rounded-xl, .rounded-2xl) { border-radius: 3px; }
+.sd-auth-card { background: #fffef9; border-radius: 5px; box-shadow: 7px 7px 0 #022c22; padding-top: 36px; max-height: calc(100dvh - 40px); overflow-y: auto; }
+.sd-auth-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 10px; background: #fde047; border-bottom: 1.5px solid #022c22; }
+.sd-auth-card h3 { font-size: 2rem; }
+.sd-auth-card .rounded-2xl { border-radius: 3px; background: #fef9c3; }
+.sd-auth-card > div:last-child button { border-radius: 4px; }
+.sd-dialog .sd-rule-row { flex-wrap: wrap; }
+@media (min-width: 1024px) { .sd-desk { transform: rotate(1deg); } }
+@media (max-width: 639px) {
+  .sd-preview-sheet { min-height: 0; padding: 18px; }
+  .sd-preview-sheet h2 { font-size: 1.35rem; }
+  .sd-desk { max-width: none; }
+  .sd-dialog-header { padding: 16px; max-height: 42dvh; overflow-y: auto; }
+  .sd-dialog-header h2 { font-size: 1.5rem; }
+  .sd-dialog-header::before { margin-bottom: 10px; }
+  .sd-dialog-toolbar { flex-wrap: wrap; gap: 12px; }
+  .sd-dialog-toolbar > div:first-child { flex-basis: calc(100% - 50px); }
+  .sd-dialog-toolbar > div:last-child { position: absolute; top: 0; right: 0; }
+  .sd-dialog-toolbar > div:last-child > :not(:last-child) { display: none; }
+  .sd-dialog-toolbar > div:first-child > div:first-child { padding-right: 40px; }
+  .sd-evidence-panel .sd-evidence-header { padding: 16px; max-height: 35dvh; overflow-y: auto; }
+  .sd-evidence-panel .sd-evidence-links { padding: 10px 16px; }
+  .sd-workflow { gap: 16px; margin-top: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sd-file-tab { transition: none; }
+  .sd-dialog .animate-slide-in-right, .sd-dialog .animate-scale-in { animation: none; }
+}

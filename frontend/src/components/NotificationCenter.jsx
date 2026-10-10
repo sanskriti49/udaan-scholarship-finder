@@ -1,484 +1,195 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import {
-	Bell,
-	Check,
-	CheckCheck,
-	Sparkles,
-	Clock,
-	AlertTriangle,
-	MapPin,
-	Calendar,
-	Trash2,
-	ChevronRight,
-	Inbox,
-} from "lucide-react";
-import {
-	getNotifications,
-	getUnreadCount,
-	markAsRead,
-	markAllAsRead,
-	deleteNotification,
-} from "../services/notificationService";
+import { Bell, Check, CheckCheck, Sparkles, Clock, MapPin, Calendar, Trash2, ArrowUpRight, Inbox, X, RotateCcw } from "lucide-react";
+import { getNotifications, getUnreadCount, markAsRead, markAllAsRead, deleteNotification } from "../services/notificationService";
 import { useAuth } from "../hooks/useAuth";
+import useDialogFocus from "../hooks/useDialogFocus";
+import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import { toast } from "sonner";
+import "./alerts.css";
 
-function formatRelativeTime(dateString) {
-
-	if (!dateString) return "";
-	const date = new Date(dateString);
-	const now = new Date();
-	const diffMs = now - date;
-	const diffSec = Math.floor(diffMs / 1000);
-	const diffMin = Math.floor(diffSec / 60);
-	const diffHour = Math.floor(diffMin / 60);
-	const diffDay = Math.floor(diffHour / 24);
-
-	if (diffMin < 1) return "Just now";
-	if (diffMin < 60) return `${diffMin}m ago`;
-	if (diffHour < 24) return `${diffHour}h ago`;
-	if (diffDay === 1) return "Yesterday";
-	if (diffDay < 7) return `${diffDay}d ago`;
-	return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+function formatRelativeTime(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const minutes = Math.max(0, Math.floor((Date.now() - date.getTime()) / 60000));
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)}h ago`;
+  if (minutes < 2880) return "Yesterday";
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
 }
 
-function getNotificationMeta(type, priority) {
-	switch (type) {
-		case "INSTANT_MATCH":
-			return {
-				icon: Sparkles,
-				iconBg: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
-				badgeText: "Instant Match",
-				badgeClass: "bg-emerald-100/70 text-emerald-900 border-emerald-300/50",
-			};
-		case "DEADLINE_7_DAYS":
-			return {
-				icon: Clock,
-				iconBg: "bg-amber-50 text-amber-700 border-amber-200/80",
-				badgeText: "7 Days Left",
-				badgeClass: "bg-amber-100/70 text-amber-900 border-amber-300/50",
-			};
-		case "DEADLINE_48_HOURS":
-			return {
-				icon: AlertTriangle,
-				iconBg: "bg-rose-50 text-rose-700 border-rose-200/80",
-				badgeText: "Urgent: 48h Left",
-				badgeClass: "bg-rose-100/70 text-rose-900 border-rose-300/50",
-			};
-		case "STATE_GRANT_UPDATE":
-			return {
-				icon: MapPin,
-				iconBg: "bg-teal-50 text-teal-700 border-teal-200/80",
-				badgeText: "State Scheme",
-				badgeClass: "bg-teal-100/70 text-teal-900 border-teal-300/50",
-			};
-		case "WEEKLY_DIGEST":
-			return {
-				icon: Calendar,
-				iconBg: "bg-sky-50 text-sky-700 border-sky-200/80",
-				badgeText: "Weekly Digest",
-				badgeClass: "bg-sky-100/70 text-sky-900 border-sky-300/50",
-			};
-		case "DEADLINE_CHANGED":
-			return {
-				icon: Clock,
-				iconBg: "bg-amber-50 text-amber-800 border-amber-200/80",
-				badgeText: "Deadline Update",
-				badgeClass: "bg-amber-100/70 text-amber-900 border-amber-300/50",
-			};
-		case "SYSTEM":
-			return {
-				icon: Sparkles,
-				iconBg: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
-				badgeText: "System Alert",
-				badgeClass: "bg-emerald-100/70 text-emerald-900 border-emerald-300/50",
-			};
-		default:
-			return {
-				icon: Bell,
-				iconBg: "bg-slate-50 text-slate-700 border-slate-200",
-				badgeText: priority === "high" ? "High Priority" : "Notification",
-				badgeClass: "bg-slate-100 text-slate-800 border-slate-200",
-			};
-	}
-}
+const TYPES = {
+  INSTANT_MATCH: { icon: Sparkles, label: "A possible match", tone: "match" },
+  DEADLINE_7_DAYS: { icon: Clock, label: "Deadline reminder", tone: "deadline" },
+  DEADLINE_48_HOURS: { icon: Clock, label: "Final reminder", tone: "urgent" },
+  DEADLINE_CHANGED: { icon: Clock, label: "Deadline changed", tone: "deadline" },
+  STATE_GRANT_UPDATE: { icon: MapPin, label: "From your state", tone: "match" },
+  WEEKLY_DIGEST: { icon: Calendar, label: "Your weekly roundup", tone: "quiet" },
+  SYSTEM: { icon: Bell, label: "An update from Udaan", tone: "quiet" },
+};
+const isPreview = (item) => String(item._id).startsWith("preview_");
+const isDeadline = (item) => String(item.type).startsWith("DEADLINE_");
 
 export default function NotificationCenter() {
-	const { user } = useAuth();
-	const [isOpen, setIsOpen] = useState(false);
-	const [notifications, setNotifications] = useState([]);
-	const [unreadCount, setUnreadCount] = useState(0);
-	const [activeTab, setActiveTab] = useState("all"); 
-	const [loading, setLoading] = useState(false);
-	const dropdownRef = useRef(null);
-	const navigate = useNavigate();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [activeTab, setActiveTab] = useState("all");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [busy, setBusy] = useState(new Set());
+  const [markingAll, setMarkingAll] = useState(false);
+  const [position, setPosition] = useState({ top: 80, right: 24 });
+  const bellRef = useRef(null);
+  const dialogRef = useDialogFocus(isOpen);
+  useBodyScrollLock(isOpen);
 
-	const fetchUnread = async () => {
-		const token = localStorage.getItem("token");
-		if (!user || !token) {
-			return;
-		}
-		try {
-			const res = await getUnreadCount();
-			if (res && res.success) {
-				setUnreadCount(res.unreadCount);
-			}
-		} catch (err) {
-			if (err.response?.status === 401) {
-				setUnreadCount(0);
-			}
-		}
-	};
+  const fetchUnread = useCallback(async () => {
+    if (!user || !localStorage.getItem("token")) return;
+    try {
+      const res = await getUnreadCount();
+      if (res.success) setUnreadCount(res.unreadCount || 0);
+    } catch { /* The opened inbox provides a visible retry if the service is unavailable. */ }
+  }, [user]);
 
-	const fetchList = async () => {
-		const token = localStorage.getItem("token");
-		if (!user || !token) {
-			setLoading(false);
-			return;
-		}
-		setLoading(true);
-		try {
-			const res = await getNotifications({
-				unread: activeTab === "unread" ? "true" : undefined,
-				limit: 30,
-			});
-			if (res && res.success) {
-				setNotifications(res.notifications || []);
-				setUnreadCount(res.unreadCount || 0);
-			}
-		} catch (err) {
-			if (err.response?.status === 401) {
-				setNotifications([]);
-				setUnreadCount(0);
-			} else {
-				console.warn("Could not fetch notifications:", err.message);
-			}
-		} finally {
-			setLoading(false);
-		}
-	};
+  const fetchList = useCallback(async () => {
+    if (!user || !localStorage.getItem("token")) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getNotifications({ limit: 30 });
+      if (!res.success) throw new Error("Unavailable");
+      setNotifications(res.notifications || []);
+      setUnreadCount(res.unreadCount || 0);
+    } catch {
+      setError("We couldn't load your updates. Give it another try.");
+    } finally { setLoading(false); }
+  }, [user]);
 
-	useEffect(() => {
-		const handlePreview = (e) => {
-			if (e.detail) {
-				setNotifications((prev) => [e.detail, ...prev]);
-				setUnreadCount((prev) => prev + 1);
-			}
-		};
-		window.addEventListener("preview-notification", handlePreview);
-		return () => window.removeEventListener("preview-notification", handlePreview);
-	}, []);
+  useEffect(() => {
+    if (!user) return;
+    const start = setTimeout(fetchUnread, 0);
+    const poll = setInterval(fetchUnread, 45000);
+    return () => { clearTimeout(start); clearInterval(poll); };
+  }, [user, fetchUnread]);
 
-	useEffect(() => {
-		if (user) {
-			fetchUnread();
-			const interval = setInterval(fetchUnread, 45000);
-			return () => clearInterval(interval);
-		} else {
-			setUnreadCount((prev) => (notifications.length > 0 ? prev : 0));
-		}
-	}, [user]);
+  useEffect(() => {
+    if (!isOpen || !user) return;
+    const start = setTimeout(fetchList, 0);
+    return () => clearTimeout(start);
+  }, [isOpen, user, fetchList]);
 
-	useEffect(() => {
-		if (isOpen && user) {
-			fetchList();
-		}
-	}, [isOpen, activeTab, user]);
+  useEffect(() => {
+    const preview = (event) => {
+      if (!event.detail) return;
+      setNotifications((prev) => [event.detail, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+    };
+    const refresh = () => { fetchUnread(); if (isOpen) fetchList(); };
+    window.addEventListener("preview-notification", preview);
+    window.addEventListener("notifications-updated", refresh);
+    return () => {
+      window.removeEventListener("preview-notification", preview);
+      window.removeEventListener("notifications-updated", refresh);
+    };
+  }, [fetchUnread, fetchList, isOpen]);
 
-	useEffect(() => {
-		const handleClickOutside = (e) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-				setIsOpen(false);
-			}
-		};
-		const handleKeyDown = (e) => {
-			if (e.key === "Escape") setIsOpen(false);
-		};
+  useEffect(() => {
+    if (!isOpen) return;
+    const close = (event) => {
+      if (event.key === "Escape") { event.stopPropagation(); setIsOpen(false); }
+    };
+    const reposition = () => {
+      const rect = bellRef.current?.getBoundingClientRect();
+      if (rect) setPosition({ top: rect.bottom + 12, right: Math.max(12, innerWidth - rect.right) });
+    };
+    document.addEventListener("keydown", close);
+    window.addEventListener("resize", reposition);
+    return () => { document.removeEventListener("keydown", close); window.removeEventListener("resize", reposition); };
+  }, [isOpen]);
 
-		if (isOpen) {
-			document.addEventListener("mousedown", handleClickOutside);
-			document.addEventListener("keydown", handleKeyDown);
-		}
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-			document.removeEventListener("keydown", handleKeyDown);
-		};
-	}, [isOpen]);
+  const runItemAction = async (item, action) => {
+    if (busy.has(item._id) || markingAll) return false;
+    setBusy((prev) => new Set(prev).add(item._id));
+    try {
+      if (!isPreview(item)) {
+        const result = await (action === "dismiss" ? deleteNotification(item._id) : markAsRead(item._id));
+        if (result.success === false) throw new Error("Update rejected");
+      }
+      setNotifications((prev) => action === "dismiss" ? prev.filter((n) => n._id !== item._id) : prev.map((n) => n._id === item._id ? { ...n, isRead: true } : n));
+      if (!item.isRead) setUnreadCount((prev) => Math.max(0, prev - 1));
+      return true;
+    } catch {
+      toast.error(action === "dismiss" ? "Couldn't dismiss this update. Try again." : "Couldn't mark this update as read. Try again.");
+      return false;
+    } finally { setBusy((prev) => { const next = new Set(prev); next.delete(item._id); return next; }); }
+  };
 
-	const handleItemClick = async (notif) => {
-		if (!notif.isRead) {
-			try {
-				await markAsRead(notif._id);
-				setNotifications((prev) =>
-					prev.map((n) => (n._id === notif._id ? { ...n, isRead: true } : n)),
-				);
-				setUnreadCount((c) => Math.max(0, c - 1));
-			} catch (_) {}
-		}
-		setIsOpen(false);
-		if (notif.link) {
-			navigate(notif.link);
-		}
-	};
+  const openItem = async (item) => {
+    if (!item.isRead) await runItemAction(item, "read");
+    if (item.link) { setIsOpen(false); navigate(item.link); }
+  };
+  const markAll = async () => {
+    setMarkingAll(true);
+    try {
+      if (user) {
+        const result = await markAllAsRead();
+        if (result.success === false) throw new Error("Update rejected");
+      }
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setUnreadCount(0);
+    } catch { toast.error("Couldn't mark your updates as read. Try again."); }
+    finally { setMarkingAll(false); }
+  };
+  const list = notifications.filter((n) => activeTab === "unread" ? !n.isRead : activeTab === "deadlines" ? isDeadline(n) : true);
+  const groups = activeTab === "all" ? [
+    { label: "To catch up on", items: list.filter((n) => !n.isRead) },
+    { label: "Already read", items: list.filter((n) => n.isRead) },
+  ] : [{ label: activeTab === "unread" ? "To catch up on" : "Deadline reminders", items: list }];
 
-	const handleMarkOne = async (e, id) => {
-		e.stopPropagation();
-		try {
-			await markAsRead(id);
-			setNotifications((prev) =>
-				prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)),
-			);
-			setUnreadCount((c) => Math.max(0, c - 1));
-			toast.success("Notification marked as read");
-		} catch (err) {
-			toast.error("Failed to update notification");
-		}
-	};
-
-	const handleDelete = async (e, id) => {
-		e.stopPropagation();
-		try {
-			await deleteNotification(id);
-			setNotifications((prev) => prev.filter((n) => n._id !== id));
-			fetchUnread();
-			toast.success("Notification dismissed");
-		} catch (err) {
-			toast.error("Failed to dismiss notification");
-		}
-	};
-
-	const handleMarkAll = async () => {
-		try {
-			await markAllAsRead();
-			setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-			setUnreadCount(0);
-			toast.success("All notifications marked as read");
-		} catch (err) {
-			toast.error("Failed marking all as read");
-		}
-	};
-
-	const displayedList =
-		activeTab === "unread"
-			? notifications.filter((n) => !n.isRead)
-			: notifications;
-
-	return (
-		<div className="relative" ref={dropdownRef}>
-			<button
-				type="button"
-				onClick={() => setIsOpen((prev) => !prev)}
-				aria-label="View notifications"
-				aria-expanded={isOpen}
-				className="btn-fluid relative p-2 rounded-full border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 shadow-2xs cursor-pointer flex items-center justify-center"
-			>
-				<Bell size={17} />
-				{unreadCount > 0 && (
-					<span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-emerald-700 text-white text-[10px] font-bold flex items-center justify-center shadow-xs">
-						{unreadCount > 99 ? "99+" : unreadCount}
-					</span>
-				)}
-			</button>
-
-			{isOpen && (
-				<div className="absolute right-0 mt-2 w-80 sm:w-96 max-h-[32rem] bg-white border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden flex flex-col z-50 origin-top-right animate-scale-in">
-					<div className="px-4 py-3 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<h3 className="text-sm font-bold text-slate-900">Notifications</h3>
-							{unreadCount > 0 && (
-								<span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-									{unreadCount} new
-								</span>
-							)}
-						</div>
-						{unreadCount > 0 && user && (
-							<button
-								type="button"
-								onClick={handleMarkAll}
-								className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 transition-colors cursor-pointer"
-							>
-								<CheckCheck size={14} />
-								<span>Mark all read</span>
-							</button>
-						)}
-					</div>
-
-					<div className="px-3 pt-2 pb-1 border-b border-slate-100 flex items-center gap-1.5 bg-white">
-						<button
-							type="button"
-							onClick={() => setActiveTab("all")}
-							className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer ${
-								activeTab === "all"
-									? "bg-slate-900 text-white shadow-2xs"
-									: "text-slate-600 hover:bg-slate-100"
-							}`}
-						>
-							All
-						</button>
-						<button
-							type="button"
-							onClick={() => setActiveTab("unread")}
-							className={`px-3 py-1 text-xs font-semibold rounded-lg transition cursor-pointer flex items-center gap-1.5 ${
-								activeTab === "unread"
-									? "bg-slate-900 text-white shadow-2xs"
-									: "text-slate-600 hover:bg-slate-100"
-							}`}
-						>
-							<span>Unread</span>
-							{unreadCount > 0 && (
-								<span className="px-1.5 py-0.2 rounded-full bg-emerald-700 text-white text-[10px] font-bold leading-tight">
-									{unreadCount}
-								</span>
-							)}
-						</button>
-					</div>
-
-					<div className="overflow-y-auto flex-1 divide-y divide-slate-100">
-						{loading ? (
-							<div className="py-10 text-center text-xs text-slate-400">
-								Loading notifications...
-							</div>
-						) : displayedList.length === 0 ? (
-							!user ? (
-								<div className="py-8 px-5 flex flex-col items-center justify-center text-center">
-									<div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/70 flex items-center justify-center mb-3">
-										<Bell size={18} />
-									</div>
-									<p className="text-xs font-bold text-slate-900">
-										Stay Ahead of Deadlines
-									</p>
-									<p className="text-[11px] text-slate-500 max-w-xs leading-relaxed mt-1 mb-4">
-										Sign in to receive instant eligibility match alerts, countdown reminders, and state grant updates.
-									</p>
-									<div className="flex items-center gap-2">
-										<button
-											type="button"
-											onClick={() => {
-												setIsOpen(false);
-												navigate("/login");
-											}}
-											className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-2xs transition"
-										>
-											Sign In
-										</button>
-										<button
-											type="button"
-											onClick={() => {
-												setIsOpen(false);
-												navigate("/signup");
-											}}
-											className="px-3.5 py-1.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
-										>
-											Create Account
-										</button>
-									</div>
-								</div>
-							) : (
-								<div className="py-12 px-4 flex flex-col items-center justify-center text-center">
-									<div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-2">
-										<Inbox size={18} />
-									</div>
-									<p className="text-xs font-semibold text-slate-700">
-										{activeTab === "unread"
-											? "No unread notifications"
-											: "No notifications yet"}
-									</p>
-									<p className="text-[11px] text-slate-400 max-w-xs mt-0.5">
-										{activeTab === "unread"
-											? "You are all caught up with your scholarship opportunities."
-											: "Verified matches, deadline alerts, and regional grants will appear here."}
-									</p>
-								</div>
-							)
-						) : (
-							displayedList.map((notif) => {
-								const meta = getNotificationMeta(notif.type, notif.priority);
-								const IconComponent = meta.icon;
-
-								return (
-									<div
-										key={notif._id}
-										onClick={() => handleItemClick(notif)}
-										className={`group p-3.5 flex items-start gap-3 cursor-pointer transition-colors duration-150 ${
-											notif.isRead
-												? "bg-white hover:bg-slate-50/80"
-												: "bg-emerald-50/35 hover:bg-emerald-50/60"
-										}`}
-									>
-										<div
-											className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center border ${meta.iconBg}`}
-										>
-											<IconComponent size={15} />
-										</div>
-
-										<div className="flex-1 min-w-0">
-											<div className="flex items-center gap-1.5 mb-1 flex-wrap">
-												<span
-													className={`text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider ${meta.badgeClass}`}
-												>
-													{meta.badgeText}
-												</span>
-												<span className="text-[10px] text-slate-400 ml-auto">
-													{formatRelativeTime(notif.createdAt)}
-												</span>
-											</div>
-
-											<h4 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2">
-												{notif.title}
-											</h4>
-											<p className="text-[11px] text-slate-600 leading-relaxed line-clamp-2 mt-0.5">
-												{notif.message}
-											</p>
-
-											{notif.evidence?.eligibilityReason && (
-												<div className="mt-1.5 inline-block text-[10px] font-medium text-emerald-850 bg-emerald-100/50 border border-emerald-200/60 rounded px-1.5 py-0.5">
-													Reason: {notif.evidence.eligibilityReason}
-												</div>
-											)}
-										</div>
-
-										<div className="shrink-0 flex items-center gap-1 opacity-80 group-hover:opacity-100">
-											{!notif.isRead && (
-												<button
-													type="button"
-													onClick={(e) => handleMarkOne(e, notif._id)}
-													title="Mark as read"
-													className="p-1 rounded text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition cursor-pointer"
-												>
-													<Check size={13} />
-												</button>
-											)}
-											<button
-												type="button"
-												onClick={(e) => handleDelete(e, notif._id)}
-												title="Dismiss"
-												className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer"
-											>
-												<Trash2 size={13} />
-											</button>
-										</div>
-									</div>
-								);
-							})
-						)}
-					</div>
-
-					<div className="px-4 py-2 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-[11px] text-slate-500">
-						<span>Proactive alerts enabled</span>
-						<button
-							type="button"
-							onClick={() => {
-								setIsOpen(false);
-								navigate("/settings");
-							}}
-							className="text-emerald-800 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
-						>
-							<span>Delivery settings</span>
-							<ChevronRight size={12} />
-						</button>
-					</div>
-				</div>
-			)}
-		</div>
-	);
+  return (
+    <>
+      <button ref={bellRef} type="button" aria-label={`View notifications${unreadCount ? `, ${unreadCount} unread` : ""}`} aria-expanded={isOpen} aria-haspopup="dialog" aria-controls={isOpen ? "notification-inbox" : undefined} className="nc-bell" onClick={() => {
+        const rect = bellRef.current.getBoundingClientRect();
+        setPosition({ top: rect.bottom + 12, right: Math.max(12, innerWidth - rect.right) });
+        setIsOpen((prev) => !prev);
+      }}>
+        <Bell size={18} />{unreadCount > 0 && <span className="nc-count">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+      </button>
+      {isOpen && createPortal(
+        <div className="nc-layer">
+          <div className="nc-backdrop" onClick={() => setIsOpen(false)} aria-hidden="true" />
+          <section ref={dialogRef} tabIndex={-1} id="notification-inbox" role="dialog" aria-modal="true" aria-labelledby="notification-inbox-title" className="nc-panel" style={{ "--nc-top": `${position.top}px`, "--nc-right": `${position.right}px` }}>
+            <header className="nc-header">
+              <div><p className="nc-eyebrow">A note for your next step</p><h2 id="notification-inbox-title">Your updates <span>{unreadCount} unread</span></h2></div>
+              <button type="button" aria-label="Close notifications" className="nc-icon-button" onClick={() => setIsOpen(false)}><X size={18} /></button>
+            </header>
+            <div className="nc-toolbar">
+              <div className="nc-tabs" role="group" aria-label="Filter updates">{[{ id: "all", label: "All" }, { id: "unread", label: "Unread" }, { id: "deadlines", label: "Deadlines" }].map((tab) => <button key={tab.id} type="button" aria-pressed={activeTab === tab.id} onClick={() => setActiveTab(tab.id)}>{tab.label}</button>)}</div>
+              {unreadCount > 0 && <button type="button" className="nc-text-action" disabled={markingAll || busy.size > 0 || loading || Boolean(error)} onClick={markAll}><CheckCheck size={14} />{markingAll ? "Marking…" : "Read all"}</button>}
+            </div>
+            <div className="nc-list" aria-busy={loading}>
+              {loading ? <div className="nc-empty" role="status"><Inbox size={32} /><h3>Picking up your updates…</h3><p>This should only take a moment.</p></div> : error ? <div className="nc-empty" role="alert"><h3>A little trouble loading.</h3><p>{error}</p><button type="button" className="nc-primary" onClick={fetchList}><RotateCcw size={15} /> Try again</button></div> : list.length === 0 ? <div className="nc-empty"><Inbox size={36} /><h3>{!user ? "Keep your next step in sight." : activeTab === "unread" ? "You're all caught up." : activeTab === "deadlines" ? "No deadline reminders here yet." : "A fresh start for your inbox."}</h3><p>{!user ? "Sign in to keep scholarship updates and reminders in one place." : "Scholarship matches, changes and reminders will land here when there's something to share."}</p>{!user && <button type="button" className="nc-primary" onClick={() => { setIsOpen(false); navigate("/login?redirect=/settings%3Ftab%3Dnotifications"); }}>Sign in <ArrowUpRight size={15} /></button>}</div> : groups.map((group) => group.items.length > 0 && <div key={group.label}><h3 className="nc-group-title">{group.label} <span>{group.items.length}</span></h3>{group.items.map((item) => {
+                const meta = TYPES[item.type] || { icon: Bell, label: "An update", tone: "quiet" };
+                const Icon = meta.icon;
+                return <article key={item._id} className={`nc-note nc-${meta.tone} ${item.isRead ? "nc-note-read" : ""}`}>
+                  <div className="nc-note-meta"><span><Icon size={13} />{isPreview(item) ? "Preview · " : ""}{meta.label}</span><time dateTime={item.createdAt}>{formatRelativeTime(item.createdAt)}</time></div>
+                  <h4>{item.link ? <button type="button" onClick={() => openItem(item)} disabled={busy.has(item._id)}>{item.title} <ArrowUpRight size={14} /></button> : item.title}</h4>
+                  <p>{item.message}</p>
+                  {item.evidence?.eligibilityReason && <p className="nc-reason">Why this reached you: {item.evidence.eligibilityReason}</p>}
+                  <div className="nc-note-actions">{item.isRead ? <span><CheckCheck size={13} /> Read</span> : <button type="button" disabled={busy.has(item._id) || markingAll} onClick={() => runItemAction(item, "read")} aria-label={`Mark ${item.title} as read`}><Check size={14} /> Mark read</button>}<button type="button" disabled={busy.has(item._id) || markingAll} onClick={() => runItemAction(item, "dismiss")} aria-label={`Dismiss ${item.title}`}><Trash2 size={13} /> Dismiss</button></div>
+                </article>;
+              })}</div>)}
+            </div>
+            <footer className="nc-footer"><span>Make room for what matters.</span><button type="button" onClick={() => { setIsOpen(false); navigate("/settings?tab=notifications"); }}>Choose your alerts <ArrowUpRight size={14} /></button></footer>
+          </section>
+        </div>, document.body
+      )}
+    </>
+  );
 }

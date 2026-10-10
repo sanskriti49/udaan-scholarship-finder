@@ -3,21 +3,28 @@ import { createPortal } from "react-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bookmark, BookmarkCheck, X, ArrowRight, ShieldCheck, Clock, Sparkles } from "lucide-react";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
+import useDialogFocus from "../hooks/useDialogFocus";
 
 export default function AuthPromptModal({
 	isOpen,
 	onClose,
 	scholarshipTitle = "",
 	scholarshipId = "",
+	appearance = "default",
 }) {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const dialogRef = useDialogFocus(isOpen);
 
 	useBodyScrollLock(isOpen);
 
 	useEffect(() => {
 		const handleKeyDown = (e) => {
-			if (e.key === "Escape") onClose();
+			if (e.key === "Escape") {
+				e.preventDefault();
+				e.stopPropagation();
+				onClose();
+			}
 		};
 		if (isOpen) {
 			document.addEventListener("keydown", handleKeyDown);
@@ -27,7 +34,6 @@ export default function AuthPromptModal({
 
 	if (!isOpen) return null;
 
-	const currentPath = encodeURIComponent(location.pathname + location.search);
 	const targetRedirect = scholarshipId
 		? `/scholarships?saveIntent=${scholarshipId}&highlight=${scholarshipId}`
 		: location.pathname + location.search;
@@ -36,7 +42,9 @@ export default function AuthPromptModal({
 		if (scholarshipId) {
 			try {
 				sessionStorage.setItem("udaan_pending_bookmark", scholarshipId);
-			} catch (_) {}
+			} catch {
+				// Sign-in still works when browser storage is unavailable.
+			}
 		}
 		onClose();
 		navigate(`${path}?redirect=${encodeURIComponent(targetRedirect)}`);
@@ -44,7 +52,7 @@ export default function AuthPromptModal({
 
 	return createPortal(
 		<div
-			className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+			className={`${appearance === "paper" ? "sd-dialog" : ""} fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 overflow-y-auto`}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="auth-modal-title"
@@ -57,7 +65,7 @@ export default function AuthPromptModal({
 			/>
 
 			{/* Modal Card */}
-			<div className="relative w-full max-w-md rounded-3xl border-[1.5px] border-emerald-950 bg-[#FAF9F6] p-6 sm:p-7 shadow-[0_24px_48px_-12px_rgba(8,28,16,0.24)] text-emerald-950 animate-scale-in">
+			<div ref={dialogRef} tabIndex={-1} className={`${appearance === "paper" ? "sd-auth-card" : "rounded-3xl bg-[#FAF9F6] shadow-[0_24px_48px_-12px_rgba(8,28,16,0.24)]"} relative w-full max-w-md border-[1.5px] border-emerald-950 p-6 sm:p-7 text-emerald-950 animate-scale-in`}>
 				{/* Close Button */}
 				<button
 					type="button"

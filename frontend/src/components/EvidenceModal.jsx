@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import {
@@ -26,6 +26,7 @@ import {
 	isGenuinePdf,
 } from "../utils/formatEvidence";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
+import useDialogFocus from "../hooks/useDialogFocus";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -64,7 +65,8 @@ function DeadlineChip({ deadline }) {
 	);
 }
 
-export default function EvidenceModal({ isOpen, onClose, scholarship }) {
+export default function EvidenceModal({ isOpen, onClose, scholarship, appearance = "default", returnFocusRef }) {
+	const dialogRef = useDialogFocus(isOpen && Boolean(scholarship), returnFocusRef);
 	const [activeSection, setActiveSection] = useState("gazette");
 	const [liveEvidence, setLiveEvidence] = useState(null);
 	const [isLoadingEvidence, setIsLoadingEvidence] = useState(false);
@@ -115,7 +117,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 	if (!isOpen || !scholarship) return null;
 
 	const rules = scholarship.rules || [];
-	const docs = scholarship.requiredDocuments || [];
+	const docs = (scholarship.requiredDocuments || []).map((doc) => typeof doc === "string" ? { name: doc } : doc);
 	const history = scholarship.history || [];
 
 	const rawGuideline =
@@ -224,7 +226,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 
 	return createPortal(
 		<div
-			className="fixed inset-0 z-50 overflow-hidden"
+			className={`${appearance === "paper" ? "sd-dialog" : ""} fixed inset-0 z-[70] overflow-hidden`}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="evidence-modal-title"
@@ -236,11 +238,13 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 			/>
 
 			<div
-				className="animate-slide-in-right fixed inset-y-0 right-0 z-50 flex h-screen max-h-screen flex-col border-l-[1.5px] border-emerald-950 bg-white text-emerald-950"
+				ref={dialogRef}
+				tabIndex={-1}
+				className={`${appearance === "paper" ? "sd-evidence-panel sd-dialog-panel" : "bg-white h-screen max-h-screen"} animate-slide-in-right fixed inset-y-0 right-0 flex flex-col border-l-[1.5px] border-emerald-950 text-emerald-950`}
 				style={{ width: "min(680px, 100vw)" }}
 			>
 				{/* Modal Header */}
-				<div className="flex shrink-0 items-start justify-between gap-4 border-b-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-5">
+				<div className="sd-evidence-header flex shrink-0 items-start justify-between gap-4 border-b-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-5">
 					<div className="min-w-0 flex-1">
 						<p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-emerald-950/55">
 							<span>{scholarship.category || "Scholarship Scheme"}</span>
@@ -290,7 +294,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 				</div>
 
 				{/* Quick Official Links Banner */}
-				<div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-[1.5px] border-dashed border-emerald-950/20 bg-emerald-50/50 px-6 py-2.5 text-xs">
+				<div className="sd-evidence-links flex shrink-0 flex-wrap items-center justify-between gap-2 border-b-[1.5px] border-dashed border-emerald-950/20 bg-emerald-50/50 px-6 py-2.5 text-xs">
 					<span className="font-bold text-emerald-950/70">Official Links:</span>
 					<div className="flex flex-wrap items-center gap-2">
 						{exactGuidelinePdf && (
@@ -320,7 +324,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 				</div>
 
 				{/* Navigation Tabs */}
-				<div className="flex shrink-0 items-center gap-1.5 overflow-x-auto border-b-[1.5px] border-emerald-950 bg-white px-4 py-3 sm:px-6">
+				<div className="sd-evidence-tabs flex shrink-0 items-center gap-1.5 overflow-x-auto border-b-[1.5px] border-emerald-950 bg-white px-4 py-3 sm:px-6" role="group" aria-label="Scholarship file sections">
 					{navSections.map((sec) => {
 						const Icon = sec.icon;
 						const isActive = activeSection === sec.id;
@@ -329,6 +333,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 								key={sec.id}
 								type="button"
 								onClick={() => setActiveSection(sec.id)}
+								aria-pressed={isActive}
 								className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] px-3.5 py-1.5 text-[13px] font-bold transition-colors ${focusRing} ${
 									isActive
 										? "border-emerald-950 bg-emerald-950 text-white"
@@ -359,7 +364,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 				</div>
 
 				{/* Modal Scrollable Content Area */}
-				<div className="min-h-0 flex-1 space-y-6 overflow-y-auto bg-white px-6 py-6 text-sm text-emerald-950 sm:px-8">
+				<div className="sd-evidence-content min-h-0 flex-1 space-y-6 overflow-y-auto bg-white px-6 py-6 text-sm text-emerald-950 sm:px-8">
 					{activeSection === "gazette" && (
 						<div className="space-y-6">
 							{exactGuidelinePdf ? (
@@ -696,7 +701,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship }) {
 				</div>
 
 				{/* Modal Footer */}
-				<div className="flex shrink-0 items-center justify-between gap-3 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-4">
+				<div className="sd-evidence-actions flex shrink-0 flex-wrap items-center justify-between gap-3 border-t-[1.5px] border-emerald-950 bg-emerald-50 px-6 py-4">
 					<span className="hidden text-xs font-semibold text-emerald-950/55 sm:inline">
 						Press{" "}
 						<kbd className="rounded border-[1.5px] border-emerald-950/20 bg-white px-1.5 py-0.5 font-mono text-xs font-bold text-emerald-950">

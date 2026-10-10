@@ -1,25 +1,19 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import AlertPreferences from "../components/AlertPreferences";
+import SettingsSectionHeader from "../components/SettingsSectionHeader";
+import "./settings.css";
 import {
   User,
   Bell,
   Shield,
   GraduationCap,
   Save,
-  CheckCircle2,
   Trash2,
   Download,
   Key,
-  Mail,
-  Smartphone,
-  MapPin,
   Sparkles,
-  ExternalLink,
-  ChevronRight,
   AlertTriangle,
-  Clock,
-  Send,
-  Loader2,
   Sliders,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
@@ -30,57 +24,31 @@ import {
   sendTestNotification,
 } from "../services/notificationService";
 
-function Toggle({ checked, onChange, disabled = false, ariaLabel = "Toggle setting" }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={ariaLabel}
-      disabled={disabled}
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-750/50 ${
-        checked ? "bg-emerald-800" : "bg-slate-300"
-      } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-    >
-      <span
-        className={`pointer-events-none inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out ${
-          checked ? "translate-x-4.5" : "translate-x-1"
-        }`}
-      />
-    </button>
-  );
-}
-
 export default function Settings() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("profile");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const activeTab = ["profile", "academics", "notifications", "security"].includes(requestedTab) ? requestedTab : "profile";
+  const setActiveTab = (tab) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("tab", tab);
+    setSearchParams(next, { replace: true });
+  };
 
   const [profile, setProfile] = useState({
-    name: user?.name || "Priya Sharma",
-    email: user?.email || "priya.sharma@example.com",
-    phone: "+91 98765 43210",
-    educationLevel: "Undergraduate (B.Tech / B.E.)",
-    stream: "Engineering / Technology",
-    college: "Jadavpur University",
-    cgpa: "8.85",
-    state: "West Bengal",
-    category: "General / Open",
-    annualIncome: "₹2,50,000 - ₹5,00,000",
-    gender: "Female",
-    disability: "No",
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    educationLevel: "",
+    stream: "",
+    college: "",
+    cgpa: "",
+    state: "",
+    category: "",
+    annualIncome: "",
+    gender: "",
+    disability: "",
   });
-
-  useEffect(() => {
-    if (user) {
-      setProfile((prev) => ({
-        ...prev,
-        name: user.name || prev.name,
-        email: user.email || prev.email,
-        phone: user.phone || prev.phone,
-      }));
-    }
-  }, [user]);
 
   const [notifications, setNotifications] = useState({
     instantMatch: true,
@@ -96,7 +64,9 @@ export default function Settings() {
     timezone: "Asia/Kolkata",
     minMatchScore: 70,
   });
-  const [notifLoading, setNotifLoading] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(Boolean(user));
+  const [savedNotifications, setSavedNotifications] = useState(null);
+  const [notifError, setNotifError] = useState(false);
   const [notifSaving, setNotifSaving] = useState(false);
   const [testingAlert, setTestingAlert] = useState(false);
 
@@ -125,14 +95,15 @@ export default function Settings() {
     "Differently Abled (PwD)",
   ];
 
-  useEffect(() => {
+  const loadNotificationPreferences = useCallback(() => {
     const token = localStorage.getItem("token");
     if (user && token) {
       setNotifLoading(true);
+      setNotifError(false);
       getPreferences()
         .then((res) => {
           if (res.success && res.preferences) {
-            setNotifications({
+            const preferences = {
               instantMatch: res.preferences.instantMatch ?? true,
               deadlineAlerts: res.preferences.deadlineAlerts ?? true,
               deadline7Days: res.preferences.deadline7Days ?? true,
@@ -145,26 +116,31 @@ export default function Settings() {
               },
               timezone: res.preferences.timezone || "Asia/Kolkata",
               minMatchScore: res.preferences.minMatchScore || 70,
-            });
+            };
+            setNotifications(preferences);
+            setSavedNotifications(preferences);
+          } else {
+            setNotifError(true);
           }
         })
         .catch((err) => {
+          setNotifError(true);
           if (err.response?.status !== 401) {
-            console.warn("Using local alert settings fallback:", err?.message);
+            console.warn("Could not load alert settings:", err?.message);
           }
         })
         .finally(() => setNotifLoading(false));
     }
   }, [user]);
 
+  useEffect(() => {
+    const start = setTimeout(loadNotificationPreferences, 0);
+    return () => clearTimeout(start);
+  }, [loadNotificationPreferences]);
+
   const handleProfileSave = (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    if (!user || !token) {
-      toast.info("Preferences saved in session. Sign in to sync across devices.");
-      return;
-    }
-    toast.success("Profile preferences saved successfully.");
+    toast.success("Your draft is kept while you're on this page. Export a copy from Security & Account to keep it.");
   };
 
   const handleNotificationsSave = async () => {
@@ -177,7 +153,10 @@ export default function Settings() {
     try {
       const res = await updatePreferences(notifications);
       if (res.success) {
+        setSavedNotifications(notifications);
         toast.success("Notification preferences saved successfully.");
+      } else {
+        toast.error("Couldn't save your alert settings. Try again.");
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed saving alert settings");
@@ -218,6 +197,7 @@ export default function Settings() {
     try {
       const res = await sendTestNotification();
       if (res.success) {
+        window.dispatchEvent(new Event("notifications-updated"));
         if (!notifications.channels?.inApp && !notifications.channels?.email) {
           toast.warning(
             "Test alert processed, but both In-App and Email channels are disabled in your settings.",
@@ -256,8 +236,7 @@ export default function Settings() {
       toast.error("Password must be at least 8 characters long.");
       return;
     }
-    toast.success("Password updated securely!");
-    setSecurity({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    toast.info("Password changes aren't available on this page yet.");
   };
 
   const toggleCategory = (cat) => {
@@ -300,9 +279,9 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] py-10 px-5 sm:px-8 text-slate-900">
+    <div className="settings-page min-h-screen py-10 px-5 sm:px-8">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6">
+        <div className="settings-main-header">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-slate-200 bg-white text-xs font-semibold tracking-wider text-emerald-850 uppercase mb-2 shadow-2xs">
             <Sliders size={13} className="text-emerald-700 shrink-0" />
             <span>Account Settings</span>
@@ -311,7 +290,7 @@ export default function Settings() {
             Settings & <span className="italic text-emerald-800 font-normal">Preferences</span>
           </h1>
           <p className="text-sm sm:text-base text-slate-600 mt-2 font-normal">
-            Manage your academic profile, eligibility criteria, and deadline notification preferences.
+            Your details, your interests, your reminders. Keep them all in one place.
           </p>
         </div>
 
@@ -341,13 +320,15 @@ export default function Settings() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8 items-start">
-          <nav className="bg-white border border-slate-200/90 rounded-3xl p-3 shadow-2xs space-y-1 sticky top-24">
+          <nav aria-label="Settings sections" className="settings-tabs bg-white border border-slate-200/90 rounded-3xl p-3 shadow-2xs space-y-1 sticky top-24">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
+                  type="button"
+                  aria-pressed={isActive}
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-150 text-left cursor-pointer ${
                     isActive
@@ -367,33 +348,27 @@ export default function Settings() {
             <div className="pt-3 mt-3 border-t border-slate-100 px-3">
               <div className="bg-emerald-50/70 border border-emerald-200/70 rounded-2xl p-3 text-xs text-slate-700 leading-relaxed font-normal">
                 <p className="font-bold text-emerald-900 flex items-center gap-1.5 mb-1">
-                  <Sparkles size={13} className="text-emerald-700" /> Match Accuracy
+                  <Sparkles size={13} className="text-emerald-700" /> Your profile matters
                 </p>
-                Keep details up to date to get 100% accurate scholarship calculations.
+                Keep your details current so scholarship matches reflect your profile.
               </div>
             </div>
           </nav>
 
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-2xs">
+          <div className="settings-content bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-8 shadow-2xs">
             {activeTab === "profile" && (
-              <form onSubmit={handleProfileSave} className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900 mb-1 font-sans">
-                    Personal & Demographic Details
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-600 font-normal">
-                    This information determines which state and demographic scholarships you qualify for.
-                  </p>
-                </div>
+              <form onSubmit={handleProfileSave} className="settings-form space-y-6">
+                <SettingsSectionHeader eyebrow="Your student file" title="Start with a little about you." description="Put your personal details in one place as you prepare to explore scholarship requirements." note="Profile edits are a draft for this session. Export a copy to keep them." icon={User} />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="st-paper-section st-fields-grid grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="st-section-marker sm:col-span-2">01 / Your personal details</div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-name" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Full Name
                     </label>
                     <input
                       type="text"
-                      value={profile.name}
+                      id="settings-name" placeholder="Your full name" value={profile.name}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition"
                       required
@@ -401,12 +376,12 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-email" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Email Address
                     </label>
                     <input
                       type="email"
-                      value={profile.email}
+                      id="settings-email" placeholder="Your email address" value={profile.email}
                       onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition"
                       required
@@ -414,26 +389,27 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-phone" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Phone Number
                     </label>
                     <input
                       type="tel"
-                      value={profile.phone}
+                      id="settings-phone" placeholder="Optional phone number" value={profile.phone}
                       onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-state" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Domicile State
                     </label>
                     <select
-                      value={profile.state}
+                      id="settings-state" value={profile.state}
                       onChange={(e) => setProfile({ ...profile, state: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition cursor-pointer"
                     >
+                      <option value="" disabled>Choose an option</option>
                       <option>All India / Central</option>
                       <option>West Bengal</option>
                       <option>Maharashtra</option>
@@ -448,14 +424,15 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-category" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Social Category
                     </label>
                     <select
-                      value={profile.category}
+                      id="settings-category" value={profile.category}
                       onChange={(e) => setProfile({ ...profile, category: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition cursor-pointer"
                     >
+                      <option value="" disabled>Choose an option</option>
                       <option>General / Open</option>
                       <option>OBC (Non-Creamy Layer)</option>
                       <option>Scheduled Caste (SC)</option>
@@ -466,14 +443,15 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-annualIncome" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Annual Family Income
                     </label>
                     <select
-                      value={profile.annualIncome}
+                      id="settings-annualIncome" value={profile.annualIncome}
                       onChange={(e) => setProfile({ ...profile, annualIncome: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition cursor-pointer"
                     >
+                      <option value="" disabled>Choose an option</option>
                       <option>Less than ₹1,50,000</option>
                       <option>₹1,50,000 - ₹2,50,000</option>
                       <option>₹2,50,000 - ₹5,00,000</option>
@@ -483,14 +461,15 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-gender" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Gender
                     </label>
                     <select
-                      value={profile.gender}
+                      id="settings-gender" value={profile.gender}
                       onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition cursor-pointer"
                     >
+                      <option value="" disabled>Choose an option</option>
                       <option>Female</option>
                       <option>Male</option>
                       <option>Non-Binary / Other</option>
@@ -498,52 +477,49 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-disability" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Person with Disability (PwD)
                     </label>
                     <select
-                      value={profile.disability}
+                      id="settings-disability" value={profile.disability}
                       onChange={(e) => setProfile({ ...profile, disability: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition cursor-pointer"
                     >
+                      <option value="" disabled>Choose an option</option>
                       <option>No</option>
                       <option>Yes (40% or above)</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
+                <div className="st-save-bar">
+                  <p>These changes stay on this page. They are not saved to your account yet.</p>
                   <button
                     type="submit"
-                    className="cursor-pointer inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-2xs hover:shadow-xs"
+                    className="st-primary"
                   >
-                    <Save size={14} /> Save Profile Changes
+                    <Save size={14} /> Keep profile draft
                   </button>
                 </div>
               </form>
             )}
 
             {activeTab === "academics" && (
-              <form onSubmit={handleProfileSave} className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900 mb-1 font-sans">
-                    Academic Background & Grants Target
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-600 font-normal">
-                    Customize your fields of study and the specific types of opportunities you want highlighted.
-                  </p>
-                </div>
+              <form onSubmit={handleProfileSave} className="settings-form space-y-6">
+                <SettingsSectionHeader eyebrow="Your next chapter" title="What are you working towards?" description="Add your course details and pick the kinds of scholarships you'd like to explore." note={`${targetCategories.length} interests selected. Choose as many as you'd like.`} icon={GraduationCap} />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="st-paper-section st-fields-grid grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="st-section-marker sm:col-span-2">01 / Your studies</div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-educationLevel" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Current Level of Study
                     </label>
                     <select
-                      value={profile.educationLevel}
+                      id="settings-educationLevel" value={profile.educationLevel}
                       onChange={(e) => setProfile({ ...profile, educationLevel: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition cursor-pointer"
                     >
+                      <option value="" disabled>Choose an option</option>
                       <option>Class 10th</option>
                       <option>Class 11th / 12th</option>
                       <option>Undergraduate (B.Tech / B.E.)</option>
@@ -555,14 +531,15 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-stream" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Field / Course Stream
                     </label>
                     <select
-                      value={profile.stream}
+                      id="settings-stream" value={profile.stream}
                       onChange={(e) => setProfile({ ...profile, stream: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition cursor-pointer"
                     >
+                      <option value="" disabled>Choose an option</option>
                       <option>Engineering / Technology</option>
                       <option>Medicine & Healthcare</option>
                       <option>Pure & Applied Sciences</option>
@@ -572,41 +549,41 @@ export default function Settings() {
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-college" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       College / Institution Name
                     </label>
                     <input
                       type="text"
-                      value={profile.college}
+                      id="settings-college" placeholder="Your college or institution" value={profile.college}
                       onChange={(e) => setProfile({ ...profile, college: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition"
                     />
                   </div>
 
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    <label htmlFor="settings-cgpa" className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                       Latest CGPA / Percentage
                     </label>
                     <input
                       type="text"
-                      value={profile.cgpa}
+                      id="settings-cgpa" placeholder="For example, 8.5 CGPA or 85%" value={profile.cgpa}
                       onChange={(e) => setProfile({ ...profile, cgpa: e.target.value })}
                       className="w-full bg-[#FAF9F6] border border-slate-300 rounded-2xl px-4 py-2.5 text-sm text-slate-900 font-medium focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-700 outline-none transition"
                     />
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2.5">
-                    Target Scholarship Categories
-                  </label>
-                  <div className="flex flex-wrap gap-2">
+                <section className="st-paper-section" aria-labelledby="scholarship-interests-title">
+                  <h3 id="scholarship-interests-title" className="st-section-marker">02 / Your scholarship interests</h3>
+                  <p className="st-category-summary">{targetCategories.length} selected. Tap an interest to add or remove it from your draft.</p>
+                  <div className="st-category-list">
                     {allCategories.map((cat) => {
                       const isSelected = targetCategories.includes(cat);
                       return (
                         <button
                           key={cat}
                           type="button"
+                          aria-pressed={isSelected}
                           onClick={() => toggleCategory(cat)}
                           className={`cursor-pointer text-xs font-bold px-3.5 py-1.5 rounded-full border transition-all ${
                             isSelected
@@ -619,323 +596,56 @@ export default function Settings() {
                       );
                     })}
                   </div>
-                </div>
+                </section>
 
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
+                <div className="st-save-bar">
+                  <p>Your study details and interests stay in this session. You can export them from Security & Account.</p>
                   <button
                     type="submit"
-                    className="cursor-pointer inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-2xs hover:shadow-xs"
+                    className="st-primary"
                   >
-                    <Save size={14} /> Save Academic Profile
+                    <Save size={14} /> Keep study draft
                   </button>
                 </div>
               </form>
             )}
 
             {activeTab === "notifications" && (
-              <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-900 mb-1 font-sans">
-                      Notification & Deadline Alerts
-                    </h2>
-                    <p className="text-xs sm:text-sm text-slate-600 font-normal">
-                      Configure real-time eligibility alerts, cutoff countdowns, and weekly digests. All settings are enforced immediately.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleSendTestAlert}
-                    disabled={testingAlert}
-                    className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100/70 text-emerald-900 text-xs font-bold transition shadow-2xs shrink-0 disabled:opacity-60"
-                  >
-                    {testingAlert ? (
-                      <Loader2 size={13} className="animate-spin" />
-                    ) : (
-                      <Send size={13} />
-                    )}
-                    <span>{testingAlert ? "Sending..." : "Send Test Alert"}</span>
-                  </button>
-                </div>
-
-                {notifLoading ? (
-                  <div className="py-12 text-center text-xs text-slate-400">
-                    Loading your notification preferences...
-                  </div>
-                ) : (
-                  <>
-                    <div className="space-y-3">
-                      <div className="p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors space-y-3">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="space-y-0.5">
-                            <div className="flex items-center gap-2">
-                              <Sparkles size={15} className="text-emerald-700" />
-                              <h4 className="text-sm font-bold text-slate-900">
-                                Instant Eligibility Match Alerts
-                              </h4>
-                            </div>
-                            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                              Automatically notify me the moment a newly discovered or updated scholarship matches my profile with {notifications.minMatchScore || 70}% or higher confidence.
-                            </p>
-                          </div>
-                          <div className="shrink-0 mt-0.5">
-                            <Toggle
-                              checked={notifications.instantMatch}
-                              onChange={(val) =>
-                                setNotifications({ ...notifications, instantMatch: val })
-                              }
-                              ariaLabel="Instant Eligibility Match Alerts"
-                            />
-                          </div>
-                        </div>
-
-                        {notifications.instantMatch && (
-                          <div className="pt-3 border-t border-slate-200/70 pl-6 space-y-2">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-semibold text-slate-700">Minimum Match Confidence</span>
-                              <span className="font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md border border-emerald-300/60 text-[11px]">
-                                {notifications.minMatchScore || 70}% Match
-                              </span>
-                            </div>
-                            <input
-                              type="range"
-                              min="50"
-                              max="95"
-                              step="5"
-                              value={notifications.minMatchScore || 70}
-                              onChange={(e) =>
-                                setNotifications({
-                                  ...notifications,
-                                  minMatchScore: Number(e.target.value),
-                                })
-                              }
-                              className="w-full accent-emerald-800 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none"
-                            />
-                            <div className="flex justify-between text-[10px] text-slate-500 font-medium">
-                              <span>50% (Broad match)</span>
-                              <span>70% (Balanced)</span>
-                              <span>90%+ (Strict match)</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors space-y-3">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="space-y-0.5">
-                            <div className="flex items-center gap-2">
-                              <Clock size={15} className="text-amber-700" />
-                              <h4 className="text-sm font-bold text-slate-900">
-                                Upcoming Deadline Reminders
-                              </h4>
-                            </div>
-                            <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                              Proactive countdown alerts before closing dates of matching or bookmarked scholarships. Expired schemes are suppressed automatically.
-                            </p>
-                          </div>
-                          <div className="shrink-0 mt-0.5">
-                            <Toggle
-                              checked={notifications.deadlineAlerts}
-                              onChange={(val) =>
-                                setNotifications({ ...notifications, deadlineAlerts: val })
-                              }
-                              ariaLabel="Upcoming Deadline Reminders"
-                            />
-                          </div>
-                        </div>
-
-                        {notifications.deadlineAlerts && (
-                          <div className="pt-3 border-t border-slate-200/70 pl-6 space-y-2.5">
-                            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-slate-800">
-                              <input
-                                type="checkbox"
-                                checked={notifications.deadline7Days}
-                                onChange={(e) =>
-                                  setNotifications({
-                                    ...notifications,
-                                    deadline7Days: e.target.checked,
-                                  })
-                                }
-                                className="rounded border-slate-300 text-emerald-800 focus:ring-emerald-700"
-                              />
-                              <span>7 Days Before Deadline (Preparation window)</span>
-                            </label>
-
-                            <label className="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-slate-800">
-                              <input
-                                type="checkbox"
-                                checked={notifications.deadline48Hours}
-                                onChange={(e) =>
-                                  setNotifications({
-                                    ...notifications,
-                                    deadline48Hours: e.target.checked,
-                                  })
-                                }
-                                className="rounded border-slate-300 text-emerald-800 focus:ring-emerald-700"
-                              />
-                              <span>48 Hours Before Deadline (Urgent final submission warning)</span>
-                            </label>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <MapPin size={15} className="text-teal-700" />
-                            <h4 className="text-sm font-bold text-slate-900">
-                              State & Regional Grant Updates
-                            </h4>
-                          </div>
-                          <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                            Special alerts whenever newly discovered state government schemes are announced for your domicile ({profile.state || "All India"}).
-                          </p>
-                        </div>
-                        <div className="shrink-0 mt-0.5">
-                          <Toggle
-                            checked={notifications.newGrantsInState}
-                            onChange={(val) =>
-                              setNotifications({ ...notifications, newGrantsInState: val })
-                            }
-                            ariaLabel="State & Regional Grant Updates"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-200/90 bg-[#FAF9F6] hover:bg-emerald-50/30 transition-colors">
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <Mail size={15} className="text-sky-700" />
-                            <h4 className="text-sm font-bold text-slate-900">
-                              Weekly Curated Scholarship Digest
-                            </h4>
-                          </div>
-                          <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                            A curated personalized summary sent every Monday morning highlighting top matching opportunities accepting applications this week.
-                          </p>
-                        </div>
-                        <div className="shrink-0 mt-0.5">
-                          <Toggle
-                            checked={notifications.weeklyDigest}
-                            onChange={(val) =>
-                              setNotifications({ ...notifications, weeklyDigest: val })
-                            }
-                            ariaLabel="Weekly Curated Scholarship Digest"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-slate-100 space-y-4">
-                      <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-                        Delivery Channels & Timezone
-                      </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between">
-                          <div>
-                            <div className="text-xs font-bold text-slate-900">In-App Notification Center</div>
-                            <div className="text-[11px] text-slate-500">Top navigation bell badge and panel</div>
-                          </div>
-                          <Toggle
-                            checked={notifications.channels?.inApp}
-                            onChange={(val) =>
-                              setNotifications({
-                                ...notifications,
-                                channels: {
-                                  ...notifications.channels,
-                                  inApp: val,
-                                },
-                              })
-                            }
-                            ariaLabel="In-App Notification Center"
-                          />
-                        </div>
-
-                        <div className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-center justify-between">
-                          <div>
-                            <div className="text-xs font-bold text-slate-900">Email Delivery</div>
-                            <div className="text-[11px] text-slate-500 truncate max-w-44">{user?.email || "Account email"}</div>
-                          </div>
-                          <Toggle
-                            checked={notifications.channels?.email}
-                            onChange={(val) =>
-                              setNotifications({
-                                ...notifications,
-                                channels: {
-                                  ...notifications.channels,
-                                  email: val,
-                                },
-                              })
-                            }
-                            ariaLabel="Email Delivery"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3.5 rounded-xl border border-slate-200 bg-white">
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">Scheduled Digest Timezone</div>
-                          <div className="text-[11px] text-slate-500">Determines when Monday morning digests are dispatched</div>
-                        </div>
-                        <select
-                          value={notifications.timezone}
-                          onChange={(e) =>
-                            setNotifications({
-                              ...notifications,
-                              timezone: e.target.value,
-                            })
-                          }
-                          className="bg-[#FAF9F6] border border-slate-300 rounded-xl px-3 py-1.5 text-xs text-slate-900 font-medium outline-none cursor-pointer"
-                        >
-                          <option value="Asia/Kolkata">Asia/Kolkata (IST - UTC+5:30)</option>
-                          <option value="UTC">UTC (Coordinated Universal Time)</option>
-                          <option value="Asia/Dubai">Asia/Dubai (GST - UTC+4:00)</option>
-                          <option value="Europe/London">Europe/London (GMT/BST)</option>
-                          <option value="America/New_York">America/New_York (EST/EDT)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-end">
-                      <button
-                        type="button"
-                        onClick={handleNotificationsSave}
-                        disabled={notifSaving}
-                        className="cursor-pointer inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all shadow-2xs hover:shadow-xs disabled:opacity-60"
-                      >
-                        {notifSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                        <span>{notifSaving ? "Saving..." : "Save Alert Settings"}</span>
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
+              <AlertPreferences
+                value={notifications}
+                onChange={setNotifications}
+                savedValue={savedNotifications}
+                loading={notifLoading}
+                saving={notifSaving}
+                testing={testingAlert}
+                onSave={handleNotificationsSave}
+                onTest={handleSendTestAlert}
+                error={notifError}
+                onRetry={loadNotificationPreferences}
+                email={user?.email}
+                state={profile.state}
+              />
             )}
-
             {activeTab === "security" && (
-              <div className="space-y-8">
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900 mb-1 font-sans">
-                    Security & Account Control
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-600 font-normal">
-                    Manage your credentials, connected identity providers, and data privacy.
-                  </p>
-                </div>
+              <div className="settings-form space-y-6">
+                <SettingsSectionHeader eyebrow="Your account file" title="Your account, in your hands." description="See your sign-in details, export your current preferences, or find help with your account." note={user?.email || "Your account details belong here."} icon={Shield} />
 
-                <form onSubmit={handleSecuritySave} className="space-y-4">
-                  <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                    <Key size={15} className="text-emerald-800" /> Update Password
+                <form onSubmit={handleSecuritySave} className="st-paper-section space-y-4">
+                  <h3 className="st-section-marker">
+                    <Key size={15} /> 01 / Your password
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <p className="st-security-note">Password changes aren't available here yet. These fields are disabled until account updates are connected.</p>
+                  <div className="st-fields-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-700">
+                      <label htmlFor="settings-currentPassword" className="text-xs font-bold text-slate-700">
                         Current Password
                       </label>
                       <input
+                        disabled
+                        autoComplete="current-password"
                         type="password"
                         placeholder="••••••••"
-                        value={security.currentPassword}
+                        id="settings-currentPassword" value={security.currentPassword}
                         onChange={(e) =>
                           setSecurity({ ...security, currentPassword: e.target.value })
                         }
@@ -943,13 +653,15 @@ export default function Settings() {
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-700">
+                      <label htmlFor="settings-newPassword" className="text-xs font-bold text-slate-700">
                         New Password
                       </label>
                       <input
+                        disabled
+                        autoComplete="new-password"
                         type="password"
                         placeholder="Min 8 characters"
-                        value={security.newPassword}
+                        id="settings-newPassword" value={security.newPassword}
                         onChange={(e) =>
                           setSecurity({ ...security, newPassword: e.target.value })
                         }
@@ -957,13 +669,15 @@ export default function Settings() {
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-slate-700">
+                      <label htmlFor="settings-confirmPassword" className="text-xs font-bold text-slate-700">
                         Confirm New Password
                       </label>
                       <input
+                        disabled
+                        autoComplete="new-password"
                         type="password"
                         placeholder="Repeat new password"
-                        value={security.confirmPassword}
+                        id="settings-confirmPassword" value={security.confirmPassword}
                         onChange={(e) =>
                           setSecurity({ ...security, confirmPassword: e.target.value })
                         }
@@ -974,18 +688,19 @@ export default function Settings() {
                   <div className="flex justify-end pt-2">
                     <button
                       type="submit"
-                      className="cursor-pointer inline-flex items-center gap-2 bg-slate-900 hover:bg-emerald-800 text-white text-xs font-bold px-5 py-2.5 rounded-full transition-all shadow-2xs"
+                      disabled
+                      className="st-primary"
                     >
-                      Update Password
+                      Password changes unavailable
                     </button>
                   </div>
                 </form>
 
-                <div className="pt-6 border-t border-slate-100 space-y-3">
-                  <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Connected Accounts
+                <section className="st-paper-section">
+                  <h3 className="st-section-marker">
+                    02 / Sign-in connections
                   </h3>
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-[#FAF9F6]">
+                  <div className="st-account-row">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-2xs">
                         <svg width="18" height="18" viewBox="0 0 48 48">
@@ -996,61 +711,54 @@ export default function Settings() {
                         </svg>
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-900">Google OAuth</p>
+                        <p className="text-sm font-bold text-slate-900">Google sign-in</p>
                         <p className="text-xs text-slate-500 font-normal">
-                          {user?.email || "Connected for one-click authentication"}
+                          {user?.authProvider === "google" || user?.googleId ? user.email : "Connection details are not available for this session."}
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full">
-                      Connected
+                    <span className="st-account-badge">
+                      {user?.authProvider === "google" || user?.googleId ? "Connected" : "Not confirmed"}
                     </span>
                   </div>
-                </div>
+                </section>
 
-                <div className="pt-6 border-t border-slate-100 space-y-3">
-                  <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Data Privacy & Account Controls
+                <section className="st-paper-section">
+                  <h3 className="st-section-marker">
+                    03 / Keep a copy
                   </h3>
 
-                  <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-[#FAF9F6]">
+                  <div className="st-account-row">
                     <div>
-                      <h4 className="text-sm font-bold text-slate-900">Download Profile Data</h4>
+                      <h4 className="text-sm font-bold text-slate-900">Download your current settings</h4>
                       <p className="text-xs text-slate-500 font-normal">
-                        Export all saved eligibility criteria, preferences, and activity in JSON format.
+                        Keep a JSON copy of the profile draft, scholarship interests, and alert settings shown on this page.
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={handleExportData}
-                      className="cursor-pointer inline-flex items-center gap-1.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs"
+                      className="st-secondary"
                     >
                       <Download size={13} /> Export JSON
                     </button>
                   </div>
+                </section>
 
-                  <div className="p-4 rounded-2xl border border-rose-200 bg-rose-50/40 flex items-center justify-between">
+                <section className="st-paper-section st-danger-section">
+                  <h3 className="st-section-marker"><AlertTriangle size={15} /> 04 / Account help</h3>
+                  <div className="st-account-row">
                     <div>
                       <h4 className="text-sm font-bold text-rose-900 flex items-center gap-1.5">
                         <AlertTriangle size={15} className="text-rose-600" /> Delete Account
                       </h4>
                       <p className="text-xs text-rose-700 font-normal">
-                        Permanently remove your account, saved scholarships, and eligibility data.
+                        Find the support options for requesting account deletion.
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        toast.error(
-                          "Please contact support@udaan.com to process permanent account deletion."
-                        )
-                      }
-                      className="cursor-pointer inline-flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs"
-                    >
-                      <Trash2 size={13} /> Delete
-                    </button>
+                    <Link to="/support" className="st-secondary"><Trash2 size={13} /> Get account help</Link>
                   </div>
-                </div>
+                </section>
               </div>
             )}
           </div>
@@ -1059,4 +767,3 @@ export default function Settings() {
     </div>
   );
 }
-
