@@ -9,7 +9,7 @@ AICTE adapter reads actual council scholarship/fellowship cards.
 | NSP | Scheme list, dated application windows, linked PDFs | HTTP with rendering fallback |
 | UP | Four scheme sections and stated timetable cycle | Chromium |
 | MahaDBT | Department tabs and scheme detail panels | HTTP with rendering fallback |
-| Karnataka SSP | Department/scheme IDs and original Kannada criteria | HTTP |
+| Karnataka SSP | Department/scheme IDs and original Kannada criteria | HTTP with browser fallback for transport failures |
 | West Bengal SVMCM | Official Government myScheme JSON catalogue | HTTP |
 | Bihar PMS | BC/EBC portal and dated application windows | HTTP |
 | DST INSPIRE | SHE section of the official programme page | Chromium |
@@ -94,6 +94,10 @@ and refreshes statuses hourly while the host runs. Environments sharing Redis
 use separate crawler locks and response cache namespaces for separate databases. `PIPELINE_BOOTSTRAP=off` or
 `ENABLE_CRAWLER=false` disables bootstrap. Historical `replay` mode does not
 refresh an existing catalogue.
+
+Eligibility-result caches share the catalogue namespace with list/detail caches,
+so a completed crawl invalidates matching results as well. Environments using
+the same Redis account cannot return another database's eligibility results.
 
 Migration 003 no longer seeds canned notices. Migrations 004 and 005 quarantine
 records citing normalized JSON samples, recognizing both old `/api/schemes`

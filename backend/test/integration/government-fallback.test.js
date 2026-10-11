@@ -61,6 +61,22 @@ test("empty fallback is rejected and leaves existing catalogue intact", async ()
 	assert.deepEqual(await store.listScholarships(), before);
 });
 
+test("a fallback whose writes all fail never reports a successful catalogue", async () => {
+	const source = getSource("aicte_ugc_national"), store = new MemoryStore();
+	await store.saveSourceState({ sourceId: source.id, lastSuccessAt: new Date("2026-10-01T00:00Z") });
+	store.saveScholarship = async () => { throw new Error("Simulated storage failure"); };
+	const pipeline = new Pipeline({ store, logger: silent, fetcherFactory: () => ({ fetch: async (url) => {
+		if (!url.includes("myscheme.gov.in")) return fail();
+		return response(url, fixture("myscheme-pgssgategpatqsaicte.json"));
+	} }) });
+	const report = await pipeline.runSource(source);
+	assert.equal(report.status, "rejected");
+	assert.equal(report.fallbackUsed, false);
+	assert.equal(report.counts.published, 0);
+	assert.ok(report.errors.some((e) => e.code === "UPSERT_FAILED"));
+	assert.equal((await store.getSourceState(source.id)).lastSuccessAt.toISOString(), "2026-10-01T00:00:00.000Z");
+});
+
 test("partial fallback does not age absent primary records; portal recovery clears fallback health", async () => {
 	const source = getSource("aicte_ugc_national"), store = new MemoryStore();
 	let recovered = false, fallbackCalls = 0;

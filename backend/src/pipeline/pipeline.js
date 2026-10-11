@@ -383,6 +383,10 @@ export class Pipeline {
 			}
 		}
 
+		if (run.counts.published === 0) {
+			return finish("rejected", new FetchError("EMPTY_CATALOGUE", "No scholarships could be published. Previous published records are preserved."));
+		}
+
 		// Page-level issues (no schemeKey)
 		for (const issue of pageIssues) {
 			await this.store.upsertIssue({ ...noteIssue(null, issue), seenAt: at, runId });

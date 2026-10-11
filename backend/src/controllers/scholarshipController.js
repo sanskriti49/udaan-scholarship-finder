@@ -13,6 +13,7 @@ import { crawlerScheduler } from "../pipeline/scheduler.js";
 import { SOURCE_REGISTRY } from "../pipeline/sources.js";
 import { computeStatus } from "../pipeline/core/status.js";
 import { verifyEvidence } from "../pipeline/core/evidence.js";
+import { evaluationCacheKey } from "../pipeline/lock.js";
 
 const PUBLIC_FILTER = { "publication.state": "published" };
 const HIDDEN_FIELDS = { legacySnapshot: 0, fieldEvidence: 0, dataHash: 0 };
@@ -557,7 +558,7 @@ export const evaluateScholarships = async (req, res) => {
 			.update(JSON.stringify(profileFingerprint))
 			.digest("hex")
 			.slice(0, 16);
-		const cacheKey = `scholarship:eval:${profileHash}`;
+		const cacheKey = evaluationCacheKey(profileHash);
 
 		// Check Redis cache
 		if (isRedisAvailable()) {
