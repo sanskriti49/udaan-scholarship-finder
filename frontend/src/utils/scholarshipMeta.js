@@ -29,19 +29,40 @@ export function deadlineInfo(deadline, status) {
 export function whyItFits(s, max = 3) {
 	const out = [];
 	const add = (t) => t && out.length < max && !out.includes(t) && out.push(t);
-	for (const r of s.rules || []) {
-		const req = formatRuleRequirement(r);
-		if (req) add(`${formatFieldLabel(r.field)}: ${req}`);
-		else if (r.description && r.description.length < 70) add(r.description);
+	const rules = s.rules || [];
+
+	for (const r of rules) {
+		if (r.description && r.description.length < 70) {
+			add(r.description);
+		} else {
+			const req = formatRuleRequirement(r);
+			if (req) add(`${formatFieldLabel(r.field)}: ${req}`);
+		}
 	}
+
+	const hasRule = (f) => rules.some((r) => r.field === f);
 	const e = s.eligibility || {};
-	if (e.familyIncome?.max) add(`Family income up to ${lakh(e.familyIncome.max)} a year`);
-	if (e.gender === "Female") add("Open to girls and women");
-	if (e.casteCategories?.length) add(`For ${e.casteCategories.join(" / ")} students`);
-	if (e.minCGPA) add(`Minimum CGPA ${e.minCGPA}`);
-	if (e.disabilityRequired) add("For students with a disability certificate");
-	if (s.level) add(`For ${s.level} students`);
-	if (s.state && s.state !== "All India") add(`Residents of ${s.state}`);
+	if (e.familyIncome?.max && !hasRule("familyIncome") && !hasRule("familyIncomeMax")) {
+		add(`Family income up to ${lakh(e.familyIncome.max)} a year`);
+	}
+	if (e.gender === "Female" && !hasRule("gender")) {
+		add("Open to girls and women");
+	}
+	if (e.casteCategories?.length && !hasRule("casteCategory") && !hasRule("category")) {
+		add(`For ${e.casteCategories.join(" / ")} students`);
+	}
+	if (e.minCGPA && !hasRule("minCGPA") && !hasRule("cgpa") && !hasRule("marks")) {
+		add(`Minimum CGPA ${e.minCGPA}`);
+	}
+	if (e.disabilityRequired && !hasRule("hasDisability") && !hasRule("disability")) {
+		add("For students with a disability certificate");
+	}
+	if (s.level && !hasRule("educationLevel") && !hasRule("level")) {
+		add(`For ${s.level} students`);
+	}
+	if (s.state && s.state !== "All India" && !hasRule("state") && !hasRule("domicile")) {
+		add(`Residents of ${s.state}`);
+	}
 	return out;
 }
 

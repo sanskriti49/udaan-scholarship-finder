@@ -9,12 +9,27 @@ import {
 	X,
 	Check,
 	ArrowUpRight,
+	Wallet,
+	Home,
+	BadgeCheck,
+	GraduationCap,
+	FileText,
+	Landmark,
+	Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
-//import { PageStyles, Stamp } from "../components/PageKit";
-import { PageStyles, Stamp, Confetti } from "../components/PageKit";
+
+import { PaperFolder, FYRibbon } from "../components/DocumentVaultVisuals";
+import {
+	CheeringStudent,
+	ShockedStudent,
+	ConfusedDetective,
+	PaperReader,
+	CoinHugger,
+} from "../components/AnimatedIllustrations";
 import { MotionStyles, Reveal, ProgressRing } from "../components/MotionKit";
 import documentImg from "../assets/images/document.png";
+import { Confetti, PageStyles, Stamp } from "../components/PageKit";
 
 function getFY(date) {
 	const y = date.getFullYear();
@@ -105,7 +120,43 @@ const DOCUMENT_REGISTRY = [
 			"Fee reimbursement schemes need the breakup of tuition, library and hostel charges, not just a total.",
 	},
 ];
-
+const DOCUMENT_UI = {
+	income_cert: {
+		icon: Wallet,
+		risk: "Issued in a past financial year",
+		validShort: "This FY only",
+	},
+	domicile_cert: {
+		icon: Home,
+		risk: "Address doesn't match Aadhaar",
+		validShort: "Permanent",
+	},
+	caste_cert: {
+		icon: BadgeCheck,
+		risk: "State format, not Central NCL",
+		validShort: "Varies by category",
+	},
+	bonafide_cert: {
+		icon: GraduationCap,
+		risk: "No AISHE code or stamp",
+		validShort: "This academic year",
+	},
+	marksheet_prev: {
+		icon: FileText,
+		risk: "Unattested internet copy",
+		validShort: "Latest exam",
+	},
+	bank_npci_dbt: {
+		icon: Landmark,
+		risk: "Account not NPCI-mapped",
+		validShort: "All year",
+	},
+	fee_receipt: {
+		icon: Receipt,
+		risk: "Total only, no breakup",
+		validShort: "This academic year",
+	},
+};
 const STATE_PORTALS = [
 	{
 		state: "Uttar Pradesh",
@@ -373,11 +424,27 @@ export default function DocumentVault() {
 							</Stamp>
 						</div>
 
-						<p className="mt-6 max-w-xl text-base leading-relaxed text-emerald-950/75 sm:text-lg">
-							Most scholarship rejections are paperwork, not merit. Tick off
-							each certificate, see who issues it, and catch the mistakes that
-							get applications bounced.
+						<p className="mt-5 max-w-md text-base leading-relaxed text-emerald-950/75 sm:text-lg">
+							Most rejections are paperwork, not merit. Tick papers off and
+							watch the folder fill.
 						</p>
+
+						<ul className="mt-7 flex flex-wrap gap-2 text-sm font-semibold">
+							{[
+								[<Lock size={14} key="l" />, "Nothing uploaded"],
+								[null, "No account needed"],
+								[null, "Ticks stay in this browser"],
+								[null, "Your checklist, not verification"],
+							].map(([icon, text]) => (
+								<li
+									key={text}
+									className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-3.5 py-1.5"
+								>
+									{icon}
+									{text}
+								</li>
+							))}
+						</ul>
 
 						<div className="mt-8 flex max-w-xl items-start gap-3.5 border-t-[1.5px] border-dashed border-emerald-950/30 pt-6">
 							<span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border-[1.5px] border-emerald-950 bg-white">
@@ -396,11 +463,11 @@ export default function DocumentVault() {
 					</div>
 
 					<div className="relative flex justify-center">
-						<div className="w-full max-w-sm overflow-hidden rounded-2xl border-[1.5px] border-emerald-950 bg-white p-4 shadow-[4px_4px_0px_0px_rgba(2,44,34,1)]">
-							<img
-								src={documentImg}
-								alt="Document preview"
-								className="mx-auto max-h-80 w-full object-contain"
+						<div className="w-full max-w-sm rounded-2xl border-[1.5px] border-emerald-950 bg-white p-3 shadow-[4px_4px_0px_0px_rgba(2,44,34,1)]">
+							<PaperFolder
+								docs={DOCUMENT_REGISTRY}
+								statuses={docStatuses}
+								activeIds={filteredDocs.map((d) => d.id)}
 							/>
 						</div>
 					</div>
@@ -479,6 +546,15 @@ export default function DocumentVault() {
 					<div className="divide-y-[1.5px] divide-dashed divide-emerald-950/25">
 						{filteredDocs.map((doc, i) => {
 							const status = docStatuses[doc.id] || "pending";
+							const {
+								icon: DocIcon,
+								risk,
+								validShort,
+							} = DOCUMENT_UI[doc.id] ?? {
+								icon: FileText,
+								validShort: "Check scheme",
+								risk: "Requirements vary",
+							};
 							return (
 								<Reveal key={doc.id} delay={i * 60}>
 									<div
@@ -490,23 +566,40 @@ export default function DocumentVault() {
 													: "border-l-transparent"
 										}`}
 									>
-										<div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-											<div className="min-w-0">
-												<h3 className="flex flex-wrap items-center gap-3 font-sans text-xl font-bold leading-tight">
+										<div className="flex flex-wrap items-start gap-3 sm:flex-nowrap sm:items-center sm:gap-4">
+											{/* Document icon */}
+											<span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-[1.5px] border-emerald-950 bg-yellow-200">
+												<DocIcon size={20} />
+											</span>
+
+											{/* Document information */}
+											<div className="min-w-0 flex-1">
+												<h3 className="flex flex-wrap items-center gap-3 text-lg font-bold leading-tight">
 													{doc.name}
+
 													{status === "ready" && (
 														<Stamp slam tilt={-5} className="text-xs">
 															In the folder
 														</Stamp>
 													)}
 												</h3>
-												<p className="mt-1 font-sans text-sm text-emerald-950/85">
-													Issued by{" "}
-													<span className="font-medium font-serif text-emerald-950">
+
+												<div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-bold">
+													<span className="rounded-full border border-emerald-950/30 bg-emerald-50 px-2.5 py-1">
 														{doc.authority}
 													</span>
-												</p>
+
+													<span className="rounded-full border border-emerald-950/30 px-2.5 py-1">
+														Valid: {validShort}
+													</span>
+
+													<span className="rounded-sm bg-yellow-200 px-2 py-1">
+														Rejected for: {risk}
+													</span>
+												</div>
 											</div>
+
+											{/* Status toggle */}
 											<span key={status} className="sk-pop shrink-0">
 												<StatusButton
 													status={status}
@@ -515,22 +608,25 @@ export default function DocumentVault() {
 											</span>
 										</div>
 
-										<p className="mt-3 max-w-prose text-[15px] leading-relaxed text-emerald-950/80">
-											<span className="rounded-sm bg-yellow-200 px-1.5 py-0.5 text-sm font-bold text-emerald-950">
+										{/* Expandable rejection information */}
+										<details className="mt-3 sm:ml-16">
+											<summary className="cursor-pointer text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4">
 												Why it gets rejected
-											</span>{" "}
-											{doc.pitfall}
-										</p>
+											</summary>
 
-										<div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-											<p className="text-sm text-emerald-950/65">
+											<p className="mt-2 max-w-prose text-[15px] leading-relaxed text-emerald-950/80">
+												{doc.pitfall}
+											</p>
+
+											<p className="mt-2 text-sm text-emerald-950/65">
 												Valid:{" "}
 												<span className="font-bold text-emerald-950">
 													{doc.validity}
 												</span>
 											</p>
 
-											<div className="flex flex-wrap items-center gap-2">
+											{/* Keep existing action buttons */}
+											<div className="mt-3 flex flex-wrap gap-2">
 												{doc.hasGenerator && (
 													<button
 														type="button"
@@ -541,6 +637,7 @@ export default function DocumentVault() {
 														Bonafide template
 													</button>
 												)}
+
 												{doc.hasDbtGuide && (
 													<button
 														type="button"
@@ -552,7 +649,7 @@ export default function DocumentVault() {
 													</button>
 												)}
 											</div>
-										</div>
+										</details>
 									</div>
 								</Reveal>
 							);

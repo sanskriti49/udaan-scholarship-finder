@@ -17,6 +17,16 @@ import { loadScholarships } from "./scholarships";
 import { useScanner } from "./useScanner";
 import { stageEligibilityDraft } from "../utils/eligibilityDraft";
 import "./scanner.css";
+import {
+	PaperReader,
+	ConfusedDetective,
+	CablesDoctor,
+	CheeringStudent,
+	CoinHugger,
+	ShockedStudent,
+	CornerPeeker,
+	DoodleSparkle,
+} from "../components/AnimatedIllustrations";
 
 const origins = {
 	ocr: "Read by OCR",
@@ -80,6 +90,7 @@ export default function Scanner() {
 							<li>A summary you can download</li>
 						</ul>
 						<small>A review aid, not certificate verification.</small>
+						<PaperReader size={112} className="scanner-context-art" />
 					</aside>
 				</header>
 				<p className="scanner-privacy">
@@ -273,6 +284,9 @@ function Workflow({ type, scheme }) {
 						>
 							<b>{index + 1}</b>
 							{label}
+							{currentStep === index + 1 && (
+								<DoodleSparkle size={14} className="scanner-step-spark" />
+							)}
 						</span>
 					),
 				)}
@@ -283,6 +297,7 @@ function Workflow({ type, scheme }) {
 					report ? "results-title" : reviewing ? "review-title" : "input-title"
 				}
 			>
+				{!busy && <CornerPeeker size={64} className="scanner-peeker" />}
 				<div className="scanner-workspace-top">
 					<span>{schemas[type].label}</span>
 					<button type="button" onClick={reset} className="scanner-text-button">
@@ -290,9 +305,10 @@ function Workflow({ type, scheme }) {
 					</button>
 				</div>
 				{scanner.error && (
-					<p role="alert" className="scanner-error">
-						{scanner.error}
-					</p>
+					<div role="alert" className="scanner-error scanner-error--art">
+						<CablesDoctor size={64} />
+						<p>{scanner.error}</p>
+					</div>
 				)}
 				{!reviewing && !report && !busy && (
 					<>
@@ -311,6 +327,13 @@ function Workflow({ type, scheme }) {
 									void scanner.scan(event.dataTransfer.files[0]);
 							}}
 						>
+							{dragging && (
+								<ShockedStudent
+									size={64}
+									bubbleText="ooh, drop it!"
+									className="scanner-drop-react"
+								/>
+							)}
 							<Upload size={27} />
 							<strong>Choose a clear copy of your certificate</strong>
 							<p>
@@ -345,6 +368,13 @@ function Workflow({ type, scheme }) {
 				)}
 				{busy && (
 					<div className="scanner-processing">
+						<div className="scanner-reading" aria-hidden="true">
+							<i />
+							<i />
+							<i />
+							<i />
+							<ConfusedDetective size={84} className="scanner-reading-kid" />
+						</div>
 						<h2>Reading your document…</h2>
 						<p role="status">{scanner.status}</p>
 						<progress aria-label="Processing document locally" />
@@ -458,11 +488,14 @@ function Workflow({ type, scheme }) {
 							{important.length ? (
 								important.map(observation)
 							) : (
-								<p className="scanner-clear-note">
-									No date or format issues were found in the recorded values.
-									Check the original and the scheme’s requirements before
-									applying.
-								</p>
+								<div className="scanner-clear">
+									<CheeringStudent size={76} className="scanner-pop" />
+									<p className="scanner-clear-note">
+										No date or format issues were found in the recorded values.
+										Check the original and the scheme’s requirements before
+										applying.
+									</p>
+								</div>
 							)}
 						</div>
 						<details className="scanner-recorded">
@@ -490,6 +523,9 @@ function Workflow({ type, scheme }) {
 							)}
 						</div>
 						<section className="scanner-handoff">
+							{prefill.familyIncome && (
+								<CoinHugger size={64} className="scanner-handoff-art" />
+							)}
 							<h3>Use a reviewed detail to save retyping.</h3>
 							{transferable.length ? (
 								<>

@@ -1069,6 +1069,227 @@ export function CablesDoctor({ size = 80, className = "" }) {
 	);
 }
 
+/**
+ * PaperReader — paste this into your illustrations file (below CablesDoctor
+ * is a good spot). It reuses what's already there: C, Sticker, Eye, Blush,
+ * Sparkle4. No new dependencies, no animation.
+ *
+ * Round-glasses kid in a coral hoodie, holding up a certificate that has a
+ * yellow-highlighted line, a mint scan band sweeping across it, and a tiny
+ * padlock charm clipped to the corner (files stay on your device).
+ */
+export function PaperReader({ size = 112, className = "" }) {
+	return (
+		<Sticker
+			width={size}
+			height={size}
+			viewBox="0 0 120 120"
+			className={className}
+			decor={
+				<g>
+					<Sparkle4 x="110" y="16" s=".9" />
+					<Sparkle4 x="7" y="22" s=".6" fill={C.lilac} />
+					<circle cx="114" cy="40" r="2.4" fill={C.hot} />
+					<path
+						d="M104 102L110 106M106 114L112 120"
+						stroke={C.coral}
+						strokeWidth="2.6"
+					/>
+				</g>
+			}
+		>
+			{/* body: hoodie */}
+			<path
+				d="M12 118C12 92 24 76 40 76C56 76 68 92 68 118Z"
+				fill={C.coral}
+				stroke={C.ink}
+				strokeWidth="2.4"
+			/>
+			<path
+				d="M31 82C34 92 46 92 49 82"
+				fill={C.cream}
+				stroke={C.ink}
+				strokeWidth="2.2"
+			/>
+			{/* resting arm */}
+			<path d="M16 102C13 108 14 112 18 115" stroke={C.ink} strokeWidth="10" />
+			<path d="M16 102C13 108 14 112 18 115" stroke={C.coral} strokeWidth="6" />
+			<circle
+				cx="18"
+				cy="115"
+				r="4.6"
+				fill={C.skin}
+				stroke={C.ink}
+				strokeWidth="1.8"
+			/>
+
+			{/* the certificate, tilted */}
+			<g transform="rotate(8 88 66)">
+				<rect
+					x="66"
+					y="34"
+					width="42"
+					height="56"
+					rx="4"
+					fill={C.cream}
+					stroke={C.ink}
+					strokeWidth="2.2"
+				/>
+				{/* title + seal */}
+				<path d="M72 42H88" stroke={C.deepGreen} strokeWidth="3" opacity=".7" />
+				<path
+					d="M72 47.5H82"
+					stroke={C.deepGreen}
+					strokeWidth="2"
+					opacity=".45"
+				/>
+				<circle
+					cx="99"
+					cy="43"
+					r="4.5"
+					fill={C.hot}
+					stroke={C.ink}
+					strokeWidth="1.4"
+				/>
+				<path
+					d="M72 54H101"
+					stroke={C.deepGreen}
+					strokeWidth="2"
+					opacity=".45"
+				/>
+				{/* highlighted line */}
+				<rect x="69" y="57" width="36" height="7" rx="2" fill={C.yellow} />
+				<path
+					d="M72 60.5H99"
+					stroke={C.deepGreen}
+					strokeWidth="2"
+					opacity=".6"
+				/>
+				{/* scan band, slips behind the head on the left */}
+				<rect
+					x="60"
+					y="66"
+					width="52"
+					height="7"
+					rx="3.5"
+					fill={C.green}
+					fillOpacity=".5"
+					stroke={C.deepGreen}
+					strokeWidth="1.4"
+				/>
+				<path
+					d="M72 69.5H96"
+					stroke={C.deepGreen}
+					strokeWidth="2"
+					opacity=".55"
+				/>
+				<path
+					d="M72 78H88"
+					stroke={C.deepGreen}
+					strokeWidth="2"
+					opacity=".45"
+				/>
+				{/* padlock charm */}
+				<path
+					d="M98 82V78.5C98 74 106 74 106 78.5V82"
+					stroke={C.ink}
+					strokeWidth="2"
+				/>
+				<rect
+					x="95"
+					y="82"
+					width="14"
+					height="11"
+					rx="2.8"
+					fill={C.yellow}
+					stroke={C.ink}
+					strokeWidth="1.8"
+				/>
+				<circle cx="102" cy="87" r="1.7" fill={C.ink} />
+			</g>
+			{/* holding arm + hand */}
+			<path d="M60 104C65 99 66 92 65 87" stroke={C.ink} strokeWidth="10" />
+			<path d="M60 104C65 99 66 92 65 87" stroke={C.coral} strokeWidth="6" />
+			<circle
+				cx="65"
+				cy="83"
+				r="5.4"
+				fill={C.skin}
+				stroke={C.ink}
+				strokeWidth="1.9"
+			/>
+
+			{/* head: bob + fringe */}
+			<ellipse
+				cx="40"
+				cy="50"
+				rx="32"
+				ry="29"
+				fill={C.hair}
+				stroke={C.ink}
+				strokeWidth="2.4"
+			/>
+			<ellipse
+				cx="40"
+				cy="56"
+				rx="28"
+				ry="24"
+				fill={C.skin}
+				stroke={C.ink}
+				strokeWidth="2.4"
+			/>
+			<path
+				d="M12 50C11 30 24 21 40 21C56 21 69 30 68 50C63 47 59 42 57 36C50 43 43 43 40 36C37 43 29 43 23 36C21 42 17 47 12 50Z"
+				fill={C.hair}
+				stroke={C.ink}
+				strokeWidth="2.2"
+			/>
+			<path
+				d="M26 28C32 24 38 23 44 24"
+				stroke={C.hairLight}
+				strokeWidth="2.4"
+			/>
+			<circle
+				cx="57"
+				cy="29"
+				r="3.8"
+				fill={C.hot}
+				stroke={C.ink}
+				strokeWidth="1.5"
+			/>
+			{/* face: eyes glance toward the paper */}
+			<Eye cx="31.5" cy="58" r="4.2" />
+			<Eye cx="51.5" cy="58" r="4.2" />
+			<circle
+				cx="30"
+				cy="58"
+				r="8.8"
+				fill="#fff"
+				fillOpacity=".3"
+				stroke={C.ink}
+				strokeWidth="2.2"
+			/>
+			<circle
+				cx="50"
+				cy="58"
+				r="8.8"
+				fill="#fff"
+				fillOpacity=".3"
+				stroke={C.ink}
+				strokeWidth="2.2"
+			/>
+			<path d="M38.6 57Q40 55 41.4 57" stroke={C.ink} strokeWidth="2" />
+			<Blush cx="19" cy="69" rx="4.4" ry="2.6" />
+			<Blush cx="61" cy="69" rx="4.4" ry="2.6" />
+			<path
+				d="M36 70Q38 73 40 70Q42 73 44 70"
+				stroke={C.ink}
+				strokeWidth="1.9"
+			/>
+		</Sticker>
+	);
+}
+
 /** Cat-ear beanie peeking over a ledge, tiny paws on top. */
 export function CornerPeeker({ size = 48, className = "" }) {
 	return (

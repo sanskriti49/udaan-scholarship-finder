@@ -546,7 +546,7 @@ export default function Scholarships() {
 			<PageStyles />
 
 			{/* ---------- Hero ---------- */}
-			<section className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 md:pb-16 md:pt-16">
+			<section className="mx-auto max-w-7xl px-5 pb-12 pt-12 sm:px-8 md:pb-10">
 				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.75fr)] lg:gap-16">
 					<div>
 						<p className="sd-eyebrow mb-5">The scholarship finder</p>
@@ -1263,7 +1263,9 @@ export default function Scholarships() {
 											) : (
 												<>
 													<div className="flex min-w-0 flex-wrap items-baseline gap-2">
-														<span className={`ud-display min-w-0 break-words font-extrabold text-emerald-950 ${g.isNarrative ? "text-xl" : "text-3xl sm:text-4xl"}`}>
+														<span
+															className={`ud-display min-w-0 break-words font-extrabold text-emerald-950 ${g.isNarrative ? "text-xl" : "text-3xl sm:text-4xl"}`}
+														>
 															{g.main}
 														</span>
 														{g.period && (
@@ -1272,7 +1274,11 @@ export default function Scholarships() {
 															</span>
 														)}
 													</div>
-													{g.details && <p className="mt-2 text-sm leading-relaxed text-emerald-950/70">{g.details}</p>}
+													{g.details && (
+														<p className="mt-2 text-sm leading-relaxed text-emerald-950/70">
+															{g.details}
+														</p>
+													)}
 													{g.options && g.options.length > 1 && (
 														<div className="mt-4 pt-3 border-t border-dashed border-emerald-950/15">
 															<p className="mb-2 text-xs font-bold text-emerald-950/60 uppercase tracking-wider">

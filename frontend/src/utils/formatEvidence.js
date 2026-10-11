@@ -200,6 +200,8 @@ export function formatFieldLabel(field) {
 		domicile: "Domicile / State",
 		religion: "Religion / Minority Status",
 		disability: "Disability Status",
+		hasDisability: "Disability Status",
+		casteCategory: "Community / Category",
 	};
 	if (map[field]) return map[field];
 	return field.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()).trim();
@@ -254,6 +256,16 @@ export function formatRuleRequirement(rule) {
 			return targetValue.map((v) => levelMap[v] || v).join(", ");
 		}
 		return levelMap[targetValue] || String(targetValue);
+	}
+
+	if (field === "hasDisability" || field === "disability") {
+		if (typeof targetValue === "boolean") {
+			return targetValue ? "Certificate required" : "Not required";
+		}
+	}
+
+	if (operator === "BOOLEAN_MATCH" || typeof targetValue === "boolean") {
+		return targetValue ? "Required" : "Not applicable";
 	}
 
 	if (Array.isArray(targetValue)) {
