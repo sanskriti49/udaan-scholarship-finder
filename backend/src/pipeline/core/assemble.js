@@ -300,7 +300,7 @@ export function assembleRecord(candidate, { source, guideline, assertions = [] }
 		? "the National Scholarship Portal"
 		: (source.name || "the official portal");
 	const parts = [`Listed on ${portalName}`];
-	if (record.currentCycle) parts.push(`for AY ${record.currentCycle.academicYear}`);
+	if (record.currentCycle) parts.push(`for ${record.currentCycle.academicYear.includes("-") ? "AY " : ""}${record.currentCycle.academicYear}`);
 	if (record.organization) parts.push(`under ${record.organization}`);
 	record.summary = `${parts.join(" ")}.`;
 	record.description = f.description || record.summary;
@@ -317,6 +317,7 @@ export function assembleRecord(candidate, { source, guideline, assertions = [] }
 		completeness: Math.round((CRITICAL_FIELDS.filter((k) => known[k]).length / CRITICAL_FIELDS.length) * 100),
 	};
 
+	if (candidate.eligibilityReview) record.dataQuality.unknownFields.push("eligibility");
 	issues.push(...validateRecord(record));
 	return { record, issues };
 }

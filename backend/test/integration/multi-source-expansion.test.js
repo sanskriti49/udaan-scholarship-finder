@@ -3,13 +3,13 @@ import assert from "node:assert/strict";
 import { MemoryStore } from "../../src/pipeline/store/memoryStore.js";
 import { SafeFetcher, createRecordedTransport, resetHostState } from "../../src/pipeline/core/http.js";
 import { loadRecordings } from "../../src/pipeline/recordings.js";
-import { enabledSources } from "../../src/pipeline/sources.js";
+import { SOURCE_REGISTRY } from "../../src/pipeline/sources.js";
 import { Pipeline } from "../../src/pipeline/pipeline.js";
 
-test("integration: multi-source expansion crawls central, state, statutory, and foundation portals", async () => {
+test("integration: normalized JSON samples exercise feed mappings (not proof of live portal support)", async () => {
 	resetHostState();
 	const store = new MemoryStore();
-	const recordings = loadRecordings();
+	const recordings = loadRecordings(undefined, { includeUnverified: true });
 	const transport = createRecordedTransport(recordings.records);
 	const pipeline = new Pipeline({
 		store,
@@ -25,8 +25,13 @@ test("integration: multi-source expansion crawls central, state, statutory, and 
 			}),
 	});
 
-	const sources = enabledSources();
-	assert.ok(sources.length >= 9, "Must have at least 9 registered official sources");
+	// Explicit test-only mappings: these portal homepages do not return these feeds.
+	const sources = SOURCE_REGISTRY.filter((source) => source.id === "nsp_central_sector" || source.jsonMapping).map((source) => ({
+		...source, enabled: true, ingestionStatus: "test_fixture", strategy: "static",
+		minExpectedSchemes: 1,
+		entries: source.jsonMapping ? [{url: recordings.manifest.entries.filter((e) => e.verification === "unverified_sample")[SOURCE_REGISTRY.filter((s) => s.jsonMapping).findIndex((s) => s.id === source.id)].url, adapter: "jsonFeed", role: "listing"}] : source.entries,
+	}));
+	assert.equal(sources.length, 9);
 
 	const reports = await pipeline.runAll(sources);
 	assert.equal(reports.length, sources.length);

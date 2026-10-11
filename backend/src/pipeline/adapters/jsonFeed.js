@@ -60,6 +60,9 @@ export const jsonFeedAdapter = {
 
 	extract(doc, snapshot, ctx) {
 		const mapping = ctx.source.jsonMapping;
+		if (!doc.json || !mapping?.itemsPath) {
+			return { records: [], issues: [{ code: "source_format_mismatch", severity: "blocking", message: "This source is configured as a JSON feed but did not return a mapped JSON document. Configure a verified endpoint or HTML adapter; rendering cannot invent a JSON feed." }] };
+		}
 		const issues = [];
 		const records = [];
 		const items = get(doc.json, mapping.itemsPath);

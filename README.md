@@ -264,6 +264,12 @@ npm start
 ```
 The backend server will start on `http://localhost:5000`.
 
+For JavaScript-dependent source fallback, run `npm run pipeline:browser:install`
+on the backend host. Eleven source configurations have verified public-page
+adapters, including separate ONGC, Reliance and LIC ingestion. See
+[live ingestion setup and verification](backend/INGESTION.md) for source readiness,
+browser setup, replay limits and safe live checks.
+
 ### 4. Configure Frontend Environment & Start
 Open a new terminal window:
 ```bash

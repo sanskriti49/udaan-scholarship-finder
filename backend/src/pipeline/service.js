@@ -69,8 +69,8 @@ export function createPipeline({ replay = false, notify = !replay, store = new M
 	});
 }
 
-export async function runPipeline({ sourceId, replay = false } = {}) {
-	const pipeline = createPipeline({ replay });
+export async function runPipeline({ sourceId, replay = false, notify = !replay } = {}) {
+	const pipeline = createPipeline({ replay, notify });
 	const sources = sourceId ? [getSource(sourceId)].filter(Boolean) : enabledSources();
 	if (sourceId && sources.length === 0) throw new Error(`Unknown source '${sourceId}'`);
 	const reports = await pipeline.runAll(sources);

@@ -248,12 +248,16 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		}
 	}
 
+	if (scholarship.dataQuality?.unknownFields?.includes("eligibility")) {
+		unknownRules.push({ ruleId: "official_manual_review", field: "eligibility", description: "Review additional official course, merit and application conditions", required: "Check the official eligibility text", actual: "Not verified", citation: null });
+	}
+
 	const isEligible = failedRules.length === 0 && unknownRules.length === 0;
 	const totalKnownRules = passedRules.length + failedRules.length;
 	const matchConfidence =
 		totalKnownRules > 0
 			? Math.round((passedRules.length / (totalKnownRules + unknownRules.length)) * 100)
-			: 100;
+			: (unknownRules.length ? 0 : 100);
 
 	// Document Readiness Audit
 	const DOC_CODE_ALIASES = {

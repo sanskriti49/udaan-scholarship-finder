@@ -15,6 +15,8 @@ const sourceSnapshotSchema = new mongoose.Schema(
 		lastSeenAt: Date,
 		httpStatus: Number,
 		contentType: String,
+		fetchMethod: { type: String, enum: ["static", "dynamic"] },
+		html: String,
 		capturedSourceType: String,
 		kind: { type: String, enum: ["html", "pdf", "json", "text"] },
 		sha256: String,

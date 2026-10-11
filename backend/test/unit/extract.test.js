@@ -48,6 +48,12 @@ test("income sentences are not mistaken for award amounts", () => {
 	);
 });
 
+test("MahaDBT inclusive income ceilings keep equality eligible", () => {
+	const [limit] = extractIncomeLimits("The parents/Guardian annual income shall be less than or equal to Rs. 2,50,000.");
+	assert.equal(limit.value, 250000);
+	assert.equal(limit.operator, "LTE");
+});
+
 test("monthly amounts keep their month count", () => {
 	const [ishan] = extractAmounts(text("ISHAN"));
 	assert.deepEqual([ishan.value, ishan.period, ishan.months], [8000, "monthly", 10]);

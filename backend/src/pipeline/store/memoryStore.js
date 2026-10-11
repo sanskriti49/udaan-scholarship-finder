@@ -53,8 +53,10 @@ export class MemoryStore {
 		for (const s of this.snapshots.values()) {
 			if (s.url === snapshot.url && s.textHash === snapshot.textHash) {
 				s.lastSeenAt = snapshot.fetchedAt;
-				s.etag = snapshot.etag ?? s.etag;
-				s.lastModified = snapshot.lastModified ?? s.lastModified;
+				s.fetchMethod = snapshot.fetchMethod || "static";
+				if (snapshot.html) s.html = snapshot.html;
+				s.etag = snapshot.fetchMethod === "dynamic" ? null : snapshot.etag ?? s.etag;
+				s.lastModified = snapshot.fetchMethod === "dynamic" ? null : snapshot.lastModified ?? s.lastModified;
 				return { ...clone(s), reused: true };
 			}
 		}
@@ -91,14 +93,15 @@ export class MemoryStore {
 		return `${schemeKey}|${ay}|${type}`;
 	}
 	async getCycle(schemeKey, academicYear, applicationType) {
-		return clone(this.cycles.get(this.cycleId(schemeKey, academicYear, applicationType))) || null;
+		const cycle = this.cycles.get(this.cycleId(schemeKey, academicYear, applicationType));
+		return cycle?.legacyUnverified ? null : clone(cycle) || null;
 	}
 	async listCycles(schemeKey) {
-		return [...this.cycles.values()].filter((c) => c.schemeKey === schemeKey).map(clone);
+		return [...this.cycles.values()].filter((c) => c.schemeKey === schemeKey && !c.legacyUnverified).map(clone);
 	}
 	async saveCycle(cycle) {
 		const id = this.cycleId(cycle.schemeKey, cycle.academicYear, cycle.applicationType);
-		const saved = { ...clone(cycle), id };
+		const saved = { ...clone(cycle), legacyUnverified: false, id };
 		this.cycles.set(id, saved);
 		return clone(saved);
 	}

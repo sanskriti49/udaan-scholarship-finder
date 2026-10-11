@@ -1,5 +1,5 @@
 {
-  "description": "Official pages captured on 2026-09-17 from outside the build sandbox (whose egress proxy blocks *.gov.in). Each entry is the text extraction of the live official URL at capture time. HTML pages were captured as markdown-style text (headings as '#', links as [text](href)); PDFs as extracted text. Entries marked isExcerpt keep the captured text verbatim but omit unrelated sections (navigation widgets, annexure tables, footers). Nothing in these files was paraphrased or edited.",
+  "description": "NSP HTML/PDF text captures and unverified normalized JSON samples. Entries marked unverified_sample are test-only and are excluded from production replay; their contents must not be presented as official source evidence.",
   "capturedAt": "2026-09-17T06:00:00.000Z",
   "captureMethod": "Automated web fetch tool (text extraction)",
   "entries": [
@@ -71,49 +71,65 @@
       "url": "https://scholarship.up.gov.in/",
       "file": "up-scholarships.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     },
     {
       "url": "https://mahadbt.maharashtra.gov.in/",
       "file": "mahadbt-scholarships.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     },
     {
       "url": "https://ssp.postmatric.karnataka.gov.in/",
       "file": "karnataka-ssp.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     },
     {
       "url": "https://svmcm.wbhed.gov.in/",
       "file": "wb-svmcm.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     },
     {
       "url": "https://pmsonline.bihar.gov.in/",
       "file": "bihar-pms.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     },
     {
       "url": "https://online-inspire.gov.in/",
       "file": "dst-inspire.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     },
     {
       "url": "https://www.aicte-india.org/",
       "file": "aicte-ugc.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     },
     {
       "url": "https://www.ongcscholar.org/",
       "file": "premier-foundations.json",
       "sourceContentType": "application/json",
-      "isExcerpt": false
+      "isExcerpt": false,
+      "verification": "unverified_sample",
+      "note": "Normalized JSON test sample: not a verified response from this portal homepage. Excluded from production replay."
     }
   ]
 }

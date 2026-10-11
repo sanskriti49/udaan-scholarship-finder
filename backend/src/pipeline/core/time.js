@@ -59,7 +59,7 @@ export function findStatedAcademicYear(text) {
 
 export function academicYearStart(ay) {
 	const normalized = normalizeAcademicYear(ay);
-	return normalized ? Number(normalized.slice(0, 4)) : null;
+	return normalized ? Number(normalized.slice(0, 4)) : /^20\d{2}$/.test(String(ay)) ? Number(ay) : null;
 }
 
 /**
@@ -72,7 +72,7 @@ export function isWithinAcademicYearWindow(date, ay) {
 	const start = academicYearStart(ay);
 	if (!start || !(date instanceof Date) || Number.isNaN(date.getTime())) return false;
 	const windowStart = istToUtc(start, 1, 1, 0, 0, 0, 0);
-	const windowEnd = istToUtc(start + 1, 12, 31, 23, 59, 59, 999);
+	const windowEnd = istToUtc(start + (/^20\d{2}$/.test(String(ay)) ? 0 : 1), 12, 31, 23, 59, 59, 999);
 	return date >= windowStart && date <= windowEnd;
 }
 

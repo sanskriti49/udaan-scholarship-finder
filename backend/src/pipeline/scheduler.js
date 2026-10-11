@@ -1,3 +1,4 @@
+import { crawlerLockKey } from "./lock.js";
 import { withDistributedLock } from "../utils/distributedLock.js";
 import { runPipeline, refreshStatuses } from "./service.js";
 import { rootLogger } from "./core/logger.js";
@@ -37,7 +38,7 @@ export class PipelineScheduler {
 	}
 
 	async triggerNow(reason = "manual", { sourceId } = {}) {
-		return withDistributedLock("lock:crawler:run", 1800, async () => {
+		return withDistributedLock(crawlerLockKey(), 1800, async () => {
 			this.executionCount += 1;
 			try {
 				const reports = await runPipeline({ sourceId });

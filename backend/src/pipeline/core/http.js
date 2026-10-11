@@ -97,6 +97,7 @@ export class SafeFetcher {
 	constructor(options = {}) {
 		this.allowedDomains = options.allowedDomains || [];
 		this.transport = options.transport || createNodeTransport();
+		this.allowRendering = options.allowRendering ?? !this.transport.isReplay;
 		this.minIntervalMs = options.minIntervalMs ?? 2000;
 		this.timeoutMs = options.timeoutMs ?? 20000;
 		this.retries = options.retries ?? 3;
@@ -221,6 +222,7 @@ export class SafeFetcher {
 				let response;
 				for (let hop = 0; ; hop += 1) {
 					const parsed = this.assertAllowed(currentUrl);
+					if (!(await this.robotsAllowed(parsed))) throw new FetchError("ROBOTS_DISALLOWED", `robots.txt disallows ${parsed.pathname}`, { url: currentUrl });
 					response = await this.throttle(parsed.host, () => this.rawRequest(currentUrl, headers));
 					if (response.status >= 300 && response.status < 400 && response.status !== 304) {
 						const location = response.headers.get("location");
@@ -293,7 +295,7 @@ export class SafeFetcher {
 export function createRecordedTransport(records, { overrides = {} } = {}) {
 	// records: [{ url, text, sourceContentType, capturedAt }]
 	const byUrl = new Map(records.map((r) => [r.url, r]));
-	return async function recordedTransport(url) {
+	const transport = async function recordedTransport(url) {
 		if (overrides[url]) return overrides[url](url);
 		if (new URL(url).pathname === "/robots.txt") {
 			return { status: 404, headers: { get: () => null }, body: Buffer.alloc(0) };
@@ -319,4 +321,6 @@ export function createRecordedTransport(records, { overrides = {} } = {}) {
 			body: Buffer.from(record.text, "utf8"),
 		};
 	};
+	transport.isReplay = true;
+	return transport;
 }

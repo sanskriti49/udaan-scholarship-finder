@@ -1,13 +1,19 @@
+import { officialPortalAdapters } from "./adapters/officialPortals.js";
 import { nspSchemeListAdapter } from "./adapters/nspSchemeList.js";
 import { nspAnnouncementsAdapter } from "./adapters/nspAnnouncements.js";
 import { guidelinePdfAdapter } from "./adapters/guidelinePdf.js";
 import { jsonFeedAdapter } from "./adapters/jsonFeed.js";
+import { mahadbtListingAdapter } from "./adapters/mahadbtListing.js";
+import { mahadbtGuidelineAdapter } from "./adapters/mahadbtGuideline.js";
 
 export const ADAPTERS = {
+	...Object.fromEntries(officialPortalAdapters.map((a) => [a.id, a])),
 	[nspSchemeListAdapter.id]: nspSchemeListAdapter,
 	[nspAnnouncementsAdapter.id]: nspAnnouncementsAdapter,
 	[guidelinePdfAdapter.id]: guidelinePdfAdapter,
 	[jsonFeedAdapter.id]: jsonFeedAdapter,
+	[mahadbtListingAdapter.id]: mahadbtListingAdapter,
+	[mahadbtGuidelineAdapter.id]: mahadbtGuidelineAdapter,
 };
 
 /**
@@ -15,7 +21,8 @@ export const ADAPTERS = {
  *   1  Official portal / notification of the administering government body
  *   2  Official site of a statutory body or PSU implementing the scheme
  *   3  Official site of a private trust / CSR programme (about its own scheme)
- * Aggregators and news sites are never registered as sources.
+ * Private aggregators and news sites are never registered. Government myScheme
+ *   is an explicitly labelled catalogue fallback when a state portal is unavailable.
  *
  * Adding a source = adding an entry here plus (if the page shape is new) one
  * small adapter. Sources are crawled in `priority` order; when two sources
@@ -54,10 +61,11 @@ export const SOURCE_REGISTRY = [
 		authorityTier: 1,
 		priority: 10,
 		enabled: true,
-		strategy: "static",
+		strategy: "auto",
+		ingestionStatus: "ready",
 		allowedDomains: ["scholarships.gov.in"],
 		entries: [
-			{ url: "https://scholarships.gov.in/All-Scholarships", adapter: "nspSchemeList", role: "listing" },
+			{ url: "https://scholarships.gov.in/All-Scholarships", adapter: "nspSchemeList", role: "listing", waitForSelector: ".accordion-body h6" },
 			{ url: "https://scholarships.gov.in/", adapter: "nspAnnouncements", role: "announcements", optional: true },
 		],
 		followUps: { adapter: "guidelinePdf", maxPerRun: 40 },
@@ -95,11 +103,12 @@ export const SOURCE_REGISTRY = [
 		authorityTier: 1,
 		priority: 15,
 		enabled: true,
-		strategy: "static",
+		ingestionStatus: "ready",
+		strategy: "dynamic",
 		state: "UP",
 		allowedDomains: ["scholarship.up.gov.in", "up.gov.in"],
 		entries: [
-			{ url: "https://scholarship.up.gov.in/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://scholarship.up.gov.in/", adapter: "upPortal", role: "listing", waitForSelector: "h5" },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("up-state"),
 		minExpectedSchemes: 1,
@@ -115,14 +124,16 @@ export const SOURCE_REGISTRY = [
 		authorityTier: 1,
 		priority: 20,
 		enabled: true,
-		strategy: "static",
+		strategy: "auto",
+		ingestionStatus: "ready",
 		state: "Maharashtra",
 		allowedDomains: ["mahadbt.maharashtra.gov.in", "mahadbt2.maharashtra.gov.in", "maharashtra.gov.in"],
 		entries: [
-			{ url: "https://mahadbt.maharashtra.gov.in/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://mahadbt.maharashtra.gov.in/", adapter: "mahadbtListing", role: "listing", waitForSelector: '.resp-tabs-container.hor_1 a[href*="/SchemeData/SchemeData?"]' },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("mahadbt-state"),
-		minExpectedSchemes: 1,
+		minExpectedSchemes: 10,
+		followUps: { adapter: "mahadbtGuideline", maxPerRun: 60 },
 		cadenceHours: 24,
 		staleAfterHours: 72,
 		rateLimit: { minIntervalMs: 2000 },
@@ -135,31 +146,34 @@ export const SOURCE_REGISTRY = [
 		authorityTier: 1,
 		priority: 25,
 		enabled: true,
+		ingestionStatus: "ready",
 		strategy: "static",
 		state: "Karnataka",
 		allowedDomains: ["ssp.karnataka.gov.in", "ssp.postmatric.karnataka.gov.in", "karnataka.gov.in"],
 		entries: [
-			{ url: "https://ssp.postmatric.karnataka.gov.in/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://ssp.karnataka.gov.in/Schemes.aspx", adapter: "karnatakaPortal", role: "listing", waitForSelector: ".scheme-li[data-scheme-id]" },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("karnataka-ssp"),
-		minExpectedSchemes: 1,
+		minExpectedSchemes: 10,
 		cadenceHours: 24,
 		staleAfterHours: 72,
 		rateLimit: { minIntervalMs: 2000 },
 	},
 	{
 		id: "wb_svmcm_scholarship",
-		name: "Swami Vivekananda Merit-cum-Means Scholarship (Government of West Bengal)",
+		name: "SVMCM — Government myScheme catalogue (West Bengal)",
 		publisher: "Department of Higher Education, Government of West Bengal",
 		sourceType: "Government",
-		authorityTier: 1,
+		authorityTier: 2,
 		priority: 30,
 		enabled: true,
+		ingestionStatus: "ready",
 		strategy: "static",
+		ingestionNote: "Official government catalogue fallback; the state portal is currently unreachable. Live application dates are not inferred.",
 		state: "West Bengal",
-		allowedDomains: ["svmcm.wbhed.gov.in", "wb.gov.in"],
+		allowedDomains: ["svmcm.wbhed.gov.in", "wb.gov.in", "myscheme.gov.in"],
 		entries: [
-			{ url: "https://svmcm.wbhed.gov.in/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://www.myscheme.gov.in/api/apisetu/schemes?slug=svmcms&lang=en", adapter: "myScheme", role: "listing" },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("wb-svmcm"),
 		minExpectedSchemes: 1,
@@ -175,11 +189,12 @@ export const SOURCE_REGISTRY = [
 		authorityTier: 1,
 		priority: 35,
 		enabled: true,
+		ingestionStatus: "ready",
 		strategy: "static",
 		state: "Bihar",
 		allowedDomains: ["pmsonline.bihar.gov.in", "pmsonline.bih.nic.in", "bihar.gov.in"],
 		entries: [
-			{ url: "https://pmsonline.bihar.gov.in/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://pmsonline.bihar.gov.in/", adapter: "biharPortal", role: "listing" },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("bihar-pms"),
 		minExpectedSchemes: 1,
@@ -195,11 +210,12 @@ export const SOURCE_REGISTRY = [
 		authorityTier: 1,
 		priority: 40,
 		enabled: true,
-		strategy: "static",
+		ingestionStatus: "ready",
+		strategy: "dynamic",
 		state: "All India",
 		allowedDomains: ["online-inspire.gov.in", "dst.gov.in"],
 		entries: [
-			{ url: "https://online-inspire.gov.in/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://online-inspire.gov.in/Account/INSPIREProgramme", adapter: "inspirePortal", role: "listing" },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("dst-inspire"),
 		minExpectedSchemes: 1,
@@ -209,43 +225,63 @@ export const SOURCE_REGISTRY = [
 	},
 	{
 		id: "aicte_ugc_national",
-		name: "National Autonomous & Statutory Councils (AICTE & UGC)",
-		publisher: "All India Council for Technical Education & University Grants Commission",
+		name: "AICTE Student Scholarships and Fellowships",
+		publisher: "All India Council for Technical Education",
 		sourceType: "Institution",
 		authorityTier: 2,
 		priority: 45,
 		enabled: true,
+		ingestionStatus: "ready",
 		strategy: "static",
 		state: "All India",
-		allowedDomains: ["aicte-india.org", "ugc.gov.in", "ugc.ac.in"],
+		allowedDomains: ["aicte.gov.in", "aicte-india.org", "scholarships.gov.in", "ugc.gov.in", "ugc.ac.in"],
 		entries: [
-			{ url: "https://www.aicte-india.org/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://www.aicte.gov.in/schemes/students-development-schemes", adapter: "aictePortal", role: "listing", waitForSelector: ".schemeListItem" },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("national-councils"),
-		minExpectedSchemes: 1,
+		minExpectedSchemes: 5,
+		followUps: { adapter: "guidelinePdf", maxPerRun: 10 },
 		cadenceHours: 24,
 		staleAfterHours: 72,
 		rateLimit: { minIntervalMs: 2000 },
 	},
 	{
 		id: "premier_foundations_csr",
-		name: "National Premier Public Sector & CSR Foundations",
-		publisher: "ONGC Foundation, Reliance Foundation & LIC Golden Jubilee",
+		name: "ONGC Foundation Scholarship Portal",
+		publisher: "ONGC Foundation",
 		sourceType: "Corporate CSR",
 		authorityTier: 2,
 		priority: 50,
 		enabled: true,
-		strategy: "static",
+		ingestionStatus: "ready",
+		strategy: "dynamic",
 		state: "All India",
-		allowedDomains: ["ongcscholar.org", "scholarships.reliancefoundation.org", "licindia.in"],
+		allowedDomains: ["ongcscholar.org"],
 		entries: [
-			{ url: "https://www.ongcscholar.org/", adapter: "jsonFeed", role: "listing" },
+			{ url: "https://ongcscholar.org/#/fellowshipScheme", adapter: "ongcPortal", role: "listing", waitForSelector: "mat-panel-title" },
 		],
 		jsonMapping: JSON_MAPPING_TEMPLATE("premier-foundations"),
 		minExpectedSchemes: 1,
 		cadenceHours: 24,
 		staleAfterHours: 72,
 		rateLimit: { minIntervalMs: 2000 },
+	},
+
+	{
+		id: "reliance_foundation", name: "Reliance Foundation Scholarships", publisher: "Reliance Foundation",
+		sourceType: "Corporate CSR", authorityTier: 3, priority: 55, enabled: true, ingestionStatus: "ready", strategy: "dynamic",
+		allowedDomains: ["scholarships.reliancefoundation.org", "scholarshipportal.reliancefoundation.org"],
+		entries: [
+			{url:"https://scholarships.reliancefoundation.org/UG_Scholarship",adapter:"reliancePortal",role:"listing",waitForSelector:"#eligibility-criteria"},
+			{url:"https://scholarships.reliancefoundation.org/PG_Scholarship",adapter:"reliancePortal",role:"listing",waitForSelector:"#eligibility-criteria"},
+		], minExpectedSchemes: 1, cadenceHours:24, staleAfterHours:72, rateLimit:{minIntervalMs:2000},
+	},
+	{
+		id: "lic_golden_jubilee", name: "LIC Golden Jubilee Foundation", publisher: "Life Insurance Corporation of India",
+		sourceType: "Corporate CSR", authorityTier:2, priority:60, enabled:true, ingestionStatus:"ready", strategy:"static",
+		allowedDomains:["licindia.in"],
+		entries:[{url:"https://web.licindia.in/golden-jubilee-foundation",adapter:"licPortal",role:"listing"}],
+		followUps:{adapter:"guidelinePdf",maxPerRun:1}, minExpectedSchemes:1, cadenceHours:24, staleAfterHours:72, rateLimit:{minIntervalMs:2000},
 	},
 ];
 

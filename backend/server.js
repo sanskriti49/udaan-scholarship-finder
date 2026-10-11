@@ -23,7 +23,11 @@ import { closeReminderQueue } from "./src/queues/reminderQueue.js";
 import { closeRedisClient, isRedisAvailable } from "./src/config/redis.js";
 import { bootstrapDatabase } from "./src/utils/bootstrapDatabase.js";
 
+import { browserHealth, checkBrowserHealth } from "./src/pipeline/core/browserHealth.js";
+import { enabledSources } from "./src/pipeline/sources.js";
+
 const app = express();
+checkBrowserHealth().catch(() => {});
 
 // Parse and normalize allowed CORS origins
 const configuredFrontends = (process.env.FRONTEND_URL || "")
@@ -129,6 +133,8 @@ const getHealthStatus = () => {
 
 	return {
 		status: isDbHealthy ? "healthy" : "degraded",
+		revision: process.env.RENDER_GIT_COMMIT || null,
+		ingestion: { sourceCount: enabledSources().length, browser: browserHealth },
 		timestamp: new Date().toISOString(),
 		uptime: Math.round(process.uptime()),
 		environment: process.env.NODE_ENV || "development",

@@ -10,7 +10,7 @@ import { sha256 } from "./http.js";
 const BLOCK_TAGS = new Set([
 	"p", "div", "section", "article", "header", "footer", "main", "aside", "nav", "table", "thead",
 	"tbody", "tr", "ul", "ol", "dl", "dt", "dd", "form", "fieldset", "blockquote", "pre", "figure",
-	"figcaption", "br", "hr", "td", "th",
+	"figcaption", "br", "hr", "td", "th", "button",
 ]);
 
 export function normalizeWhitespace(text) {
@@ -216,6 +216,7 @@ export async function toDocument(fetchResult) {
 		url: fetchResult.url,
 		finalUrl: fetchResult.finalUrl || fetchResult.url,
 		kind,
+		html: kind === "html" && !contentType.startsWith("text/x-captured-text") ? body.toString("utf8") : null,
 		text,
 		pages,
 		json,

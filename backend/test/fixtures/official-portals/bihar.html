@@ -1,0 +1,452 @@
+<!DOCTYPE html><html><body><body>
+
+<!-- ===== HEADER IMAGE ===== -->
+<img src="Assets/Web_Images/bcebc.jpg" class="img-fluid header-image" alt="BC-EBC Portal Header" style="width: 100%; height: auto;">
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-xl navbar-custom sticky-top py-1">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <i class="fas fa-graduation-cap" style="color:#0b5e9e; font-size:1.5rem;"></i>
+      <span class="d-none d-sm-inline fw-bold" style="font-size:1.1rem;">Post Matric Scholarship BC-EBC Portal</span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+         <div class="d-flex align-items-center gap-2 flex-wrap ms-auto">
+   <!-- Official Login - click to open popup -->
+   <a href="#" id="officialLoginBtn" class="btn btn-primary btn-sm rounded-pill px-3" style="background: #0b5e9e; font-size:0.75rem; font-weight: 600; box-shadow: 0 2px 8px rgba(11, 94, 158, 0.3);">
+     <i class="fas fa-lock me-1"></i>Official Login
+   </a>
+   <a href="#" class="btn btn-outline-secondary btn-sm rounded-pill px-2" style="font-size:0.75rem;">
+     <i class="fa fa-user"></i>
+   </a>
+ </div>
+    </div>
+  </div>
+</nav>
+        <div class="popup-overlay" id="fyPopup">
+    <div class="popup-box">
+        <div class="popup-header">
+            <h4><i class="fas fa-calendar-alt" style="color: #0b5e9e; margin-right: 8px;"></i>Select Academic Year</h4>
+            <button class="popup-close" id="closePopupBtn">×</button>
+        </div>
+        <div class="popup-body">
+            <label for="fyearSelect">Choose Year:</label>
+            <select id="fyearSelect" class="popup-select">
+                <option value="">-- Select Year --</option>
+                <option value="https://instpmsonline.bihar.gov.in/pmsbcebc2425off/pms/pms_online/deptDefault.aspx">2024-26</option>
+                <option value="http://pmsonline.bihar.gov.in/bcebcdpt/pms/pms_online/deptdefault.aspx">2026-27</option>
+            </select>
+        </div>
+        <div class="popup-footer">
+    <button class="btn-cancel" id="cancelPopupBtn">Cancel</button>
+</div>
+    </div>
+</div>
+
+<!-- ===== CAROUSEL ===== -->
+<div class="container-fluid px-4 mt-2">
+  <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"></button>
+      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
+    </div>
+    <div class="carousel-inner rounded-3 shadow-sm">
+      <div class="carousel-item">
+        <img src="Assets/Web_Images/PMS_Banner.jpg" class="d-block w-100 img-fluid" alt="PMS Banner" style="width:100%; height:auto; max-height:380px; object-fit:cover;">
+      </div>
+      <div class="carousel-item active">
+        <img src="Assets/Web_Images/Scholarship_PROCESS.jpg" class="d-block w-100 img-fluid" alt="Scholarship Process" style="width:100%; height:auto; max-height:380px; object-fit:cover;">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== OFFICIAL BADGE ===== -->
+<div class="container-fluid px-4 mt-3">
+  <div class="text-center">
+    <span class="badge-red d-inline-flex align-items-center gap-2" style="background: linear-gradient(135deg, #EB5B00, #c94a00); padding: 8px 24px; border-radius: 50px; box-shadow: 0 4px 15px rgba(235, 91, 0, 0.3);">
+      <i class="fas fa-exclamation-triangle" style="font-size: 1.1rem;"></i>
+      <span style="font-weight: 700; letter-spacing: 0.3px;">Official Site of Bihar Post Matric Scholarship BC-EBC Portal</span>
+      <span style="width: 2px; height: 25px; background: rgba(255,255,255,0.4);"></span>
+      <span style="font-weight: 500; font-size: 0.75rem; opacity: 0.95;">
+        <i class="fas fa-building me-1"></i>Education Department Govt. of Bihar
+      </span>
+    </span>
+  </div>
+</div>
+
+<!-- ===== NOTIFICATION + DATES ===== -->
+<div class="container-fluid px-4 mt-3">
+  <div class="notification-banner">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h5><span class="blink-text">🔔 NEW REGISTRATION OPEN</span> – 2026-27</h5>
+        <p>BC/EBC Post Matric Scholarship आवेदन <strong>15.07.2026</strong> से <strong>30.09.2026</strong> तक</p>
+      </div>
+      <div class="col-md-4 text-md-end mt-2 mt-md-0">
+        <a href="https://pmsonline.bihar.gov.in/2026/pms/pms_online/CreateProfile.aspx" target="_blank" class="btn btn-light btn-sm rounded-pill fw-bold px-4" style="color:#0b5e9e;">
+          <i class="fas fa-edit me-1"></i> Apply Now
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PORTAL DATES ===== -->
+<div class="container-fluid px-4 mt-2">
+  <div class="portal-date-box shadow-sm">
+    <div class="row align-items-center">
+      <div class="col-md-4"><i class="fas fa-calendar-alt text-primary me-1"></i><strong>2026-27:</strong> 15.07.2026 – 30.09.2026</div>
+      <div class="col-md-4 mt-1 mt-md-0"><i class="fas fa-calendar-check text-success me-1"></i><strong>2024-25/2025-26:</strong> 25.08.2025 – 15.11.2025</div>
+      <div class="col-md-4 mt-1 mt-md-0"><i class="fas fa-edit text-warning me-1"></i><strong>संशोधन:</strong> 2024-25/2025-26 Finalize <strong>25.12.2025</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ACTION BUTTONS (ONE ROW) ===== -->
+<!-- ===== ACTION BUTTONS (UNIFIED CARD DESIGN) ===== -->
+<div class="container-fluid px-4 mt-3">
+  <div class="row g-3">
+    <!-- New Registration 2026-27 -->  
+      <div class="col-md-3 col-6">
+  <a href="https://pmsonline.bihar.gov.in/26-27/pms/pms_online/CreateProfile.aspx" target="_blank" style="text-decoration: none; text-align: center;">
+    <div class="card">
+      <div class="card-body cardhover" style="background: #135D66; border-radius: 8px; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+        <b style="color: white; font-size: 0.9rem;">New Registration<br>2026-27</b>
+      </div>
+    </div>
+  </a>
+</div>
+
+    <!-- Already Registered with Dropdown -->
+<div class="col-md-3 col-6">
+  <a href="#" data-bs-toggle="modal" data-bs-target="#alreadyRegisteredModal" style="text-decoration: none; text-align: center;">
+    <div class="card">
+      <div class="card-body cardhover" style="background: #1a7fc1; border-radius: 8px; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+        <b style="color: white; font-size: 0.9rem;">Student Login <br>Select Year</b>
+      </div>
+    </div>
+  </a>
+</div>
+
+<!-- ===== ALREADY REGISTERED MODAL ===== -->
+<div class="modal fade" id="alreadyRegisteredModal" tabindex="-1" aria-labelledby="alreadyRegisteredModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header" style="padding: 10px 16px; background: #1a7fc1; color: white;">
+        <h5 class="modal-title" style="font-size: 0.95rem;" id="alreadyRegisteredModalLabel">
+          <i class="fas fa-user-check me-2"></i>Select Academic Year
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div class="row">
+          <div class="col-12">
+            <select class="form-select" onchange="if(this.value) window.open(this.value,'_blank'); this.selectedIndex=0;" style="font-size: 0.9rem; padding: 10px;">
+              <option value="#" selected="">--- Select Academic Year ---</option>
+              <option value="https://pmsonline.bihar.gov.in/pmsbcebc2425dlog/pms/pms_online/Login.aspx">2024-2025</option>
+              <option value="https://pmsonline.bihar.gov.in/pmsbcebc2425dlog/pms/pms_online/createprofile.aspx">2025-2026</option>
+              <option value="https://pmsonline.bihar.gov.in/2026-27/pms/pms_online/CreateProfile.aspx">2026-2027</option>
+            </select>
+            <p class="text-muted mt-2" style="font-size: 0.75rem; text-align: center;">
+              <i class="fas fa-info-circle me-1"></i>Select year to login
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Application Status -->
+      <div class="col-md-3 col-6">
+  <a href="#" data-bs-toggle="modal" data-bs-target="#alreadyRegisteredModalStatus" style="text-decoration: none; text-align: center;">
+    <div class="card">
+      <div class="card-body cardhover" style="background-image: linear-gradient(to right bottom, #842a3b, #aa3b3d, #cc5239, #e96f2d, #ff9013); border-radius: 5px;">
+        <b style="color: white; font-size: 0.9rem;">Application Status <br>Select Year</b>
+      </div>
+    </div>
+  </a>
+</div>
+    
+      <div class="modal fade" id="alreadyRegisteredModalStatus" tabindex="-1" aria-labelledby="alreadyRegisteredModalLabelStatus" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header" style="padding: 10px 16px; background: #1a7fc1; color: white;">
+        <h5 class="modal-title" style="font-size: 0.95rem;" id="alreadyRegisteredModalLabelStatus">
+          <i class="fas fa-user-check me-2"></i>Select Academic Year
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <div class="row">
+          <div class="col-12">
+            <select class="form-select" onchange="if(this.value) window.open(this.value,'_blank'); this.selectedIndex=0;" style="font-size: 0.9rem; padding: 10px;">
+              <option value="#" selected="">--- Select Academic Year ---</option>
+              <option value="https://pmsonline.bihar.gov.in/pmsbcebc2425dlog/pms/pms_online/studentapplicationstatusdetails.aspx">2024-2025</option>
+              <option value="https://pmsonline.bihar.gov.in/pmsbcebc2425dlog/pms/pms_online/studentapplicationstatusdetails.aspx">2025-2026</option>
+              <option value="https://pmsonline.bihar.gov.in/2026-27/pms/pms_online/studentapplicationstatusdetails.aspx">2026-2027</option>
+            </select>
+            <p class="text-muted mt-2" style="font-size: 0.75rem; text-align: center;">
+              <i class="fas fa-info-circle me-1"></i>Select year to login
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- BC-EBC Portal -->
+    <div class="col-md-3 col-6">
+      <a href="https://scstpmsonline.bihar.gov.in" target="_blank" style="text-decoration: none; text-align: center;">
+        <div class="card">
+          <div class="card-body cardhover" style="background: #4158A6; border-radius: 8px; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+            <b style="color: white; font-size: 0.9rem;">SC-ST Portal</b>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== INSTITUTE PORTAL ===== -->
+<div class="container-fluid px-4 mt-3">
+  <a href="https://instpmsonline.bihar.gov.in" target="_blank" class="action-btn-institute">
+    <i class="fas fa-university me-2"></i>Go to Institute Portal (2024-2025) Onwards
+  </a>
+</div>
+    <!-- ===== VIEW MORE SECTION (ALL MISSING CONTENT) ===== -->
+<div class="container-fluid px-4 mt-3">
+  <div class="glass-card p-3">
+    <h6 class="fw-bold text-center" style="color:#c62828; font-size:0.95rem; cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#viewMoreContent" aria-expanded="false">
+      <i class="fas fa-eye me-2"></i>महत्वपूर्ण निर्देश – छात्र/छात्राओं के लिए <i class="fas fa-chevron-down ms-2"></i>
+    </h6>
+    <div class="collapse" id="viewMoreContent">
+      <div class="view-more-content mt-3">
+ 
+        <div class="section-title"><i class="fas fa-calendar-plus text-success me-2"></i>ऑनलाइन आवेदन आमंत्रण – शैक्षणिक सत्र 2026-27</div>
+        <div class="note-box">
+          <p>सभी संबंधित छात्र/छात्राओं को सूचित किया जाता है कि शैक्षणिक सत्र 2026-27 हेतु छात्रवृत्ति/शैक्षणिक सहायता के लिए ऑनलाइन आवेदन <strong>दिनांक 15.07.2026 से 30.09.2026</strong> तक आमंत्रित किए जा रहे हैं। इच्छुक एवं पात्र छात्र/छात्राएं निर्धारित तिथि के भीतर PMS पोर्टल के माध्यम से आवेदन करें।</p>
+        </div>
+        <!-- Student Guidelines -->
+        <div class="section-title"><i class="fas fa-list-check text-warning me-2"></i>महत्वपूर्ण निर्देश – छात्र/छात्राओं के लिए</div>
+        <ul class="list-unstyled" style="padding-left: 10px;">
+             <li class="list-group-item">
+    <strong>1.</strong> आवेदन के लिए <strong> R.O. Level का आय प्रमाण पत्र एवं जाति प्रमाण पत्र</strong> आवश्यक हैं।
+
+  </li>
+
+  <li class="list-group-item">
+    <strong>2.</strong> <strong>Course Year</strong> शैक्षणिक सत्र के अनुसार <strong>स्वतः (Auto Select)</strong> होगा।
+  </li>
+
+  <li class="list-group-item">
+    <strong>3.</strong> <strong>Aadhaar Seeding Check अनिवार्य है।</strong> जिन छात्रों का आधार <strong>DBT हेतु बैंक खाते से Seed</strong> नहीं है, वे अपना आवेदन <strong>Finalize</strong> नहीं कर सकेंगे। आवेदन केवल <strong>Aadhaar Seeding पूर्ण होने के बाद</strong> ही Finalize किया जा सकेगा।
+  </li>
+
+  <li class="list-group-item">
+    <strong>4.</strong> सुनिश्चित करें कि आपका <strong>आधार सही बैंक खाते से DBT हेतु Seed</strong> है, अन्यथा छात्रवृत्ति की राशि आपके खाते में प्राप्त नहीं होगी।
+  </li>
+
+  <li class="list-group-item">
+    <strong>5.</strong> <strong>आय प्रमाण पत्र</strong> की जारी तिथि <strong>01-04-2026 या उसके बाद</strong> की होनी चाहिए।
+  </li>
+
+  <li class="list-group-item">
+    <strong>6.</strong> <strong>जाति प्रमाण पत्र</strong> पिछले <strong>दो शैक्षणिक सत्रों से वर्तमान शैक्षणिक सत्र</strong> तक मान्य होगा।
+  </li>
+
+  <li class="list-group-item">
+    <strong>7.</strong> सभी आवश्यक <strong>शैक्षणिक दस्तावेजों</strong> पर अंकित तिथि <strong>01-04-2026 से 31-03-2027</strong> के बीच की होनी चाहिए।
+  </li>
+
+  
+   <li class="list-group-item">
+    <strong>8.</strong> आवेदन की स्थिति से संबंधित जानकारी <strong>SMS</strong> के माध्यम से भेजी जाएगी। यदि किसी कारणवश SMS प्राप्त नहीं होता है, तो छात्र/छात्राएं <strong>PMS Portal</strong> पर नियमित रूप से लॉगिन कर अपने आवेदन की स्थिति देखते रहें तथा आवश्यकता होने पर निर्धारित समय-सीमा के भीतर आवश्यक संशोधन करें।
+</li>
+ 
+
+  <li class="list-group-item">
+    <strong>9.</strong> अपलोड किए गए <strong>आय एवं जाति प्रमाण पत्रों के सफल सत्यापन</strong> के बाद ही छात्रवृत्ति की राशि जारी की जाएगी।
+  </li>
+
+  <li class="list-group-item">
+    <strong>10.</strong> यदि अपलोड किए गए दस्तावेज गलत या अमान्य पाए जाते हैं, तो लॉगिन करके <strong>सही दस्तावेज संख्या एवं दस्तावेज पुनः अपडेट</strong> करें।
+  </li>
+
+  <li class="list-group-item">
+    <strong>11.</strong> आवेदन में <strong>Defect/Reject</strong> होने पर त्रुटि सुधारने के लिए <strong>अधिकतम 3 अवसर</strong> दिए जाएंगे। इसके बाद भी त्रुटि दूर न होने पर आवेदन <strong>अस्वीकृत (Rejected)</strong> कर दिया जाएगा।
+  </li>
+
+  <li class="list-group-item">
+    <strong>12.</strong> यदि कोई छात्र/छात्रा <strong>इसी पाठ्यक्रम एवं इसी शैक्षणिक सत्र</strong> में किसी अन्य छात्रवृत्ति योजना का लाभ ले रहा/रही है, तो उसका <strong>PMS आवेदन निरस्त (Rejected)</strong> कर दिया जाएगा।
+  </li>
+ 
+   <li class="list-group-item">
+    <strong>13.</strong> यदि किसी छात्र/छात्रा के आवेदन में <strong>Defect</strong> पाया जाता है, तो उसे <strong>15 दिनों के भीतर आवश्यक सुधार कर आवेदन पुनः Finalize</strong> करना अनिवार्य होगा। निर्धारित अवधि में सुधार एवं Finalize नहीं करने पर आवेदन <strong>अस्वीकृत (Rejected)</strong> कर दिया जाएगा।
+</li>
+  
+         
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ===== APPLICATION PROCESS TIMELINE (IMPROVED SPACING) ===== -->
+<div class="container-fluid px-4 mt-3">
+  <div class="glass-card p-3">
+    <h6 class="fw-bold text-center" style="color:#0b4b7c; font-size:0.95rem;"><i class="fas fa-clock me-2"></i>Application Process Timeline</h6>
+    <div class="timeline-wrapper">
+      <span class="timeline-step">1 Registration</span>
+    
+      <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">2 Fill Application</span>
+      <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">3 Upload Docs</span>
+      <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">4 Aadhaar Seeding Status</span>
+          <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">5 Finalized</span>
+      <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">6 Institute Verify</span>
+      <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">7 District Verify</span>
+      <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">8 State Approval</span>
+      <span class="timeline-arrow">↓</span>
+      <span class="timeline-step">9 Scholarship Payment</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DOCUMENTS ===== -->
+<div class="container-fluid px-4 mt-3">
+  <div class="glass-card p-3">
+    <h6 class="fw-bold text-center" style="color:#0b4b7c; font-size:0.95rem;"><i class="fas fa-file-alt me-2"></i>Required Documents</h6>
+    <div class="row g-2">
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-id-card"></i><span>Aadhaar</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-file-invoice"></i><span>Income Certificate</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-certificate"></i><span>Caste Certificate</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-user-graduate"></i><span>10th Certificate</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-school"></i><span>Bonafide</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-receipt"></i><span>Fee Receipt</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-file-alt"></i><span>Last Mark Sheet</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-user"></i><span>Photograph</span></div></div>
+      <div class="col-3 col-md-2 col-lg-1-9"><div class="doc-card"><i class="fas fa-university"></i><span>Aadhaar Seeded Bank</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== IMPORTANT INSTRUCTIONS ===== -->
+<div class="container-fluid px-4 mt-3">
+  <div class="glass-card p-3">
+    <h6 class="text-danger fw-bold text-center" style="font-size:0.95rem; margin-bottom:12px;">
+      <i class="fas fa-arrow-circle-down me-2"></i>Important Instructions
+    </h6>
+    <ul class="list-unstyled instruct-list">
+      <li>
+        <a href="https://instpmsonline.bihar.gov.in/pmsbcebc2223off" target="_blank">Click here</a>
+        <span>to visit <strong>BC-EBC portal</strong> (2022-23, 2023-24)</span>
+      </li>
+      <li>
+        <a href="https://scstpmsonline.bihar.gov.in/scstpms2223" target="_blank">Click here</a>
+        <span>to visit <strong>SC-ST portal</strong> (2022-23, 2023-24)</span>
+      </li>
+      <li>
+        <a href="https://pmsonline.bihar.gov.in/pmsedu/" target="_blank">Click here</a>
+        <span>to visit <strong>portal</strong> (2019-20, 2020-21, 2021-22)</span>
+      </li>
+      <li>
+        <a href="Assets/PDF/Student.pdf" target="_blank">Click here</a>
+        <span>to download <strong>Student Correction Flow</strong> PDF</span>
+      </li>
+      <li style="grid-column: 1 / -1; justify-content: center; background: #fff3cd; border-left-color: #ffc107;">
+        <a href="https://resident.uidai.gov.in/bank-mapper" target="_blank" style="color:#856404;">Click here</a>
+        <span style="color:#856404;">आधार सीडिंग जांचें <strong class="blink-text" style="color:#dc3545;">(Check Aadhaar Seeding)</strong></span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+<footer class="footer-custom mt-4" style="padding: 15px 0 8px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" style="box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-3">
+                <h5 style="color: white"><i class="fa fa-building"></i>&nbsp;Post Matric Scholarship</h5>
+                <p style="color: white">
+                    Software Solutions Provided by<br>
+                    NIC-Bihar State Centre&nbsp;<a href="https://bihar.nic.in/" target="_blank"><img src="Assets/Web_Images/NIC-Logo.webp" class="img-fluid" style="width: 75px; height: auto; filter: contrast(0%) brightness(2);"></a>
+                </p>
+            </div>
+            <div class="col-md-3">
+                <h5 style="color: white"><i class="fa fa-link" style="color: white;"></i>&nbsp;Useful Links</h5>
+                <a href="https://nsp.gov.in/loginPage" style="color: white; text-decoration: none;" target="_blank">1. National Scholarship Portal</a><br>
+                <a href="https://state.bihar.gov.in/educationbihar/CitizenHome.html" style="color: white; text-decoration: none;" target="_blank">2. Education Department Website</a><br>
+                <a href="https://medhasoft.bih.nic.in/" style="color: white; text-decoration: none;" target="_blank">3. MedhaSoft</a>
+            </div>
+
+            <div class="col-md-3">
+                <h5 style="color: white"><i class="fa fa-feed" style="color: white;"></i>&nbsp;For any Query &amp; Feedback</h5>
+                <p style="color: white;">
+                    Directorate of Secondary Education<br>
+                    Education Department<br>
+                    Government of Bihar
+                </p>
+            </div>
+            <div class="col-md-3">
+                <h5 style="color: white"><i class="fa fa-feed" style="color: white;"></i>&nbsp;Note:</h5>
+                <p style="color: white;">
+                    For any assistance please contact<br>
+                    District Scholarship Committee
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<!-- ===== MODAL ===== -->
+<div class="modal fade" id="modalDefMerged" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header" style="padding:8px 16px;">
+        <h5 class="modal-title" style="font-size:0.9rem;">Select Year</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="padding:12px;">
+        <select class="form-select form-select-sm" onchange="if(this.value) window.open(this.value,'_blank'); this.selectedIndex=0;" style="font-size:0.85rem;">
+          <option value="#" selected="">--- Select Year ---</option>
+          <option value="https://scstpmsonline.bihar.gov.in/pmsscst2425dlog/pms/pms_online/Login.aspx">2024-2025</option>
+          <option value="https://scstpmsonline.bihar.gov.in/pmsscst2425dlog/pms/pms_online/createprofile.aspx">2025-2026</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Floating -->
+<a href="https://pmsonline.bihar.gov.in/2026/pms/pms_online/CreateProfile.aspx" class="floating-apply"><i class="fas fa-edit me-1"></i>Apply Now</a>
+<button class="scroll-top" id="scrollTopBtn"><i class="fas fa-arrow-up"></i></button>
+
+
+
+
+</body></body></html>

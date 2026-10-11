@@ -89,7 +89,7 @@ export function extractAmounts(text) {
  */
 export function extractIncomeLimits(text) {
 	const re = new RegExp(
-		String.raw`income[^\n.;]{0,80}(?:\n[^\n.;]{0,60})?\s(not\s+(?:be\s+)?more\s+than|upto|up\s+to|not\s+exceed(?:ing)?|below|less\s+than)\s*${RUPEE}\s*${NUMBER}\s*(lakhs?|lacs?)?`,
+		String.raw`income[^\n.;]{0,80}(?:\n[^\n.;]{0,60})?\s(not\s+(?:be\s+)?more\s+than|upto|up\s+to|not\s+exceed(?:ing)?|below|less\s+than\s+or\s+equal\s+to|less\s+than)\s*${RUPEE}\s*${NUMBER}\s*(lakhs?|lacs?)?`,
 		"gi",
 	);
 	const out = [];
@@ -98,7 +98,7 @@ export function extractIncomeLimits(text) {
 		const base = parseIndianNumber(m[2]);
 		if (base === null) continue;
 		const value = m[3] ? Math.round(base * 100000) : base;
-		const operator = /below|less/i.test(m[1]) ? "LT" : "LTE";
+		const operator = /equal/i.test(m[1]) ? "LTE" : /below|less/i.test(m[1]) ? "LT" : "LTE";
 		const ctx = contextQuote(text, m.index, m[0].length);
 		out.push({ value, operator, quote: ctx.quote, index: ctx.index, matched: m[0] });
 	}

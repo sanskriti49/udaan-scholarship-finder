@@ -40,6 +40,9 @@ export class MongoStore {
 			{
 				$set: {
 					lastSeenAt: snapshot.fetchedAt,
+					fetchMethod: snapshot.fetchMethod || "static",
+					...(snapshot.html ? { html: snapshot.html } : {}),
+					...(snapshot.fetchMethod === "dynamic" ? { etag: null, lastModified: null } : {}),
 					...(snapshot.etag ? { etag: snapshot.etag } : {}),
 					...(snapshot.lastModified ? { lastModified: snapshot.lastModified } : {}),
 				},
@@ -81,16 +84,16 @@ export class MongoStore {
 	}
 
 	async getCycle(schemeKey, academicYear, applicationType) {
-		return plain(await ScholarshipCycle.findOne({ schemeKey, academicYear, applicationType }).lean());
+		return plain(await ScholarshipCycle.findOne({ schemeKey, academicYear, applicationType, legacyUnverified: { $ne: true } }).lean());
 	}
 	async listCycles(schemeKey) {
-		return (await ScholarshipCycle.find({ schemeKey }).lean()).map(plain);
+		return (await ScholarshipCycle.find({ schemeKey, legacyUnverified: { $ne: true } }).lean()).map(plain);
 	}
 	async saveCycle(cycle) {
 		const { id, createdAt, updatedAt, ...data } = cycle;
 		const saved = await ScholarshipCycle.findOneAndUpdate(
 			{ schemeKey: cycle.schemeKey, academicYear: cycle.academicYear, applicationType: cycle.applicationType },
-			{ $set: data },
+			{ $set: { ...data, legacyUnverified: false } },
 			{ upsert: true, returnDocument: "after", runValidators: true, lean: true },
 		);
 		return plain(saved);

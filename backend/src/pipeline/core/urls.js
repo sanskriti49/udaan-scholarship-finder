@@ -39,14 +39,14 @@ export function hostMatches(hostname, allowedDomains = []) {
  * Resolve and encode a URL (portals often publish links containing raw spaces).
  * Returns null when the input cannot be a real URL.
  */
-export function canonicalizeUrl(raw, base) {
+export function canonicalizeUrl(raw, base, { preserveHash = false } = {}) {
 	if (!raw || typeof raw !== "string") return null;
 	const trimmed = raw.trim();
 	if (!trimmed || /^(javascript|mailto|tel|data):/i.test(trimmed) || trimmed === "#") return null;
 	try {
 		const url = new URL(trimmed.replace(/ /g, "%20"), base);
 		if (url.protocol !== "https:" && url.protocol !== "http:") return null;
-		url.hash = "";
+		if (!preserveHash) url.hash = "";
 		return url.toString();
 	} catch {
 		return null;
@@ -57,8 +57,8 @@ export function canonicalizeUrl(raw, base) {
  * Validate a URL that will be shown to students. Returns
  * { ok: true, url } or { ok: false, reason }.
  */
-export function validateOfficialUrl(raw, allowedDomains, { base, allowRoot = false } = {}) {
-	const url = canonicalizeUrl(raw, base);
+export function validateOfficialUrl(raw, allowedDomains, { base, allowRoot = false, preserveHash = false } = {}) {
+	const url = canonicalizeUrl(raw, base, { preserveHash });
 	if (!url) return { ok: false, reason: "unparseable_url" };
 	const parsed = new URL(url);
 	if (!hostMatches(parsed.hostname, allowedDomains)) {

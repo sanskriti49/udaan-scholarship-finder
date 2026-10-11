@@ -35,7 +35,7 @@ export function computeStatus(record, now = new Date(), { closingSoonDays = 7 } 
 	const opensAt = cycle.opensAt ? new Date(cycle.opensAt).getTime() : null;
 	const closesAt = cycle.closesAt ? new Date(cycle.closesAt).getTime() : null;
 	const latestClose = cycle.latestPossibleClosesAt ? new Date(cycle.latestPossibleClosesAt).getTime() : null;
-	const ay = cycle.academicYear ? ` for AY ${cycle.academicYear}` : "";
+	const ay = cycle.academicYear ? ` for ${cycle.academicYear.includes("-") ? "AY " : ""}${cycle.academicYear}` : "";
 	const renewal = cycle.applicationType === "renewal" ? " (renewal applications only)" : "";
 
 	if (closesAt !== null && nowMs > closesAt) {

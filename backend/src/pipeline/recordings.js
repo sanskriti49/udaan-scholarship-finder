@@ -10,11 +10,11 @@ export const DEFAULT_RECORDING_DIR = path.resolve(here, "../../test/fixtures/rec
  * replay runs. Replays use the capture timestamp as `fetchedAt`, so evidence
  * never claims to be fresher than it is.
  */
-export function loadRecordings(dir = DEFAULT_RECORDING_DIR) {
+export function loadRecordings(dir = DEFAULT_RECORDING_DIR, { includeUnverified = false } = {}) {
 	const manifest = JSON.parse(fs.readFileSync(path.join(dir, "manifest.json"), "utf8"));
 	return {
 		manifest,
-		records: manifest.entries.map((entry) => ({
+		records: manifest.entries.filter((entry) => includeUnverified || entry.verification !== "unverified_sample").map((entry) => ({
 			url: entry.url.replace(/ /g, "%20"),
 			text: fs.readFileSync(path.join(dir, entry.file), "utf8"),
 			sourceContentType: entry.sourceContentType,

@@ -694,6 +694,8 @@ export const getCrawlerStatus = async (req, res) => {
 				enabled: src.enabled,
 				authorityTier: src.authorityTier,
 				strategy: src.strategy,
+				ingestionStatus: src.ingestionStatus || "ready",
+				ingestionNote: src.ingestionNote || null,
 				allowedDomains: src.allowedDomains,
 				cadenceHours: src.cadenceHours,
 				staleAfterHours: src.staleAfterHours,

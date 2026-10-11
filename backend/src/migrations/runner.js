@@ -9,8 +9,11 @@ import IngestionIssue from "../models/IngestionIssue.js";
 import * as m001 from "./001-provenance-pipeline.js";
 import * as m002 from "./002-populate-required-documents.js";
 import * as m003 from "./003-seed-recent-updates.js";
+import * as m004 from "./004-quarantine-unverified-samples.js";
 
-export const MIGRATIONS = [m001, m002, m003];
+import * as m005 from "./005-quarantine-original-feed-paths.js";
+
+export const MIGRATIONS = [m001, m002, m003, m004, m005];
 export const PIPELINE_MODELS = [Scholarship, ScholarshipCycle, ScholarshipVersion, SourceSnapshot, SourceState, CrawlRun, IngestionIssue];
 
 /** Applies pending migrations in order and records them in `migrations`. */

@@ -28,7 +28,7 @@ function printReport(reports) {
 		console.log(JSON.stringify(r.counts, null, 2));
 		for (const p of r.pages || []) {
 			const tag = p.error ? `ERROR ${p.error.code}` : p.notModified ? "304" : p.pageChanged ? "changed" : "unchanged";
-			console.log(`  [${tag}] ${p.role || ""} ${p.url}`);
+			console.log(`  [${tag}] ${p.fetchMethod || "static"}${p.fallbackReason ? ` (fallback: ${p.fallbackReason})` : ""} ${p.role || ""} ${p.url}`);
 		}
 		for (const e of r.errors || []) console.log(`  ! ${e.code}: ${e.message}`);
 	}

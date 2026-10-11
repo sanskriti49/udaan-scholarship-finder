@@ -31,7 +31,7 @@ const MIN_TEXT_CHARS = { html: 400, pdf: 200, json: 2, text: 100 };
 const GUIDELINE_FIELDS = new Set(["amount", "eligibility.familyIncome", "eligibility.minDisabilityPercent"]);
 
 function stripSnapshotText(snapshot) {
-	const { text, pages, ...meta } = snapshot;
+	const { text, pages, html, ...meta } = snapshot;
 	return meta;
 }
 
@@ -46,6 +46,7 @@ function docFromSnapshot(snapshot) {
 		textHash: snapshot.textHash,
 		quality: snapshot.quality || assessTextQuality(snapshot.text),
 		documentDate: snapshot.documentDate,
+		html: snapshot.html || null,
 	};
 }
 
@@ -65,9 +66,10 @@ export class Pipeline {
 	 * @param {Function} [opts.now]          clock (for tests)
 	 * @param {Function} [opts.onDataChange] async ({ record, changeType, summary, deltas, isNew })
 	 */
-	constructor({ store, fetcherFactory = createDefaultFetcher, now = () => new Date(), onDataChange = null, logger } = {}) {
+	constructor({ store, fetcherFactory = createDefaultFetcher, renderer = fetchRendered, now = () => new Date(), onDataChange = null, logger } = {}) {
 		this.store = store;
 		this.fetcherFactory = fetcherFactory;
+		this.renderer = renderer;
 		this.now = now;
 		this.onDataChange = onDataChange;
 		this.logger = logger || rootLogger;
@@ -79,13 +81,39 @@ export class Pipeline {
 		const page = { url: entry.url, role: entry.role, adapter: entry.adapter };
 		run.pages.push(page);
 		try {
-			const dynamic = (entry.strategy || source.strategy) === "dynamic";
-			const result = dynamic
-				? await fetchRendered(entry.url, { allowedDomains: source.allowedDomains, fetcher, waitForSelector: entry.waitForSelector })
+			const strategy = entry.strategy || source.strategy || "static";
+			if (!["static", "auto", "dynamic"].includes(strategy)) throw new FetchError("SOURCE_CONFIG", `Unknown strategy: ${strategy}`);
+			const render = () => this.renderer(entry.url, {
+				allowedDomains: source.allowedDomains, fetcher,
+				...source.rendering, ...entry.rendering, waitForSelector: entry.waitForSelector || entry.rendering?.waitForSelector || source.rendering?.waitForSelector,
+			});
+			const dynamic = strategy === "dynamic" && fetcher.allowRendering !== false;
+			// An HTTP 304 only covers the HTML shell, not data populated by JavaScript.
+			const conditional = previous && previous.fetchMethod !== "dynamic" && !previous.contentType?.includes("rendered");
+			let result = dynamic
+				? await render()
 				: await fetcher.fetch(entry.url, {
-						etag: previous?.etag,
-						lastModified: previous?.lastModified,
+						etag: conditional ? previous.etag : undefined,
+						lastModified: conditional ? previous.lastModified : undefined,
 					});
+			let doc = result.notModified && previous ? docFromSnapshot(previous) : await toDocument(result);
+			let fallbackReason = null;
+			if (doc.kind === "html") {
+				if (doc.text.length < MIN_TEXT_CHARS.html) fallbackReason = "thin_content";
+				else if (entry.role === "listing" || entry.role === "announcements") {
+					const adapter = ADAPTERS[entry.adapter];
+					if (!adapter) throw new FetchError("SOURCE_CONFIG", `Unknown adapter: ${entry.adapter}`);
+					const preview = adapter.extract(doc, { ...doc, id: "preview", sourceId: source.id, fetchedAt: result.fetchedAt }, { source, entry });
+					fallbackReason = preview.issues?.find((issue) => issue.severity === "blocking" &&
+						["page_structure_changed", "too_few_schemes", "academic_year_not_stated"].includes(issue.code))?.code || null;
+				}
+			}
+			if (strategy === "auto" && fallbackReason && fetcher.allowRendering !== false && !result.capturedSourceType) {
+				page.fallbackReason = fallbackReason;
+				result = await render();
+				doc = await toDocument(result);
+			}
+			page.fetchMethod = result.fetchMethod || (dynamic ? "dynamic" : "static");
 			page.httpStatus = result.status;
 			page.attempts = result.attempts;
 			page.durationMs = Date.now() - started;
@@ -97,7 +125,6 @@ export class Pipeline {
 				return { doc: docFromSnapshot(previous), snapshot: { ...previous, fetchedAt: result.fetchedAt } };
 			}
 
-			const doc = await toDocument(result);
 			if (doc.text.length < (MIN_TEXT_CHARS[doc.kind] ?? 100)) {
 				throw new FetchError("THIN_CONTENT", `Only ${doc.text.length} characters of text; page may require rendering or be broken`);
 			}
@@ -108,6 +135,9 @@ export class Pipeline {
 				fetchedAt: result.fetchedAt,
 				httpStatus: result.status,
 				contentType: result.contentType,
+				fetchMethod: page.fetchMethod,
+				// Public HTML is required to replay structural HTML adapters on a 304.
+				html: (ADAPTERS[entry.adapter]?.needsHtml || entry.adapter.startsWith("mahadbt")) ? doc.html : undefined,
 				capturedSourceType: result.capturedSourceType || null,
 				kind: doc.kind,
 				sha256: result.sha256,
@@ -168,6 +198,9 @@ export class Pipeline {
 		const state = (await this.store.getSourceState(source.id)) || { sourceId: source.id, consecutiveFailures: 0 };
 		state.lastAttemptAt = at;
 		const fetcher = this.fetcherFactory(source);
+		// Persist active work before network requests so an interrupted process is
+		// distinguishable from a source that has never been attempted.
+		await this.store.saveRun(run);
 		log.info("source run started", { entries: source.entries.length });
 
 		const finish = async (status, error) => {
@@ -194,6 +227,10 @@ export class Pipeline {
 			return run;
 		};
 
+		if (source.ingestionStatus === "needs_adapter") {
+			return finish("rejected", new FetchError("SOURCE_NOT_READY", source.ingestionNote || "A verified live parser is not configured for this source"));
+		}
+
 		// ---- Discovery + Fetch + Extract (listing & cross-check pages) ----
 		const candidates = [];
 		const assertions = [];
@@ -212,7 +249,7 @@ export class Pipeline {
 				return finish("failed", error);
 			}
 			if (run.pages.at(-1).pageChanged) run.pageChanged = true;
-			const out = adapter.extract(fetched.doc, fetched.snapshot, { source });
+			const out = adapter.extract(fetched.doc, fetched.snapshot, { source, entry });
 			const blocking = (out.issues || []).filter((i) => i.severity === "blocking");
 			pageIssues.push(...(out.issues || []).map((i) => ({ ...i, details: { ...i.details, url: entry.url } })));
 			if (blocking.length && !entry.optional) {
@@ -352,7 +389,7 @@ export class Pipeline {
 
 	async resolveExisting(source, schemeKey) {
 		const existing = await this.store.getScholarship(schemeKey);
-		if (existing) return existing;
+		if (existing) return existing.legacy ? { ...existing, adoptedFromLegacy: true } : existing;
 		for (const [slug, key] of Object.entries(source.legacyAliases || {})) {
 			if (key !== schemeKey) continue;
 			const legacy = await this.store.findByLegacySlug(slug);

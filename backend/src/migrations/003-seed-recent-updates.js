@@ -1,8 +1,6 @@
 /**
- * Migration 003 — Seed verified recent update notices on prominent catalog schemes.
- *
- * Ensures that the change detection lifecycle, "Updated" badges, change notices,
- * and "Recently Updated Only" filtering have active official revision data to display.
+ * Retained migration ID for existing installations. Canned change notices are
+ * not official evidence and must never be seeded into a user's catalogue.
  */
 export const id = "003-seed-recent-updates";
 
@@ -29,26 +27,9 @@ const UPDATES = [
 	},
 ];
 
-export async function up({ db, models, log = console.log }) {
-	const scholarships = db.collection("scholarships");
+export const UNVERIFIED_UPDATE_SUMMARIES = UPDATES.map((item) => item.summary);
 
-	let updatedCount = 0;
-	for (const item of UPDATES) {
-		const res = await scholarships.updateMany(
-			{
-				title: item.titleMatch,
-				"publication.state": "published",
-			},
-			{
-				$set: {
-					hasChanges: true,
-					latestChangeSummary: item.summary,
-				},
-			},
-		);
-		updatedCount += res.modifiedCount;
-	}
-
-	log(`[${id}] marked ${updatedCount} published scholarships with active revision history`);
-	return { updatedCount };
+export async function up({ log = console.log }) {
+	log(`[${id}] skipped unverified canned update notices`);
+	return { updatedCount: 0, skippedUnverifiedNotices: true };
 }
