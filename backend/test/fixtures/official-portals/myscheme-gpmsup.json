@@ -1,0 +1,528 @@
+{
+  "data": {
+    "_id": "6613d6f7d7abbe47ee23ad7a",
+    "en": {
+      "applicationProcess": [
+        {
+          "mode": "Online",
+          "process": [
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Registration",
+                  "underline": true
+                },
+                {
+                  "text": ":",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-1: Applicant need to visit the "
+                },
+                {
+                  "children": [
+                    {
+                      "text": "official website"
+                    }
+                  ],
+                  "link": "https://scholarship.up.gov.in",
+                  "type": "link"
+                },
+                {
+                  "text": "."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-2: Click "
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Registration"
+                    }
+                  ],
+                  "link": "https://scholarship.up.gov.in/RegistrationNew.aspx",
+                  "type": "link"
+                },
+                {
+                  "text": " under Student option."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-3: Select the option among the following:"
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "For ST,SC,General Category) (Fresh)"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "For OBC Category"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "For Minority Category"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "For children studying in class 9 and 10 of parents engaged in unclean profession."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-4: Select the further option accordingly"
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Pre-matric (Fresh)."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Post-matric Intermediate (Fresh)."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Post-matric Other Than Intermediate (Fresh)."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Post-matric Other State (Fresh)."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-5: Provide the required information for registration and click on submit."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-6: Now, note down the registration number from the screen."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "Login",
+                  "underline": true
+                },
+                {
+                  "text": ":",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-1: Applicant need to visit the "
+                },
+                {
+                  "children": [
+                    {
+                      "text": "official website."
+                    }
+                  ],
+                  "link": "https://scholarship.up.gov.in",
+                  "type": "link"
+                },
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-2: Click Fresh Login under Student option."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-3: Fill out the required details."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Registration Number."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Mobile Number."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Password. "
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-4: Complete the DigiLocker verification."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-5: Fill out the application form."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Registration Details"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Personnel Details."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Bank Details."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                }
+              ],
+              "type": "ul_list"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-6: Upload required documents."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-7: Complete NPCI verification."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-8: Download the application form."
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "text": "Step-9: Submit the application form to the institute with all required documents."
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "process_md": "> **Registration**:\n\nStep-1: Applicant need to visit the [official website](https://scholarship.up.gov.in).\nStep-2: Click [Registration](https://scholarship.up.gov.in/RegistrationNew.aspx) under Student option.\nStep-3: Select the option among the following:\n\n\n  - For ST,SC,General Category) (Fresh)\n  - For OBC Category\n  - For Minority Category\n  - For children studying in class 9 and 10 of parents engaged in unclean profession.\n\n\nStep-4: Select the further option accordingly\n\n\n  - Pre-matric (Fresh).\n  - Post-matric Intermediate (Fresh).\n  - Post-matric Other Than Intermediate (Fresh).\n  - Post-matric Other State (Fresh).\n\n\nStep-5: Provide the required information for registration and click on submit.\nStep-6: Now, note down the registration number from the screen.\n<br>\n\n> **Login**:\n\nStep-1: Applicant need to visit the [official website.](https://scholarship.up.gov.in)\nStep-2: Click Fresh Login under Student option.\nStep-3: Fill out the required details.\n\n\n  - Registration Number.\n  - Mobile Number.\n  - Password. \n\n\nStep-4: Complete the DigiLocker verification.\nStep-5: Fill out the application form.\n\n\n  - Registration Details\n  - Personnel Details.\n  - Bank Details.\n\n\nStep-6: Upload required documents.\nStep-7: Complete NPCI verification.\nStep-8: Download the application form.\nStep-9: Submit the application form to the institute with all required documents.\n"
+        }
+      ],
+      "basicDetails": {
+        "dbtScheme": false,
+        "level": {
+          "label": "State/ UT",
+          "value": "state"
+        },
+        "nodalDepartmentName": {
+          "label": "Department of Social Welfare",
+          "value": 90000049
+        },
+        "schemeCategory": [
+          {
+            "label": "Education & Learning",
+            "value": "628ce76cd6d1a3bde4685292"
+          }
+        ],
+        "schemeFor": "Individual",
+        "schemeName": "General Pre Matric Scholarship-Uttar Pradesh",
+        "schemeOpenDate": "2016-03-16",
+        "schemeShortTitle": "GPMSUP",
+        "schemeSubCategory": [
+          {
+            "label": "Scholarships and student finance",
+            "value": "Scholarships and student finance"
+          }
+        ],
+        "state": {
+          "label": "Uttar Pradesh",
+          "value": 9
+        },
+        "tags": [
+          "Education",
+          "Financial Assistance",
+          "Scholarship"
+        ],
+        "targetBeneficiaries": [
+          {
+            "label": "Individual",
+            "value": "individual"
+          }
+        ]
+      },
+      "eligibilityCriteria": {
+        "eligibilityDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Beneficiary must be a resident of Uttar Pradesh."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Beneficiary must belong to the General category."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Beneficiaries who are dependents of people in occupations traditionally considered untouchable."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Beneficiaries' parents' annual income should not be more than ₹2,50,000/-."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "All the children of the applicant's parents will be eligible."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Students cannot receive other scholarships alongside this one (with some exceptions)."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Beneficiary's age limit is 12 to 20 years old (as of July 1st)."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ol_list"
+          }
+        ],
+        "eligibilityDescription_md": "\n1. Beneficiary must be a resident of Uttar Pradesh.\n1. Beneficiary must belong to the General category.\n1. Beneficiaries who are dependents of people in occupations traditionally considered untouchable.\n1. Beneficiaries&#39; parents&#39; annual income should not be more than ₹2,50,000/-.\n1. All the children of the applicant&#39;s parents will be eligible.\n1. Students cannot receive other scholarships alongside this one (with some exceptions).\n1. Beneficiary&#39;s age limit is 12 to 20 years old (as of July 1st).\n\n"
+      },
+      "schemeContent": {
+        "benefitTypes": {
+          "id": 1,
+          "label": "Cash",
+          "value": "cash"
+        },
+        "benefits": [
+          {
+            "children": [
+              {
+                "text": "For complete course duration : ₹3,000/- annually. "
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "benefits_md": "For complete course duration : ₹3,000/- annually. \n",
+        "briefDescription": "The Uttar Pradesh Social Welfare Department offers a Pre Matric Scholarship for General category students. This scholarship aims to financially assist students from these categories to pursue secondary education and complete their matriculation. ",
+        "detailedDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "The Social Welfare Department recognizes the importance of education in shaping the future, and is committed to providing opportunities for all.  That's why they offer scholarships to financially disadvantaged students from General castes, enrolled in Class 9 or 10. This program bridges the financial gap that can hinder a student's academic journey, empowering them to complete secondary school and pursue their educational goals. By alleviating the financial burden on families, the scholarship encourages students to stay in school, focus on their studies, and reach for a brighter future through higher education."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "align_justify"
+          }
+        ],
+        "detailedDescription_md": "The Social Welfare Department recognizes the importance of education in shaping the future, and is committed to providing opportunities for all.  That&amp;#39;s why they offer scholarships to financially disadvantaged students from General castes, enrolled in Class 9 or 10. This program bridges the financial gap that can hinder a student&amp;#39;s academic journey, empowering them to complete secondary school and pursue their educational goals. By alleviating the financial burden on families, the scholarship encourages students to stay in school, focus on their studies, and reach for a brighter future through higher education.\n",
+        "exclusions_md": "",
+        "references": [
+          {
+            "title": "Details",
+            "url": "https://scholarship.up.gov.in/PDFS/GO/Gen%20Prematric%20(class%209-10)%20niyamawali%202016.pdf"
+          },
+          {
+            "title": "Amendment",
+            "url": "https://scholarship.up.gov.in/PDFS/GO/202324/Adobe%20Scan%2028-Sept-2023%20gen%20pre.pdf"
+          },
+          {
+            "title": "Official Website",
+            "url": "https://scholarship.up.gov.in/index.aspx"
+          },
+          {
+            "title": "Registration",
+            "url": "https://scholarship.up.gov.in/RegistrationNew.aspx"
+          }
+        ],
+        "schemeImageUrl": ""
+      },
+      "schemeDefinitions": []
+    },
+    "slug": "gpmsup"
+  },
+  "error": "{}",
+  "errorDescription": "",
+  "status": "Success",
+  "statusCode": 200
+}

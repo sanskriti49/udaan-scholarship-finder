@@ -7,3 +7,9 @@ Source URLs are in `src/pipeline/sources.js`. Files correspond to UP, Karnataka,
 Bihar, INSPIRE, AICTE, ONGC, Reliance UG/PG and LIC. `wb.json` is the actual public
 government myScheme response for slug `svmcms`. No application credentials,
 student documents or personal profile data are included.
+
+`myscheme-<slug>.json` contains the unmodified public response fetched on
+11 October 2026 from `https://www.myscheme.gov.in/api/apisetu/schemes?slug=<slug>&lang=en`.
+The five UP alternatives, two Karnataka alternatives and AICTE PG alternative
+are configured explicitly in the source registry. `pmrs` was excluded because
+it overlaps the OBC pre-matric entry; it is not counted as another scholarship.

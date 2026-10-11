@@ -54,6 +54,7 @@ export function createDefaultFetcher(source, overrides = {}) {
 	return new SafeFetcher({
 		allowedDomains: source.allowedDomains,
 		minIntervalMs: source.rateLimit?.minIntervalMs,
+		...source.http,
 		...overrides,
 	});
 }
@@ -90,12 +91,19 @@ export class Pipeline {
 			const dynamic = strategy === "dynamic" && fetcher.allowRendering !== false;
 			// An HTTP 304 only covers the HTML shell, not data populated by JavaScript.
 			const conditional = previous && previous.fetchMethod !== "dynamic" && !previous.contentType?.includes("rendered");
-			let result = dynamic
-				? await render()
-				: await fetcher.fetch(entry.url, {
+			let result;
+			try {
+				result = dynamic ? await render() : await fetcher.fetch(entry.url, {
 						etag: conditional ? previous.etag : undefined,
 						lastModified: conditional ? previous.lastModified : undefined,
 					});
+			} catch (error) {
+				// Opt in only for a transport failure. HTTP refusals and robots rules
+				// remain failures; Chromium still validates TLS normally.
+				if (strategy !== "auto" || !source.allowNetworkRendering || fetcher.allowRendering === false || error.code !== "NETWORK") throw error;
+				page.fallbackReason = "network_transport_failed";
+				result = await render();
+			}
 			let doc = result.notModified && previous ? docFromSnapshot(previous) : await toDocument(result);
 			let fallbackReason = null;
 			if (doc.kind === "html") {
@@ -108,7 +116,7 @@ export class Pipeline {
 						["page_structure_changed", "too_few_schemes", "academic_year_not_stated"].includes(issue.code))?.code || null;
 				}
 			}
-			if (strategy === "auto" && fallbackReason && fetcher.allowRendering !== false && !result.capturedSourceType) {
+			if (strategy === "auto" && fallbackReason && result.fetchMethod !== "dynamic" && fetcher.allowRendering !== false && !result.capturedSourceType) {
 				page.fallbackReason = fallbackReason;
 				result = await render();
 				doc = await toDocument(result);
@@ -172,6 +180,28 @@ export class Pipeline {
 	}
 
 	async runSource(source) {
+		const primary = await this.runSourceAttempt(source);
+		if (!["failed", "rejected"].includes(primary.status) || !source.fallbackEntries?.length || source.ingestionStatus === "needs_adapter") return primary;
+		const fallback = await this.runSourceAttempt({
+			...source, name: `${source.name} - Government myScheme fallback`,
+			authorityTier: 2, strategy: "static", allowNetworkRendering: false,
+			entries: source.fallbackEntries, fallbackEntries: null, minExpectedSchemes: 1,
+			followUps: { maxPerRun: 0 }, isFallback: true,
+		});
+		fallback.primaryErrors = primary.errors;
+		fallback.errors = [...primary.errors.map((e) => ({ ...e, primaryAttempt: true })), ...fallback.errors];
+		fallback.fallbackUsed = ["success", "partial"].includes(fallback.status) && fallback.counts.published > 0;
+		if (fallback.fallbackUsed) fallback.status = "partial";
+		const state = await this.store.getSourceState(source.id);
+		state.lastStatus = fallback.status;
+		state.lastError = fallback.fallbackUsed ? primary.errors[0] : fallback.errors.at(-1);
+		state.fallbackUsed = fallback.fallbackUsed;
+		await this.store.saveSourceState(state);
+		await this.store.saveRun(fallback);
+		return fallback;
+	}
+
+	async runSourceAttempt(source) {
 		const at = this.now();
 		const runId = crypto.randomBytes(8).toString("hex");
 		const log = this.logger.child({ sourceId: source.id, runId });
@@ -216,6 +246,7 @@ export class Pipeline {
 				state.lastError = run.errors[run.errors.length - 1] || null;
 			}
 			state.lastRunId = runId;
+			state.fallbackUsed = Boolean(source.isFallback && run.counts.published > 0);
 			state.lastStatus = status;
 			await this.store.saveSourceState(state);
 			await this.store.saveRun(run);
@@ -268,6 +299,9 @@ export class Pipeline {
 		// ---- Deduplicate ----
 		const { records: unique, issues: dedupeIssues } = dedupeCandidates(candidates);
 		run.counts.discovered = unique.length;
+		if (unique.length < (source.minExpectedSchemes ?? 1)) {
+			return finish("rejected", new FetchError("EMPTY_CATALOGUE", `Expected at least ${source.minExpectedSchemes ?? 1} schemes; found ${unique.length}. Stored records are preserved.`));
+		}
 
 		// ---- Follow-up documents (guidelines) ----
 		const linkedBy = new Map();
@@ -357,6 +391,9 @@ export class Pipeline {
 		// ---- Freshness: records that disappeared from the source ----
 		const stored = await this.store.listScholarships({ primarySourceId: source.id });
 		for (const record of stored) {
+			// A limited alternative catalogue cannot establish that a record has
+			// disappeared from the administering portal.
+			if (source.isFallback || /Government myScheme fallback/.test(record.sourceSite || "")) continue;
 			if (seen.has(record.schemeKey) || record.legacy) continue;
 			record.freshness = record.freshness || {};
 			record.freshness.missingRunCount = (record.freshness.missingRunCount || 0) + 1;

@@ -172,7 +172,7 @@ app.get("/api/health", (req, res) => {
 app.get("/api/health/ingestion", async (req, res) => {
 	try {
 		const [states, counts] = await Promise.all([
-			SourceState.find({}).select("sourceId lastStatus lastAttemptAt lastSuccessAt lastError").lean(),
+			SourceState.find({}).select("sourceId lastStatus lastAttemptAt lastSuccessAt lastError fallbackUsed").lean(),
 			Scholarship.aggregate([{ $match: { "publication.state": "published", legacy: { $ne: true } } },
 				{ $group: { _id: "$primarySourceId", count: { $sum: 1 } } }]),
 		]);
@@ -184,6 +184,8 @@ app.get("/api/health/ingestion", async (req, res) => {
 				return { id: source.id, name: source.name, published: counts.find((c) => c._id === source.id)?.count || 0,
 					lastStatus: state?.lastStatus || "not_attempted", lastAttemptAt: state?.lastAttemptAt || null,
 					lastSuccessAt: state?.lastSuccessAt || null,
+					fallbackUsed: Boolean(state?.fallbackUsed),
+					coverage: state?.fallbackUsed ? "Government myScheme subset; primary portal unavailable" : (source.authorityTier === 2 && source.entries.every((e) => e.adapter === "myScheme") ? "Government myScheme catalogue" : "Administering portal"),
 					error: error ? { code: error.code, ...(safeErrors.has(error.code) ? { message: String(error.message || "").split("\n")[0].slice(0,180) } : {}) } : null };
 			}) });
 	} catch {

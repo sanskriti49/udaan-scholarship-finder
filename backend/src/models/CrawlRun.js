@@ -8,6 +8,8 @@ const crawlRunSchema = new mongoose.Schema(
 		finishedAt: Date,
 		status: { type: String, enum: ["running", "success", "partial", "failed", "rejected"] },
 		pageChanged: Boolean,
+		fallbackUsed: Boolean,
+		primaryErrors: [mongoose.Schema.Types.Mixed],
 		pages: [mongoose.Schema.Types.Mixed],
 		counts: mongoose.Schema.Types.Mixed,
 		failures: [mongoose.Schema.Types.Mixed],

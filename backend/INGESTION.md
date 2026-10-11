@@ -55,6 +55,24 @@ CAPTCHA bypasses or student-document uploads are involved.
 
 ## Verification
 
+UP, Karnataka and AICTE try their administering portal first. If it fails or its
+layout cannot be verified, they fetch explicitly verified government myScheme
+records: five UP programmes, two Karnataka programmes, and AICTE's PG scholarship.
+This is limited alternative coverage, not the entire primary catalogue. NSP
+separately covers AICTE Pragati, Saksham and Swanath. No current dates are inferred
+from myScheme's general programme descriptions or old guideline filenames.
+
+Karnataka can try Chromium after a Node transport failure, retaining normal TLS
+validation. HTTP refusals and robots restrictions are not bypassed. An empty
+alternative catalogue is a rejected crawl and leaves stored data intact. A
+limited fallback never marks absent primary records as missing.
+
+`/api/health/ingestion` reports `partial`, `fallbackUsed: true`, the primary error,
+published counts and limited coverage when an alternative supplied records.
+Each record names the government fallback and retains its exact source citations,
+application links, eligibility text and application instructions. A successful
+primary crawl clears the fallback flag. Other published records are retained.
+
 ```sh
 npm test
 npm run test:pipeline:browser

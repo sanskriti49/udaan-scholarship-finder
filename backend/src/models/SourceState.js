@@ -6,6 +6,7 @@ const sourceStateSchema = new mongoose.Schema(
 		lastAttemptAt: Date,
 		lastSuccessAt: Date,
 		lastStatus: String,
+		fallbackUsed: { type: Boolean, default: false },
 		lastRunId: String,
 		consecutiveFailures: { type: Number, default: 0 },
 		lastError: mongoose.Schema.Types.Mixed,

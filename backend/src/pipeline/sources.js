@@ -52,6 +52,13 @@ const JSON_MAPPING_TEMPLATE = (namespace) => ({
 	},
 });
 
+// Verified public government catalogue records. A fallback does not establish
+// current application dates or complete coverage of the administering portal.
+const mySchemeEntries = (...slugs) => slugs.map((slug) => ({
+	url: `https://www.myscheme.gov.in/api/apisetu/schemes?slug=${slug}&lang=en`,
+	adapter: "myScheme", role: "listing", optional: true,
+}));
+
 export const SOURCE_REGISTRY = [
 	{
 		id: "nsp_central_sector",
@@ -106,7 +113,9 @@ export const SOURCE_REGISTRY = [
 		ingestionStatus: "ready",
 		strategy: "dynamic",
 		state: "UP",
-		allowedDomains: ["scholarship.up.gov.in", "up.gov.in"],
+		allowedDomains: ["scholarship.up.gov.in", "up.gov.in", "myscheme.gov.in", "backwardwelfareup.gov.in", "upbocw.in", "uplmis.in"],
+		fallbackEntries: mySchemeEntries("gpmsup", "obcpms", "pmcup", "mpss", "srspy"),
+		http: { timeoutMs: 10000, retries: 1 },
 		entries: [
 			{ url: "https://scholarship.up.gov.in/", adapter: "upPortal", role: "listing", waitForSelector: "h5" },
 		],
@@ -147,9 +156,12 @@ export const SOURCE_REGISTRY = [
 		priority: 25,
 		enabled: true,
 		ingestionStatus: "ready",
-		strategy: "static",
+		strategy: "auto",
+		allowNetworkRendering: true,
 		state: "Karnataka",
-		allowedDomains: ["ssp.karnataka.gov.in", "ssp.postmatric.karnataka.gov.in", "karnataka.gov.in"],
+		allowedDomains: ["ssp.karnataka.gov.in", "ssp.postmatric.karnataka.gov.in", "karnataka.gov.in", "kar.nic.in", "myscheme.gov.in"],
+		fallbackEntries: mySchemeEntries("pdos", "vfas"),
+		http: { timeoutMs: 10000, retries: 1 },
 		entries: [
 			{ url: "https://ssp.karnataka.gov.in/Schemes.aspx", adapter: "karnatakaPortal", role: "listing", waitForSelector: ".scheme-li[data-scheme-id]" },
 		],
@@ -161,7 +173,7 @@ export const SOURCE_REGISTRY = [
 	},
 	{
 		id: "wb_svmcm_scholarship",
-		name: "SVMCM — Government myScheme catalogue (West Bengal)",
+		name: "SVMCM - Government myScheme catalogue (West Bengal)",
 		publisher: "Department of Higher Education, Government of West Bengal",
 		sourceType: "Government",
 		authorityTier: 2,
@@ -234,7 +246,9 @@ export const SOURCE_REGISTRY = [
 		ingestionStatus: "ready",
 		strategy: "static",
 		state: "All India",
-		allowedDomains: ["aicte.gov.in", "aicte-india.org", "scholarships.gov.in", "ugc.gov.in", "ugc.ac.in"],
+		allowedDomains: ["aicte.gov.in", "aicte-india.org", "scholarships.gov.in", "ugc.gov.in", "ugc.ac.in", "myscheme.gov.in"],
+		fallbackEntries: mySchemeEntries("pgssgategpatqsaicte"),
+		http: { timeoutMs: 10000, retries: 1 },
 		entries: [
 			{ url: "https://www.aicte.gov.in/schemes/students-development-schemes", adapter: "aictePortal", role: "listing", waitForSelector: ".schemeListItem" },
 		],

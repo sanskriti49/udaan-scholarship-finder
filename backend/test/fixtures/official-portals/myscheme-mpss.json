@@ -1,0 +1,521 @@
+{
+  "data": {
+    "_id": "6482b668481f59106a682045",
+    "en": {
+      "applicationProcess": [
+        {
+          "mode": "Online",
+          "process": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "First of all, click on the Option available in Student Section (by OBC students) on the "
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "website."
+                        }
+                      ],
+                      "link": "https://scholarship.up.gov.in",
+                      "type": "link"
+                    },
+                    {
+                      "text": ""
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Complete Student Registration. "
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To fill out the application form."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Take a printout of the application form."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To deposit prints out along with all enclosures in the educational institute."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Verify and forward the application form to the educational institute."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To verify and forward by the education officer."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To examine and match the data at the state N.I.C. level."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To approve/disapprove by the District Approval Committee."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To lock the approved data through digital signature by District Backward Classes Welfare Officer."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To generate the demand from N.I.C. on the basis of available data by the directorate."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "To deposit the amount directly in the bank account of the student."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            }
+          ],
+          "process_md": "\n1. First of all, click on the Option available in Student Section (by OBC students) on the [website.](https://scholarship.up.gov.in)1. Complete Student Registration. \n1. To fill out the application form.\n1. Take a printout of the application form.\n1. To deposit prints out along with all enclosures in the educational institute.\n1. Verify and forward the application form to the educational institute.\n1. To verify and forward by the education officer.\n1. To examine and match the data at the state N.I.C. level.\n1. To approve/disapprove by the District Approval Committee.\n1. To lock the approved data through digital signature by District Backward Classes Welfare Officer.\n1. To generate the demand from N.I.C. on the basis of available data by the directorate.\n1. To deposit the amount directly in the bank account of the student.\n\n",
+          "url": "https://scholarship.up.gov.in"
+        }
+      ],
+      "basicDetails": {
+        "dbtScheme": null,
+        "level": {
+          "label": "State/ UT",
+          "value": "state"
+        },
+        "nodalDepartmentName": {
+          "label": "Backward Welfare Department",
+          "value": 90000052
+        },
+        "nodalMinistryName": null,
+        "otherDepartmentNames": null,
+        "otherMinistryName": null,
+        "schemeCategory": [
+          {
+            "label": "Education & Learning",
+            "value": "628ce76cd6d1a3bde4685292"
+          }
+        ],
+        "schemeCloseDate": null,
+        "schemeFor": "Individual",
+        "schemeName": "Post-matric Scholarship Scheme- Uttar Pradesh",
+        "schemeOpenDate": null,
+        "schemeShortTitle": "MPSS-UP",
+        "schemeSubCategory": [
+          {
+            "label": "Scholarships and student finance",
+            "value": "Scholarships and student finance"
+          }
+        ],
+        "schemeType": null,
+        "state": {
+          "label": "Uttar Pradesh",
+          "value": 9
+        },
+        "tags": [
+          "Financial Assistance",
+          "Student",
+          "Education",
+          "Scholarship"
+        ],
+        "targetBeneficiaries": [
+          {
+            "label": "Individual",
+            "value": "individual"
+          }
+        ]
+      },
+      "eligibilityCriteria": {
+        "eligibilityDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Native and under study in Uttar Pradesh."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "The annual income of parents/guardian of the student is upto Rs. 2 Lakh."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Students from Other Backwards Classes study in all government-aided and recognized state educational institutes (subject to budget availability). "
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": ""
+                      }
+                    ],
+                    "type": "paragraph"
+                  }
+                ],
+                "type": "ol_list"
+              }
+            ],
+            "type": "align_justify"
+          }
+        ],
+        "eligibilityDescription_md": "\n   1. Native and under study in Uttar Pradesh.\n   1. The annual income of parents/guardian of the student is upto Rs. 2 Lakh.\n   1. Students from Other Backwards Classes study in all government-aided and recognized state educational institutes (subject to budget availability). \n\n"
+      },
+      "schemeContent": {
+        "benefitTypes": {
+          "id": 1,
+          "label": "Cash",
+          "value": "cash"
+        },
+        "benefits": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Course group-wise determined rates for scholarship"
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ul_list"
+              }
+            ],
+            "type": "align_left"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "S No."
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Group"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Course"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Hostel Rates (Rs/month)"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Day scholar Rates (Rs/month)"
+                      }
+                    ],
+                    "type": "table_cell"
+                  }
+                ],
+                "type": "table_row"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "1"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Group -1"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Degree and Master Degree Courses, M. Fil.-Ph.D., Courses of all medical therapies, Technology, Engineering, Planning, Architecture, Design, Fashion Technology, Agriculture, Animal Husbandry, Allied Sciences, Business Finance, Management Administration, Computer Science etc, C.P.L. Courses, Post Graduate Diploma in Medical Management, C.A., I.C.W.A., C.S., I.C.F.A., LL.M. , D. Lit, D.S.C. etc."
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "1,200/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "550/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  }
+                ],
+                "type": "table_row"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "2"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Group -2"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Graduate/Post Graduate level Degree Diploma, certificate course like Pharmacy , Nursing, LL.B., B.F.S., Para-Medical like rehabilitation, Diagnosis etc, Mass-Communication, Hotel Management, Interior Decoration, Nutrition and Dietetics, Commercial Art, Tourism Hospitality, Financial Services (e.g. Banking Insurance, Taxation etc.), in which minimum qualification is Intermediate or equivalent and post graduate courses which are not included in Group-1 like M.A./M.Sc./M. Com./M. Ed./M. Pharma/B. Ed. Etc.   "
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "820/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "530/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  }
+                ],
+                "type": "table_row"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "3"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Group-3"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "All graduate level courses which are not included in Group-I and II, like B.A., B. Sc. and B. Com./B.T.C etc. "
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "570/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "300/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  }
+                ],
+                "type": "table_row"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "4"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Group -4"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "All non-degree level courses, where-in the minimum entrance qualification is High School, like I.T.I. and three year’s diploma courses (Polytechnic) etc. "
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "380/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "230/-"
+                      }
+                    ],
+                    "type": "table_cell"
+                  }
+                ],
+                "type": "table_row"
+              }
+            ],
+            "type": "table"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "benefits_md": "\n  - Course group-wise determined rates for scholarship\n\nS No.GroupCourseHostel Rates (Rs/month)Day scholar Rates (Rs/month)1Group -1Degree and Master Degree Courses, M. Fil.-Ph.D., Courses of all medical therapies, Technology, Engineering, Planning, Architecture, Design, Fashion Technology, Agriculture, Animal Husbandry, Allied Sciences, Business Finance, Management Administration, Computer Science etc, C.P.L. Courses, Post Graduate Diploma in Medical Management, C.A., I.C.W.A., C.S., I.C.F.A., LL.M. , D. Lit, D.S.C. etc.1,200/-550/-2Group -2Graduate/Post Graduate level Degree Diploma, certificate course like Pharmacy , Nursing, LL.B., B.F.S., Para-Medical like rehabilitation, Diagnosis etc, Mass-Communication, Hotel Management, Interior Decoration, Nutrition and Dietetics, Commercial Art, Tourism Hospitality, Financial Services (e.g. Banking Insurance, Taxation etc.), in which minimum qualification is Intermediate or equivalent and post graduate courses which are not included in Group-1 like M.A./M.Sc./M. Com./M. Ed./M. Pharma/B. Ed. Etc.   820/-530/-3Group-3All graduate level courses which are not included in Group-I and II, like B.A., B. Sc. and B. Com./B.T.C etc. 570/-300/-4Group -4All non-degree level courses, where-in the minimum entrance qualification is High School, like I.T.I. and three year’s diploma courses (Polytechnic) etc. 380/-230/-<br>\n\n",
+        "briefDescription": "The UP scholarship program was started by the state of Uttar Pradesh to increase literacy rates and generate a skilled youth force to boost social and economic growth.",
+        "detailedDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Education is top-seeded to uplift the backward classes.  Because of a lack of education, a social category remains backward. In spite of the long duration passed since the independence of the country, no expected improvement seen in the educational status of Other Backward Classes. Many efforts have been made to improve the educational status.  At present, post matric scholarship scheme is being operated in online mode by the Department of Backward Classes Welfare with the objective of developing backward classes and uplifting their educational status.  Under this scheme, students of Other Backward Classes studying in all government schools, aided and recognized educational institutes are being provided with a scholarship each year.  Department of Backward Classes Welfare is continuously working to uplift the educational status of backward classes."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "align_justify"
+          }
+        ],
+        "detailedDescription_md": "Education is top-seeded to uplift the backward classes.  Because of a lack of education, a social category remains backward. In spite of the long duration passed since the independence of the country, no expected improvement seen in the educational status of Other Backward Classes. Many efforts have been made to improve the educational status.  At present, post matric scholarship scheme is being operated in online mode by the Department of Backward Classes Welfare with the objective of developing backward classes and uplifting their educational status.  Under this scheme, students of Other Backward Classes studying in all government schools, aided and recognized educational institutes are being provided with a scholarship each year.  Department of Backward Classes Welfare is continuously working to uplift the educational status of backward classes.\n",
+        "exclusions_md": "",
+        "references": [
+          {
+            "title": "Guidelines",
+            "url": "https://www.backwardwelfareup.gov.in/en/page/postmatric"
+          }
+        ],
+        "schemeImageUrl": ""
+      },
+      "schemeDefinitions": []
+    },
+    "slug": "mpss"
+  },
+  "error": "{}",
+  "errorDescription": "",
+  "status": "Success",
+  "statusCode": 200
+}

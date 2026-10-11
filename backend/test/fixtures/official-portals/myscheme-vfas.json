@@ -1,0 +1,415 @@
+{
+  "data": {
+    "_id": "64643f158919dbd7e6f5ba29",
+    "en": {
+      "applicationProcess": [
+        {
+          "mode": "Online",
+          "process": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Visit the official "
+                        },
+                        {
+                          "children": [
+                            {
+                              "bold": true,
+                              "text": "portal"
+                            }
+                          ],
+                          "link": "https://dom.karnataka.gov.in/new-page/Online%20Application%20For%20Vidyasiri%20%20for%20Minority%20candidates%20for%20the%20year%202022-23/en",
+                          "type": "link"
+                        },
+                        {
+                          "text": " designated for the scholarship scheme."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Fill out the application form online through the SSP (Student Scholarship Portal) software."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Provide accurate personal and academic details as required in the application form."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Upload the necessary documents, such as Aadhaar card, bank account details, caste certificate, income certificate, and previous year's marks card."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "After students complete the online application, please take a printout of the filled application form."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Gather all the required documents as specified in the application process and submit the hard copies of the application form and supporting documents to your respective college."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "College principals and inspection officers will review the application and documents submitted by the student."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "They will verify the information provided and ensure that all required documents are in order."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "The Taluk Backward Classes Welfare Officer will further review and verify the application and documents. "
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "The officer will confirm the details provided and verify the eligibility of the student."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "The District Backward Classes Welfare Officer will check the information the Taluk Welfare Officer provided."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "They will ensure the application's compliance with the scheme's guidelines and regulations."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "The college principal will provide information about the selected student's attendance, confirming that it meets the minimum requirement of 75%."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "This attendance information will be uploaded by the Taluk Backward Classes Welfare Officer through the online portal."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Based on the respective year's budget, the qualified students will be approved at the taluk level for the Vidyasiri-Food and Accommodation Scholarship."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Grants will be allocated according to category-wise reservations and the Merit cum Means criteria."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ol_list"
+                }
+              ],
+              "type": "align_justify"
+            }
+          ],
+          "process_md": "\n   1. Visit the official [**portal**](https://dom.karnataka.gov.in/new-page/Online%20Application%20For%20Vidyasiri%20%20for%20Minority%20candidates%20for%20the%20year%202022-23/en) designated for the scholarship scheme.   1. Fill out the application form online through the SSP (Student Scholarship Portal) software.\n   1. Provide accurate personal and academic details as required in the application form.\n   1. Upload the necessary documents, such as Aadhaar card, bank account details, caste certificate, income certificate, and previous year&amp;#39;s marks card.\n   1. After students complete the online application, please take a printout of the filled application form.\n   1. Gather all the required documents as specified in the application process and submit the hard copies of the application form and supporting documents to your respective college.\n   1. College principals and inspection officers will review the application and documents submitted by the student.\n   1. They will verify the information provided and ensure that all required documents are in order.\n   1. The Taluk Backward Classes Welfare Officer will further review and verify the application and documents. \n   1. The officer will confirm the details provided and verify the eligibility of the student.\n   1. The District Backward Classes Welfare Officer will check the information the Taluk Welfare Officer provided.\n   1. They will ensure the application&amp;#39;s compliance with the scheme&amp;#39;s guidelines and regulations.\n   1. The college principal will provide information about the selected student&amp;#39;s attendance, confirming that it meets the minimum requirement of 75%.\n   1. This attendance information will be uploaded by the Taluk Backward Classes Welfare Officer through the online portal.\n   1. Based on the respective year&amp;#39;s budget, the qualified students will be approved at the taluk level for the Vidyasiri-Food and Accommodation Scholarship.\n   1. Grants will be allocated according to category-wise reservations and the Merit cum Means criteria.\n\n",
+          "url": ""
+        }
+      ],
+      "basicDetails": {
+        "dbtScheme": null,
+        "level": {
+          "label": "State",
+          "value": "state"
+        },
+        "nodalDepartmentName": {
+          "label": "Backward Classes Department",
+          "value": 2999993
+        },
+        "schemeCategory": [
+          {
+            "label": "Social welfare & Empowerment",
+            "value": "628ce87cd6d1a3bde4685312"
+          },
+          {
+            "label": "Education & Learning",
+            "value": "628ce76cd6d1a3bde4685292"
+          }
+        ],
+        "schemeFor": "Individual",
+        "schemeName": "Vidyasiri food And Accommodation Scholarship Scheme",
+        "schemeOpenDate": null,
+        "schemeShortTitle": "VFASS",
+        "schemeSubCategory": [
+          {
+            "label": "Education and training grants, fellowship, stipend",
+            "value": "Education and training grants, fellowship, stipend"
+          },
+          {
+            "label": "Universities and higher education",
+            "value": "Universities and higher education"
+          }
+        ],
+        "state": {
+          "label": "Karnataka",
+          "value": 29
+        },
+        "tags": [
+          "Stipend",
+          "Education",
+          "Students"
+        ],
+        "targetBeneficiaries": [
+          {
+            "label": "Individual",
+            "value": "individual"
+          }
+        ]
+      },
+      "eligibilityCriteria": {
+        "eligibilityDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Students must be citizens of India and permanent residents of Karnataka."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Students should belong to backward classes listed by the Government of India or the State Government."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Students must be pursuing post-matric courses in government, local, aided, or recognized private institutions affiliated with statutory universities in Karnataka."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Students who have not secured admission in any departmental or government-funded student hostel are eligible."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "The annual income of the student's family should fall within the specified limits based on their category."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ol_list"
+              }
+            ],
+            "type": "align_justify"
+          }
+        ],
+        "eligibilityDescription_md": "\n   1. Students must be citizens of India and permanent residents of Karnataka.\n   1. Students should belong to backward classes listed by the Government of India or the State Government.\n   1. Students must be pursuing post-matric courses in government, local, aided, or recognized private institutions affiliated with statutory universities in Karnataka.\n   1. Students who have not secured admission in any departmental or government-funded student hostel are eligible.\n   1. The annual income of the student&amp;#39;s family should fall within the specified limits based on their category.\n\n"
+      },
+      "schemeContent": {
+        "benefitTypes": {
+          "id": 1,
+          "label": "Cash",
+          "value": "cash"
+        },
+        "benefits": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Financial assistance for food and accommodation expenses."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Monthly stipend of Rs. 1,500 for 10 months per academic year."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Support for students belonging to backward classes."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Direct crediting of funds to the students' bank accounts."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Promotes access to higher education for eligible students."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Encourages academic performance through the eligibility criteria."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Reduces the financial burden on students pursuing post-matric courses."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ol_list"
+              }
+            ],
+            "type": "align_justify"
+          }
+        ],
+        "benefits_md": "\n   1. Financial assistance for food and accommodation expenses.\n   1. Monthly stipend of Rs. 1,500 for 10 months per academic year.\n   1. Support for students belonging to backward classes.\n   1. Direct crediting of funds to the students&amp;#39; bank accounts.\n   1. Promotes access to higher education for eligible students.\n   1. Encourages academic performance through the eligibility criteria.\n   1. Reduces the financial burden on students pursuing post-matric courses.\n\n",
+        "briefDescription": "Vidyasiri-Food and Accommodation Scholarship Scheme (VFAS) is a government initiative in Karnataka that provides financial assistance to students belonging to backward classes pursuing post-matric courses in recognized institutions. Scheme offers a monthly stipend of Rs. 1,500 for10 months",
+        "detailedDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Vidyasiri-Food and Accommodation Scholarship Scheme (VFAS) is specifically designed for students from backward classes pursuing post-matric courses in government, local, aided, and recognized private institutions affiliated with statutory universities in Karnataka. The scheme requires students to link their Aadhaar number to their bank account. To be eligible for the scheme, students must be citizens of India and permanent residents of Karnataka. They should belong to backward classes listed by the Government of India or the State Government. Students who have not secured admission in any departmental or government-funded student hostel and are studying in post-matric courses are eligible to apply. The scheme provides a monthly stipend of Rs. 1,500 for 10 months, totaling Rs. 15,000 per annum, which is directly credited to the students' bank accounts. The income of the student's family should fall within specific limits based on the category they belong to. The eligibility criteria also include minimum marks required in the previous year's annual examination for fresh and renewal students."
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "align_justify"
+          }
+        ],
+        "detailedDescription_md": "Vidyasiri-Food and Accommodation Scholarship Scheme (VFAS) is specifically designed for students from backward classes pursuing post-matric courses in government, local, aided, and recognized private institutions affiliated with statutory universities in Karnataka. The scheme requires students to link their Aadhaar number to their bank account. To be eligible for the scheme, students must be citizens of India and permanent residents of Karnataka. They should belong to backward classes listed by the Government of India or the State Government. Students who have not secured admission in any departmental or government-funded student hostel and are studying in post-matric courses are eligible to apply. The scheme provides a monthly stipend of Rs. 1,500 for 10 months, totaling Rs. 15,000 per annum, which is directly credited to the students&amp;#39; bank accounts. The income of the student&amp;#39;s family should fall within specific limits based on the category they belong to. The eligibility criteria also include minimum marks required in the previous year&amp;#39;s annual examination for fresh and renewal students.\n",
+        "exclusions": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Students attending equivalent courses more than once are not eligible."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Students practicing medicine during postgraduate medical courses are not eligible."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Students who have changed courses multiple times are not eligible."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ol_list"
+              }
+            ],
+            "type": "align_justify"
+          }
+        ],
+        "exclusions_md": "\n   1. Students attending equivalent courses more than once are not eligible.\n   1. Students practicing medicine during postgraduate medical courses are not eligible.\n   1. Students who have changed courses multiple times are not eligible.\n\n",
+        "references": [
+          {
+            "title": "Guidelines On The Website",
+            "url": "https://bcwd.karnataka.gov.in/info-2/Scholarships/Vidyasiri/en"
+          }
+        ],
+        "schemeImageUrl": ""
+      },
+      "schemeDefinitions": []
+    },
+    "slug": "vfas"
+  },
+  "error": "{}",
+  "errorDescription": "",
+  "status": "Success",
+  "statusCode": 200
+}

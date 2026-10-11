@@ -1,0 +1,271 @@
+{
+  "data": {
+    "_id": "63d7be2d04d33927ca2a836e",
+    "en": {
+      "applicationProcess": [
+        {
+          "mode": "Online",
+          "process": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "First of all, OBC students need to click on Option in the Student Section of  "
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "website."
+                        }
+                      ],
+                      "link": "https://scholarship.up.gov.in",
+                      "type": "link"
+                    },
+                    {
+                      "text": ""
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Student Registration."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Fill out the application form."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Print out of application form."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Deposit the print out along with all the enclosures in the educational institute."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Verify and forward the application form by an educational institute."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Verify and forward the application by Education Officer."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Examine and match the data at state N.I.C. level."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Approve/disapprove by the District Approval Committee."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Lock the approved data with the digital signature by District Backward Class Welfare Officer."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Generate the demand by the Directorate based on the data available on N.I.C."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Depositing of the amount directly in the bank account of the student."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            }
+          ],
+          "process_md": "\n1. First of all, OBC students need to click on Option in the Student Section of  [website.](https://scholarship.up.gov.in)1. Student Registration.\n1. Fill out the application form.\n1. Print out of application form.\n1. Deposit the print out along with all the enclosures in the educational institute.\n1. Verify and forward the application form by an educational institute.\n1. Verify and forward the application by Education Officer.\n1. Examine and match the data at state N.I.C. level.\n1. Approve/disapprove by the District Approval Committee.\n1. Lock the approved data with the digital signature by District Backward Class Welfare Officer.\n1. Generate the demand by the Directorate based on the data available on N.I.C.\n1. Depositing of the amount directly in the bank account of the student.\n\n",
+          "url": "https://scholarship.up.gov.in"
+        }
+      ],
+      "basicDetails": {
+        "dbtScheme": true,
+        "implementingAgency": null,
+        "level": {
+          "label": "Central",
+          "value": "central"
+        },
+        "nodalDepartmentName": null,
+        "nodalMinistryName": {
+          "label": "Ministry Of Social Justice and Empowerment",
+          "value": 712
+        },
+        "otherDepartmentNames": null,
+        "otherMinistryName": null,
+        "schemeCategory": [
+          {
+            "label": "Education & Learning",
+            "value": "628ce76cd6d1a3bde4685292"
+          }
+        ],
+        "schemeCloseDate": null,
+        "schemeFor": "Individual",
+        "schemeName": "Pre-Matric Scholarship",
+        "schemeOpenDate": null,
+        "schemeShortTitle": "PMRS",
+        "schemeSubCategory": [
+          {
+            "label": "Scholarships and student finance",
+            "value": "Scholarships and student finance"
+          }
+        ],
+        "state": null,
+        "tags": [
+          "Financial Assistance",
+          "Education",
+          "Student Welfare"
+        ],
+        "targetBeneficiaries": [
+          {
+            "label": "Individual",
+            "value": "individual"
+          }
+        ]
+      },
+      "eligibilityCriteria": {
+        "eligibilityDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Native and studying in Uttar Pradesh. "
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Annual income of the parents/guardians of the students upto Rs. 2 Lakh."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Students studying in government schools, aided and recognized educational institutes (provided the availability of the budget). ।"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": ""
+                  }
+                ],
+                "type": "paragraph"
+              }
+            ],
+            "type": "ol_list"
+          }
+        ],
+        "eligibilityDescription_md": "\n1. Native and studying in Uttar Pradesh. \n1. Annual income of the parents/guardians of the students upto Rs. 2 Lakh.\n1. Students studying in government schools, aided and recognized educational institutes (provided the availability of the budget). ।\n\n"
+      },
+      "schemeContent": {
+        "benefitTypes": {
+          "label": "Cash",
+          "value": "Cash"
+        },
+        "benefits": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "Monthly Rs. 150/- for a maximum of 10 months. "
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Annually Rs. 750/- ad hoc grant in one go."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ol_list"
+          }
+        ],
+        "benefits_md": "\n1. Monthly Rs. 150/- for a maximum of 10 months. \n1. Annually Rs. 750/- ad hoc grant in one go.\n\n",
+        "briefDescription": "The scholarship is designed to provide OBC students with the necessary financial resources studying at pre-matriculation stage to enable them to complete their education.\n",
+        "detailedDescription": [
+          {
+            "children": [
+              {
+                "text": "Education is top seeded to uplift the backward classes. Because of lack of education, a social category remains backward. Inspite of long duration passed since independence of the country, expected improvement is not seen in the educational status of Other Backward Classes. Many efforts have been made to improve the educational status.  At present, Fee Reimbursement scheme is being operated in online mode by Department of Backward Classes Welfare with the objective of development of backward classes and uplifting their educational status.  Under this scheme, students of Other Backward Classes studying in all government schools, aided and recognized educational institute are being provided with the scholarship each year.  Department of Backward Classes Welfare is continuously working to uplift the educational status of backward classes."
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "detailedDescription_md": "Education is top seeded to uplift the backward classes. Because of lack of education, a social category remains backward. Inspite of long duration passed since independence of the country, expected improvement is not seen in the educational status of Other Backward Classes. Many efforts have been made to improve the educational status.  At present, Fee Reimbursement scheme is being operated in online mode by Department of Backward Classes Welfare with the objective of development of backward classes and uplifting their educational status.  Under this scheme, students of Other Backward Classes studying in all government schools, aided and recognized educational institute are being provided with the scholarship each year.  Department of Backward Classes Welfare is continuously working to uplift the educational status of backward classes.\n",
+        "exclusions_md": "",
+        "references": [
+          {
+            "title": "Guidelines",
+            "url": "https://www.backwardwelfareup.gov.in/en/page/prematric"
+          }
+        ],
+        "schemeImageUrl": ""
+      },
+      "schemeDefinitions": []
+    },
+    "slug": "pmrs"
+  },
+  "error": "{}",
+  "errorDescription": "",
+  "status": "Success",
+  "statusCode": 200
+}

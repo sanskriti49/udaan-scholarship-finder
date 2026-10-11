@@ -204,13 +204,15 @@ export const mySchemeAdapter = {
 		if(doc.json?.statusCode!==200||!en?.basicDetails?.schemeName||!data.slug)return missing();
 		const b=en.basicDetails,c=en.schemeContent,eligibility=plain(en.eligibilityCriteria?.eligibilityDescription);
 		const title=b.schemeName,listing=`https://www.myscheme.gov.in/schemes/${data.slug}`;
-		const description=[c.briefDescription,plain(c.detailedDescription),`Eligibility: ${eligibility}`,`Benefits: ${plain(c.benefits)}`].filter(Boolean).join("\n\n");
+		const application = (en.applicationProcess || []).map((p) => plain(p.process)).filter(Boolean).join("\n");
+		const description=[c.briefDescription,plain(c.detailedDescription),`Eligibility: ${eligibility}`,`Benefits: ${plain(c.benefits)}`,application ? `How to apply: ${application}` : null].filter(Boolean).join("\n\n");
 		const item=candidate(title,description,doc,snapshot,source,{organization:b.nodalDepartmentName?.label});
 		if(!item)return missing();
 		item.links.listingUrl=listing;
 		const references=c.references||[];
-		item.links.guidelinesUrl=references.map((r)=>link(r.url,doc,source)).find(Boolean)||listing;
-		item.links.applyUrl=item.links.guidelinesUrl;
+		const validReferences = references.map((r) => ({ title: r.title || "", url: link(r.url, doc, source) })).filter((r) => r.url);
+		item.links.guidelinesUrl=validReferences.find((r)=>/guideline|details|amendment/i.test(r.title))?.url || listing;
+		item.links.applyUrl=validReferences.find((r)=>/apply portal|application link|registration|scholarship portal/i.test(r.title))?.url || listing;
 		// Rates vary by course. Preserve the table in description; never attribute
 		// the largest rate to every applicant or annualize the monthly rates.
 		const benefits=plain(c.benefits), rates=[...benefits.matchAll(/₹\s*([\d,]+)\s*\/-/g)].map((m)=>({value:Number(m[1].replaceAll(",","")),quote:m[0]}));

@@ -1,0 +1,773 @@
+{
+  "data": {
+    "_id": "65a9017230cd9600eb54910c",
+    "en": {
+      "applicationProcess": [
+        {
+          "mode": "Online",
+          "process": [
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "How to get register",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Applicant must visit the "
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "official web portal."
+                        }
+                      ],
+                      "link": "https://www.uplmis.in/Guest/frm_createlogin_forlabs.aspx",
+                      "type": "link"
+                    },
+                    {
+                      "text": ""
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Provide the required details"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Enter Aadhaar Number."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Choose Circle."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Choose District."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Mobile Number."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Submit the registration request."
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            },
+            {
+              "children": [
+                {
+                  "text": ""
+                }
+              ],
+              "type": "paragraph"
+            },
+            {
+              "children": [
+                {
+                  "bold": true,
+                  "text": "How to submit the application",
+                  "underline": true
+                }
+              ],
+              "type": "block_quote"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "text": "Applicant must visit the official "
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "web portal"
+                        }
+                      ],
+                      "link": "https://www.uplmis.in/Guest/frm_CreateLogin.aspx?type=2",
+                      "type": "link"
+                    },
+                    {
+                      "text": "."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Provide the required details"
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Choose Circle."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Choose Scheme name."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Enter Registered Aadhaar Number."
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Enter Registered Mobile Number."
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Click on \"Open Application form\"."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Provide the required details in application form."
+                    }
+                  ],
+                  "type": "list_item"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "text": "Applicant/Worker details"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Child details"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Bank Account Details"
+                        }
+                      ],
+                      "type": "list_item"
+                    },
+                    {
+                      "children": [
+                        {
+                          "text": "Submit the required documents"
+                        }
+                      ],
+                      "type": "list_item"
+                    }
+                  ],
+                  "type": "ul_list"
+                },
+                {
+                  "children": [
+                    {
+                      "text": "Submit the application request. "
+                    }
+                  ],
+                  "type": "list_item"
+                }
+              ],
+              "type": "ol_list"
+            }
+          ],
+          "process_md": "> **How to get register**\n\n\n1. Applicant must visit the [official web portal.](https://www.uplmis.in/Guest/frm_createlogin_forlabs.aspx)1. Provide the required details\n\n  - Enter Aadhaar Number.\n  - Choose Circle.\n  - Choose District.\n  - Mobile Number.\n\n1. Submit the registration request.\n\n<br>\n\n> **How to submit the application**\n\n\n1. Applicant must visit the official [web portal](https://www.uplmis.in/Guest/frm_CreateLogin.aspx?type=2).1. Provide the required details\n\n  - Choose Circle.\n  - Choose Scheme name.\n  - Enter Registered Aadhaar Number.\n  - Enter Registered Mobile Number.\n\n1. Click on &quot;Open Application form&quot;.\n1. Provide the required details in application form.\n\n  - Applicant/Worker details\n  - Child details\n  - Bank Account Details\n  - Submit the required documents\n\n1. Submit the application request. \n\n"
+        }
+      ],
+      "basicDetails": {
+        "dbtScheme": false,
+        "level": {
+          "label": "State/ UT",
+          "value": "state"
+        },
+        "nodalDepartmentName": {
+          "label": "Labour Department, Uttar Pradesh",
+          "value": 90000031
+        },
+        "schemeCategory": [
+          {
+            "label": "Education & Learning",
+            "value": "628ce76cd6d1a3bde4685292"
+          }
+        ],
+        "schemeFor": "Individual",
+        "schemeName": "Sant Ravidaas Shiksha Protsaahan Yojana ",
+        "schemeOpenDate": "2022-08-04",
+        "schemeShortTitle": "SRSPY",
+        "schemeSubCategory": [
+          {
+            "label": "Scholarships and student finance",
+            "value": "Scholarships and student finance"
+          }
+        ],
+        "state": {
+          "label": "Uttar Pradesh",
+          "value": 9
+        },
+        "tags": [
+          "Education",
+          "Financial Assistance",
+          "Scholarship"
+        ],
+        "targetBeneficiaries": [
+          {
+            "label": "Individual",
+            "value": "individual"
+          }
+        ]
+      },
+      "eligibilityCriteria": {
+        "eligibilityDescription": [
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "text": "The construction worker must be registered with the Board and be actively updated."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The construction worker must have completed at least one year (365 days) of membership with the Board after registration."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The age of the child should be as follows according to the class on July 1 of each year:"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Class 1 and 2: Maximum age 6 to 8 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Class 3 to 5: Maximum age 8 to 11 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Class 6 to 8: Maximum age 11 to 14 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Class 9 to 12: Maximum age 14 to 18 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Graduate and postgraduate: Maximum age 18 to 25 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Graduate (MBBS) and postgraduate degree/diploma in medicine from any government educational institution: Maximum age 25 to 35 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Research in any subject: Maximum age 25 to 35 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Study at Indian Institute of Management (IIM), Indian Institute of Technology (IIT), National Institute of Technology (NIT), National Institute of Fashion Technology (NIFT), and National Law University: Maximum age 25 to 35 years"
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ul_list"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Aadhaar certification of the construction worker's children is required for the benefits of the scheme."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The child must be enrolled in an educational institution that is recognized by a government-established education board/university."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "The benefits will be payable to a maximum of two children of registered construction workers."
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "text": "Registered construction workers' sons/daughters will be eligible to receive a subsidy for purchasing a bicycle to go to school after passing class 9, 10, 11, or 12 and entering the next class."
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ol_list"
+          }
+        ],
+        "eligibilityDescription_md": "\n1. The construction worker must be registered with the Board and be actively updated.\n1. The construction worker must have completed at least one year (365 days) of membership with the Board after registration.\n1. The age of the child should be as follows according to the class on July 1 of each year:\n\n  - Class 1 and 2: Maximum age 6 to 8 years\n  - Class 3 to 5: Maximum age 8 to 11 years\n  - Class 6 to 8: Maximum age 11 to 14 years\n  - Class 9 to 12: Maximum age 14 to 18 years\n  - Graduate and postgraduate: Maximum age 18 to 25 years\n  - Graduate (MBBS) and postgraduate degree/diploma in medicine from any government educational institution: Maximum age 25 to 35 years\n  - Research in any subject: Maximum age 25 to 35 years\n  - Study at Indian Institute of Management (IIM), Indian Institute of Technology (IIT), National Institute of Technology (NIT), National Institute of Fashion Technology (NIFT), and National Law University: Maximum age 25 to 35 years\n\n1. Aadhaar certification of the construction worker&#39;s children is required for the benefits of the scheme.\n1. The child must be enrolled in an educational institution that is recognized by a government-established education board/university.\n1. The benefits will be payable to a maximum of two children of registered construction workers.\n1. Registered construction workers&#39; sons/daughters will be eligible to receive a subsidy for purchasing a bicycle to go to school after passing class 9, 10, 11, or 12 and entering the next class.\n\n"
+      },
+      "schemeContent": {
+        "benefitTypes": {
+          "id": 1,
+          "label": "Cash",
+          "value": "cash"
+        },
+        "benefits": [
+          {
+            "children": [
+              {
+                "bold": true,
+                "text": "Financial Support:"
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Lump sum amounts awarded for different grades and courses"
+                  }
+                ],
+                "type": "list_item"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Class 1-5: ₹2,000/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Class 6-10: ₹2,500/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Class 11-12: ₹3,000/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Undergraduate: ₹12,000/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "ITI/Polytechnic/Vocational: ₹12,000/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Following professional degrees course (minimum 2 years): Fees or up to ₹60,000/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "children": [
+                          {
+                            "children": [
+                              {
+                                "text": "Management - MBA, BBA"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Engineering - B.Tech and B.Arch, M.Tech, ME, BE"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Computer Application - BCA, MCA"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Fine Arts - BFA"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Education - B.Ed, B.P.Ed, C.P.Ed, M.Ed"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Designing - Fashion/Interior/Web"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Mass Communication/Journalism - BJMC"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Pharmacy - B.Pharma, M.Pharma"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Hospitality - Hotel Management"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Medical - B.D.S, B.A.M.S, B.H.M.S, B.U.M.S"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Nursing - B.Sc, M.Sc"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Finance - B.Com/CA/CFA/CS"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Architecture - B.Arch"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Law - LLB, LLM"
+                              }
+                            ],
+                            "type": "list_item"
+                          },
+                          {
+                            "children": [
+                              {
+                                "text": "Agriculture"
+                              }
+                            ],
+                            "type": "list_item"
+                          }
+                        ],
+                        "type": "ol_list"
+                      }
+                    ],
+                    "type": "ol_list"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Post-graduate: ₹24,000/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Research: ₹1,00,000/-"
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Medical Undergraduate (MBBS) and Post Graduate Degree/Diploma, IIM/IIT/NIT/NIFT/Law: Full fee reimbursement."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ul_list"
+              },
+              {
+                "children": [
+                  {
+                    "bold": true,
+                    "text": "Additional Incentives:"
+                  }
+                ],
+                "type": "list_item"
+              }
+            ],
+            "type": "ol_list"
+          },
+          {
+            "children": [
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "text": "Bicycle subsidy for school commute (once only)."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Passing high school/intermediate with 70% marks: ₹5,000/- (boys) or ₹8,000/- (girls)."
+                      }
+                    ],
+                    "type": "list_item"
+                  },
+                  {
+                    "children": [
+                      {
+                        "text": "Passing graduation/post-graduation with 60% marks: ₹10,000/- (boys) or ₹12,000/- (girls)."
+                      }
+                    ],
+                    "type": "list_item"
+                  }
+                ],
+                "type": "ul_list"
+              }
+            ],
+            "type": "ol_list"
+          }
+        ],
+        "benefits_md": "**Financial Support:**\n\n1. **Lump sum amounts awarded for different grades and courses**\n\n  - Class 1-5: ₹2,000/-\n  - Class 6-10: ₹2,500/-\n  - Class 11-12: ₹3,000/-\n  - Undergraduate: ₹12,000/-\n  - ITI/Polytechnic/Vocational: ₹12,000/-\n  - Following professional degrees course (minimum 2 years): Fees or up to ₹60,000/-\n\n\n         1. Management - MBA, BBA\n         1. Engineering - B.Tech and B.Arch, M.Tech, ME, BE\n         1. Computer Application - BCA, MCA\n         1. Fine Arts - BFA\n         1. Education - B.Ed, B.P.Ed, C.P.Ed, M.Ed\n         1. Designing - Fashion/Interior/Web\n         1. Mass Communication/Journalism - BJMC\n         1. Pharmacy - B.Pharma, M.Pharma\n         1. Hospitality - Hotel Management\n         1. Medical - B.D.S, B.A.M.S, B.H.M.S, B.U.M.S\n         1. Nursing - B.Sc, M.Sc\n         1. Finance - B.Com/CA/CFA/CS\n         1. Architecture - B.Arch\n         1. Law - LLB, LLM\n         1. Agriculture\n\n\n  - Post-graduate: ₹24,000/-\n  - Research: ₹1,00,000/-\n  - Medical Undergraduate (MBBS) and Post Graduate Degree/Diploma, IIM/IIT/NIT/NIFT/Law: Full fee reimbursement.\n\n1. **Additional Incentives:**\n\n\n\n  - Bicycle subsidy for school commute (once only).\n  - Passing high school/intermediate with 70% marks: ₹5,000/- (boys) or ₹8,000/- (girls).\n  - Passing graduation/post-graduation with 60% marks: ₹10,000/- (boys) or ₹12,000/- (girls).\n\n\n",
+        "briefDescription": "\"Sant Ravidas Shiksha Protsahan Yojana\" is a scholarship program launched by the Uttar Pradesh government. The scheme aims to provide financial assistance to the children of construction workers for their education.",
+        "detailedDescription": [
+          {
+            "children": [
+              {
+                "text": "The objective of \"Sant Ravidas Shiksha Protsahan Yojana\" is to encourage the children of construction workers registered in the "
+              },
+              {
+                "text": "Building and Other Construction Workers Welfare Board",
+                "underline": true
+              },
+              {
+                "text": " towards education by providing scholarships and incentive funds to their meritorious children and connecting them to the mainstream of education by motivating them for higher and professional education. "
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "text": ""
+              }
+            ],
+            "type": "paragraph"
+          },
+          {
+            "children": [
+              {
+                "text": "Under the scheme, the sons/daughters of registered construction workers, after passing class 9, class 10, class 11 or class 12 and entering the next class, are motivated to pursue further studies and provide them facilities to go to school. For the purpose of getting the bicycle purchased, a lump sum amount as prescribed by the Board will be provided in the form of subsidy. "
+              }
+            ],
+            "type": "paragraph"
+          }
+        ],
+        "detailedDescription_md": "The objective of &quot;Sant Ravidas Shiksha Protsahan Yojana&quot; is to encourage the children of construction workers registered in the Building and Other Construction Workers Welfare Board towards education by providing scholarships and incentive funds to their meritorious children and connecting them to the mainstream of education by motivating them for higher and professional education. \n<br>\n\nUnder the scheme, the sons/daughters of registered construction workers, after passing class 9, class 10, class 11 or class 12 and entering the next class, are motivated to pursue further studies and provide them facilities to go to school. For the purpose of getting the bicycle purchased, a lump sum amount as prescribed by the Board will be provided in the form of subsidy. \n",
+        "exclusions_md": "",
+        "references": [
+          {
+            "title": "Details",
+            "url": "https://www.upbocw.in/StaticPages/schemes.aspx#tab2"
+          },
+          {
+            "title": "Guideline",
+            "url": "https://www.upbocw.in/pdf/schemes/sant_ravidas_17_11_2023.pdf"
+          },
+          {
+            "title": "Registration",
+            "url": "https://www.uplmis.in/Guest/frm_createlogin_forlabs.aspx"
+          },
+          {
+            "title": "Apply Portal",
+            "url": "https://www.uplmis.in/Guest/frm_CreateLogin.aspx?type=2"
+          }
+        ],
+        "schemeImageUrl": ""
+      },
+      "schemeDefinitions": []
+    },
+    "slug": "srspy"
+  },
+  "error": "{}",
+  "errorDescription": "",
+  "status": "Success",
+  "statusCode": 200
+}
