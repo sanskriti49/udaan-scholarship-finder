@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowUpRight, FolderOpen } from "lucide-react";
 import { Stamp } from "./PageKit";
 import { CornerPeeker } from "./AnimatedIllustrations";
-import { formatGrant } from "../utils/formatGrant";
+import { GrantAmount } from "./ScholarshipKit";
 import { deadlineInfo } from "../utils/scholarshipMeta";
 
 // A live preview of the current results, ordered by the nearest known deadline.
@@ -16,7 +16,6 @@ export default function ScholarshipDiscoveryDesk({ items, loading, error, onOpen
 		return rank(a) - rank(b);
 	}).slice(0, 3);
 	const selected = previews.find((s) => (s._id || s.id) === selectedId) || previews[0];
-	const grant = selected && formatGrant(selected.amount);
 	const deadline = selected && deadlineInfo(selected.deadline, selected.status);
 
 	return (
@@ -37,11 +36,11 @@ export default function ScholarshipDiscoveryDesk({ items, loading, error, onOpen
 						<div className="h-12 w-2/3 animate-pulse bg-emerald-950/10" />
 					</div>
 				) : selected && !error ? (
-					<div className="py-6" aria-live="polite" aria-atomic="true">
+					<div className="sd-preview-body" aria-live="polite" aria-atomic="true">
 						<p className="text-xs font-semibold text-emerald-950/60">{selected.category || "Scholarship"} · {selected.level || "See eligibility"}</p>
-						<h2 className="mt-3 font-georgia text-2xl leading-tight">{selected.title}</h2>
-						<p className="mt-2 text-sm text-emerald-950/60">{selected.organization}</p>
-						<p className="mt-5 font-georgia text-3xl leading-tight">{grant.main} <span className="font-sans text-xs">{grant.period}</span></p>
+						<h2 className="sd-preview-title mt-3 font-georgia text-2xl leading-tight">{selected.title}</h2>
+						<p className="sd-preview-organization mt-2 text-sm text-emerald-950/60">{selected.organization}</p>
+						<div className="sd-preview-award"><GrantAmount amount={selected.amount} showDetails /></div>
 						<div className="mt-5 flex flex-wrap items-center justify-between gap-3">
 							<span className={`text-sm font-bold ${deadline.tone === "urgent" ? "text-rose-700" : "text-emerald-800"}`}>{deadline.text}</span>
 							<button type="button" onClick={() => onOpen(selected)} className="sd-text-link">Open this file <ArrowUpRight size={15} /></button>

@@ -66,6 +66,12 @@ export function extractAmounts(text) {
 		const { start, end } = lineBounds(text, m.index, m[0].length);
 		const line = text.slice(start, end);
 		if (/income/i.test(line)) continue;
+		// PDF line wrapping can put "annual income ... not" on the previous
+		// line and only "exceeding Rs..." beside the number. Check that
+		// continuation without excluding a following explicit award clause.
+		const prefix = text.slice(start, m.index);
+		const previousStart = text.lastIndexOf("\n", start - 2) + 1;
+		if (/^\s*(?:not\s+)?(?:exceed(?:ing|s)?|more\s+than|less\s+than|below|up\s+to)\b/i.test(prefix) && /\bincome\b/i.test(text.slice(previousStart, start))) continue;
 		if (/^\s*note\b/i.test(line)) continue;
 		const value = parseIndianNumber(m[1]);
 		const period = normalizePeriod(m[2]);

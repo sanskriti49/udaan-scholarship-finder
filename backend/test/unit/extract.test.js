@@ -61,6 +61,13 @@ test("monthly amounts keep their month count", () => {
 	assert.deepEqual([nspg.value, nspg.period, nspg.months], [15000, "monthly", 10]);
 });
 
+test("wrapped LIC income ceilings are not treated as scholarship awards", () => {
+	const text = "Have parents/guardian with an annual income (from all sources) not\nexceeding Rs.4,50,000/- per annum.\n[A]. General Scholarship\na) An amount of Rs.50,000/- per annum, will be awarded to the selected Scholar\nb) An amount of Rs.40,000/- per annum, will be awarded to the selected Scholar\nc) An amount of Rs.20,000/- per annum will be awarded to the selected Scholars\n[B]. Special Scholarship\nAn amount of Rs. 15,000/- per annum will be awarded to the selected";
+	assert.deepEqual(extractAmounts(text).map((c) => c.value), [50000, 40000, 20000, 15000]);
+	assert.ok(extractAmounts(text).every((c) => text.slice(c.index, c.index + c.quote.length) === c.quote));
+	assert.deepEqual(extractIncomeLimits(text).map((c) => c.value), [450000]);
+});
+
 test("disability threshold", () => {
 	assert.deepEqual(extractMinDisabilityPercent(text("AICTE_2012_G")).map((c) => c.value), [40]);
 });

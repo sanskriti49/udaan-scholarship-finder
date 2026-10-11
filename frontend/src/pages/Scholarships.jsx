@@ -1262,8 +1262,8 @@ export default function Scholarships() {
 												</>
 											) : (
 												<>
-													<div className="flex items-baseline gap-2">
-														<span className="ud-display text-4xl sm:text-5xl font-extrabold text-emerald-950">
+													<div className="flex min-w-0 flex-wrap items-baseline gap-2">
+														<span className={`ud-display min-w-0 break-words font-extrabold text-emerald-950 ${g.isNarrative ? "text-xl" : "text-3xl sm:text-4xl"}`}>
 															{g.main}
 														</span>
 														{g.period && (
@@ -1272,6 +1272,7 @@ export default function Scholarships() {
 															</span>
 														)}
 													</div>
+													{g.details && <p className="mt-2 text-sm leading-relaxed text-emerald-950/70">{g.details}</p>}
 													{g.options && g.options.length > 1 && (
 														<div className="mt-4 pt-3 border-t border-dashed border-emerald-950/15">
 															<p className="mb-2 text-xs font-bold text-emerald-950/60 uppercase tracking-wider">

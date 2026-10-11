@@ -391,7 +391,7 @@ export default function Footer() {
 							Official scholarship portals. Each one opens in a new tab.
 						</p>
 					</div>
-					<ul className="grid gap-x-10 border-t border-[#12332a]/10 sm:grid-cols-2 xl:grid-cols-3">
+					<ul className="grid min-w-0 gap-x-10 border-t border-[#12332a]/10 sm:grid-cols-2 xl:grid-cols-3">
 						{PORTALS.map((p) => (
 							<li key={p.label} className="border-b border-[#12332a]/10">
 								<a
@@ -399,7 +399,7 @@ export default function Footer() {
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label={`${p.label} (opens in a new tab)`}
-									className={`group flex min-h-12 items-baseline justify-between gap-3 py-3 ${FOCUS}`}
+									className={`group flex min-h-12 flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-3 ${FOCUS}`}
 								>
 									<span className="text-[15px] font-semibold underline-offset-4 decoration-[#b8913f] group-hover:underline">
 										{p.label}

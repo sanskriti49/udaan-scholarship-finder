@@ -47,7 +47,7 @@ export function DeadlineMeter({ deadline, status, className = "" }) {
 	);
 }
 
-export function GrantAmount({ amount, size = "md" }) {
+export function GrantAmount({ amount, size = "md", showDetails = false }) {
 	const g = formatGrant(amount);
 	if (g.isUnpublished)
 		return (
@@ -56,9 +56,10 @@ export function GrantAmount({ amount, size = "md" }) {
 			</p>
 		);
 	return (
-		<p className="flex min-w-0 items-baseline gap-x-1.5 whitespace-nowrap">
+		<div className="min-w-0">
+		<p className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1">
 			<span
-				className={`ud-display font-extrabold leading-none text-emerald-950 ${size === "lg" ? "text-3xl sm:text-4xl" : "text-2xl"}`}
+				className={`ud-display min-w-0 break-words font-extrabold leading-tight text-emerald-950 ${g.isNarrative ? "text-lg" : size === "lg" ? "text-3xl sm:text-4xl" : "text-2xl"}`}
 			>
 				{g.main}
 			</span>
@@ -68,6 +69,8 @@ export function GrantAmount({ amount, size = "md" }) {
 				</span>
 			)}
 		</p>
+		{showDetails && g.details && <p className="mt-2 text-xs leading-relaxed text-emerald-950/65">{g.details}</p>}
+		</div>
 	);
 }
 
@@ -155,9 +158,6 @@ export function ScholarshipCard({
 		? formatChangeNotice(s.latestChangeSummary)
 		: null;
 	const link = cleanOfficialUrl(s.applicationLink || s.sourceUrl);
-	const docs = Array.isArray(s.requiredDocuments)
-		? s.requiredDocuments.length
-		: 0;
 	const both = summary && why.length > 0;
 
 	const whyList = (
