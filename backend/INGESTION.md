@@ -62,7 +62,7 @@ This is limited alternative coverage, not the entire primary catalogue. NSP
 separately covers AICTE Pragati, Saksham and Swanath. No current dates are inferred
 from myScheme's general programme descriptions or old guideline filenames.
 
-Karnataka can try Chromium after a Node transport failure, retaining normal TLS
+Karnataka can try Chromium after a Node transport failure or timeout, retaining normal TLS
 validation. HTTP refusals and robots restrictions are not bypassed. An empty
 alternative catalogue is a rejected crawl and leaves stored data intact. A
 limited fallback never marks absent primary records as missing.

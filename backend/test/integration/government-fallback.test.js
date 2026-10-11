@@ -111,17 +111,19 @@ test("one unavailable alternative does not discard the other cited schemes", asy
 });
 
 test("Karnataka transport failure can use native rendering, while HTTP refusal cannot", async () => {
-	for (const code of ["NETWORK", "HTTP_STATUS", "ROBOTS_DISALLOWED"]) {
+	for (const code of ["NETWORK", "TIMEOUT", "HTTP_STATUS", "ROBOTS_DISALLOWED"]) {
 		const source = { ...getSource("karnataka_ssp_scholarship"), fallbackEntries: null };
 		let rendered = 0;
 		const pipeline = new Pipeline({ store: new MemoryStore(), logger: silent, fetcherFactory: () => ({ fetch: async () => fail(code) }),
 			renderer: async (url) => { rendered++; return response(url, fixture("karnataka.html"), "text/html", { fetchMethod: "dynamic" }); } });
 		const report = await pipeline.runSource(source);
-		assert.equal(rendered, code === "NETWORK" ? 1 : 0);
-		if (code === "NETWORK") {
+		const transportFailure = ["NETWORK", "TIMEOUT"].includes(code);
+		assert.equal(rendered, transportFailure ? 1 : 0);
+		if (transportFailure) {
 			assert.equal(report.status, "success");
 			assert.equal(report.counts.published, 54);
 			assert.equal(report.pages[0].fallbackReason, "network_transport_failed");
+			assert.equal(report.pages[0].transportError.code, code);
 		} else assert.equal(report.status, "failed");
 	}
 });

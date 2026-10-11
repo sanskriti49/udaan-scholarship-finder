@@ -100,8 +100,9 @@ export class Pipeline {
 			} catch (error) {
 				// Opt in only for a transport failure. HTTP refusals and robots rules
 				// remain failures; Chromium still validates TLS normally.
-				if (strategy !== "auto" || !source.allowNetworkRendering || fetcher.allowRendering === false || error.code !== "NETWORK") throw error;
+				if (strategy !== "auto" || !source.allowNetworkRendering || fetcher.allowRendering === false || !["NETWORK", "TIMEOUT"].includes(error.code)) throw error;
 				page.fallbackReason = "network_transport_failed";
+				page.transportError = { code: error.code };
 				result = await render();
 			}
 			let doc = result.notModified && previous ? docFromSnapshot(previous) : await toDocument(result);
