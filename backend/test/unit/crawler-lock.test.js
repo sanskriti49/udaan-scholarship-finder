@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import mongoose from "mongoose";
-import { crawlerLockKey } from "../../src/pipeline/lock.js";
+import { crawlerLockKey, catalogueNamespace } from "../../src/pipeline/lock.js";
 
 test("crawler leases are shared within a database, isolated across environments, and omit credentials",()=>{
 	const oldUri=process.env.MONGO_URI,oldName=mongoose.connection.name;
@@ -9,11 +9,14 @@ test("crawler leases are shared within a database, isolated across environments,
 		process.env.MONGO_URI="mongodb+srv://test-user:example-password@cluster.example/test";
 		mongoose.connection.name="test";
 		const key=crawlerLockKey();
+		const cacheNamespace=catalogueNamespace();
 		process.env.MONGO_URI="mongodb+srv://other-user:other-password@cluster.example/test";
 		assert.equal(crawlerLockKey(),key);
+		assert.equal(catalogueNamespace(),cacheNamespace);
 		assert.doesNotMatch(key,/password|test-user|cluster\.example/);
 		mongoose.connection.name="production";
 		assert.notEqual(crawlerLockKey(),key);
+		assert.notEqual(catalogueNamespace(),cacheNamespace);
 	} finally {
 		if(oldUri===undefined)delete process.env.MONGO_URI;else process.env.MONGO_URI=oldUri;
 		mongoose.connection.name=oldName;

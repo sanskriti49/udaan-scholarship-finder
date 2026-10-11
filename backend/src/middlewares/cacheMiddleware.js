@@ -1,4 +1,5 @@
 import { redisClient, isRedisAvailable } from "../config/redis.js";
+import { catalogueNamespace } from "../pipeline/lock.js";
 
 /**
  * Cache Middleware for Express
@@ -11,7 +12,6 @@ import { redisClient, isRedisAvailable } from "../config/redis.js";
  */
 export function cacheMiddleware(options = {}) {
 	const ttl = options.ttl || parseInt(process.env.CACHE_TTL_SECONDS, 10) || 300;
-	const prefix = options.prefix || "udaan:cache:scholarships";
 
 	return async (req, res, next) => {
 		// Only cache idempotent GET requests
@@ -25,6 +25,7 @@ export function cacheMiddleware(options = {}) {
 			return next();
 		}
 
+		const prefix = options.prefix || `udaan:cache:scholarships:${catalogueNamespace()}`;
 		const cacheKey = buildDeterministicCacheKey(prefix, req);
 
 		try {
@@ -114,7 +115,7 @@ export function buildDeterministicCacheKey(prefix, req) {
  *
  * @param {string} [pattern="udaan:cache:scholarships:*"]
  */
-export async function clearScholarshipCache(pattern = "udaan:cache:scholarships:*") {
+export async function clearScholarshipCache(pattern = `udaan:cache:scholarships:${catalogueNamespace()}:*`) {
 	if (!isRedisAvailable()) {
 		if (redisClient && (redisClient.status === "connecting" || redisClient.status === "connect")) {
 			try {

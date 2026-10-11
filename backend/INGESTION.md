@@ -73,7 +73,7 @@ populated by JavaScript. Offline replay cannot launch a live browser.
 Startup applies migrations and refreshes existing catalogues from live sources,
 under a database-scoped Redis lock. The scheduler repeats crawls every 24 hours
 and refreshes statuses hourly while the host runs. Environments sharing Redis
-use separate crawler locks for separate databases. `PIPELINE_BOOTSTRAP=off` or
+use separate crawler locks and response cache namespaces for separate databases. `PIPELINE_BOOTSTRAP=off` or
 `ENABLE_CRAWLER=false` disables bootstrap. Historical `replay` mode does not
 refresh an existing catalogue.
 

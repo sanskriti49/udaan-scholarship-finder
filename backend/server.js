@@ -25,6 +25,8 @@ import { bootstrapDatabase } from "./src/utils/bootstrapDatabase.js";
 
 import { browserHealth, checkBrowserHealth } from "./src/pipeline/core/browserHealth.js";
 import { enabledSources } from "./src/pipeline/sources.js";
+import SourceState from "./src/models/SourceState.js";
+import Scholarship from "./src/models/Scholarship.js";
 
 const app = express();
 checkBrowserHealth().catch(() => {});
@@ -164,6 +166,29 @@ app.get("/health", (req, res) => {
 app.get("/api/health", (req, res) => {
 	const health = getHealthStatus();
 	res.status(health.status === "healthy" ? 200 : 503).json(health);
+});
+
+// Public source availability, without admin controls or private user records.
+app.get("/api/health/ingestion", async (req, res) => {
+	try {
+		const [states, counts] = await Promise.all([
+			SourceState.find({}).select("sourceId lastStatus lastAttemptAt lastSuccessAt lastError").lean(),
+			Scholarship.aggregate([{ $match: { "publication.state": "published", legacy: { $ne: true } } },
+				{ $group: { _id: "$primarySourceId", count: { $sum: 1 } } }]),
+		]);
+		const safeErrors = new Set(["NETWORK", "TIMEOUT", "HTTP_STATUS", "DYNAMIC_FAILED", "DYNAMIC_UNAVAILABLE", "ROBOTS_DISALLOWED", "DOMAIN_NOT_ALLOWED", "THIN_CONTENT"]);
+		res.json({ success: true, revision: process.env.RENDER_GIT_COMMIT || null, checkedAt: new Date().toISOString(),
+			sources: enabledSources().map((source) => {
+				const state = states.find((s) => s.sourceId === source.id);
+				const error = state?.lastError;
+				return { id: source.id, name: source.name, published: counts.find((c) => c._id === source.id)?.count || 0,
+					lastStatus: state?.lastStatus || "not_attempted", lastAttemptAt: state?.lastAttemptAt || null,
+					lastSuccessAt: state?.lastSuccessAt || null,
+					error: error ? { code: error.code, ...(safeErrors.has(error.code) ? { message: String(error.message || "").split("\n")[0].slice(0,180) } : {}) } : null };
+			}) });
+	} catch {
+		res.status(503).json({ success: false, message: "Source health is temporarily unavailable." });
+	}
 });
 
 app.get("/", (req, res) => {
