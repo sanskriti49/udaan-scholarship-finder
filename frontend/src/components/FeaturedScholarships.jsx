@@ -1,3 +1,4 @@
+import { getCategoryTheme } from "../utils/categoryThemes.js";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -8,7 +9,7 @@ import {
 	Sparkles,
 } from "lucide-react";
 import { getScholarships } from "../services/scholarshipService";
-import { CategoryMotifIcon, getCategoryTheme } from "./CategoryMotif";
+import { CategoryMotifIcon } from "./CategoryMotif";
 import { CablesDoctor, DoodleSquiggleArrow } from "./AnimatedIllustrations";
 import { ScholarshipCard, CardSkeleton, focusRing } from "./ScholarshipKit";
 import { Reveal } from "./MotionKit";

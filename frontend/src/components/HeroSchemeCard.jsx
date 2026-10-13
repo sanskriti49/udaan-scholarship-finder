@@ -13,7 +13,7 @@ import { TearOffCountdown } from "./SignatureInteractions";
 import { CountUp } from "./MotionKit";
 
 // Scheme metadata and numerical behavior are unchanged.
-export const SCHEMES = [
+const SCHEMES = [
 	{
 		id: "all_degrees",
 		tab: "All Degrees (NSP)",
@@ -394,6 +394,7 @@ export default function HeroSchemeCard({ deadline, onView }) {
 						/>
 					</button>
 				</div>
+				<p className="px-5 pb-4 text-xs leading-relaxed text-emerald-900/65 sm:px-6">Illustrative income check. Confirm the current award, deadline and full eligibility criteria in the scheme listing and provider's instructions.</p>
 			</article>
 		</div>
 	);

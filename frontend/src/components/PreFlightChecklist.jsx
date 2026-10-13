@@ -1,15 +1,13 @@
+import { buildDynamicChecklist } from "../utils/dynamicChecklist.js";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
 	ShieldCheck,
-	AlertTriangle,
 	CheckCircle2,
 	Circle,
 	ArrowUpRight,
-	FileText,
 	FileCheck2,
 	LockKeyhole,
-	Sparkles,
 } from "lucide-react";
 
 const focusRing =
@@ -17,120 +15,8 @@ const focusRing =
 
 /**
  * Builds dynamic checklist items tailored specifically to the given scholarship's
- * statutory criteria, current academic cycle, required documents, and common portal rejection traps.
+ * recorded criteria and document preparation suggestions.
  */
-export function buildDynamicChecklist(scholarship) {
-	if (!scholarship) return [];
-
-	const items = [];
-	const cycleYear = scholarship.currentCycle?.academicYear || "2024-25";
-	const cycleStartYear = cycleYear.split("-")[0] || "2024";
-	const id = scholarship._id || scholarship.id || "";
-	const incomeMax = scholarship.eligibility?.familyIncome?.max;
-	const casteCategories = scholarship.eligibility?.casteCategories || [];
-	const isCentral =
-		scholarship.state === "All India" ||
-		scholarship.sourceType === "Government" ||
-		/central|national|nsp/i.test(scholarship.title);
-
-	// 1. Family Income Certificate Check
-	const hasIncomeRule =
-		incomeMax !== undefined ||
-		scholarship.rules?.some((r) => r.field === "familyIncome") ||
-		scholarship.requiredDocuments?.some((d) =>
-			/income/i.test(typeof d === "string" ? d : d.name),
-		);
-
-	if (hasIncomeRule) {
-		const ceilingStr = incomeMax
-			? `≤ ₹${Number(incomeMax).toLocaleString("en-IN")}`
-			: "within official ceiling";
-		items.push({
-			id: "income",
-			documentName: "Family Income Certificate",
-			scannerType: "income",
-			criteria: `Family income must be ${ceilingStr} per annum.`,
-			rejectionTrap: `Must be issued on or after 1 April ${cycleStartYear} (Financial Year ${cycleYear}). State revenue certificates from prior financial years are automatically rejected during portal scrutiny. Must be from Tehsildar/SDO (Notary affidavits disqualified).`,
-			tag: "High Rejection Risk",
-		});
-	}
-
-	// 2. Caste / Category Certificate Check
-	const hasCasteRule =
-		casteCategories.length > 0 ||
-		scholarship.requiredDocuments?.some((d) =>
-			/caste|category|community/i.test(typeof d === "string" ? d : d.name),
-		) ||
-		/obc|sc|st|ews/i.test(scholarship.category || "");
-
-	if (hasCasteRule) {
-		const targetCats =
-			casteCategories.length > 0
-				? casteCategories.join(" / ")
-				: "OBC / SC / ST / EWS";
-		items.push({
-			id: "caste",
-			documentName: "Caste / Category Certificate",
-			scannerType: "caste",
-			criteria: `Recognized certificate for ${targetCats} category.`,
-			rejectionTrap: isCentral
-				? `Central NSP schemes strictly require the Central Government Non-Creamy Layer format referencing DoPT OM 36012/22/93-Estt.(SCT). State-only format certificates without the Central clause are disqualified.`
-				: `Must be digitally signed with a verifiable barcode/QR code from the competent district magistrate or sub-divisional authority.`,
-			tag: isCentral ? "Central Format Trap" : "Digital Stamp Required",
-		});
-	}
-
-	// 3. College Bonafide Certificate Check
-	const hasBonafideRule =
-		scholarship.requiredDocuments?.some((d) =>
-			/bonafide|enrollment|college|study/i.test(
-				typeof d === "string" ? d : d.name,
-			),
-		) ||
-		scholarship.eligibility?.courses?.length > 0 ||
-		true; // Universal for student scholarships
-
-	if (hasBonafideRule) {
-		items.push({
-			id: "bonafide",
-			documentName: "College Bonafide Certificate",
-			scannerType: "bonafide",
-			criteria: `Certifies current full-time enrollment for session ${cycleYear}.`,
-			rejectionTrap: `Must state the institution's official 6-digit AISHE Code (e.g., C-12345) and active semester. Plain college letterheads lacking the AISHE code and institutional seal fail at the Institute Nodal Officer verification stage.`,
-			tag: "AISHE Code Required",
-		});
-	}
-
-	// 4. Marksheet / Academic Records
-	const marksRule = scholarship.rules?.find(
-		(r) => r.field === "cgpa" || r.field === "percentage" || r.field === "marks",
-	);
-	const minMarksDesc = marksRule
-		? marksRule.description || `Minimum ${marksRule.value}% aggregate`
-		: "Qualifying marks / top 20th percentile as per scheme circular.";
-
-	items.push({
-		id: "marksheet",
-		documentName: "Previous Exam / 12th Marksheet",
-		scannerType: null,
-		criteria: minMarksDesc,
-		rejectionTrap: `Student name, parent name, and date of birth must match your Aadhaar card letter-by-letter. Spelling variations (e.g. initials vs expanded names) cause PFMS bank validation failures.`,
-		tag: "Name-Match Gate",
-	});
-
-	// 5. Bank Account & Aadhaar NPCI Seeding
-	items.push({
-		id: "bank",
-		documentName: "Aadhaar-Seeded Bank Passbook",
-		scannerType: null,
-		criteria: "Active individual savings account in student's own name.",
-		rejectionTrap: `Must be linked with Aadhaar and mapped with NPCI DBT (Direct Benefit Transfer). Minor accounts, joint accounts, or wallets (Paytm/Airtel Payments Bank) are rejected by PFMS central disbursement.`,
-		tag: "DBT / NPCI Trap",
-	});
-
-	return items;
-}
-
 export default function PreFlightChecklist({ scholarship }) {
 	const items = buildDynamicChecklist(scholarship);
 	const [checked, setChecked] = useState(() => new Set());
@@ -163,7 +49,7 @@ export default function PreFlightChecklist({ scholarship }) {
 						</h3>
 					</div>
 					<p className="text-xs text-emerald-950/70 font-medium">
-						Demystifying bureaucratic rejection rules for this specific scheme.
+						Preparation suggestions based on this listing. Ticks record your progress; confirm requirements with the provider.
 					</p>
 				</div>
 
@@ -229,7 +115,7 @@ export default function PreFlightChecklist({ scholarship }) {
 
 									<div className="mt-2 rounded-lg bg-white/90 border border-emerald-950/10 p-2 text-xs leading-relaxed text-emerald-950/75">
 										<span className="font-bold text-rose-800">
-											⚠️ Rejection Trap:{" "}
+												Confirm with the provider:{" "}
 										</span>
 										{item.rejectionTrap}
 									</div>
@@ -241,7 +127,7 @@ export default function PreFlightChecklist({ scholarship }) {
 												className={`inline-flex items-center gap-1 text-xs font-bold text-emerald-800 underline decoration-yellow-400 decoration-2 underline-offset-4 hover:text-emerald-950 ${focusRing}`}
 											>
 												<FileCheck2 size={13} />
-												<span>Test in Zero-PII Pre-check</span>
+												<span>Review in document scanner</span>
 												<ArrowUpRight size={12} />
 											</Link>
 										</div>

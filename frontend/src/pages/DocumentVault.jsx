@@ -19,16 +19,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { PaperFolder, FYRibbon } from "../components/DocumentVaultVisuals";
-import {
-	CheeringStudent,
-	ShockedStudent,
-	ConfusedDetective,
-	PaperReader,
-	CoinHugger,
-} from "../components/AnimatedIllustrations";
+import { PaperFolder } from "../components/DocumentVaultVisuals";
 import { MotionStyles, Reveal, ProgressRing } from "../components/MotionKit";
-import documentImg from "../assets/images/document.png";
 import { Confetti, PageStyles, Stamp } from "../components/PageKit";
 
 function getFY(date) {

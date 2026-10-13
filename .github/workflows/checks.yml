@@ -1,0 +1,46 @@
+name: Tests and application smoke checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      REDIS_URL: redis://127.0.0.1:6399
+      SMTP_HOST: 127.0.0.1
+      SMTP_PORT: 6398
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - name: Install backend
+        working-directory: backend
+        run: npm ci
+      - name: Backend unit and integration tests
+        working-directory: backend
+        run: npm test
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install browser for application tests
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Frontend lint, unit tests, build and browser smoke checks
+        working-directory: frontend
+        run: npm run check
+      - name: Scanner browser regressions
+        working-directory: frontend
+        run: npm run test:scanner:ui
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-failures
+          path: frontend/test-results/

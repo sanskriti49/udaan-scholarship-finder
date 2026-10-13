@@ -38,10 +38,10 @@ const profileSchema = new mongoose.Schema(
 		state: String,
 		cgpa: Number,
 		percentage: Number,
-		hasDisability: { type: Boolean, default: false },
+		hasDisability: { type: Boolean, default: null },
 		documentsHeld: {
 			type: [String],
-			default: ["MARKSHEET", "COLLEGE_ID", "BANK_PASSBOOK"],
+			default: [],
 		},
 	},
 	{ timestamps: true },

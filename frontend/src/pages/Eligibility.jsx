@@ -81,7 +81,7 @@ const CATEGORIES = [
 ];
 
 const STATES = [
-	{ value: "All India", label: "Any state (Central)" },
+	{ value: "All India", label: "National schemes only" },
 	{ value: "UP", label: "Uttar Pradesh" },
 	{ value: "Maharashtra", label: "Maharashtra" },
 	{ value: "Karnataka", label: "Karnataka" },
@@ -114,7 +114,7 @@ const STEPS = [
 		id: "docs",
 		label: "Papers",
 		title: "Which certificates do you already have?",
-		sub: "We'll tell you exactly what's still missing for each scheme.",
+		sub: "We'll compare what you hold with source-cited requirements where available.",
 	},
 ];
 
@@ -237,7 +237,6 @@ function DualNumber({
 					aria-label={`${label}, exact value`}
 					onChange={(e) => onChange(e.target.value)}
 					className={`w-36 rounded-lg border-[1.5px] border-emerald-950/30 bg-white px-3 py-2 text-sm font-semibold hover:border-emerald-950 ${focusRing}`}
-					required
 				/>
 				{hint && <span className="text-xs text-emerald-950/55">{hint}</span>}
 			</div>
@@ -358,7 +357,8 @@ function ResultCard({ s, tone, index, onWhy }) {
 				<div className="flex items-center gap-3 border-t border-dashed border-emerald-950/20 pt-4 sm:flex-col sm:justify-center sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
 					<ProgressRing percent={ev.readinessScore} size={76} />
 					<p className="max-w-[9rem] text-xs font-semibold leading-snug text-emerald-950/65 sm:text-center">
-						Ready to apply
+						{audit.requirementsVerified ? "Criteria and documents recorded" : "Recorded criteria met"}
+						{!audit.requirementsVerified && <span className="block font-medium">Document requirements not verified</span>}
 						{audit.total > 0 && (
 							<span className="block font-medium">
 								{audit.heldCount} of {audit.total} documents in hand
@@ -394,7 +394,7 @@ export default function EligibilityPage() {
 		casteCategory: "",
 		state: "",
 		cgpa: "",
-		hasDisability: false,
+		hasDisability: null,
 		...scannerDraft?.prefill,
 	});
 	const [documentsHeld, setDocumentsHeld] = useState([]);
@@ -440,8 +440,8 @@ export default function EligibilityPage() {
 			const activeDocs = customDocs || documentsHeld;
 			const payload = {
 				...activeForm,
-				familyIncome: Number(activeForm.familyIncome),
-				cgpa: Number(activeForm.cgpa),
+				familyIncome: activeForm.familyIncome == null || String(activeForm.familyIncome).trim() === "" ? null : Number(activeForm.familyIncome),
+				cgpa: activeForm.cgpa == null || String(activeForm.cgpa).trim() === "" ? null : Number(activeForm.cgpa),
 				documentsHeld: activeDocs,
 			};
 			const response = await evaluateProfile(payload);
@@ -492,17 +492,12 @@ export default function EligibilityPage() {
 						fullName: p.fullName || prev.fullName,
 						educationLevel: p.educationLevel || prev.educationLevel,
 						courseStream: p.courseStream || p.stream || prev.courseStream,
-						familyIncome:
-							p.familyIncome !== undefined
-								? p.familyIncome
-								: p.income !== undefined
-									? p.income
-									: prev.familyIncome,
+						familyIncome: p.familyIncome !== undefined ? p.familyIncome ?? "" : p.income ?? prev.familyIncome,
 						gender: p.gender || prev.gender,
 						casteCategory:
 							p.casteCategory || p.caste_category || prev.casteCategory,
 						state: p.state || prev.state,
-						cgpa: p.cgpa !== undefined ? p.cgpa : prev.cgpa,
+						cgpa: p.cgpa ?? prev.cgpa,
 						hasDisability:
 							p.hasDisability !== undefined
 								? p.hasDisability
@@ -557,15 +552,10 @@ export default function EligibilityPage() {
 		}
 		if (
 			step === 2 &&
-			(formData.familyIncome === "" ||
-				formData.cgpa === "" ||
-				!Number.isFinite(Number(formData.familyIncome)) ||
-				Number(formData.familyIncome) < 0 ||
-				!Number.isFinite(Number(formData.cgpa)) ||
-				Number(formData.cgpa) < 0 ||
-				Number(formData.cgpa) > 10)
+			((formData.familyIncome !== "" && (!Number.isFinite(Number(formData.familyIncome)) || Number(formData.familyIncome) < 0)) ||
+				(formData.cgpa !== "" && (!Number.isFinite(Number(formData.cgpa)) || Number(formData.cgpa) < 0 || Number(formData.cgpa) > 10)))
 		) {
-			toast.info("Enter your annual family income and CGPA (0 to 10).");
+			toast.info("Use a non-negative income and CGPA from 0 to 10, or leave unknown values blank.");
 			return;
 		}
 		if (step < last) goTo(step + 1);
@@ -629,8 +619,8 @@ export default function EligibilityPage() {
 							Find out what you actually qualify for.
 						</h1>
 						<p className="mt-5 max-w-xl text-base leading-relaxed text-emerald-950/75 sm:text-lg">
-							Four quick steps. We compare your answers against each scheme's
-							official rules and show which clause decided every result.
+							Four quick steps. We compare your answers with recorded criteria,
+							show missing information, and link source excerpts where available.
 						</p>
 						<p className="mt-4 max-w-xl rounded-md border border-emerald-950/15 bg-white/70 px-4 py-3 text-xs leading-relaxed text-emerald-950/75">
 							No account needed. Your answers are sent to Udaan to calculate
@@ -654,7 +644,7 @@ export default function EligibilityPage() {
 							tilt={-8}
 							className="absolute -bottom-3 -left-5 border-emerald-700 bg-white/70 text-2xl text-emerald-700"
 						>
-							Verified
+							Rule checks
 						</Stamp>
 					</div>
 				</div>
@@ -783,14 +773,13 @@ export default function EligibilityPage() {
 											value={formData.state}
 											onChange={(v) => set("state", v)}
 										/>
-										<CheckTile
-											checked={formData.hasDisability}
-											onToggle={() =>
-												set("hasDisability", !formData.hasDisability)
-											}
-										>
-											I have a PwD disability certificate (40% or more)
-										</CheckTile>
+										<p className="text-xs text-emerald-950/65">National schemes only filters out state-specific listings. It does not establish your domicile.</p>
+										<ChipGroup
+											label="Disability status"
+											options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "unknown", label: "Not specified" }]}
+											value={formData.hasDisability === true ? "yes" : formData.hasDisability === false ? "no" : "unknown"}
+											onChange={(v) => set("hasDisability", v === "unknown" ? null : v === "yes")}
+										/>
 									</>
 								)}
 								{step === 2 && (
@@ -817,7 +806,7 @@ export default function EligibilityPage() {
 											max={10}
 											step={0.1}
 											display={(v) => Number(v).toFixed(1)}
-											hint="Board % ÷ 9.5 is a fair estimate"
+											hint="Enter the CGPA reported by your institution; leave blank if unavailable"
 										/>
 									</>
 								)}

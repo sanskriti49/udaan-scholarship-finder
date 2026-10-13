@@ -27,6 +27,7 @@ import {
 } from "../utils/formatEvidence";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import useDialogFocus from "../hooks/useDialogFocus";
+import { evidenceQuotes, documentItems } from "../utils/evidencePresentation.js";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -66,23 +67,25 @@ function DeadlineChip({ deadline }) {
 }
 
 export default function EvidenceModal({ isOpen, onClose, scholarship, appearance = "default", returnFocusRef }) {
+	if (!isOpen || !scholarship) return null;
+	return <EvidenceContent key={scholarship._id || scholarship.id || scholarship.slug || scholarship.title} isOpen={isOpen} onClose={onClose} scholarship={scholarship} appearance={appearance} returnFocusRef={returnFocusRef} />;
+}
+
+function EvidenceContent({ isOpen, onClose, scholarship, appearance, returnFocusRef }) {
 	const dialogRef = useDialogFocus(isOpen && Boolean(scholarship), returnFocusRef);
 	const [activeSection, setActiveSection] = useState("gazette");
 	const [liveEvidence, setLiveEvidence] = useState(null);
-	const [isLoadingEvidence, setIsLoadingEvidence] = useState(false);
+	const [isLoadingEvidence, setIsLoadingEvidence] = useState(Boolean(scholarship._id || scholarship.id || scholarship.slug));
 
 	useBodyScrollLock(isOpen);
 
 	useEffect(() => {
 		if (!isOpen || !scholarship) return;
-		setActiveSection("gazette");
-		setLiveEvidence(null);
 
 		const idOrSlug = scholarship._id || scholarship.id || scholarship.slug;
 		if (!idOrSlug) return;
 
 		let isMounted = true;
-		setIsLoadingEvidence(true);
 
 		fetch(`/api/scholarships/${idOrSlug}/evidence`)
 			.then((res) => {
@@ -117,7 +120,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 	if (!isOpen || !scholarship) return null;
 
 	const rules = scholarship.rules || [];
-	const docs = (scholarship.requiredDocuments || []).map((doc) => typeof doc === "string" ? { name: doc } : doc);
+	const docs = documentItems(scholarship, liveEvidence);
 	const history = scholarship.history || [];
 
 	const rawGuideline =
@@ -137,56 +140,10 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 			liveEvidence?.sourceUrl ||
 				scholarship.sourceUrl ||
 				scholarship.applicationLink ||
-				"https://scholarships.gov.in/All-Scholarships",
+				null,
 		);
 
-	const rawQuotes =
-		liveEvidence?.data && liveEvidence.data.length > 0
-			? liveEvidence.data.map((e, idx) => ({
-					clause:
-						e.locator ||
-						`Official Guideline §${idx + 1}: ${e.field || "Requirement"}`,
-					quote: e.quote,
-					page: e.page,
-					url: e.url || specificSchemeUrl,
-					field: e.field,
-					verified: e.verified ?? true,
-					fetchedAt: e.fetchedAt,
-				}))
-			: scholarship.provenanceQuotes && scholarship.provenanceQuotes.length > 0
-				? scholarship.provenanceQuotes.map((q, idx) => ({
-						clause: q.clause || `Official Rule ${idx + 1}`,
-						quote: q.quote,
-						page: q.page,
-						url: q.sourceUrl || specificSchemeUrl,
-						field: q.ruleId?.split("#")[1] || "criteria",
-						verified: true,
-					}))
-				: rules.length > 0
-					? rules.map((r, idx) => ({
-							clause: `Official Rule ${idx + 1}: ${r.field || "Eligibility Criteria"}`,
-							quote:
-								r.description ||
-								`Applicants must satisfy all ${r.field} criteria as specified in the official guidelines.`,
-							page: 1,
-							url: specificSchemeUrl,
-							field: r.field,
-							verified: true,
-						}))
-					: [
-							{
-								clause: "Official Guidelines: General Terms",
-								quote:
-									scholarship.description ||
-									"This scholarship is verified against official government notifications and published circulars.",
-								page: 1,
-								url: specificSchemeUrl,
-								field: "general",
-								verified: true,
-							},
-						];
-
-	const effectiveQuotes = rawQuotes;
+	const effectiveQuotes = evidenceQuotes(scholarship, liveEvidence);
 
 	const navSections = [
 		{
@@ -203,7 +160,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 		},
 		{
 			id: "documents",
-			label: "Required Documents",
+			label: "Documents to review",
 			count: docs.length,
 			icon: FolderCheck,
 		},
@@ -251,7 +208,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 							<span aria-hidden>·</span>
 							<span className="inline-flex items-center gap-1 text-emerald-800">
 								<ShieldCheck size={13} />
-								Official Rules & Guidelines
+								Criteria & source evidence
 							</span>
 							{exactGuidelinePdf && (
 								<>
@@ -398,12 +355,10 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 								<div className="space-y-1 rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/50 p-4">
 									<h4 className="font-serif flex items-center gap-2 text-base font-bold text-emerald-950">
 										<ShieldCheck size={16} className="text-emerald-800" />
-										Official Scheme Verification
+										Source evidence
 									</h4>
 									<p className="text-[14px] leading-relaxed text-emerald-950/75">
-										Rules, eligibility criteria, and financial figures are
-										verified directly from published notifications on the
-										official portal (
+										Review the excerpts below and confirm current instructions with the provider (
 										{formatSourceLabel(
 											scholarship.sourceUrl || scholarship.applicationLink,
 										)}
@@ -416,18 +371,19 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 								<div className="mb-3.5 flex flex-wrap items-center justify-between gap-2">
 									<h4 className="font-serif flex items-center gap-1.5 text-base font-bold text-emerald-950">
 										<Sparkles size={16} className="text-emerald-800" />
-										Official Guidelines & Direct Quotes (
+										Source excerpts (
 										{effectiveQuotes.length})
 									</h4>
 									{isLoadingEvidence && (
 										<span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-950/55">
 											<Loader2 size={12} className="animate-spin" /> Verifying
-											live source...
+											stored excerpts...
 										</span>
 									)}
 								</div>
 
 								<div className="space-y-4">
+									{effectiveQuotes.length === 0 && <p className="rounded-xl border border-emerald-950/20 p-4 text-sm">No source excerpt is available for this listing. Recorded criteria are explanations, not quotations; check the provider's instructions.</p>}
 									{effectiveQuotes.map((q, idx) => {
 										const quoteDocUrl = cleanOfficialUrl(
 											q.url || specificSchemeUrl,
@@ -450,10 +406,11 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 															Page {q.page}
 														</span>
 													)}
+													<span className="text-xs font-semibold text-emerald-950/60">{q.verified ? "Excerpt checked against stored source" : "Not verified"}</span>
 												</div>
 
 												<blockquote className="border-l-2 border-yellow-400 pl-3 text-[14px] italic leading-relaxed text-emerald-950/85">
-													“{formatEvidenceText(q.quote, q.field)}”
+													{formatEvidenceText(q.quote)}
 												</blockquote>
 
 												{quoteDocUrl && (
@@ -475,9 +432,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 																<ExternalLink size={11} />
 															</a>
 														) : (
-															<span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-900">
-																Verified Rule
-															</span>
+															<a href={quoteDocUrl} target="_blank" rel="noopener noreferrer" className="font-bold underline underline-offset-4">Open source page</a>
 														)}
 													</div>
 												)}
@@ -496,8 +451,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 									Who Can Apply (Eligibility Criteria)
 								</h4>
 								<p className="text-sm text-emerald-950/65">
-									Please verify that you meet the following requirements before
-									submitting an application.
+									These recorded criteria are explanations, not source quotations. Review the source excerpts and current provider instructions before applying.
 								</p>
 							</div>
 
@@ -537,8 +491,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 							) : (
 								<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/30 p-8 text-center text-emerald-950/60">
 									<p className="text-sm font-medium">
-										Standard eligibility criteria apply as described in the
-										official scheme guidelines.
+										Eligibility criteria have not been recorded. Check the provider's current instructions.
 									</p>
 								</div>
 							)}
@@ -550,12 +503,10 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 							<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
 								<div>
 									<h4 className="font-serif text-lg font-bold text-emerald-950">
-										Required Documents (
-										{docs.length > 0 ? docs.length : "Standard"})
+										Documents to review ({docs.length})
 									</h4>
 									<p className="text-sm text-emerald-950/65">
-										Keep these documents ready for verification when submitting
-										your application.
+										Source-cited requirements are labelled below. Other items are preparation suggestions; confirm the provider's document list.
 									</p>
 								</div>
 								<Link
@@ -577,7 +528,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 											className="flex items-start gap-2.5 rounded-xl border-[1.5px] border-emerald-950/20 bg-white p-3.5 transition-colors hover:border-emerald-950"
 										>
 											<span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md border-[1.5px] border-emerald-950 bg-white">
-												{doc.mandatory !== false && (
+												{doc.mandatory && (
 													<Check size={11} strokeWidth={3.5} />
 												)}
 											</span>
@@ -587,9 +538,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 												</span>
 												<span className="mt-1 flex items-center gap-1.5">
 													<span className="text-xs font-semibold text-emerald-950/55">
-														{doc.mandatory !== false
-															? "Required"
-															: "If applicable"}
+														{doc.sourceCited ? (doc.mandatory ? "Required per cited instructions" : "Listed in cited instructions") : "Preparation suggestion — not verified"}
 													</span>
 													{doc.code && (
 														<span className="rounded bg-emerald-50 px-1.5 py-0.2 font-mono text-[10px] text-emerald-950/50">
@@ -604,12 +553,10 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 							) : (
 								<div className="rounded-2xl border-[1.5px] border-emerald-950/20 bg-emerald-50/30 p-6 text-center text-emerald-950/70">
 									<p className="text-sm font-semibold">
-										Standard verification documents are required:
+										Document requirements have not been verified.
 									</p>
 									<p className="mt-1.5 text-xs text-emerald-950/60 leading-relaxed max-w-lg mx-auto">
-										Aadhaar Card, institutional Bonafide / ID card, qualifying
-										semester/board marksheets, bank account passbook (DBT
-										enabled), and family income certificate (if applicable).
+										Check the provider's current document list before preparing your application.
 									</p>
 								</div>
 							)}
@@ -628,7 +575,7 @@ export default function EvidenceModal({ isOpen, onClose, scholarship, appearance
 								<p className="text-[15px] leading-relaxed text-emerald-950/75">
 									{scholarship.description ||
 										scholarship.summary ||
-										"Official government body or verified institution offering this scholarship scheme."}
+										"Provider details have not been recorded."}
 								</p>
 
 								<div className="pt-2 flex flex-wrap items-center gap-3">

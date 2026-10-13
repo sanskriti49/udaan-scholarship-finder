@@ -1,3 +1,4 @@
+import { useCopy } from "../hooks/useCopy.js";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -24,7 +25,7 @@ import { gsap } from "gsap";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { toast } from "sonner";
 import { faqs } from "../utils/faqs";
-import { PageStyles, Stamp, useCopy } from "../components/PageKit";
+import { PageStyles, Stamp } from "../components/PageKit";
 
 gsap.registerPlugin(ScrollToPlugin);
 

@@ -109,7 +109,7 @@ test("whitespace-tolerant quote location stores the exact matched text", () => {
 	assert.ok(verifyEvidence(ev, snap).ok);
 });
 
-test("buildRequiredDocuments generates statutory baseline and criteria-derived documents", async () => {
+test("buildRequiredDocuments generates suggestions without invented mandatory requirements", async () => {
 	const { buildRequiredDocuments } = await import("../../src/pipeline/core/requiredDocuments.js");
 
 	// Baseline scheme
@@ -122,6 +122,7 @@ test("buildRequiredDocuments generates statutory baseline and criteria-derived d
 	assert.ok(baselineCodes.includes("BANK_PASSBOOK"));
 	assert.ok(!baselineCodes.includes("INCOME_CERT"));
 	assert.ok(!baselineCodes.includes("CASTE_CERT"));
+	assert.ok(baseline.every((d) => d.mandatory === false && d.verificationStatus === "suggested"));
 
 	// Means-tested, SC/ST, girl student scheme in UP
 	const specialized = buildRequiredDocuments(
@@ -154,7 +155,7 @@ test("ruleEvaluator matches student held documents using code aliases", async ()
 			{ code: "AADHAAR", name: "Aadhaar Card" },
 			{ code: "ADMISSION_PROOF", name: "Admission Proof" },
 			{ code: "INCOME_CERT", name: "Income Certificate" },
-		],
+		].map((doc) => ({ ...doc, mandatory: true, verificationStatus: "source_cited", evidence: { field: `requiredDocuments.${doc.code}`, quote: `${doc.name} is required`, snapshotId: "a".repeat(24), url: "https://example.gov.in/guidelines" } })),
 	};
 
 	// Student holds COLLEGE_ID (alias for ADMISSION_PROOF) and AADHAAR

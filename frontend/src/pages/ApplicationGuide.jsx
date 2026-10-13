@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
 	BookOpen,
@@ -13,10 +13,8 @@ import {
 	Award,
 	ChevronRight,
 	Quote,
-	Share2,
 	Bookmark,
 	ThumbsUp,
-	MessageCircle,
 	Eye,
 	Zap,
 	Copy,
@@ -27,7 +25,6 @@ import {
 	ChevronDown,
 	Expand,
 	Minimize,
-	RotateCcw,
 } from "lucide-react";
 import Badge from "../components/Badge";
 
@@ -230,6 +227,7 @@ const ApplicationGuide = () => {
 			next = [...completedSections, sectionId];
 		}
 		setCompletedSections(next);
+		if (next.length === sections.length) setShowConfetti(true);
 		localStorage.setItem("completedGuideSections", JSON.stringify(next));
 	};
 
@@ -243,15 +241,12 @@ const ApplicationGuide = () => {
 	const progress = Math.round(
 		(completedSections.length / sections.length) * 100,
 	);
-	const allDone = completedSections.length === sections.length;
-
 	useEffect(() => {
-		if (allDone) {
-			setShowConfetti(true);
+		if (showConfetti) {
 			const t = setTimeout(() => setShowConfetti(false), 3000);
 			return () => clearTimeout(t);
 		}
-	}, [allDone]);
+	}, [showConfetti]);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -273,7 +268,7 @@ const ApplicationGuide = () => {
 	const particles = showConfetti
 		? Array.from({ length: 36 }, (_, i) => ({
 				id: i,
-				left: Math.random() * 100,
+				left: (i * 37) % 100,
 				color: [
 					"#143621",
 					"#2d6a4f",
@@ -282,10 +277,10 @@ const ApplicationGuide = () => {
 					"#d8f3dc",
 					"#b7e4c7",
 				][i % 6],
-				delay: Math.random() * 0.5,
-				dur: 1.1 + Math.random() * 1.4,
-				size: 4 + Math.random() * 5,
-				round: Math.random() > 0.5,
+				delay: ((i * 7) % 50) / 100,
+				dur: 1.1 + ((i * 13) % 140) / 100,
+				size: 4 + ((i * 3) % 6),
+				round: i % 2 === 0,
 			}))
 		: [];
 

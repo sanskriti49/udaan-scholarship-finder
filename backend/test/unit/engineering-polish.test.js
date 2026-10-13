@@ -111,58 +111,6 @@ test("notificationService: channel suppression drops notifications when both inA
 	assert.equal(res, null, "Notification must be suppressed when inApp and email are both false");
 });
 
-test("reminderWorker logic: skips cleanly if user unbookmarked scholarship or disabled alerts", () => {
-	// Simulated worker decision function matching reminderWorker.js implementation
-	function evaluateReminderExecution({ isBookmarked, prefs, reminderWindow }) {
-		if (!isBookmarked) {
-			return { status: "SKIPPED", reason: "Scholarship no longer bookmarked" };
-		}
-		if (!prefs.deadlineAlerts) {
-			return { status: "SKIPPED", reason: "User preference disabled" };
-		}
-		if (reminderWindow === "7_days" && !prefs.deadline7Days) {
-			return { status: "SKIPPED", reason: "7-day alerts disabled by user" };
-		}
-		if (reminderWindow === "48_hours" && !prefs.deadline48Hours) {
-			return { status: "SKIPPED", reason: "48-hour alerts disabled by user" };
-		}
-		return { status: "DISPATCHED" };
-	}
-
-	// 1. Unbookmarked -> SKIPPED
-	const unbookmarked = evaluateReminderExecution({
-		isBookmarked: false,
-		prefs: { deadlineAlerts: true, deadline7Days: true, deadline48Hours: true },
-		reminderWindow: "7_days",
-	});
-	assert.equal(unbookmarked.status, "SKIPPED");
-	assert.equal(unbookmarked.reason, "Scholarship no longer bookmarked");
-
-	// 2. Global deadlineAlerts off -> SKIPPED
-	const globalOff = evaluateReminderExecution({
-		isBookmarked: true,
-		prefs: { deadlineAlerts: false, deadline7Days: true, deadline48Hours: true },
-		reminderWindow: "7_days",
-	});
-	assert.equal(globalOff.status, "SKIPPED");
-
-	// 3. 7-day alert off -> SKIPPED
-	const sevenDaysOff = evaluateReminderExecution({
-		isBookmarked: true,
-		prefs: { deadlineAlerts: true, deadline7Days: false, deadline48Hours: true },
-		reminderWindow: "7_days",
-	});
-	assert.equal(sevenDaysOff.status, "SKIPPED");
-
-	// 4. All active -> DISPATCHED
-	const active = evaluateReminderExecution({
-		isBookmarked: true,
-		prefs: { deadlineAlerts: true, deadline7Days: true, deadline48Hours: true },
-		reminderWindow: "7_days",
-	});
-	assert.equal(active.status, "DISPATCHED");
-});
-
 test("ruleEvaluator: minMatchScore filters eligibility match alerts accurately", () => {
 	const eligibleProfile = {
 		familyIncome: 200000,

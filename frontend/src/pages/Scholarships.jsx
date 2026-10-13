@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { getCategoryTheme } from "../utils/categoryThemes.js";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { evidenceQuotes } from "../utils/evidencePresentation.js";
 import { createPortal } from "react-dom";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -54,7 +56,6 @@ import {
 } from "../components/ScholarshipKit";
 import {
 	CategoryMotifIcon,
-	getCategoryTheme,
 } from "../components/CategoryMotif";
 import {
 	ConfusedDetective,
@@ -232,7 +233,9 @@ export default function Scholarships() {
 	const status = searchParams.get("status") || "active";
 
 	const urlSearch = searchParams.get("search") || "";
-	const [search, setSearch] = useState(urlSearch);
+	const [searchDraft, setSearchDraft] = useState({ origin: searchParams.toString(), value: urlSearch });
+	const search = searchDraft.origin === searchParams.toString() ? searchDraft.value : urlSearch;
+	const setSearch = (value) => setSearchDraft({ origin: searchParams.toString(), value });
 
 	const [scholarships, setScholarships] = useState([]);
 	const [recentUpdatesCount, setRecentUpdatesCount] = useState(0);
@@ -251,11 +254,6 @@ export default function Scholarships() {
 	const detailTriggerRef = useRef(null);
 	const drawerRef = useDialogFocus(isModalOpen);
 	const filterRef = useDialogFocus(filtersOpen);
-
-	useEffect(() => {
-		// Changing a filter or sort must not overwrite a search still being typed.
-		setSearch(urlSearch);
-	}, [urlSearch]);
 
 	const updateMultiParam = (key, option, defaultOption) => {
 		const currentParam = searchParams.get(key);
@@ -278,6 +276,7 @@ export default function Scholarships() {
 			else next.set(key, updatedList.join(","));
 		}
 		setSearchParams(next, { replace: true });
+		setSearchDraft({ origin: next.toString(), value: search });
 	};
 
 	const updateParam = (key, value, defaultValue) => {
@@ -285,6 +284,7 @@ export default function Scholarships() {
 		if (!value || value === defaultValue) next.delete(key);
 		else next.set(key, value);
 		setSearchParams(next, { replace: true });
+		setSearchDraft({ origin: next.toString(), value: search });
 	};
 
 	const toggleCat = (val) => updateMultiParam("category", val, "All");
@@ -305,19 +305,19 @@ export default function Scholarships() {
 				if (trimmed) next.set("search", trimmed);
 				else next.delete("search");
 				setSearchParams(next, { replace: true });
+				setSearchDraft({ origin: next.toString(), value: trimmed });
 			}
 		}, 300);
 		return () => clearTimeout(timer);
-	}, [search]);
+	}, [search, searchParams, setSearchParams]);
 
 	useEffect(() => {
-		if (!search || search.trim().length < 2) {
-			setSuggestions([]);
-			setIsSuggestionsOpen(false);
-			return;
-		}
-
 		const timer = setTimeout(async () => {
+			if (!search || search.trim().length < 2) {
+				setSuggestions([]);
+				setIsSuggestionsOpen(false);
+				return;
+			}
 			try {
 				const res = await getScholarshipSuggestions(search);
 				if (res.success && Array.isArray(res.data)) {
@@ -352,20 +352,20 @@ export default function Scholarships() {
 			?.scrollIntoView({ behavior: "smooth", block: "start" });
 	};
 
-	const fetchLiveScholarships = async () => {
+	const fetchLiveScholarships = useCallback(async () => {
 		try {
 			setLoading(true);
 			setError(null);
 			const params = {
 				search: (searchParams.get("search") || "").trim() || undefined,
-				category: selectedCats.length > 0 ? selectedCats.join(",") : undefined,
-				level: selectedLevels.length > 0 ? selectedLevels.join(",") : undefined,
-				state: selectedStates.length > 0 ? selectedStates.join(",") : undefined,
+				category: searchParams.get("category") || undefined,
+				level: searchParams.get("level") || undefined,
+				state: searchParams.get("state") || undefined,
 				sourceType:
-					selectedSources.length > 0 ? selectedSources.join(",") : undefined,
-				hasChanges: hasChangesOnly ? "true" : undefined,
-				status,
-				sort,
+					searchParams.get("sourceType") || undefined,
+				hasChanges: searchParams.get("hasChanges") === "true" ? "true" : undefined,
+				status: searchParams.get("status") || "active",
+				sort: searchParams.get("sort") || "deadline",
 				limit: 50,
 			};
 			const res = await getScholarships(params);
@@ -383,14 +383,14 @@ export default function Scholarships() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [searchParams]);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			fetchLiveScholarships();
 		}, 80);
 		return () => clearTimeout(timer);
-	}, [searchParams]);
+	}, [fetchLiveScholarships]);
 
 	const openDetails = (s) => {
 		detailTriggerRef.current = document.activeElement;
@@ -425,8 +425,8 @@ export default function Scholarships() {
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!user || !token) {
-			setSaved(new Set());
-			return;
+			const timer = setTimeout(() => setSaved(new Set()), 0);
+			return () => clearTimeout(timer);
 		}
 		getBookmarks()
 			.then((res) => {
@@ -1150,7 +1150,7 @@ export default function Scholarships() {
 
 													<span className="inline-flex items-center gap-1 rounded-full border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-800">
 														<ShieldCheck size={13} />
-														Verified
+														{selectedScholarship.verified === true ? "Source checked" : "Not verified"}
 													</span>
 
 													{isGenuinePdf(
@@ -1307,7 +1307,7 @@ export default function Scholarships() {
 									<p className="text-[15px] leading-relaxed text-emerald-950/80">
 										{selectedScholarship.description ||
 											selectedScholarship.summary ||
-											"Official scholarship verified against its published notification."}
+											"A description has not been recorded. Check the provider's current instructions."}
 									</p>
 								</DrawerSection>
 
@@ -1339,39 +1339,19 @@ export default function Scholarships() {
 										</DrawerSection>
 									)}
 
-								{((selectedScholarship.provenanceQuotes &&
-									selectedScholarship.provenanceQuotes.length > 0) ||
-									(selectedScholarship.rules &&
-										selectedScholarship.rules.length > 0)) && (
-									<DrawerSection
-										title="From the official notice"
+								{evidenceQuotes(selectedScholarship).length > 0 && (<DrawerSection
+										title="Stored source excerpts"
 										aside={
 											<span className="text-xs font-bold text-emerald-950/55">
-												{selectedScholarship.provenanceQuotes?.length ||
-													selectedScholarship.rules?.length ||
-													0}{" "}
+												{evidenceQuotes(selectedScholarship).length}{" "}
 												clauses
 											</span>
 										}
 									>
 										<div className="space-y-3">
-											{(selectedScholarship.provenanceQuotes &&
-											selectedScholarship.provenanceQuotes.length > 0
-												? selectedScholarship.provenanceQuotes
-												: selectedScholarship.rules.map((r, i) => ({
-														clause: `Official Rule ${i + 1}: ${r.field}`,
-														quote:
-															r.description ||
-															`Satisfies eligibility criteria as specified in the official scheme circular.`,
-														page: 1,
-														sourceUrl:
-															selectedScholarship.officialLinks
-																?.guidelinesUrl ||
-															selectedScholarship.sourceUrl,
-													}))
-											).map((q, idx) => {
+											{evidenceQuotes(selectedScholarship).map((q, idx) => {
 												const rawQuoteLink =
-													q.sourceUrl ||
+													q.url || q.sourceUrl ||
 													selectedScholarship.officialLinks?.guidelinesUrl ||
 													selectedScholarship.sourceUrl;
 												const quoteLink = cleanOfficialUrl(rawQuoteLink);
@@ -1391,6 +1371,7 @@ export default function Scholarships() {
 													>
 														<div className="flex flex-wrap items-baseline justify-between gap-2">
 															<p className="text-sm font-bold">{clauseTitle}</p>
+															<span className="text-xs text-emerald-950/60">Stored excerpt · Not verified</span>
 															{q.page && (
 																<span className="text-xs font-semibold text-emerald-950/55">
 																	Page {q.page}

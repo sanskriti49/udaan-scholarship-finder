@@ -51,93 +51,25 @@ export function formatClauseTitle(clause, field, fallbackIdx = 1) {
 	return clean || (field ? CLAUSE_MAP[field] || field : `Guideline ${fallbackIdx}`);
 }
 
-export function formatEvidenceText(rawQuote, field) {
-	if (!rawQuote || typeof rawQuote !== "string") return "";
-	let text = rawQuote.trim();
-
-	if (text.startsWith('""') && text.endsWith('""')) {
-		text = text.slice(2, -2).trim();
-	} else if (text.startsWith('"') && text.endsWith('"') && text.indexOf('":') === -1) {
-		text = text.slice(1, -1).trim();
-	}
-
-	const jsonMatch = text.match(/^"([^"]+)"\s*:\s*(.+)$/);
-	if (jsonMatch) {
-		const key = jsonMatch[1];
-		let val = jsonMatch[2].trim();
-		if (val.startsWith('"') && val.endsWith('"')) {
-			val = val.slice(1, -1);
-		}
-
-		if (key === "familyIncomeMax" || key === "familyIncome") {
-			const num = Number(val);
-			const formatted = !isNaN(num) ? `₹${num.toLocaleString("en-IN")}` : val;
-			return `Annual family income must not exceed ${formatted} as specified in official scheme criteria.`;
-		}
-
-		if (key === "amountValue" || key === "amount") {
-			const num = Number(val);
-			const formatted = !isNaN(num) ? `₹${num.toLocaleString("en-IN")}` : val;
-			return `Official scholarship grant amount is ${formatted} as specified by the issuing authority.`;
-		}
-
-		if (key === "level") {
-			return `Eligible education levels: ${val}.`;
-		}
-
-		if (key === "category" || key === "caste") {
-			return `Eligible applicant category: ${val}.`;
-		}
-
-		if (key === "department" || key === "organization") {
-			return `Administering body: ${val}.`;
-		}
-
-		if (key === "title" || key === "schemeName") {
-			return `Official Scheme: "${val}".`;
-		}
-
-		if (key === "guidelinesUrl" || key === "guidelineUrl") {
-			return `Official guidelines circular: ${val}`;
-		}
-
-		if (key === "applyUrl" || key === "applicationLink") {
-			return `Official online application portal: ${val}`;
-		}
-
-		if (key === "state") {
-			return `Applicable state: ${val}.`;
-		}
-
-		return `${key.replace(/([A-Z])/g, " $1").trim()}: ${val}`;
-	}
-
-	return text;
+export function formatEvidenceText(rawQuote) {
+	return typeof rawQuote === "string" ? rawQuote : "";
 }
 
+// Preserve the actual cited path. A URL identifies a source; it is not proof of authenticity.
 export function cleanOfficialUrl(raw) {
-	if (!raw || typeof raw !== "string") return "https://scholarships.gov.in/";
+	if (!raw || typeof raw !== "string") return null;
 	try {
 		const parsed = new URL(raw);
-		if (parsed.pathname.toLowerCase().startsWith("/api/schemes")) {
-			return parsed.origin + "/";
-		}
-		if (
-			parsed.pathname.includes("2026.pdf") ||
-			parsed.pathname.includes("Guidelines.pdf") ||
-			parsed.pathname.startsWith("/docs/")
-		) {
-			return parsed.origin + "/";
-		}
+		if (!["https:", "http:"].includes(parsed.protocol) || parsed.username || parsed.password) return null;
 		return parsed.toString();
 	} catch {
-		return raw;
+		return null;
 	}
 }
-
 export function isGenuinePdf(url) {
 	if (!url || typeof url !== "string") return false;
 	const clean = cleanOfficialUrl(url);
+	if (!clean) return false;
 	const lower = clean.toLowerCase();
 	if (!lower.endsWith(".pdf") && !lower.includes(".pdf?")) return false;
 	if (lower.includes("not_available.pdf") || lower.includes("/null") || lower.includes("/undefined")) return false;

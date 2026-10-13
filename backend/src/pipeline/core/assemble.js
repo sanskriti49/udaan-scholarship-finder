@@ -280,6 +280,9 @@ export function assembleRecord(candidate, { source, guideline, assertions = [] }
 	}
 
 	record.requiredDocuments = buildRequiredDocuments(facts, candidate, guideline, record.state);
+	for (const doc of record.requiredDocuments) {
+		if (doc.evidence && !record.fieldEvidence.includes(doc.evidence)) record.fieldEvidence.push(doc.evidence);
+	}
 
 	issues.push(...applyAssertions(record, assertions));
 	const { rules, provenanceQuotes } = buildRules(record.schemeKey, facts, evidence);

@@ -135,6 +135,8 @@ const scholarshipSchema = new mongoose.Schema(
 				code: { type: String, required: true },
 				name: { type: String, required: true },
 				mandatory: { type: Boolean, default: true },
+				verificationStatus: { type: String, enum: ["source_cited", "suggested"], default: "suggested" },
+				evidence: { type: evidenceSchema, default: null },
 			},
 		],
 		// Legacy-compatible citation projection used by the eligibility evaluator.

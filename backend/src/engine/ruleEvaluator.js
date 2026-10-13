@@ -1,10 +1,29 @@
 /**
  * Deterministic Rule Evaluator for Udaan
- * Evaluates student profiles against scholarship rule trees with zero hallucination.
+ * Evaluates a flat list of recorded scholarship conditions.
  * Returns explicit pass/fail breakdowns, ineligibility reasons, document audit, and source citations.
  */
+import { isCitedDocument } from "../pipeline/core/requiredDocuments.js";
+
+export function optionalNumber(value) {
+	if (value == null || (typeof value === "string" && !value.trim())) return null;
+	if (typeof value !== "string" && typeof value !== "number") return null;
+	const number = Number(value);
+	return Number.isFinite(number) && number >= 0 ? number : null;
+}
+
+function optionalBoolean(value) {
+	if (value === true || value === "true") return true;
+	if (value === false || value === "false") return false;
+	return null;
+}
+
+function optionalText(value) {
+	return typeof value === "string" && value.trim() ? value.trim() : null;
+}
 
 export function normalizeProfile(rawProfile = {}) {
+	const state = optionalText(rawProfile.state);
 	return {
 		fullName: rawProfile.fullName || "",
 		educationLevel: rawProfile.educationLevel || rawProfile.level || "",
@@ -13,27 +32,18 @@ export function normalizeProfile(rawProfile = {}) {
 			rawProfile.courseStream ||
 			rawProfile.eligibleStreams ||
 			"",
-		familyIncome: Number(
-			rawProfile.familyIncome !== undefined
-				? rawProfile.familyIncome
-				: rawProfile.income !== undefined
-					? rawProfile.income
-					: NaN,
-		),
-		gender: rawProfile.gender || "Any",
-		casteCategory:
+		familyIncome: optionalNumber(rawProfile.familyIncome !== undefined ? rawProfile.familyIncome : rawProfile.income),
+		gender: rawProfile.gender === "Any" ? null : optionalText(rawProfile.gender),
+		casteCategory: optionalText(
 			rawProfile.casteCategory ||
 			rawProfile.caste_category ||
 			rawProfile.category ||
-			"General",
-		state: rawProfile.state || "All India",
-		cgpa: Number(rawProfile.cgpa !== undefined ? rawProfile.cgpa : NaN),
-		percentage: Number(
-			rawProfile.percentage !== undefined ? rawProfile.percentage : NaN,
-		),
-		hasDisability: Boolean(
-			rawProfile.hasDisability || rawProfile.disabilityRequired,
-		),
+			null),
+		// "All India" is a national-catalogue selection, not a student's domicile.
+		state: state?.toLowerCase() === "all india" ? null : state,
+		cgpa: optionalNumber(rawProfile.cgpa),
+		percentage: optionalNumber(rawProfile.percentage),
+		hasDisability: optionalBoolean(rawProfile.hasDisability !== undefined ? rawProfile.hasDisability : rawProfile.disabilityRequired),
 		documentsHeld: Array.isArray(rawProfile.documentsHeld)
 			? rawProfile.documentsHeld
 			: [],
@@ -76,7 +86,7 @@ export function formatRequirement(field, operator, target) {
 }
 
 export function formatActualValue(field, actual) {
-	if (actual === undefined || actual === null || actual === "") return "Not specified";
+	if (actual === undefined || actual === null || actual === "" || Number.isNaN(actual)) return "Not specified";
 	switch (field) {
 		case "familyIncome":
 			return `₹${Number(actual).toLocaleString("en-IN")}`;
@@ -91,7 +101,7 @@ export function formatActualValue(field, actual) {
 	}
 }
 
-function evaluateCondition(actual, operator, target) {
+function evaluateCondition(actual, operator, target, field) {
 	if (actual === undefined || actual === null || Number.isNaN(actual)) {
 		return { result: false, missingActual: true };
 	}
@@ -109,7 +119,7 @@ function evaluateCondition(actual, operator, target) {
 	}
 
 	// State / Domicile wildcard: "All India" matches any resident
-	if (targetStr === "all india" || actualStr === "all india") {
+	if (field === "state" && targetStr === "all india") {
 		return { result: true };
 	}
 
@@ -150,7 +160,7 @@ function evaluateCondition(actual, operator, target) {
 			const targetArr = Array.isArray(target) ? target : [target];
 			const hasWildcard = targetArr.some((t) => {
 				const s = String(t).trim().toLowerCase();
-				return s === "any" || s === "all" || s === "*" || s === "all india";
+				return s === "any" || s === "all" || s === "*" || (field === "state" && s === "all india");
 			});
 			if (hasWildcard) return { result: true };
 			return {
@@ -162,7 +172,7 @@ function evaluateCondition(actual, operator, target) {
 			};
 		}
 		case "BOOLEAN_MATCH":
-			return { result: Boolean(actual) === Boolean(target) };
+			return { result: actual === target };
 		default:
 			return { result: false };
 	}
@@ -181,16 +191,20 @@ export function evaluateEligibility(rawProfile, scholarship) {
 	let rules = Array.isArray(scholarship.rules) && scholarship.rules.length > 0
 		? scholarship.rules
 		: buildFallbackRules(scholarship);
+	const hasRecordedConditions = rules.length > 0;
 
 	// Filter out bogus unconstrained rules (e.g. targetValue: "Any" or "All")
 	rules = rules.filter((r) => {
 		const t = String(r.targetValue).trim().toLowerCase();
-		return t !== "any" && t !== "all" && t !== "*";
+		return t !== "any" && t !== "all" && t !== "*" && !(r.field === "state" && (t === "all india" || (Array.isArray(r.targetValue) && r.targetValue.some((v) => String(v).toLowerCase() === "all india"))));
 	});
 
 	const passedRules = [];
 	const failedRules = [];
 	const unknownRules = [];
+	if (!hasRecordedConditions) {
+		unknownRules.push({ ruleId: "criteria_not_recorded", field: "eligibility", description: "Eligibility criteria have not been recorded", required: "Check the provider's current instructions", actual: "Not verified", citation: null });
+	}
 
 	for (const rule of rules) {
 		const actualValue = profile[rule.field];
@@ -222,6 +236,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 			actualValue,
 			rule.operator,
 			rule.targetValue,
+			rule.field,
 		);
 
 		if (evalResult.result) {
@@ -273,9 +288,10 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		DISABILITY_CERT: ["DISABILITY_CERT", "DISABILITY_CERTIFICATE", "UDID_CARD"],
 	};
 
-	const requiredDocs = Array.isArray(scholarship.requiredDocuments)
+	const listedDocs = Array.isArray(scholarship.requiredDocuments)
 		? scholarship.requiredDocuments
 		: [];
+	const requiredDocs = listedDocs.filter((doc) => isCitedDocument(doc) && doc.mandatory === true);
 	const studentDocs = new Set(
 		profile.documentsHeld.map((d) => String(d).toUpperCase()),
 	);
@@ -286,7 +302,9 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		missingCount: 0,
 		held: [],
 		missing: [],
-		percentage: 100,
+		percentage: null,
+		requirementsVerified: requiredDocs.length > 0,
+		suggestions: listedDocs.filter((doc) => !isCitedDocument(doc)),
 	};
 
 	for (const doc of requiredDocs) {
@@ -309,7 +327,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 	}
 
 	// Composite readiness: 60% match confidence + 40% document readiness
-	const compositeReadiness = Math.round(
+	const compositeReadiness = documentAudit.percentage === null ? matchConfidence : Math.round(
 		matchConfidence * 0.6 + documentAudit.percentage * 0.4,
 	);
 
@@ -333,10 +351,10 @@ function buildFallbackRules(scholarship) {
 		rules.push({
 			id: "rule_income",
 			field: "familyIncome",
-			operator: "LTE",
+			operator: elig.familyIncome.operator === "LT" ? "LT" : "LTE",
 			targetValue: elig.familyIncome.max,
 			isMandatory: true,
-			description: `Annual family income must not exceed ₹${elig.familyIncome.max.toLocaleString("en-IN")}`,
+			description: `Annual family income must ${elig.familyIncome.operator === "LT" ? "be below" : "not exceed"} ₹${elig.familyIncome.max.toLocaleString("en-IN")}`,
 			failMessage: `Family income exceeds allowed ceiling of ₹${elig.familyIncome.max.toLocaleString("en-IN")}`,
 		});
 	}

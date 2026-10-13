@@ -153,8 +153,8 @@ test("searchable PDF uses native text; corrections retain evidence; privacy", as
   ).toBeVisible();
   expect(requests.every((r) => r.method === "GET" && !r.body)).toBeTruthy();
   expect(
-    requests.every((r) => new URL(r.url).hostname === "localhost"),
-  ).toBeTruthy();
+	requests.filter((r) => new URL(r.url).hostname !== "localhost"),
+  ).toEqual([]);
   expect(requests.some((r) => r.url.includes("traineddata"))).toBeFalsy();
   expect(
     await page.evaluate(async () => ({
@@ -200,8 +200,8 @@ test("real local English image OCR and asset isolation", async ({ page }) => {
     "2025-01-14",
   );
   expect(
-    urls.every((url) => new URL(url).hostname === "localhost"),
-  ).toBeTruthy();
+    urls.filter((url) => new URL(url).hostname !== "localhost"),
+  ).toEqual([]);
   expect(
     await page.evaluate(async () => (await indexedDB.databases()).length),
   ).toBe(0);

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { getCategoryTheme } from "../utils/categoryThemes.js";
+import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -34,7 +35,6 @@ import { CountUp } from "../components/MotionKit";
 import { deadlineInfo } from "../utils/scholarshipMeta";
 import {
 	CategoryMotifIcon,
-	getCategoryTheme,
 } from "../components/CategoryMotif";
 import {
 	BoardCurator,
@@ -133,6 +133,7 @@ function GhostCard({ className = "", children }) {
 }
 
 function DeadlineChip({ deadline }) {
+	const [now] = useState(Date.now);
 	if (!deadline) {
 		return (
 			<span className="inline-flex shrink-0 items-center rounded-md border-[1.5px] border-emerald-950/20 bg-white px-2.5 py-1 text-xs font-bold">
@@ -142,7 +143,7 @@ function DeadlineChip({ deadline }) {
 	}
 	const d = new Date(deadline);
 	const diffDays = Math.ceil(
-		(d.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+		(d.getTime() - now) / (1000 * 60 * 60 * 24),
 	);
 	const isUrgent = diffDays >= 0 && diffDays <= 7;
 
@@ -447,7 +448,7 @@ export default function SavedScholarships() {
 
 	useBodyScrollLock(isDrawerOpen || isEvidenceModalOpen);
 
-	const fetchBookmarks = async () => {
+	const fetchBookmarks = useCallback(async () => {
 		const token = localStorage.getItem("token");
 		if (!user || !token) {
 			setSavedItems([]);
@@ -474,11 +475,12 @@ export default function SavedScholarships() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [user]);
 
 	useEffect(() => {
-		fetchBookmarks();
-	}, [user]);
+		const timer = setTimeout(fetchBookmarks, 0);
+		return () => clearTimeout(timer);
+	}, [fetchBookmarks]);
 
 	// Global bookmark sync listener
 	useEffect(() => {
@@ -493,7 +495,7 @@ export default function SavedScholarships() {
 			}
 		});
 		return unsubscribe;
-	}, []);
+	}, [fetchBookmarks]);
 
 	const handleRemoveBookmark = async (scholarship) => {
 		const id = scholarship._id || scholarship.id;
@@ -1022,7 +1024,7 @@ export default function SavedScholarships() {
 
 													<span className="inline-flex items-center gap-1 rounded-md border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-800">
 														<ShieldCheck size={13} />
-														Verified scheme
+														{selectedScholarship.verified === true ? "Source checked" : "Not verified"}
 													</span>
 												</div>
 

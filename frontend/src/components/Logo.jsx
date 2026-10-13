@@ -6,7 +6,6 @@ export default function Logo({
 	tagline = "Scholarship Intelligence",
 	to = "/",
 	iconOnly = false,
-	showDot = true,
 	className = "",
 	emblemClassName = "",
 	taglineClassName = "",

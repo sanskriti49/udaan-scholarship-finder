@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import Scholarship from "../models/Scholarship.js";
 import ScholarshipVersion from "../models/ScholarshipVersion.js";
 import UserProfile from "../models/UserProfile.js";
-import { evaluateEligibility } from "../engine/ruleEvaluator.js";
+import { evaluateEligibility, normalizeProfile } from "../engine/ruleEvaluator.js";
 import ScholarshipCycle from "../models/ScholarshipCycle.js";
 import SourceSnapshot from "../models/SourceSnapshot.js";
 import IngestionIssue from "../models/IngestionIssue.js";
@@ -541,17 +541,13 @@ export const evaluateScholarships = async (req, res) => {
 		}
 
 		// Deterministic cache key based on profile attributes
+		const normalizedProfile = normalizeProfile(profile);
+		delete normalizedProfile.fullName;
 		const profileFingerprint = {
-			income: profile.familyIncome || profile.income,
-			cgpa: profile.cgpa,
-			percentage: profile.percentage,
-			educationLevel: profile.educationLevel,
-			stream: profile.courseStream || profile.stream,
-			gender: profile.gender,
-			casteCategory: profile.casteCategory || profile.caste_category,
-			state: profile.state,
-			hasDisability: profile.hasDisability,
-			documents: (profile.documentsHeld || []).slice().sort(),
+			...normalizedProfile,
+			documentsHeld: normalizedProfile.documentsHeld.slice().sort(),
+			nationalOnly: profile.state === "All India",
+			evaluatorVersion: 2,
 		};
 		const profileHash = crypto
 			.createHash("sha256")
@@ -578,7 +574,10 @@ export const evaluateScholarships = async (req, res) => {
 			status: { $ne: "closed" },
 		};
 
-		if (profile.state && profile.state !== "All India") {
+		if (profile.state === "All India") {
+			// The UI's national-only option does not claim any state domicile.
+			query.state = "All India";
+		} else if (profile.state) {
 			query.state = { $in: [profile.state, "All India"] };
 		}
 		if (profile.gender === "Male") {

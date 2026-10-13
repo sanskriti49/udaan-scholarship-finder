@@ -1,3 +1,4 @@
+import { reducedMotion, haptic } from "../utils/motionPreferences.js";
 import { useState, useEffect, useRef } from "react";
 import {
 	Clock,
@@ -17,19 +18,6 @@ import {
 } from "lucide-react";
 
 /* ---------- shared helpers ---------- */
-
-const reducedMotion = () =>
-	typeof window !== "undefined" &&
-	window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-const haptic = (ms = 10) => {
-	if (reducedMotion()) return;
-	try {
-		navigator.vibrate?.(ms);
-	} catch {
-		/* not supported / blocked */
-	}
-};
 
 // Full literal class strings so Tailwind can see them.
 const SH2 = "shadow-[2px_2px_0px_0px_rgba(2,44,34,1)]";
@@ -66,7 +54,6 @@ function useTimeLeft(deadline) {
 
 	useEffect(() => {
 		let off;
-		setT(timeLeftUntil(deadline));
 		const id = setInterval(() => {
 			const next = timeLeftUntil(deadline);
 			if (next.days !== prevDays.current) {
@@ -126,6 +113,10 @@ const fmtDate = (d) =>
 	});
 
 export function TearOffCountdown({ deadline, compact = false }) {
+	return <DeadlineCountdown key={String(deadline)} deadline={deadline} compact={compact} />;
+}
+
+function DeadlineCountdown({ deadline, compact }) {
 	const [t, flip] = useTimeLeft(deadline);
 	const tier = tierOf(t);
 	const tone = TIERS[tier];
@@ -196,19 +187,6 @@ export function TearOffCountdown({ deadline, compact = false }) {
 /* =========================================================================
    2. Repeat-action microcopy hook
    ========================================================================= */
-
-export function useActionMicrocopy(copies = []) {
-	const [count, setCount] = useState(0);
-	const trigger = () => {
-		setCount((c) => c + 1);
-		haptic(12);
-	};
-	return {
-		count,
-		currentCopy: copies[Math.min(count, copies.length - 1)] ?? copies[0],
-		trigger,
-	};
-}
 
 /* =========================================================================
    3. Save button ("pin to desk")
@@ -325,7 +303,7 @@ export function TypewriterMatchCheck({
 	grantAmount = "₹50,000 / year",
 	onFinish,
 }) {
-	const instant = useRef(reducedMotion()).current;
+	const [instant] = useState(reducedMotion);
 	const [step, setStep] = useState(instant ? checks.length : 0);
 	const [stamped, setStamped] = useState(instant);
 	const finishRef = useRef(onFinish);

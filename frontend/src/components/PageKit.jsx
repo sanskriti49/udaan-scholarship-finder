@@ -108,12 +108,11 @@ const SCRAP_COLORS = [
 ];
 
 export function Confetti({ burst }) {
-	const [show, setShow] = useState(false);
+	const [expiredBurst, setExpiredBurst] = useState(null);
 
 	useEffect(() => {
 		if (!burst) return;
-		setShow(true);
-		const t = setTimeout(() => setShow(false), 2400);
+		const t = setTimeout(() => setExpiredBurst(burst), 2400);
 		return () => clearTimeout(t);
 	}, [burst]);
 
@@ -121,16 +120,16 @@ export function Confetti({ burst }) {
 		() =>
 			Array.from({ length: 70 }, (_, i) => ({
 				id: i,
-				dx: (Math.random() - 0.5) * 1000,
-				dy: 120 + Math.random() * 620,
-				rot: (Math.random() - 0.5) * 900,
-				d: Math.random() * 0.15,
+				dx: (((i * 37 + burst * 13) % 101) / 100 - 0.5) * 1000,
+				dy: 120 + ((i * 43 + burst * 17) % 621),
+				rot: ((i * 97 + burst * 29) % 901) - 450,
+				d: ((i * 7 + burst) % 16) / 100,
 				color: SCRAP_COLORS[i % SCRAP_COLORS.length],
 			})),
 		[burst],
 	);
 
-	if (!show) return null;
+	if (!burst || expiredBurst === burst) return null;
 	return (
 		<div
 			aria-hidden
@@ -151,19 +150,4 @@ export function Confetti({ burst }) {
 			))}
 		</div>
 	);
-}
-
-export function useCopy() {
-	const [copied, setCopied] = useState(null);
-	const copy = async (key, value) => {
-		try {
-			await navigator.clipboard.writeText(value);
-			setCopied(key);
-			setTimeout(() => setCopied((c) => (c === key ? null : c)), 1600);
-			return true;
-		} catch {
-			return false;
-		}
-	};
-	return [copied, copy];
 }

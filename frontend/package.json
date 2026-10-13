@@ -8,10 +8,14 @@
     "predev": "npm run scanner:assets",
     "prebuild": "npm run scanner:assets",
     "test:scanner": "node --test test/scanner.test.mjs test/scanner-handoff.test.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:smoke": "playwright test app-smoke.spec.mjs",
+    "check": "npm run lint && npm test && npm run build",
     "test:scanner:ui": "playwright test",
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "postbuild": "npm run test:smoke",
+    "lint": "eslint . --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
