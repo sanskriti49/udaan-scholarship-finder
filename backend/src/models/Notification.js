@@ -16,6 +16,7 @@ const notificationSchema = new mongoose.Schema(
 				"STATE_GRANT_UPDATE",
 				"WEEKLY_DIGEST",
 				"DEADLINE_CHANGED",
+				"ELIGIBILITY_CHANGED",
 				"SYSTEM",
 			],
 			required: true,
@@ -74,6 +75,7 @@ const notificationSchema = new mongoose.Schema(
 			default: false,
 			index: true,
 		},
+		isDismissed: { type: Boolean, default: false },
 		readAt: {
 			type: Date,
 			default: null,
@@ -87,7 +89,7 @@ const notificationSchema = new mongoose.Schema(
 			inApp: {
 				status: {
 					type: String,
-					enum: ["delivered", "read"],
+					enum: ["delivered", "read", "skipped"],
 					default: "delivered",
 				},
 				deliveredAt: {

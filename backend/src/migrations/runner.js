@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import Scholarship from "../models/Scholarship.js";
 import ScholarshipCycle from "../models/ScholarshipCycle.js";
 import ScholarshipVersion from "../models/ScholarshipVersion.js";
+import EligibilityRuleVersion from "../models/EligibilityRuleVersion.js";
+import EligibilityAlertDelivery from "../models/EligibilityAlertDelivery.js";
 import SourceSnapshot from "../models/SourceSnapshot.js";
 import SourceState from "../models/SourceState.js";
 import CrawlRun from "../models/CrawlRun.js";
@@ -12,9 +14,10 @@ import * as m003 from "./003-seed-recent-updates.js";
 import * as m004 from "./004-quarantine-unverified-samples.js";
 
 import * as m005 from "./005-quarantine-original-feed-paths.js";
+import * as m006 from "./006-eligibility-alert-indexes.js";
 
-export const MIGRATIONS = [m001, m002, m003, m004, m005];
-export const PIPELINE_MODELS = [Scholarship, ScholarshipCycle, ScholarshipVersion, SourceSnapshot, SourceState, CrawlRun, IngestionIssue];
+export const MIGRATIONS = [m001, m002, m003, m004, m005, m006];
+export const PIPELINE_MODELS = [Scholarship, ScholarshipCycle, ScholarshipVersion, EligibilityRuleVersion, EligibilityAlertDelivery, SourceSnapshot, SourceState, CrawlRun, IngestionIssue];
 
 /** Applies pending migrations in order and records them in `migrations`. */
 export async function runMigrations({ log = console.log } = {}) {

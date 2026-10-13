@@ -15,6 +15,7 @@ export const getNotifications = async (req, res) => {
 
 		const filter = {
 			user: req.user._id,
+			isDismissed: { $ne: true },
 			"deliveryChannels.inApp.status": { $ne: "skipped" },
 		};
 		if (req.query.unread === "true") {
@@ -33,6 +34,7 @@ export const getNotifications = async (req, res) => {
 			Notification.countDocuments(filter),
 			Notification.countDocuments({
 				user: req.user._id,
+				isDismissed: { $ne: true },
 				isRead: false,
 				"deliveryChannels.inApp.status": { $ne: "skipped" },
 			}),
@@ -63,6 +65,7 @@ export const getUnreadCount = async (req, res) => {
 	try {
 		const unreadCount = await Notification.countDocuments({
 			user: req.user._id,
+			isDismissed: { $ne: true },
 			isRead: false,
 			"deliveryChannels.inApp.status": { $ne: "skipped" },
 		});
@@ -160,9 +163,15 @@ export const deleteNotification = async (req, res) => {
 			});
 		}
 
-		const deleted = await Notification.findOneAndDelete({
+		// Retain eligibility records as hidden receipts while an email retry may
+		// still need them. Dismissing a pending alert must never resurrect it.
+		let deleted = await Notification.findOneAndUpdate({
+			_id: id, user: req.user._id, type: "ELIGIBILITY_CHANGED",
+		}, { $set: { isDismissed: true, isRead: true, readAt: new Date() } }, { new: true });
+		if (!deleted) deleted = await Notification.findOneAndDelete({
 			_id: id,
 			user: req.user._id,
+			type: { $ne: "ELIGIBILITY_CHANGED" },
 		});
 
 		if (!deleted) {
@@ -174,7 +183,7 @@ export const deleteNotification = async (req, res) => {
 
 		return res.status(200).json({
 			success: true,
-			message: "Notification deleted successfully",
+			message: "Notification dismissed successfully",
 		});
 	} catch (err) {
 		return res.status(500).json({

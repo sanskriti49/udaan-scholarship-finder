@@ -1,5 +1,6 @@
 import { notificationService } from "../services/notificationService.js";
 import { withDistributedLock } from "../utils/distributedLock.js";
+import { relayEligibilityAlerts } from "../services/eligibilityAlertRelay.js";
 
 /**
  * NotificationScheduler
@@ -58,6 +59,11 @@ export class NotificationScheduler {
 	async executeJobs(triggerReason = "SCHEDULED") {
 		this.executionCount++;
 		console.log(`[NotificationScheduler] Executing scheduled jobs (${triggerReason})...`);
+		try {
+			await withDistributedLock("lock:notification:eligibility_relay", 300, () => relayEligibilityAlerts());
+		} catch (error) {
+			console.error("[NotificationScheduler] Eligibility relay error:", error.message);
+		}
 
 		try {
 			// 1. Deadline scan with distributed lock (10-min lease)
@@ -90,6 +96,7 @@ export class NotificationScheduler {
 
 	async triggerJobManually(jobName = "all") {
 		console.log(`[NotificationScheduler] Manual trigger requested for: '${jobName}'`);
+		if (jobName === "eligibility" || jobName === "all") await relayEligibilityAlerts();
 		if (jobName === "deadline" || jobName === "all") {
 			await notificationService.runDeadlineCheck();
 		}

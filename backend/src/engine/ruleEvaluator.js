@@ -188,9 +188,7 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		}
 	}
 
-	let rules = Array.isArray(scholarship.rules) && scholarship.rules.length > 0
-		? scholarship.rules
-		: buildFallbackRules(scholarship);
+	let rules = eligibilityRules(scholarship);
 	const hasRecordedConditions = rules.length > 0;
 
 	// Filter out bogus unconstrained rules (e.g. targetValue: "Any" or "All")
@@ -341,6 +339,10 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		unknownRules,
 		documentAudit,
 	};
+}
+
+export function eligibilityRules(scholarship) {
+	return Array.isArray(scholarship.rules) && scholarship.rules.length > 0 ? scholarship.rules : buildFallbackRules(scholarship);
 }
 
 function buildFallbackRules(scholarship) {

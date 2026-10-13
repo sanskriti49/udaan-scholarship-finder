@@ -1,6 +1,7 @@
 import Scholarship from "../../models/Scholarship.js";
 import ScholarshipCycle from "../../models/ScholarshipCycle.js";
 import ScholarshipVersion from "../../models/ScholarshipVersion.js";
+import EligibilityRuleVersion from "../../models/EligibilityRuleVersion.js";
 import SourceSnapshot from "../../models/SourceSnapshot.js";
 import SourceState from "../../models/SourceState.js";
 import CrawlRun from "../../models/CrawlRun.js";
@@ -102,6 +103,13 @@ export class MongoStore {
 	async addVersion(version) {
 		const { scholarshipId, ...rest } = version;
 		await ScholarshipVersion.create({ ...rest, scholarship: scholarshipId });
+	}
+	async getEligibilityVersion(id) {
+		return plain(await EligibilityRuleVersion.findById(id).lean());
+	}
+	async addEligibilityVersion(version) {
+		return plain(await EligibilityRuleVersion.findOneAndUpdate({ versionKey: version.versionKey },
+			{ $setOnInsert: version }, { upsert: true, returnDocument: "after", runValidators: true, lean: true }));
 	}
 	async listVersions(schemeKey) {
 		return (await ScholarshipVersion.find({ schemeKey }).sort({ observedAt: 1 }).lean()).map(plain);

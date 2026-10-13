@@ -114,6 +114,16 @@
 .ap-error p { margin-top: 12px; font-size: 13px; }
 .ap-error button { margin-top: 20px; background: #fde047; }
 @keyframes nc-enter { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.nc-impact { margin-top: 12px; padding: 12px; border: 1px solid #022c2240; background: #fffef9; font-size: 12px; overflow-wrap: anywhere; }
+.nc-impact summary { cursor: pointer; font-weight: 700; }
+.nc-impact section { margin-top: 14px; padding-top: 10px; border-top: 1px solid #022c2220; }
+.nc-impact dl { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 5px 8px; margin-top: 8px; }
+.nc-impact dt { color: #022c228f; }
+.nc-impact dd { margin: 0; }
+.nc-impact ul { list-style: disc; padding-left: 18px; margin-top: 7px; }
+.nc-impact a { text-decoration: underline; text-underline-offset: 3px; }
+.nc-impact-source { margin-top: 10px; }
+.nc-impact-source blockquote { margin-top: 5px; padding-left: 9px; border-left: 2px solid #74c69d; color: #334155; white-space: pre-wrap; }
 @media (max-width: 1023px) { .alerts-settings-shell .settings-tabs { display: flex; overflow-x: auto; position: static; gap: 6px; } .alerts-settings-shell .settings-tabs > button { width: auto; flex-shrink: 0; padding: 12px; } .alerts-settings-shell .settings-tabs > div { display: none; } }
 @media (max-width: 639px) { .nc-panel { top: 80px; left: 12px; right: 12px; max-height: calc(100dvh - 100px); } .nc-header { padding: 18px 16px; } .nc-header h2 { font-size: 26px; } .nc-list { padding-inline: 12px; } .ap-header { flex-direction: column; } .ap-sticky-note { width: 100%; transform: none; } .ap-sheets, .ap-channel-grid { grid-template-columns: minmax(0, 1fr); } .ap-sheet { padding: 18px; } .ap-save-actions { width: 100%; } .ap-save-actions button { flex: 1; } }
 @media (prefers-reduced-motion: reduce) { .nc-panel { animation: none; } .ap-switch, .ap-switch span { transition: none; } }

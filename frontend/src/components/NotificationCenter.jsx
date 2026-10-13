@@ -8,6 +8,7 @@ import useDialogFocus from "../hooks/useDialogFocus";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import { toast } from "sonner";
 import "./alerts.css";
+import EligibilityChangeDetails from "./EligibilityChangeDetails";
 
 function formatRelativeTime(value) {
   if (!value) return "";
@@ -26,6 +27,7 @@ const TYPES = {
   DEADLINE_7_DAYS: { icon: Clock, label: "Deadline reminder", tone: "deadline" },
   DEADLINE_48_HOURS: { icon: Clock, label: "Final reminder", tone: "urgent" },
   DEADLINE_CHANGED: { icon: Clock, label: "Deadline changed", tone: "deadline" },
+  ELIGIBILITY_CHANGED: { icon: Sparkles, label: "Your eligibility changed", tone: "match" },
   STATE_GRANT_UPDATE: { icon: MapPin, label: "From your state", tone: "match" },
   WEEKLY_DIGEST: { icon: Calendar, label: "Your weekly roundup", tone: "quiet" },
   SYSTEM: { icon: Bell, label: "An update from Udaan", tone: "quiet" },
@@ -181,6 +183,7 @@ export default function NotificationCenter() {
                   <div className="nc-note-meta"><span><Icon size={13} />{isPreview(item) ? "Preview · " : ""}{meta.label}</span><time dateTime={item.createdAt}>{formatRelativeTime(item.createdAt)}</time></div>
                   <h4>{item.link ? <button type="button" onClick={() => openItem(item)} disabled={busy.has(item._id)}>{item.title} <ArrowUpRight size={14} /></button> : item.title}</h4>
                   <p>{item.message}</p>
+                  {item.type === "ELIGIBILITY_CHANGED" && <EligibilityChangeDetails impact={item.data} onNavigate={() => setIsOpen(false)} />}
                   {item.evidence?.eligibilityReason && <p className="nc-reason">Why this reached you: {item.evidence.eligibilityReason}</p>}
                   <div className="nc-note-actions">{item.isRead ? <span><CheckCheck size={13} /> Read</span> : <button type="button" disabled={busy.has(item._id) || markingAll} onClick={() => runItemAction(item, "read")} aria-label={`Mark ${item.title} as read`}><Check size={14} /> Mark read</button>}<button type="button" disabled={busy.has(item._id) || markingAll} onClick={() => runItemAction(item, "dismiss")} aria-label={`Dismiss ${item.title}`}><Trash2 size={13} /> Dismiss</button></div>
                 </article>;

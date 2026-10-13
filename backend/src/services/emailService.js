@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 import NotificationLog from "../models/NotificationLog.js";
+import { eligibilityEmailContent } from "./eligibilityEmail.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -241,6 +242,10 @@ class EmailService {
 		const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
 		switch (type) {
+			case "ELIGIBILITY_CHANGED": return {
+				subject: data.title,
+				html: this.getBaseLayout(`${eligibilityEmailContent(data)}<a href="${frontendUrl}/eligibility" class="cta-button">Review your saved profile</a>`, "A recorded eligibility check changed for you"),
+			};
 			case "INSTANT_MATCH": {
 				const matchScore = data.evidence?.matchScore || 85;
 				const amount = this.formatAmount(data.amount);

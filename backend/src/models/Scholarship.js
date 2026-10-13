@@ -114,6 +114,7 @@ const scholarshipSchema = new mongoose.Schema(
 			},
 			age: { min: Number, max: Number },
 		},
+		eligibilityVersion: { type: mongoose.Schema.Types.ObjectId, ref: "EligibilityRuleVersion", default: null },
 		rules: [
 			{
 				id: { type: String, required: true },

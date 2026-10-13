@@ -13,6 +13,7 @@ const notificationPreferenceSchema = new mongoose.Schema(
 			type: Boolean,
 			default: true,
 		},
+		eligibilityChanges: { type: Boolean, default: false },
 		deadlineAlerts: {
 			type: Boolean,
 			default: true,

@@ -14,6 +14,7 @@ These are deployment links. A successful local build does not establish their cu
 - A deterministic evaluator of a **flat list of conditions**, with passed, failed and unknown checks. Recorded criteria can be incomplete. The percentage describes evaluated rules, not award probability or an ML prediction.
 - Browser-local PDF.js text extraction and English Tesseract OCR. Students edit extracted fields and explicitly choose which supported fields to carry into eligibility.
 - Bookmarks, in-app notifications, alert preferences and optional SMTP email. BullMQ job IDs and database keys reduce duplicate notification records; delivery depends on service availability and does not provide an exactly-once email guarantee.
+- Opt-in personalized eligibility-change alerts for saved schemes: compare source-backed rule versions against the same saved profile, explain changed checks with old/new evidence, and retain pending events for retry. [Design, limitations and offline demo](backend/ELIGIBILITY_ALERTS.md).
 - Redis response and eligibility caching, invalidation after catalogue changes, request limits and protected account/admin endpoints.
 
 ## Eligibility and evidence semantics

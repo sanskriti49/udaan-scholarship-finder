@@ -28,6 +28,7 @@ export class MemoryStore {
 		this.scholarships = new Map();
 		this.cycles = new Map();
 		this.versions = [];
+		this.eligibilityVersions = new Map();
 		this.issues = new Map();
 		this.runs = [];
 	}
@@ -108,6 +109,16 @@ export class MemoryStore {
 
 	async addVersion(version) {
 		this.versions.push({ ...clone(version), id: newId() });
+	}
+	async getEligibilityVersion(id) {
+		return clone(this.eligibilityVersions.get(String(id))) || null;
+	}
+	async addEligibilityVersion(version) {
+		const existing = [...this.eligibilityVersions.values()].find(v => v.versionKey === version.versionKey);
+		if (existing) return clone(existing);
+		const saved = { ...clone(version), id: newId() };
+		this.eligibilityVersions.set(saved.id, saved);
+		return clone(saved);
 	}
 	async listVersions(schemeKey) {
 		return this.versions.filter((v) => v.schemeKey === schemeKey).map(clone);

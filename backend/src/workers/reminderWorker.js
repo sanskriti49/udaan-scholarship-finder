@@ -7,6 +7,10 @@ import Scholarship from "../models/Scholarship.js";
 import Bookmark from "../models/Bookmark.js";
 import User from "../models/User.js";
 import NotificationLog from "../models/NotificationLog.js";
+import EligibilityRuleVersion from "../models/EligibilityRuleVersion.js";
+import SourceSnapshot from "../models/SourceSnapshot.js";
+import UserProfile from "../models/UserProfile.js";
+import { processEligibilityChange } from "./processEligibilityChange.js";
 
 /**
  * BullMQ Reminder Worker for Udaan
@@ -26,6 +30,8 @@ export function createReminderWorker() {
 	workerInstance = new Worker(
 		REMINDER_QUEUE_NAME,
 		async (job) => {
+			if (job.name === "handleEligibilityChangeAlert") return processEligibilityChange(job,
+				{ Scholarship, EligibilityRuleVersion, SourceSnapshot, Bookmark, UserProfile, notificationService });
 			if (job.name === "handleDeadlineChangeAlert") {
 				return await processDeadlineChangeAlert(job);
 			}

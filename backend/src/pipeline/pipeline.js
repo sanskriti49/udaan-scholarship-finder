@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { prepareEligibilityVersion } from "./core/eligibilityVersions.js";
 import { SafeFetcher, FetchError } from "./core/http.js";
 import { fetchRendered } from "./core/dynamic.js";
 import { toDocument, assessTextQuality } from "./core/documents.js";
@@ -593,7 +594,16 @@ export class Pipeline {
 			}
 		}
 
+		record.id ||= crypto.randomBytes(12).toString("hex");
+		const eligibilityVersion = await prepareEligibilityVersion(record, existing, this.store, verifiedAt,
+			Boolean(this.onDataChange) && record.publication.state === "published");
+		record.eligibilityVersion = eligibilityVersion.id;
 		const saved = await this.store.saveScholarship(record);
+		if (this.onDataChange && eligibilityVersion.alert.status === "pending") {
+			await this.onDataChange({ record: saved, changeType: "ELIGIBILITY_RULES_CHANGED",
+				previousVersionId: eligibilityVersion.previousVersion, currentVersionId: eligibilityVersion.id }).catch(e =>
+				this.logger.warn("eligibility alert enqueue failed; durable event remains pending", { error: e.message }));
+		}
 
 		// ---- Version history ----
 		const versions = [];

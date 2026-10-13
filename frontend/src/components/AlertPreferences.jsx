@@ -17,13 +17,13 @@ function AlertSheet({ number, icon: Icon, title, description, checked, onChange,
 
 export default function AlertPreferences({ value, onChange, savedValue, loading, saving, testing, onSave, onTest, error, onRetry, email, state }) {
 	const dirty = savedValue && JSON.stringify(value) !== JSON.stringify(savedValue);
-	const enabled = [value.instantMatch, value.deadlineAlerts, value.newGrantsInState, value.weeklyDigest].filter(Boolean).length;
+	const enabled = [value.instantMatch, value.deadlineAlerts, value.newGrantsInState, value.weeklyDigest, value.eligibilityChanges].filter(Boolean).length;
 	const update = (key, next) => onChange({ ...value, [key]: next });
 	const channel = (key, next) => onChange({ ...value, channels: { ...value.channels, [key]: next } });
 	return <div className="alert-preferences">
 		<header className="ap-header">
 			<div><p className="ap-eyebrow">Your reminder desk</p><h2>A heads-up, when you need it.</h2><p>Choose the updates you want. Save your settings when they feel right.</p></div>
-			<div className="ap-sticky-note"><Bell size={20} /><strong>{enabled} of 4 alert types on</strong><span>{dirty ? "You have unsaved changes." : loading ? "Loading your saved choices…" : error ? "Saved choices unavailable." : "Your saved choices are shown below."}</span></div>
+			<div className="ap-sticky-note"><Bell size={20} /><strong>{enabled} of 5 alert types on</strong><span>{dirty ? "You have unsaved changes." : loading ? "Loading your saved choices…" : error ? "Saved choices unavailable." : "Your saved choices are shown below."}</span></div>
 		</header>
 		{loading ? <div className="ap-loading" role="status"><Loader2 size={22} className="animate-spin" /> Loading your alert settings…</div> : error ? <div className="ap-error" role="alert"><h3>We couldn't load your settings.</h3><p>Try again before changing your preferences.</p><button type="button" onClick={onRetry}><RotateCcw size={15} /> Try again</button></div> : <>
 			<fieldset disabled={saving || testing} className="ap-fieldset">
@@ -37,6 +37,9 @@ export default function AlertPreferences({ value, onChange, savedValue, loading,
 					</AlertSheet>
 					<AlertSheet number="03" icon={MapPin} title="New schemes in your state" description={`Get updates on newly discovered state schemes for ${state || "your home state"}.`} checked={value.newGrantsInState} onChange={(next) => update("newGrantsInState", next)} />
 					<AlertSheet number="04" icon={Mail} title="A weekly catch-up" description="A Monday roundup of scholarship opportunities that match your profile." checked={value.weeklyDigest} onChange={(next) => update("weeklyDigest", next)} />
+					<AlertSheet number="05" icon={Sparkles} title="Eligibility changes that affect me" description="For your saved scholarships, hear when a source-backed rule change alters a check against your saved profile. Off until you choose to enable it." checked={value.eligibilityChanges} onChange={(next) => update("eligibilityChanges", next)}>
+						<div className="ap-extra"><p>Each update includes the old and new requirements, source excerpts, and checks that still need review. <Link to="/eligibility">Check and save your profile</Link>, then save the scholarships you want to follow. A passing check does not confirm an award.</p></div>
+					</AlertSheet>
 				</div>
 				<section className="ap-delivery">
 					<h3 className="ap-section-label">02 / Where should your updates go?</h3>

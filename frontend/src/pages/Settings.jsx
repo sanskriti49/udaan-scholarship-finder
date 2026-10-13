@@ -52,6 +52,7 @@ export default function Settings() {
 
   const [notifications, setNotifications] = useState({
     instantMatch: true,
+    eligibilityChanges: false,
     deadlineAlerts: true,
     deadline7Days: true,
     deadline48Hours: true,
@@ -105,6 +106,7 @@ export default function Settings() {
           if (res.success && res.preferences) {
             const preferences = {
               instantMatch: res.preferences.instantMatch ?? true,
+              eligibilityChanges: res.preferences.eligibilityChanges === true,
               deadlineAlerts: res.preferences.deadlineAlerts ?? true,
               deadline7Days: res.preferences.deadline7Days ?? true,
               deadline48Hours: res.preferences.deadline48Hours ?? true,

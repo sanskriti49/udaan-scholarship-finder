@@ -7,6 +7,8 @@ import Scholarship from "../models/Scholarship.js";
 import Bookmark from "../models/Bookmark.js";
 import { evaluateEligibility } from "../engine/ruleEvaluator.js";
 import { emailService } from "./emailService.js";
+import EligibilityAlertDelivery from "../models/EligibilityAlertDelivery.js";
+import { deliverEligibilityNotification } from "./eligibilityDelivery.js";
 
 class NotificationService {
 	/**
@@ -18,6 +20,7 @@ class NotificationService {
 			prefs = await NotificationPreference.create({
 				user: userId,
 				instantMatch: true,
+				eligibilityChanges: false,
 				deadlineAlerts: true,
 				deadline7Days: true,
 				deadline48Hours: true,
@@ -33,8 +36,12 @@ class NotificationService {
 	}
 
 	async updatePreferences(userId, updateData = {}) {
+		if (updateData.eligibilityChanges !== undefined && typeof updateData.eligibilityChanges !== "boolean") {
+			throw new Error("eligibilityChanges must be true or false");
+		}
 		const allowedFields = [
 			"instantMatch",
+			"eligibilityChanges",
 			"deadlineAlerts",
 			"deadline7Days",
 			"deadline48Hours",
@@ -72,6 +79,7 @@ class NotificationService {
 	 */
 	async createNotification(userId, payload) {
 		const prefs = await this.getPreferences(userId);
+		if (payload.type === "ELIGIBILITY_CHANGED" && prefs.eligibilityChanges !== true) return null;
 
 		// Preference gates
 		if (payload.type === "INSTANT_MATCH" && !prefs.instantMatch) return null;
@@ -94,6 +102,8 @@ class NotificationService {
 		if (prefs.channels?.inApp === false && prefs.channels?.email === false) {
 			return null;
 		}
+		if (payload.type === "ELIGIBILITY_CHANGED") return deliverEligibilityNotification(userId, payload, prefs,
+			{ Notification, EligibilityAlertDelivery, User, emailService });
 
 		let notification;
 		try {

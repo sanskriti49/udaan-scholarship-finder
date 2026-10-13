@@ -54,6 +54,15 @@ async function notifyDeadlineChange({ record, changeType, summary, deltas }) {
 	}
 }
 
+async function notifyDataChange(event) {
+	if (event.changeType === "ELIGIBILITY_RULES_CHANGED") {
+		const { relayEligibilityAlerts } = await import("../services/eligibilityAlertRelay.js");
+		await relayEligibilityAlerts();
+		return;
+	}
+	return notifyDeadlineChange(event);
+}
+
 export function createPipeline({ replay = false, notify = !replay, store = new MongoStore() } = {}) {
 	let fetcherFactory;
 	if (replay) {
@@ -65,7 +74,7 @@ export function createPipeline({ replay = false, notify = !replay, store = new M
 	return new Pipeline({
 		store,
 		...(fetcherFactory ? { fetcherFactory } : {}),
-		onDataChange: notify ? notifyDeadlineChange : null,
+		onDataChange: notify ? notifyDataChange : null,
 	});
 }
 

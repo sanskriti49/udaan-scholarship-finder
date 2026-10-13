@@ -56,8 +56,9 @@ export const bullMqConnection = {
 	maxRetriesPerRequest: null,
 	enableReadyCheck: false,
 	retryStrategy(times) {
-		if (times > 2) return null;
-		return 300;
+		// Background workers must reconnect after an outage to process durable events.
+		// The separate cache client keeps its existing fail-open policy.
+		return Math.min(300 * (2 ** Math.min(times, 5)), 10000);
 	},
 };
 

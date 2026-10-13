@@ -24,6 +24,7 @@ export const TRACKED_FIELDS = [
 	"eligibility.minDisabilityPercent",
 	"eligibility.familyIncome",
 	"eligibility.casteCategories",
+	"eligibility.minCGPA",
 ];
 
 const CYCLE_FIELDS = [
@@ -67,7 +68,13 @@ const isEmpty = (v) => v === null || v === undefined || (Array.isArray(v) && v.l
 export function recordDataHash(record) {
 	const picked = {};
 	for (const f of TRACKED_FIELDS) picked[f] = get(record, f) ?? null;
+	picked.rules = semanticRules(record.rules);
 	return sha256(JSON.stringify(stable(picked)));
+}
+
+function semanticRules(rules = []) {
+	return rules.map(({ id, field, operator, targetValue }) => ({ id, field, operator,
+		targetValue: operator === "IN" && Array.isArray(targetValue) ? [...targetValue].sort() : targetValue })).sort((a, b) => a.id.localeCompare(b.id));
 }
 
 export function cycleKey(cycle) {
@@ -92,7 +99,8 @@ export function cycleDataHash(cycle) {
  *   the value, a review issue is raised (see `reconfirmedFields`).
  */
 export function mergeRecordFields(stored, incoming, { reconfirmedFields = new Set() } = {}) {
-	const merged = structuredClone(stored);
+	// JSON preserves ObjectId references as strings; structuredClone loses their prototype.
+	const merged = JSON.parse(JSON.stringify(stored));
 	const deltas = [];
 	const issues = [];
 	const evidenceByField = new Map();
@@ -131,6 +139,9 @@ export function mergeRecordFields(stored, incoming, { reconfirmedFields = new Se
 	const incomingRuleIds = new Set(incoming.rules.map((r) => r.id));
 	const keptRules = (stored.rules || []).filter((r) => !incomingRuleIds.has(r.id));
 	merged.rules = [...keptRules, ...incoming.rules];
+	if (!same(semanticRules(stored.rules), semanticRules(merged.rules))) {
+		deltas.push({ field: "rules", oldValue: semanticRules(stored.rules), newValue: semanticRules(merged.rules) });
+	}
 	const keptQuotes = (stored.provenanceQuotes || []).filter((q) => !incomingRuleIds.has(q.ruleId));
 	merged.provenanceQuotes = [...keptQuotes, ...incoming.provenanceQuotes];
 
@@ -169,7 +180,7 @@ export function diffCycle(stored, incoming) {
 export function classifyFieldDeltas(deltas) {
 	if (deltas.some((d) => d.field === "eligibility.familyIncome")) return "INCOME_CEILING_CHANGE";
 	if (deltas.some((d) => d.field === "amount")) return "AWARD_UPDATE";
-	if (deltas.some((d) => d.field.startsWith("eligibility."))) return "CRITERIA_MODIFIED";
+	if (deltas.some((d) => d.field === "rules" || d.field === "state" || d.field === "level" || d.field.startsWith("eligibility."))) return "CRITERIA_MODIFIED";
 	if (deltas.some((d) => /link|Url/i.test(d.field))) return "LINK_UPDATED";
 	return "FIELD_UPDATED";
 }
