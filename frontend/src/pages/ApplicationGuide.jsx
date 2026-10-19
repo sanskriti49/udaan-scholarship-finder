@@ -27,6 +27,7 @@ import {
 	Minimize,
 } from "lucide-react";
 import Badge from "../components/Badge";
+import StudentDoodles from "../components/StudentDoodles";
 
 const ApplicationGuide = () => {
 	const [activeSection, setActiveSection] = useState("overview");
@@ -293,9 +294,7 @@ const ApplicationGuide = () => {
 				/>
 			</div>
 
-			<section className="relative overflow-hidden bg-white border-b border-slate-200/80 py-12 sm:py-16 px-4 sm:px-6">
-				<div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-900/5 rounded-full blur-3xl pointer-events-none" />
-				<div className="absolute -bottom-20 -left-20 w-64 h-64 bg-teal-800/5 rounded-full blur-3xl pointer-events-none" />
+			<section className="relative overflow-hidden bg-[#E9F0EA] border-b border-emerald-950/15 py-12 sm:py-16 px-5 sm:px-8">
 
 				{particles.map((p) => (
 					<div
@@ -313,70 +312,73 @@ const ApplicationGuide = () => {
 					/>
 				))}
 
-				<div className="relative max-w-4xl mx-auto text-center">
-					<Badge>Scholarship Preparation Guide</Badge>
-					<h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-slate-900 tracking-tight leading-tight mt-3 mb-4">
-						Craft a Standout Scholarship Application
-					</h1>
-					<p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto font-normal">
-						Strategic writing frameworks, STAR method templates, and common
-						pitfalls to ensure your story resonates with review committees.
-					</p>
+				<div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
+					<div className="max-w-2xl">
+						<Badge>Scholarship Preparation Guide</Badge>
+						<h1 className="text-4xl sm:text-5xl font-georgia text-emerald-950 tracking-tight leading-[1.08] mt-3 mb-4">
+							Craft a Standout Scholarship Application
+						</h1>
+						<p className="text-sm sm:text-base text-emerald-950/75 leading-relaxed max-w-xl font-normal">
+							Strategic writing frameworks, STAR method templates, and common
+							pitfalls to ensure your story resonates with review committees.
+						</p>
 
-					<div className="flex flex-wrap justify-center gap-4 sm:gap-6 mt-6">
-						<div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-							<Clock className="w-4 h-4 text-emerald-800" />
-							<span>15 min read</span>
+						<div className="flex flex-wrap gap-4 sm:gap-6 mt-6">
+							<div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+								<Clock className="w-4 h-4 text-emerald-800" />
+								<span>15 min read</span>
+							</div>
+							<div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+								<Eye className="w-4 h-4 text-emerald-800" />
+								<span>Verified across 37+ Schemes</span>
+							</div>
+							<div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+								<Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+								<span>4.9/5 Student Rating</span>
+							</div>
 						</div>
-						<div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-							<Eye className="w-4 h-4 text-emerald-800" />
-							<span>Verified across 37+ Schemes</span>
-						</div>
-						<div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-							<Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-							<span>4.9/5 Student Rating</span>
+
+						<div className="flex flex-wrap gap-3 mt-6">
+							<button
+								onClick={() => setBookmarked(!bookmarked)}
+								className={`cursor-pointer px-4 py-2.5 rounded-2xl transition flex items-center gap-2 border text-sm font-semibold ${
+									bookmarked
+										? "bg-emerald-50 border-emerald-700 text-emerald-900 shadow-2xs"
+										: "bg-white border-slate-200 text-slate-700 hover:border-emerald-700/40 hover:bg-slate-50"
+								}`}
+							>
+								<Bookmark
+									className={`w-4 h-4 ${bookmarked ? "fill-emerald-800 text-emerald-800" : ""}`}
+								/>
+								<span>{bookmarked ? "Saved" : "Save Guide"}</span>
+							</button>
+							<button
+								onClick={() => setLiked(!liked)}
+								className={`cursor-pointer px-4 py-2.5 rounded-2xl transition flex items-center gap-2 border text-sm font-semibold ${
+									liked
+										? "bg-emerald-50 border-emerald-700 text-emerald-900 shadow-2xs"
+										: "bg-white border-slate-200 text-slate-700 hover:border-emerald-700/40 hover:bg-slate-50"
+								}`}
+							>
+								<ThumbsUp
+									className={`w-4 h-4 ${liked ? "fill-emerald-800 text-emerald-800" : ""}`}
+								/>
+								<span>{liked ? "Helpful (Marked)" : "Mark Helpful"}</span>
+							</button>
+							<button
+								onClick={() => setIsFullscreen(!isFullscreen)}
+								className="cursor-pointer px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:border-emerald-700/40 hover:bg-slate-50 transition flex items-center gap-2 text-sm font-semibold"
+							>
+								{isFullscreen ? (
+									<Minimize className="w-4 h-4" />
+								) : (
+									<Expand className="w-4 h-4" />
+								)}
+								<span>{isFullscreen ? "Exit Focus" : "Focus Mode"}</span>
+							</button>
 						</div>
 					</div>
-
-					<div className="flex flex-wrap justify-center gap-3 mt-6">
-						<button
-							onClick={() => setBookmarked(!bookmarked)}
-							className={`cursor-pointer px-4 py-2.5 rounded-2xl transition flex items-center gap-2 border text-sm font-semibold ${
-								bookmarked
-									? "bg-emerald-50 border-emerald-700 text-emerald-900 shadow-2xs"
-									: "bg-white border-slate-200 text-slate-700 hover:border-emerald-700/40 hover:bg-slate-50"
-							}`}
-						>
-							<Bookmark
-								className={`w-4 h-4 ${bookmarked ? "fill-emerald-800 text-emerald-800" : ""}`}
-							/>
-							<span>{bookmarked ? "Saved" : "Save Guide"}</span>
-						</button>
-						<button
-							onClick={() => setLiked(!liked)}
-							className={`cursor-pointer px-4 py-2.5 rounded-2xl transition flex items-center gap-2 border text-sm font-semibold ${
-								liked
-									? "bg-emerald-50 border-emerald-700 text-emerald-900 shadow-2xs"
-									: "bg-white border-slate-200 text-slate-700 hover:border-emerald-700/40 hover:bg-slate-50"
-							}`}
-						>
-							<ThumbsUp
-								className={`w-4 h-4 ${liked ? "fill-emerald-800 text-emerald-800" : ""}`}
-							/>
-							<span>{liked ? "Helpful (Marked)" : "Mark Helpful"}</span>
-						</button>
-						<button
-							onClick={() => setIsFullscreen(!isFullscreen)}
-							className="cursor-pointer px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:border-emerald-700/40 hover:bg-slate-50 transition flex items-center gap-2 text-sm font-semibold"
-						>
-							{isFullscreen ? (
-								<Minimize className="w-4 h-4" />
-							) : (
-								<Expand className="w-4 h-4" />
-							)}
-							<span>{isFullscreen ? "Exit Focus" : "Focus Mode"}</span>
-						</button>
-					</div>
+					<StudentDoodles scene="writing" />
 				</div>
 			</section>
 

@@ -71,7 +71,7 @@ export default function Scanner() {
 						<p className="scanner-eyebrow">
 							YOUR APPLICATION PAPERS, A LITTLE CLEARER
 						</p>
-						<h1 className="font-bricolage-grotesque">
+						<h1>
 							Read your document.
 							<br />
 							<em>Know your next step.</em>

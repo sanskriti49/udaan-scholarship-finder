@@ -33,9 +33,7 @@ import { PageStyles } from "../components/PageKit";
 import { ScholarshipCard, CardSkeleton } from "../components/ScholarshipKit";
 import { CountUp } from "../components/MotionKit";
 import { deadlineInfo } from "../utils/scholarshipMeta";
-import {
-	CategoryMotifIcon,
-} from "../components/CategoryMotif";
+import { CategoryMotifIcon } from "../components/CategoryMotif";
 import {
 	BoardCurator,
 	CablesDoctor,
@@ -142,9 +140,7 @@ function DeadlineChip({ deadline }) {
 		);
 	}
 	const d = new Date(deadline);
-	const diffDays = Math.ceil(
-		(d.getTime() - now) / (1000 * 60 * 60 * 24),
-	);
+	const diffDays = Math.ceil((d.getTime() - now) / (1000 * 60 * 60 * 24));
 	const isUrgent = diffDays >= 0 && diffDays <= 7;
 
 	let text = d.toLocaleDateString("en-IN", {
@@ -631,7 +627,7 @@ export default function SavedScholarships() {
 				<div className="grid items-end gap-10 lg:grid-cols-[1.25fr_1fr]">
 					<div>
 						<h1
-							className="font-georgia text-5xl font-medium leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
+							className="font-bricolage-grotesque text-5xl font-medium leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl"
 							style={{ textWrap: "balance" }}
 						>
 							Your shortlist, with the clock on it.
@@ -1024,7 +1020,9 @@ export default function SavedScholarships() {
 
 													<span className="inline-flex items-center gap-1 rounded-md border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-800">
 														<ShieldCheck size={13} />
-														{selectedScholarship.verified === true ? "Source checked" : "Not verified"}
+														{selectedScholarship.verified === true
+															? "Source checked"
+															: "Not verified"}
 													</span>
 												</div>
 

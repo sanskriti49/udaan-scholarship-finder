@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { PageStyles, Stamp } from "../components/PageKit";
+import StudentDoodles from "../components/StudentDoodles";
 
 const focusRing = "focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200";
 const STEPS = [
@@ -72,17 +73,17 @@ export default function HowToApply() {
         <Link to="/resources#roadmap" className={`inline-flex items-center gap-2 text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 ${focusRing}`}>
           <ArrowLeft size={16} /> Back to your roadmap
         </Link>
-        <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
+        <div className="mt-10 grid items-center gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
+          <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-widest text-emerald-950/60">Student application guide</p>
             <h1 className="mt-4 font-georgia text-5xl leading-[1.05] sm:text-6xl">From your first shortlist to submitted.</h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-emerald-950/75">Four steps to help you prepare and apply. Start at the beginning, or jump to the help you need right now.</p>
+            <aside className="relative mt-8 max-w-lg border-l-4 border-yellow-400 pl-5">
+              <Stamp tilt={-3} className="text-xs">Before you begin</Stamp>
+              <p className="mt-3 text-sm leading-relaxed text-emerald-950/75">Every scheme has its own rules. Check the current official notice for deadlines, documents and application requirements.</p>
+            </aside>
           </div>
-          <aside className="relative max-w-xs rotate-2 bg-yellow-200 px-5 pb-5 pt-7 shadow-[3px_4px_0_rgba(2,44,34,0.3)]">
-            <span aria-hidden className="absolute -top-2 left-1/2 h-4 w-16 -translate-x-1/2 bg-white/60" />
-            <Stamp tilt={-4} className="text-sm">Before you begin</Stamp>
-            <p className="mt-4 text-sm leading-relaxed">Every scheme has its own rules. Check the current official notice for deadlines, documents and application requirements.</p>
-          </aside>
+          <StudentDoodles scene="journey" />
         </div>
         <nav aria-label="Application guide sections" className="mt-12 flex flex-wrap gap-x-7 gap-y-4 border-y-[1.5px] border-emerald-950 py-5">
           {STEPS.map((step) => <Link key={step.id} to={`#${step.id}`} className={`text-sm font-semibold underline decoration-yellow-300 decoration-2 underline-offset-4 ${focusRing}`}>{step.number} {step.category}</Link>)}

@@ -197,7 +197,7 @@ export default function TrustShield() {
 				<div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
 					<div>
 						<h1
-							className="font-serif text-[2.5rem] font-medium leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl"
+							className="font-bricolage-grotesque  text-[2.5rem] font-medium leading-[1.06] tracking-tight sm:text-5xl lg:text-6xl"
 							style={{ textWrap: "balance" }}
 						>
 							Got a scholarship link or forward? Check it before you reply.

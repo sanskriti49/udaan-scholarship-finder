@@ -1,5 +1,6 @@
 import { ArrowRight, Check, Clock, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import StudentDoodles from "./StudentDoodles";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -261,23 +262,29 @@ export default function HowItWorks() {
 			className="border-b-[1.5px] border-emerald-950/15 bg-white px-5 py-16 sm:px-8 md:py-24"
 		>
 			<div className="mx-auto max-w-7xl">
-				<div className="mb-12 max-w-2xl">
-					<span className="text-sm font-bold text-emerald-950/60">
-						How Udaan works
-					</span>
-					<h2
-						id="how-heading"
-						className="mt-1 font-serif text-3xl leading-tight text-emerald-950 sm:text-4xl md:text-5xl"
-					>
-						From “ugh, PDFs” to{" "}
-						<span className="ud-display font-extrabold underline decoration-yellow-300 decoration-4 underline-offset-4">
-							applied.
+				<div className="mb-12 grid items-center gap-6 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+					<div className="max-w-2xl">
+						<span className="text-sm font-bold text-emerald-950/60">
+							How Udaan works
 						</span>
-					</h2>
-					<p className="mt-3 text-base font-medium leading-relaxed text-emerald-950/70">
-						We turn dense government circulars into a short checklist you can
-						actually finish.
-					</p>
+						<h2
+							id="how-heading"
+							className="mt-1 font-serif text-3xl leading-tight text-emerald-950 sm:text-4xl md:text-5xl"
+						>
+							From “ugh, PDFs” to{" "}
+							<span className="ud-display font-extrabold underline decoration-yellow-300 decoration-4 underline-offset-4">
+								applied.
+							</span>
+						</h2>
+						<p className="mt-3 text-base font-medium leading-relaxed text-emerald-950/70">
+							We turn dense government circulars into a short checklist you can
+							actually finish.
+						</p>
+					</div>
+					<StudentDoodles
+						scene="together"
+						className="max-w-md"
+					/>
 				</div>
 
 				<ol className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">

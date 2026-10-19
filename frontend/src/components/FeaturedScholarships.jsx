@@ -28,33 +28,33 @@ const LENSES = [
 const DOORS = [
 	{
 		category: "Women",
-		title: "I'm a girl in college",
+		title: "Scholarships for women",
 		sub: "Schemes reserved for women",
 	},
 	{
 		category: "Need based",
-		title: "Money is tight at home",
-		sub: "Income-linked support",
+		title: "I need financial support",
+		sub: "Scholarships based on family income",
 	},
 	{
 		category: "SC / ST / OBC",
-		title: "I have a caste certificate",
-		sub: "Post-matric and more",
+		title: "I'm from an SC, ST or OBC community",
+		sub: "Explore category-based scholarships",
 	},
 	{
 		category: "Merit based",
-		title: "My marks are strong",
-		sub: "Merit-cum-means awards",
+		title: "MMy hard work deserves a boost",
+		sub: "Awards for academic achievement",
 	},
 	{
 		category: "Minority",
 		title: "I'm from a minority community",
-		sub: "Central and state schemes",
+		sub: "Explore community-specific support",
 	},
 	{
 		category: "Government",
-		title: "Show me the big central ones",
-		sub: "NSP and ministry schemes",
+		title: "Explore government scholarships",
+		sub: "Central and state-funded schemes",
 	},
 ];
 
@@ -308,10 +308,11 @@ export default function FeaturedScholarships() {
 				<Reveal className="mt-14">
 					<div className="flex flex-wrap items-end justify-between gap-3">
 						<h3 className="ud-display text-2xl font-bold sm:text-3xl">
-							Start from where you are
+							Find what fits you
 						</h3>
 						<p className="text-sm font-medium text-emerald-950/60">
-							Pick the one that sounds most like you.
+							Your background, your achievements, your opportunities. Pick a
+							category to explore.
 						</p>
 					</div>
 					<ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -358,11 +359,11 @@ export default function FeaturedScholarships() {
 								</span>
 								<span className="min-w-0 flex-1">
 									<span className="block font-bold leading-snug">
-										None of these? Let us work it out.
+										Not sure where you fit? We'll help.
 									</span>
 									<span className="block text-xs font-medium text-emerald-950/70">
-										A few taps about your course, income and state. We check
-										every scheme's rules for you.
+										Tell us a little about yourself, and we'll find scholarships
+										you may qualify for.
 									</span>
 								</span>
 								<ArrowRight

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { Confetti, PageStyles, Stamp } from "../components/PageKit";
+import StudentDoodles from "../components/StudentDoodles";
 
 const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -984,6 +985,10 @@ export default function Resources() {
 					</div>
 
 					<div id="templates" className="scroll-mt-8">
+						<StudentDoodles
+							scene="writing"
+							className="mb-7 max-w-sm"
+						/>
 						<h2 className="font-georgia text-4xl leading-[1.05] sm:text-5xl">
 							Templates
 						</h2>

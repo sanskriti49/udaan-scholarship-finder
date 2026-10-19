@@ -403,7 +403,7 @@ export default function DocumentVault() {
 				<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-14">
 					<div>
 						<div className="relative mt-6">
-							<h1 className="font-georgia text-5xl font-medium leading-[0.98] sm:text-6xl md:text-7xl">
+							<h1 className="font-bricolage-grotesque text-5xl font-medium leading-[0.98] sm:text-6xl md:text-7xl">
 								Check your papers before the portal does.
 							</h1>
 							<Stamp
