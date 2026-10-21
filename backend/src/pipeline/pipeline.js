@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { ruleTreeSchema } from "../engine/ruleSchema.js";
 import { prepareEligibilityVersion } from "./core/eligibilityVersions.js";
 import { SafeFetcher, FetchError } from "./core/http.js";
 import { fetchRendered } from "./core/dynamic.js";
@@ -7,10 +8,12 @@ import { dedupeCandidates } from "./core/dedupe.js";
 import { assembleRecord, selectCurrentCycle } from "./core/assemble.js";
 import {
 	classifyFieldDeltas,
+	classifySemanticChange,
 	cycleDataHash,
 	diffCycle,
 	mergeRecordFields,
 	recordDataHash,
+	publicPolicyVersion,
 } from "./core/changes.js";
 import { computeStatus, sortDeadline } from "./core/status.js";
 import { slugify } from "./core/dedupe.js";
@@ -442,6 +445,7 @@ export class Pipeline {
 	}
 
 	async upsert(source, incoming, { blocking, guideline, at, runId }) {
+		if (incoming.ruleTree != null) incoming = { ...incoming, ruleTree: ruleTreeSchema.parse(incoming.ruleTree) };
 		const extraIssues = [];
 		const existing = await this.resolveExisting(source, incoming.schemeKey);
 		const listingEvidence = incoming.fieldEvidence.find((e) => e.field === "title");
@@ -474,6 +478,7 @@ export class Pipeline {
 			delete record.cycles;
 			deltas = merged.deltas;
 			extraIssues.push(...merged.issues);
+			if (merged.issues.some(issue => issue.severity === "blocking")) blocking = true;
 			record.dataQuality = incoming.dataQuality;
 			outcome = deltas.length ? "updated" : "unchanged";
 		}
@@ -593,6 +598,18 @@ export class Pipeline {
 				record.latestChangeSummary = summaries.join(" • ");
 			}
 		}
+		// Older crawls mistook MongoDB defaults for changes. Repair derived badges
+		// during the next normal refresh without rewriting immutable history.
+		if (!dataChanged && existing?.hasChanges && !existing.adoptedFromLegacy) {
+			const history = (await this.store.listVersions(record.schemeKey)).filter(version => !version.legacyUnverified && version.changeType !== "FIRST_OBSERVED");
+			if (history.length) {
+				const latest = history.map(publicPolicyVersion).filter(version => !version.routineRefresh)
+					.sort((a, b) => new Date(b.observedAt) - new Date(a.observedAt))[0];
+				record.hasChanges = Boolean(latest);
+				record.latestChangeSummary = latest ? latest.summary : null;
+				if (!latest) delete record.freshness.lastChangedAt;
+			}
+		}
 
 		record.id ||= crypto.randomBytes(12).toString("hex");
 		const eligibilityVersion = await prepareEligibilityVersion(record, existing, this.store, verifiedAt,
@@ -611,8 +628,10 @@ export class Pipeline {
 			versions.push({ changeType: "FIRST_OBSERVED", summary: "First observed on the official source.", deltas: [] });
 		}
 		if (deltas.length) {
+			const changeType = classifyFieldDeltas(deltas);
 			versions.push({
-				changeType: classifyFieldDeltas(deltas),
+				changeType,
+				semanticCategory: classifySemanticChange(deltas, changeType),
 				summary: `Official values changed: ${deltas.map((d) => d.field).join(", ")}`,
 				deltas: deltas.map((d) => ({ ...d, humanReadable: `${d.field} updated from official source` })),
 			});

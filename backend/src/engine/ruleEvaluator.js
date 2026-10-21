@@ -1,9 +1,11 @@
 /**
  * Deterministic Rule Evaluator for Udaan
- * Evaluates a flat list of recorded scholarship conditions.
+ * Evaluates recursive policy trees using Kleene three-state logic.
+ * Legacy flat rules are an implicit AND; absent criteria stay unknown.
  * Returns explicit pass/fail breakdowns, ineligibility reasons, document audit, and source citations.
  */
 import { isCitedDocument } from "../pipeline/core/requiredDocuments.js";
+import { conditionSchema, ruleTreeSchema, ruleTreeLeaves } from "./ruleSchema.js";
 
 export function optionalNumber(value) {
 	if (value == null || (typeof value === "string" && !value.trim())) return null;
@@ -57,11 +59,11 @@ export function formatRequirement(field, operator, target) {
 
 	switch (field) {
 		case "familyIncome":
-			return `Annual family income ${operator === "LT" ? "below" : "≤"} ₹${Number(target).toLocaleString("en-IN")}`;
+			return `Annual family income ${{ LT: "below", LTE: "≤", GTE: "≥", EQ: "=" }[operator] || operator} ₹${Number(target).toLocaleString("en-IN")}`;
 		case "cgpa":
-			return `Minimum ${target} CGPA`;
+			return `CGPA ${{ LT: "<", LTE: "≤", GTE: "≥", EQ: "=" }[operator] || operator} ${target}`;
 		case "percentage":
-			return `Minimum ${target}% marks`;
+			return `Marks ${{ LT: "<", LTE: "≤", GTE: "≥", EQ: "=" }[operator] || operator} ${target}%`;
 		case "educationLevel": {
 			const levels = Array.isArray(target) ? target.join(" or ") : target;
 			return `${levels} degree required`;
@@ -75,7 +77,7 @@ export function formatRequirement(field, operator, target) {
 		case "state":
 			return `${target} permanent domicile required`;
 		case "hasDisability":
-			return "Documented PwD status required";
+			return target ? "Documented PwD status required" : "Applicants without PwD status";
 		case "stream": {
 			const streams = Array.isArray(target) ? target.join(", ") : target;
 			return `Enrolled in ${streams}`;
@@ -124,16 +126,51 @@ function evaluateCondition(actual, operator, target, field) {
 	}
 
 	const STATE_ALIASES = {
-		up: "uttar pradesh",
-		mh: "maharashtra",
-		ka: "karnataka",
-		wb: "west bengal",
+		ap: "andhra pradesh",
+		ar: "arunachal pradesh",
+		as: "assam",
 		br: "bihar",
+		cg: "chhattisgarh",
+		ch: "chandigarh",
+		ga: "goa",
+		gj: "gujarat",
+		hr: "haryana",
+		hp: "himachal pradesh",
+		jh: "jharkhand",
+		ka: "karnataka",
+		kl: "kerala",
+		mp: "madhya pradesh",
+		mh: "maharashtra",
+		mn: "manipur",
+		ml: "meghalaya",
+		mz: "mizoram",
+		nl: "nagaland",
+		od: "odisha",
+		or: "odisha",
+		orissa: "odisha",
+		pb: "punjab",
+		rj: "rajasthan",
+		sk: "sikkim",
 		tn: "tamil nadu",
+		ts: "telangana",
+		tg: "telangana",
+		tr: "tripura",
+		up: "uttar pradesh",
+		uk: "uttarakhand",
+		ut: "uttarakhand",
+		uttaranchal: "uttarakhand",
+		wb: "west bengal",
+		an: "andaman and nicobar islands",
+		dh: "dadra and nagar haveli and daman and diu",
 		dl: "delhi",
+		"delhi ncr": "delhi",
+		jk: "jammu and kashmir",
+		la: "ladakh",
+		ld: "lakshadweep",
+		py: "puducherry",
 	};
-	const normActual = STATE_ALIASES[actualStr] || actualStr;
-	const normTarget = STATE_ALIASES[targetStr] || targetStr;
+	const normActual = field === "state" ? STATE_ALIASES[actualStr] || actualStr : actualStr;
+	const normTarget = field === "state" ? STATE_ALIASES[targetStr] || targetStr : targetStr;
 
 	switch (operator) {
 		case "LT": {
@@ -166,7 +203,7 @@ function evaluateCondition(actual, operator, target, field) {
 			return {
 				result: targetArr.some((t) => {
 					const s = String(t).trim().toLowerCase();
-					const normT = STATE_ALIASES[s] || s;
+					const normT = field === "state" ? STATE_ALIASES[s] || s : s;
 					return normT === normActual;
 				}),
 			};
@@ -176,6 +213,87 @@ function evaluateCondition(actual, operator, target, field) {
 		default:
 			return { result: false };
 	}
+}
+
+export function describeRuleTree(node) {
+	if (node.type === "CONDITION") return formatRequirement(node.field, node.operator, node.targetValue);
+	if (node.type === "NOT") return `Must not satisfy (${describeRuleTree(node.child)})`;
+	if (node.type === "CONDITIONAL_BRANCH") return `If (${describeRuleTree(node.condition)}), then (${describeRuleTree(node.then)}); otherwise (${describeRuleTree(node.else)})`;
+	return `(${node.children.map(describeRuleTree).join(node.type === "AND" ? " AND " : " OR ")})`;
+}
+
+const unknownCheck = (ruleId, description, reason) => ({ ruleId, field: "eligibility", description,
+	required: "Check the provider's current instructions", actual: "Not verified", citation: null, status: "unknown", reason });
+const combineAnd = states => states.includes("failed") ? "failed" : states.includes("unknown") ? "unknown" : "passed";
+const combineOr = states => states.includes("passed") ? "passed" : states.includes("unknown") ? "unknown" : "failed";
+
+function leafResult(rawRule, profile, provenanceMap) {
+	// Mongoose legacy subdocuments contain storage metadata. Only policy fields
+	// cross into the condition schema; explicit trees are validated strictly whole.
+	const input = { type: "CONDITION" };
+	for (const key of ["id", "field", "operator", "targetValue", "description", "failMessage", "isMandatory"]) {
+		if (rawRule?.[key] !== undefined) input[key] = rawRule[key];
+	}
+	const parsed = conditionSchema.safeParse(input);
+	if (!parsed.success) {
+		const check = unknownCheck(rawRule?.id || "invalid_rule", "This recorded criterion needs review", "invalid_rule");
+		return { status: "unknown", checks: [check], allChecks: [check], score: 0,
+			trace: { type: "CONDITION", id: check.ruleId, status: "unknown", check } };
+	}
+	const rule = parsed.data;
+	const actualValue = profile[rule.field];
+	const targets = Array.isArray(rule.targetValue) ? rule.targetValue : [rule.targetValue];
+	const unrestricted = targets.some(v => typeof v === "string" &&
+		(["any", "all", "*"].includes(v.toLowerCase()) || (rule.field === "state" && v.toLowerCase() === "all india")));
+	const missing = actualValue == null || actualValue === "" || Number.isNaN(actualValue);
+	const status = unrestricted ? "passed" : missing ? "unknown" :
+		evaluateCondition(actualValue, rule.operator, rule.targetValue, rule.field).result ? "passed" : "failed";
+	const requirement = unrestricted ? "Open to all applicants" : formatRequirement(rule.field, rule.operator, rule.targetValue);
+	const check = { ruleId: rule.id, field: rule.field, description: rule.description || requirement,
+		required: requirement, condition: requirement, actual: formatActualValue(rule.field, actualValue),
+		citation: provenanceMap.get(rule.id) || null, status,
+		...(status === "failed" ? { failMessage: rule.failMessage || `Your ${rule.field} (${formatActualValue(rule.field, actualValue)}) does not meet the requirement: ${requirement}` } : {}),
+	};
+	return { status, checks: [check], allChecks: [check], score: status === "passed" ? 1 : 0,
+		trace: { type: "CONDITION", id: rule.id, status, check } };
+}
+
+function evaluateNode(node, profile, provenanceMap, path = "root") {
+	if (node.type === "CONDITION") return leafResult(node, profile, provenanceMap);
+	const evaluate = (child, suffix) => evaluateNode(child, profile, provenanceMap, `${path}.${suffix}`);
+	const syntheticCheck = status => ({ ruleId: node.id || `logic:${path}`, field: "eligibility", status,
+		description: node.description || describeRuleTree(node), required: describeRuleTree(node), condition: describeRuleTree(node),
+		actual: "Compared with your profile", citation: null,
+		...(status === "failed" ? { failMessage: `Your profile does not satisfy: ${describeRuleTree(node)}` } : {}),
+	});
+	let status, checks, score, allChecks, trace;
+	if (node.type === "NOT") {
+		const child = evaluate(node.child, "child");
+		status = child.status === "unknown" ? "unknown" : child.status === "passed" ? "failed" : "passed";
+		checks = [syntheticCheck(status)]; allChecks = child.allChecks;
+		score = status === "passed" ? 1 : 0;
+		trace = { child: child.trace };
+	} else if (node.type === "CONDITIONAL_BRANCH") {
+		const condition = evaluate(node.condition, "condition"), yes = evaluate(node.then, "then"), no = evaluate(node.else, "else");
+		const selected = condition.status === "passed" ? yes : condition.status === "failed" ? no : null;
+		status = selected ? selected.status : yes.status === no.status ? yes.status : "unknown";
+		checks = selected ? selected.checks : yes.status === no.status ? [...yes.checks, ...no.checks] : [syntheticCheck("unknown")];
+		score = selected ? selected.score : Math.min(yes.score, no.score);
+		allChecks = [condition, yes, no].flatMap(r => r.allChecks);
+		trace = { condition: condition.trace, then: yes.trace, else: no.trace,
+			selectedBranch: selected === yes ? "then" : selected === no ? "else" : null };
+	} else {
+		const children = node.children.map((child, i) => evaluate(child, i));
+		status = (node.type === "AND" ? combineAnd : combineOr)(children.map(c => c.status));
+		// A passing OR needs one proof. For an unknown OR, failed alternatives
+		// cannot be presented as disqualifiers. All branches remain in the trace.
+		const relevant = node.type === "AND" || status === "failed" ? children : status === "passed"
+			? [children.find(c => c.status === "passed")] : children.filter(c => c.status === "unknown");
+		checks = relevant.flatMap(c => c.checks); allChecks = children.flatMap(c => c.allChecks);
+		score = node.type === "AND" ? children.reduce((sum, c) => sum + c.score, 0) / children.length : Math.max(...children.map(c => c.score));
+		trace = { children: children.map(c => c.trace) };
+	}
+	return { status, checks, allChecks, score, trace: { type: node.type, id: node.id || `logic:${path}`, description: node.description, status, ...trace } };
 }
 
 export function evaluateEligibility(rawProfile, scholarship) {
@@ -188,89 +306,37 @@ export function evaluateEligibility(rawProfile, scholarship) {
 		}
 	}
 
-	let rules = eligibilityRules(scholarship);
-	const hasRecordedConditions = rules.length > 0;
-
-	// Filter out bogus unconstrained rules (e.g. targetValue: "Any" or "All")
-	rules = rules.filter((r) => {
-		const t = String(r.targetValue).trim().toLowerCase();
-		return t !== "any" && t !== "all" && t !== "*" && !(r.field === "state" && (t === "all india" || (Array.isArray(r.targetValue) && r.targetValue.some((v) => String(v).toLowerCase() === "all india"))));
-	});
-
-	const passedRules = [];
-	const failedRules = [];
-	const unknownRules = [];
-	if (!hasRecordedConditions) {
-		unknownRules.push({ ruleId: "criteria_not_recorded", field: "eligibility", description: "Eligibility criteria have not been recorded", required: "Check the provider's current instructions", actual: "Not verified", citation: null });
-	}
-
-	for (const rule of rules) {
-		const actualValue = profile[rule.field];
-		const isValueMissing =
-			actualValue === undefined ||
-			actualValue === null ||
-			actualValue === "" ||
-			Number.isNaN(actualValue);
-
-		// Only a citation recorded for this exact rule is shown. No guessing by keyword
-		// and no generated placeholder text: an uncited rule has citation = null.
-		const citation = provenanceMap.get(rule.id) || null;
-		const reqText = formatRequirement(rule.field, rule.operator, rule.targetValue);
-		const actualText = formatActualValue(rule.field, actualValue);
-
-		if (isValueMissing) {
-			unknownRules.push({
-				ruleId: rule.id,
-				field: rule.field,
-				description: rule.description || reqText,
-				required: reqText,
-				actual: actualText,
-				citation,
-			});
-			continue;
+	let result;
+	if (scholarship.ruleTree != null) {
+		const parsed = ruleTreeSchema.safeParse(scholarship.ruleTree);
+		if (parsed.success) result = evaluateNode(parsed.data, profile, provenanceMap);
+		else {
+			const check = unknownCheck("invalid_rule_tree", "The recorded policy tree needs review", "invalid_rule_tree");
+			result = { status: "unknown", checks: [check], allChecks: [check], score: 0,
+				trace: { type: "INVALID", status: "unknown", check } };
 		}
-
-		const evalResult = evaluateCondition(
-			actualValue,
-			rule.operator,
-			rule.targetValue,
-			rule.field,
-		);
-
-		if (evalResult.result) {
-			passedRules.push({
-				ruleId: rule.id,
-				field: rule.field,
-				description: rule.description || reqText,
-				actual: actualText,
-				condition: reqText,
-				citation,
-			});
-		} else {
-			failedRules.push({
-				ruleId: rule.id,
-				field: rule.field,
-				description: rule.description || reqText,
-				actual: actualText,
-				required: reqText,
-				failMessage:
-					rule.failMessage ||
-					`Your ${rule.field} (${actualText}) does not meet the requirement: ${reqText}`,
-				citation,
-			});
+	} else {
+		const rules = eligibilityRules(scholarship);
+		if (rules.length) result = evaluateNode({ type: "AND", children: rules.map(r => ({ ...r, type: "CONDITION" })) }, profile, provenanceMap);
+		else {
+			const check = unknownCheck("criteria_not_recorded", "Eligibility criteria have not been recorded", "criteria_not_recorded");
+			result = { status: "unknown", checks: [check], allChecks: [check], score: 0,
+				trace: { type: "UNRECORDED", status: "unknown", check } };
 		}
 	}
-
 	if (scholarship.dataQuality?.unknownFields?.includes("eligibility")) {
-		unknownRules.push({ ruleId: "official_manual_review", field: "eligibility", description: "Review additional official course, merit and application conditions", required: "Check the official eligibility text", actual: "Not verified", citation: null });
+		const check = unknownCheck("official_manual_review", "Review additional official course, merit and application conditions", "manual_review");
+		result.status = combineAnd([result.status, "unknown"]);
+		result.checks.push(check); result.allChecks.push(check);
+		result.score *= result.checks.length > 1 ? (result.checks.length - 1) / result.checks.length : 0;
+		result.trace = { type: "AND", id: "policy_with_manual_review", status: result.status,
+			children: [result.trace, { type: "MANUAL_REVIEW", status: "unknown", check }] };
 	}
-
-	const isEligible = failedRules.length === 0 && unknownRules.length === 0;
-	const totalKnownRules = passedRules.length + failedRules.length;
-	const matchConfidence =
-		totalKnownRules > 0
-			? Math.round((passedRules.length / (totalKnownRules + unknownRules.length)) * 100)
-			: (unknownRules.length ? 0 : 100);
+	const passedRules = result.checks.filter(r => r.status === "passed");
+	const failedRules = result.checks.filter(r => r.status === "failed");
+	const unknownRules = result.checks.filter(r => r.status === "unknown");
+	const isEligible = result.status === "passed";
+	const matchConfidence = isEligible ? 100 : Math.min(99, Math.round(result.score * 100));
 
 	// Document Readiness Audit
 	const DOC_CODE_ALIASES = {
@@ -331,6 +397,9 @@ export function evaluateEligibility(rawProfile, scholarship) {
 
 	return {
 		isEligible,
+		status: result.status,
+		evaluationTree: result.trace,
+		ruleResults: result.allChecks,
 		matchConfidence,
 		documentReadiness: documentAudit.percentage,
 		readinessScore: compositeReadiness,
@@ -342,6 +411,10 @@ export function evaluateEligibility(rawProfile, scholarship) {
 }
 
 export function eligibilityRules(scholarship) {
+	if (scholarship.ruleTree != null) {
+		const parsed = ruleTreeSchema.safeParse(scholarship.ruleTree);
+		return parsed.success ? ruleTreeLeaves(parsed.data) : [];
+	}
 	return Array.isArray(scholarship.rules) && scholarship.rules.length > 0 ? scholarship.rules : buildFallbackRules(scholarship);
 }
 
@@ -349,7 +422,7 @@ function buildFallbackRules(scholarship) {
 	const rules = [];
 	const elig = scholarship.eligibility || {};
 
-	if (elig.familyIncome && elig.familyIncome.max) {
+	if (elig.familyIncome && elig.familyIncome.max != null) {
 		rules.push({
 			id: "rule_income",
 			field: "familyIncome",

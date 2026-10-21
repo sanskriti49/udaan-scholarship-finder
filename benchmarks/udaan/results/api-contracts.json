@@ -1,0 +1,38 @@
+{
+  "canonical": {
+    "status": 200,
+    "cache": "MISS",
+    "count": 20,
+    "total": 104,
+    "firstTitle": "Synthetic UG Merit Scholarship 0"
+  },
+  "reordered": {
+    "status": 200,
+    "cache": "HIT",
+    "count": 20,
+    "total": 104,
+    "firstTitle": "Synthetic UG Merit Scholarship 0"
+  },
+  "lowercaseCached": {
+    "status": 200,
+    "cache": "HIT",
+    "count": 20,
+    "total": 104,
+    "firstTitle": "Synthetic UG Merit Scholarship 0"
+  },
+  "lowercaseUncached": {
+    "status": 200,
+    "cache": "BYPASS",
+    "count": 0,
+    "total": 0
+  },
+  "caseCollision": true,
+  "cacheInvalidationShowsUpdate": true,
+  "unauthenticatedAdminStatus": 401,
+  "emptyProfileSummary": {
+    "totalEvaluated": 300,
+    "eligibleCount": 0,
+    "ineligibleCount": 0,
+    "missingInfoCount": 300
+  }
+}

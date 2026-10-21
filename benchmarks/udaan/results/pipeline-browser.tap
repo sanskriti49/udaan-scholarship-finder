@@ -1,0 +1,52 @@
+
+> backend@1.0.0 test:pipeline:browser
+> node --test test/browser/adaptive-rendering.test.mjs
+
+TAP version 13
+# {"ts":"2026-10-21T11:43:13.515Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"synthetic_js_portal","runId":"0617c3d96ae1a6e2","entries":1}
+# {"ts":"2026-10-21T11:43:19.853Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"synthetic_js_portal","runId":"0617c3d96ae1a6e2","status":"success","counts":{"discovered":1,"published":1,"needsReview":0,"created":1,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":1,"missingFromSource":0},"errors":[]}
+# Subtest: real browser: asynchronous API content is rendered, cited, and ingested
+ok 1 - real browser: asynchronous API content is rendered, cited, and ingested
+  ---
+  duration_ms: 6360.9594
+  type: 'test'
+  ...
+# Subtest: real browser: redirect to a robots-disallowed page is blocked before requesting it
+ok 2 - real browser: redirect to a robots-disallowed page is blocked before requesting it
+  ---
+  duration_ms: 2060.1879
+  type: 'test'
+  ...
+# Subtest: real browser: redirect outside the allowlist is blocked before requesting it
+ok 3 - real browser: redirect outside the allowlist is blocked before requesting it
+  ---
+  duration_ms: 2006.5861
+  type: 'test'
+  ...
+# Subtest: real browser: blocked external media frame does not abort the main scholarship page
+ok 4 - real browser: blocked external media frame does not abort the main scholarship page
+  ---
+  duration_ms: 1703.6999
+  type: 'test'
+  ...
+# Subtest: real browser: missing readiness selector produces a bounded timeout
+ok 5 - real browser: missing readiness selector produces a bounded timeout
+  ---
+  duration_ms: 1737.3709
+  type: 'test'
+  ...
+# Subtest: real browser: HTTP access errors and oversized documents are not extracted
+ok 6 - real browser: HTTP access errors and oversized documents are not extracted
+  ---
+  duration_ms: 2862.8318
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 18097.2881

@@ -1,5 +1,6 @@
 import { redisClient, isRedisAvailable } from "../config/redis.js";
 import { catalogueNamespace } from "../pipeline/lock.js";
+import { canonicalizeCatalogueQuery, serializeQueryValue } from "../engine/catalogueQuery.js";
 
 /**
  * Cache Middleware for Express
@@ -84,7 +85,7 @@ export function buildDeterministicCacheKey(prefix, req) {
 	const rawPath = `${req.baseUrl || ""}${req.path || ""}`.replace(/\/+/g, "/");
 	const path = rawPath.length > 1 ? rawPath.replace(/\/+$/, "") : rawPath;
 
-	const query = { ...(req.query || {}) };
+	const query = canonicalizeCatalogueQuery(req.query);
 	// Remove tracking and cache-busting parameters
 	delete query._;
 	delete query.t;
@@ -102,11 +103,12 @@ export function buildDeterministicCacheKey(prefix, req) {
 	const queryString = queryKeys
 		.map((key) => {
 			const val = query[key];
-			return `${encodeURIComponent(key)}=${encodeURIComponent(String(val).trim().toLowerCase())}`;
+			return `${encodeURIComponent(key)}=${encodeURIComponent(serializeQueryValue(val))}`;
 		})
 		.join("&");
 
-	return queryString ? `${prefix}:${path}?${queryString}` : `${prefix}:${path}`;
+	// A new key format isolates entries written before query normalization changed.
+	return queryString ? `${prefix}:v2:${path}?${queryString}` : `${prefix}:v2:${path}`;
 }
 
 /**

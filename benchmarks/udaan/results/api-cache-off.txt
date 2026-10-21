@@ -1,0 +1,5 @@
+[Redis] Connection issue (ECONNREFUSED). Operating in fail-open fallback mode.
+[Redis] Initial connection unavailable. Cache layer operating in fail-open mode.
+[Redis] Connection issue (ECONNREFUSED). Operating in fail-open fallback mode.
+[Redis] Connection issue (ECONNREFUSED). Operating in fail-open fallback mode.
+Real scholarship router listening on 5103; cache=off

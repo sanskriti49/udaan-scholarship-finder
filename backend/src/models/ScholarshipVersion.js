@@ -31,6 +31,12 @@ const scholarshipVersionSchema = new mongoose.Schema(
 			],
 			required: true,
 		},
+		semanticCategory: {
+			type: String,
+			enum: ["RELAXATION", "RESTRICTION", "DATE_EXTENSION", "PROCEDURAL_UPDATE", "MIXED_CHANGE", null],
+			default: null,
+			index: true,
+		},
 		summary: { type: String, required: true },
 		deltas: [
 			{

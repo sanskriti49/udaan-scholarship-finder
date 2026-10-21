@@ -1,0 +1,21 @@
+{
+  "start": "2026-10-21T11:58:43.296Z",
+  "end": "2026-10-21T11:59:03.811Z",
+  "k6ExitCode": 0,
+  "mongooseCalls": {
+    "scholarships.createIndex": 0,
+    "scholarshipversions.createIndex": 0,
+    "sourcesnapshots.createIndex": 0,
+    "userprofiles.createIndex": 0,
+    "scholarshipcycles.createIndex": 0,
+    "ingestionissues.createIndex": 0,
+    "sourcestates.createIndex": 0,
+    "users.createIndex": 0,
+    "crawlruns.createIndex": 0,
+    "eligibilityruleversions.createIndex": 0,
+    "scholarships.aggregate": 0,
+    "scholarships.countDocuments": 0,
+    "scholarships.find": 0
+  },
+  "cacheReady": true
+}

@@ -6,6 +6,8 @@ Students enable **Eligibility changes that affect me** under Settings → Notifi
 
 Ingestion stores immutable `EligibilityRuleVersion` snapshots containing the evaluator's rules, unknown-criteria flag, source quotations and checked field evidence. The semantic hash includes fields, operators and targets; refreshing a quotation or reordering a category set does not create a new rule version. A change from `<` to `≤` does.
 
+Snapshots also retain optional recursive policy trees. Their hashes include logical structure, so changing AND to OR creates a new version. Compound policies need a checked full-policy excerpt as well as leaf citations. See [the rule engine contract](RULE_ENGINE.md) for validation and ingestion safeguards.
+
 Before marking a version verified, the pipeline checks every recorded rule citation against the stored source snapshot, URL, text hash and character offsets. This establishes excerpt integrity, not legal/provider certification or complete scholarship coverage. Versions retain both previous and current evidence. No alerts are generated for first observations, uncited rules, extraction failures or unverified previous versions. Existing schemes acquire their baseline on the next successful crawl; an invented historical baseline is never backfilled.
 
 The current version points to its predecessor. Each alert job contains the scheme ID and both version IDs, not student profile values. Workers read opted-in students' saved profiles and evaluate each profile unchanged against both snapshots. A missing income/category/domicile/disability stays unknown. Passing one criterion never means a guaranteed scholarship award.
@@ -13,6 +15,8 @@ The current version points to its predecessor. Each alert job contains the schem
 ## Meaningful personal changes
 
 The current implementation alerts when a changed recorded criterion changes from failed to passed, passed to failed, unknown to known, or newly requires information that is missing. Adding an already-passing criterion, changing source wording, or raising an income ceiling for a student who remains below both ceilings produces no alert. Changed requirements with an unknown answer in both versions also produce no alert.
+
+For recursive policies, alerts compare the overall tree outcome. A leaf changing in an alternative route does not generate an alert when the student's overall result remains unchanged. The explanation includes the old/new policy expression and the checks still needing review.
 
 The inbox card and email contain old/new requirements, the saved answer used, source excerpts and links, remaining failed/unknown criteria, and a link to review the saved profile. The payload records assessment time and profile update time. Source-backed extraction does not establish that all provider terms were captured.
 

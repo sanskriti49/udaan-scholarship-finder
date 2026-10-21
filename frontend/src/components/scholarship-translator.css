@@ -1,0 +1,24 @@
+.sch-translation { min-width: 0; color: #294e3b; font-size: 12px; }
+.sch-translation-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 5px 0; border: 0; background: transparent; color: #315c40; font-size: 12px; font-weight: 650; cursor: pointer; }
+.sch-translation-toggle:hover { text-decoration: underline; text-underline-offset: 4px; }
+.sch-translation-toggle .is-open { transform: rotate(180deg); }
+.sch-translation :is(button, select, summary, a):focus-visible { outline: 3px solid #0f766e; outline-offset: 3px; }
+.sch-translation-panel { display: grid; gap: 12px; padding: 15px; margin: 5px 0 14px; border: 1px solid #cbd5c5; background: #f2f5ed; border-radius: 8px; }
+.sch-translation-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sch-translation label { font-weight: 650; font-size: 12px; }
+.sch-translation select { min-height: 40px; min-width: 0; max-width: 100%; padding: 6px 25px 6px 9px; border: 1px solid #a8b8a3; border-radius: 5px; color: #214632; background: #fffef9; font: inherit; }
+.sch-translation p { margin: 0; }
+.sch-translation-result:empty { display: none; }
+.sch-translation-label { font-size: 10px; font-weight: 650; color: #56705d; }
+.sch-translated-title { margin: 5px 0 !important; font-size: 16px; font-weight: 600; line-height: 1.6; overflow-wrap: anywhere; white-space: pre-wrap; }
+.sch-translation .sch-translation-note { font-size: 11px; font-weight: 400; line-height: 1.6; color: #5b6e5d; }
+.sch-translation-result > .sch-translation-note:only-child { display: flex; align-items: center; gap: 7px; }
+.sch-translation-source { border-top: 1px solid #cbd5c5; padding-top: 10px; }
+.sch-translation-source summary { min-height: 32px; font-size: 11px; cursor: pointer; }
+.sch-translation-source label { display: block; margin-bottom: 5px; }
+.sch-translation-source select { margin-bottom: 7px; width: 100%; }
+.sch-translation-error { padding: 10px; border-left: 2px solid #a47a4d; background: #faf1de; line-height: 1.6; }
+.sch-translation-error button { margin-top: 6px; padding: 5px 0; font: inherit; font-weight: 650; background: transparent; border: 0; color: #315c40; text-decoration: underline; cursor: pointer; }
+.sch-translation-external { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
+.sch-translation.is-compact .sch-translation-toggle { min-height: 32px; font-size: 11px; }
+.sch-translation.is-compact .sch-translation-panel { padding: 12px; }

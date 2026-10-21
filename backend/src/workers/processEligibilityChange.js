@@ -1,5 +1,6 @@
 import { explainEligibilityImpact, eligibilityImpactMessage } from "../engine/eligibilityImpact.js";
 import { verifyEvidence } from "../pipeline/core/evidence.js";
+import { eligibilityRules } from "../engine/ruleEvaluator.js";
 
 export async function processEligibilityChange(job, { Scholarship, EligibilityRuleVersion, SourceSnapshot, Bookmark, UserProfile, notificationService }) {
 	const { scholarshipId, previousVersionId, currentVersionId } = job.data;
@@ -25,7 +26,9 @@ export async function processEligibilityChange(job, { Scholarship, EligibilityRu
 			if (!snapshot || !verifyEvidence(evidence, { ...snapshot, id: String(snapshot._id || snapshot.id) }).ok)
 				return finish("suppressed", { status: "SKIPPED", reason: "Source evidence failed verification" });
 		}
-		if (!version.snapshot.rules.length || version.snapshot.rules.some(r => !version.evidence.some(e => e.ruleId === r.id)))
+		const rules = eligibilityRules(version.snapshot);
+		if (!rules.length || rules.some(r => !version.evidence.some(e => e.ruleId === r.id)) ||
+			(version.snapshot.ruleTree && !version.evidence.some(e => e.ruleId === "policy_tree")))
 			return finish("suppressed", { status: "SKIPPED", reason: "Incomplete rule evidence" });
 	}
 	let recipients = 0, dispatched = 0, unchanged = 0, skipped = 0;

@@ -1,17 +1,10 @@
-import { getCategoryTheme } from "../utils/categoryThemes.js";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { evidenceQuotes } from "../utils/evidencePresentation.js";
-import { createPortal } from "react-dom";
 import { useSearchParams, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../hooks/useAuth";
 import {
 	Search,
 	X,
-	ShieldCheck,
-	History,
-	FileText,
-	ExternalLink,
 	RotateCcw,
 	ArrowUpRight,
 	Check,
@@ -31,22 +24,10 @@ import {
 	onBookmarkChanged,
 	setPendingBookmark,
 } from "../utils/bookmarkSync";
-import { formatGrant } from "../utils/formatGrant";
 import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import useDialogFocus from "../hooks/useDialogFocus";
-import { deadlineInfo } from "../utils/scholarshipMeta";
 import ScholarshipDiscoveryDesk from "../components/ScholarshipDiscoveryDesk";
 import "./scholarships.css";
-import {
-	formatClauseTitle,
-	formatEvidenceText,
-	formatSourceLabel,
-	formatChangeNotice,
-	formatFieldLabel,
-	formatRuleRequirement,
-	cleanOfficialUrl,
-	isGenuinePdf,
-} from "../utils/formatEvidence";
 import { PageStyles } from "../components/PageKit";
 import { CountUp } from "../components/MotionKit";
 import {
@@ -61,8 +42,6 @@ import {
 	ConfusedDetective,
 	CablesDoctor,
 } from "../components/AnimatedIllustrations";
-import PreFlightChecklist from "../components/PreFlightChecklist";
-import AddToCalendarButton from "../components/AddToCalendarButton";
 
 const CATEGORIES = [
 	"All",
@@ -155,24 +134,6 @@ function FilterGroup({
 	);
 }
 
-function DeadlineChip({ deadline, status }) {
-	const { text, tone } = deadlineInfo(deadline, status);
-	const tones = {
-		urgent: "border-rose-300 bg-rose-50 text-rose-800",
-		soon: "border-emerald-950/20 bg-yellow-200 text-emerald-950",
-		quiet: "border-emerald-950/15 bg-emerald-50 text-emerald-950/70",
-		calm: "border-emerald-950/15 bg-emerald-50 text-emerald-950/70",
-		closed: "border-emerald-950/15 bg-white text-emerald-950/60",
-	};
-	return (
-		<span
-			className={`inline-flex shrink-0 items-center rounded-full border-[1.5px] px-2.5 py-1 text-xs font-bold ${tones[tone]}`}
-		>
-			{text}
-		</span>
-	);
-}
-
 function ActiveFilter({ children, onRemove, label }) {
 	return (
 		<span className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950/25 bg-white py-1 pl-3 pr-1 text-[13px] font-semibold">
@@ -186,20 +147,6 @@ function ActiveFilter({ children, onRemove, label }) {
 				<X size={12} strokeWidth={3} />
 			</button>
 		</span>
-	);
-}
-
-function DrawerSection({ title, aside, children }) {
-	return (
-		<section className="border-t-[1.5px] border-dashed border-emerald-950/20 pt-6 first:border-t-0 first:pt-0">
-			<div className="mb-3 flex items-baseline justify-between gap-3">
-				<h4 className="ud-display text-lg font-bold text-emerald-950">
-					{title}
-				</h4>
-				{aside}
-			</div>
-			{children}
-		</section>
 	);
 }
 
@@ -249,10 +196,8 @@ export default function Scholarships() {
 	const [saved, setSaved] = useState(new Set());
 	const [selectedScholarship, setSelectedScholarship] = useState(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
 	const [filtersOpen, setFiltersOpen] = useState(false);
 	const detailTriggerRef = useRef(null);
-	const drawerRef = useDialogFocus(isModalOpen);
 	const filterRef = useDialogFocus(filtersOpen);
 
 	const updateMultiParam = (key, option, defaultOption) => {
@@ -398,22 +343,12 @@ export default function Scholarships() {
 		setIsModalOpen(true);
 	};
 
-	const closeDrawer = () => {
+	const closeDetails = () => {
 		setIsModalOpen(false);
 		setSelectedScholarship(null);
 	};
 
-	useEffect(() => {
-		if (!isModalOpen || authPrompt.isOpen) return;
-		const handleKeyDown = (e) => {
-			if (e.key === "Escape") closeDrawer();
-		};
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [isModalOpen, authPrompt.isOpen]);
-
-	// Lock for both surfaces, otherwise the page scrolls behind the evidence modal.
-	useBodyScrollLock(isModalOpen || isEvidenceModalOpen || filtersOpen);
+	useBodyScrollLock(filtersOpen);
 
 	useEffect(() => {
 		if (!filtersOpen) return;
@@ -1089,405 +1024,20 @@ export default function Scholarships() {
 				</div>
 			</div>
 
-			{/* ---------- Detail drawer ---------- */}
-			{isModalOpen &&
-				selectedScholarship &&
-				createPortal(
-					<div
-						className="sd-dialog fixed inset-0 z-[65] overflow-hidden"
-						role="dialog"
-						aria-modal="true"
-						aria-labelledby="scholarship-drawer-title"
-					>
-						<div
-							className="animate-fade-in fixed inset-0 bg-emerald-950/45 backdrop-blur-[2px]"
-							onClick={closeDrawer}
-							aria-hidden="true"
-						/>
-
-						<div
-							ref={drawerRef}
-							tabIndex={-1}
-							className="sd-dialog-panel animate-slide-in-right fixed inset-y-0 right-0 flex flex-col border-l-[1.5px] border-emerald-950 text-emerald-950"
-							style={{ width: "min(640px, 100vw)" }}
-						>
-							{(() => {
-								const drawerTheme = getCategoryTheme(
-									selectedScholarship.category,
-								);
-								return (
-									<div
-										className="sd-dialog-header relative overflow-hidden shrink-0 border-b-[1.5px] border-emerald-950 px-6 py-5"
-										style={{ background: drawerTheme.colors.headerBg }}
-									>
-										{/* Watermark in background */}
-										<div className="absolute -right-4 -bottom-4 opacity-15 pointer-events-none transform rotate-12 scale-150">
-											<CategoryMotifIcon
-												category={selectedScholarship.category}
-												size={96}
-											/>
-										</div>
-
-										<div className="sd-dialog-toolbar relative z-10 flex items-start justify-between gap-4">
-											<div className="min-w-0 flex-1">
-												<div className="flex flex-wrap items-center gap-2 mb-2">
-													<span
-														className="inline-flex items-center gap-1.5 rounded-full border-[1.5px] px-2.5 py-0.5 text-xs font-bold"
-														style={{
-															borderColor: drawerTheme.colors.border,
-															backgroundColor: "white",
-															color: drawerTheme.colors.text,
-														}}
-													>
-														<CategoryMotifIcon
-															category={selectedScholarship.category}
-															size={15}
-														/>
-														<span>
-															{selectedScholarship.category || "Scholarship"}
-														</span>
-													</span>
-
-													<span className="inline-flex items-center gap-1 rounded-full border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-800">
-														<ShieldCheck size={13} />
-														{selectedScholarship.verified === true ? "Source checked" : "Not verified"}
-													</span>
-
-													{isGenuinePdf(
-														selectedScholarship.officialLinks?.guidelinesUrl,
-													) && (
-														<span className="inline-flex items-center gap-1 rounded-full border border-emerald-950/20 bg-white/80 px-2 py-0.5 text-xs font-bold text-emerald-950/70">
-															<FileText size={12} />
-															Official PDF
-														</span>
-													)}
-												</div>
-
-												<h2
-													id="scholarship-drawer-title"
-													className="ud-display text-2xl sm:text-3xl font-extrabold leading-tight text-emerald-950"
-												>
-													{selectedScholarship.title}
-												</h2>
-												<a
-													href={`/scanner?scholarship=${encodeURIComponent(selectedScholarship._id || selectedScholarship.id)}`}
-													className="mt-3 inline-block text-sm font-semibold text-emerald-900 underline underline-offset-4"
-												>
-													Check document readiness ↗
-												</a>
-
-												<div className="mt-2.5 flex flex-wrap items-center gap-3">
-													<p className="text-sm font-medium text-emerald-950/65">
-														{selectedScholarship.organization}
-													</p>
-													<DeadlineChip
-														deadline={selectedScholarship.deadline}
-														status={selectedScholarship.status}
-													/>
-												</div>
-											</div>
-
-											<div className="flex items-center gap-2 shrink-0">
-												<AddToCalendarButton
-													scholarship={selectedScholarship}
-													variant="mini"
-												/>
-												<SaveButton
-													saved={saved.has(
-														selectedScholarship._id || selectedScholarship.id,
-													)}
-													saving={savingSet.has(
-														selectedScholarship._id || selectedScholarship.id,
-													)}
-													name={selectedScholarship.title}
-													onToggle={() =>
-														toggleSave(
-															selectedScholarship._id || selectedScholarship.id,
-															selectedScholarship,
-														)
-													}
-												/>
-
-												<button
-													type="button"
-													onClick={closeDrawer}
-													aria-label="Close details"
-													className={`flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-emerald-950 bg-white hover:bg-yellow-200 transition ${focusRing}`}
-												>
-													<X size={17} />
-												</button>
-											</div>
-										</div>
-									</div>
-								);
-							})()}
-
-							<div className="sd-dialog-content min-h-0 flex-1 space-y-6 overflow-y-auto px-5 py-6 text-sm sm:px-8">
-								{selectedScholarship.latestChangeSummary &&
-									formatChangeNotice(
-										selectedScholarship.latestChangeSummary,
-									) && (
-										<div className="rounded-xl border-[1.5px] border-emerald-950/15 bg-yellow-200 p-4">
-											<p className="flex items-center gap-1.5 text-xs font-bold">
-												<History size={13} />
-												Recently changed
-											</p>
-											<p className="mt-1.5 text-sm leading-snug">
-												{formatChangeNotice(
-													selectedScholarship.latestChangeSummary,
-												)}
-											</p>
-										</div>
-									)}
-
-								{(() => {
-									const g = formatGrant(selectedScholarship.amount);
-									return (
-										<div className="sd-award-note">
-											<div className="flex items-center justify-between border-b border-dashed border-emerald-950/15 pb-2.5 mb-3">
-												<span className="text-xs font-extrabold uppercase tracking-wider text-emerald-950/60">
-													Award amount
-												</span>
-											</div>
-
-											{g.isUnpublished ? (
-												<>
-													<p className="text-lg font-semibold italic text-emerald-950/70">
-														{g.main}
-													</p>
-													<p className="mt-1.5 text-sm leading-relaxed text-emerald-950/70 font-medium">
-														{g.details ||
-															"The amount follows official government rules. Check official notice for exact figures."}
-													</p>
-												</>
-											) : (
-												<>
-													<div className="flex min-w-0 flex-wrap items-baseline gap-2">
-														<span
-															className={`ud-display min-w-0 break-words font-extrabold text-emerald-950 ${g.isNarrative ? "text-xl" : "text-3xl sm:text-4xl"}`}
-														>
-															{g.main}
-														</span>
-														{g.period && (
-															<span className="text-base font-semibold text-emerald-950/60 font-sans">
-																{g.period}
-															</span>
-														)}
-													</div>
-													{g.details && (
-														<p className="mt-2 text-sm leading-relaxed text-emerald-950/70">
-															{g.details}
-														</p>
-													)}
-													{g.options && g.options.length > 1 && (
-														<div className="mt-4 pt-3 border-t border-dashed border-emerald-950/15">
-															<p className="mb-2 text-xs font-bold text-emerald-950/60 uppercase tracking-wider">
-																Award Tiers & Variations
-															</p>
-															<div className="flex flex-wrap gap-2">
-																{g.options.map((opt, i) => (
-																	<span
-																		key={i}
-																		className="rounded-full border-[1.5px] border-emerald-950/25 bg-white px-3 py-1 text-xs font-bold text-emerald-950"
-																	>
-																		₹{opt.value?.toLocaleString("en-IN")} /{" "}
-																		{opt.period}
-																	</span>
-																))}
-															</div>
-														</div>
-													)}
-												</>
-											)}
-										</div>
-									);
-								})()}
-
-								<DrawerSection title="About">
-									<p className="text-[15px] leading-relaxed text-emerald-950/80">
-										{selectedScholarship.description ||
-											selectedScholarship.summary ||
-											"A description has not been recorded. Check the provider's current instructions."}
-									</p>
-								</DrawerSection>
-
-								{selectedScholarship.rules &&
-									selectedScholarship.rules.length > 0 && (
-										<DrawerSection
-											title="Who can apply"
-											aside={
-												<span className="text-xs font-bold text-emerald-950/55">
-													{selectedScholarship.rules.length} criteria
-												</span>
-											}
-										>
-											<ul className="divide-y divide-dashed divide-emerald-950/20 rounded-xl border-[1.5px] border-emerald-950/20">
-												{selectedScholarship.rules.map((r, idx) => (
-													<li
-														key={idx}
-														className="sd-rule-row flex items-start justify-between gap-4 px-4 py-3"
-													>
-														<span className="text-[15px] font-semibold leading-snug">
-															{r.description || formatFieldLabel(r.field)}
-														</span>
-														<span className="shrink-0 rounded-sm bg-yellow-200 px-1.5 py-0.5 text-[13px] font-bold">
-															{formatRuleRequirement(r)}
-														</span>
-													</li>
-												))}
-											</ul>
-										</DrawerSection>
-									)}
-
-								{evidenceQuotes(selectedScholarship).length > 0 && (<DrawerSection
-										title="Stored source excerpts"
-										aside={
-											<span className="text-xs font-bold text-emerald-950/55">
-												{evidenceQuotes(selectedScholarship).length}{" "}
-												clauses
-											</span>
-										}
-									>
-										<div className="space-y-3">
-											{evidenceQuotes(selectedScholarship).map((q, idx) => {
-												const rawQuoteLink =
-													q.url || q.sourceUrl ||
-													selectedScholarship.officialLinks?.guidelinesUrl ||
-													selectedScholarship.sourceUrl;
-												const quoteLink = cleanOfficialUrl(rawQuoteLink);
-												const isPdf = isGenuinePdf(quoteLink);
-												const sourceLabel = formatSourceLabel(quoteLink);
-												const clauseTitle = formatClauseTitle(
-													q.clause,
-													q.field,
-													idx + 1,
-												);
-												const cleanQuote = formatEvidenceText(q.quote, q.field);
-
-												return (
-													<div
-														key={idx}
-														className="rounded-xl border-[1.5px] border-emerald-950/20 bg-white p-4"
-													>
-														<div className="flex flex-wrap items-baseline justify-between gap-2">
-															<p className="text-sm font-bold">{clauseTitle}</p>
-															<span className="text-xs text-emerald-950/60">Stored excerpt · Not verified</span>
-															{q.page && (
-																<span className="text-xs font-semibold text-emerald-950/55">
-																	Page {q.page}
-																</span>
-															)}
-														</div>
-														<blockquote className="mt-2 border-l-2 border-yellow-400 pl-3 text-[15px] italic leading-relaxed text-emerald-950/80">
-															“{cleanQuote}”
-														</blockquote>
-														{quoteLink && (
-															<div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-																<span
-																	className="max-w-[260px] truncate font-medium text-emerald-950/55"
-																	title={quoteLink}
-																>
-																	{sourceLabel}
-																</span>
-																{isPdf && (
-																	<a
-																		href={quoteLink}
-																		target="_blank"
-																		rel="noopener noreferrer"
-																		className="inline-flex shrink-0 items-center gap-1 font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950"
-																	>
-																		Open cited PDF
-																		<ExternalLink size={11} />
-																	</a>
-																)}
-															</div>
-														)}
-													</div>
-												);
-											})}
-										</div>
-									</DrawerSection>
-								)}
-
-								<PreFlightChecklist scholarship={selectedScholarship} />
-							</div>
-
-							<div className="sd-dialog-actions flex shrink-0 flex-wrap items-center gap-2 border-t-[1.5px] border-emerald-950 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
-								{selectedScholarship.applicationLink && (
-									<a
-										href={cleanOfficialUrl(selectedScholarship.applicationLink)}
-										target="_blank"
-										rel="noopener noreferrer"
-										className={`group inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-emerald-800 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-900 active:translate-y-px ${focusRing}`}
-									>
-										Apply on official site
-										<ArrowUpRight
-											size={15}
-											className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-										/>
-									</a>
-								)}
-								<AddToCalendarButton
-									scholarship={selectedScholarship}
-									variant="pill"
-								/>
-								<button
-									type="button"
-									onClick={() => {
-										setIsModalOpen(false);
-										setIsEvidenceModalOpen(true);
-									}}
-									className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full border-[1.5px] border-emerald-950 bg-white px-5 py-2.5 text-sm font-bold hover:bg-emerald-100 ${focusRing}`}
-								>
-									<FileText size={15} />
-									Full rules
-								</button>
-								<SaveButton
-									variant="pill"
-									saved={saved.has(
-										selectedScholarship._id || selectedScholarship.id,
-									)}
-									saving={savingSet.has(
-										selectedScholarship._id || selectedScholarship.id,
-									)}
-									onToggle={() =>
-										toggleSave(
-											selectedScholarship._id || selectedScholarship.id,
-											selectedScholarship,
-										)
-									}
-								/>
-								{(() => {
-									const rawGl =
-										selectedScholarship.officialLinks?.guidelinesUrl ||
-										(selectedScholarship.sourceUrl
-											?.toLowerCase()
-											.includes(".pdf")
-											? selectedScholarship.sourceUrl
-											: null);
-									return isGenuinePdf(rawGl) ? (
-										<a
-											href={cleanOfficialUrl(rawGl)}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="ml-auto text-sm font-bold underline decoration-yellow-300 decoration-2 underline-offset-4 hover:decoration-emerald-950"
-										>
-											Official PDF
-										</a>
-									) : null;
-								})()}
-							</div>
-						</div>
-					</div>,
-					document.body,
-				)}
-
 			<EvidenceModal
-				appearance="paper"
 				returnFocusRef={detailTriggerRef}
-				isOpen={isEvidenceModalOpen}
-				onClose={() => setIsEvidenceModalOpen(false)}
+				isOpen={isModalOpen}
+				onClose={closeDetails}
 				scholarship={selectedScholarship}
+				initialSection="overview"
+				interactionsBlocked={authPrompt.isOpen}
+				actions={selectedScholarship && <SaveButton
+					variant="pill"
+					name={selectedScholarship.title}
+					saved={saved.has(selectedScholarship._id || selectedScholarship.id)}
+					saving={savingSet.has(selectedScholarship._id || selectedScholarship.id)}
+					onToggle={() => toggleSave(selectedScholarship._id || selectedScholarship.id, selectedScholarship)}
+				/>}
 			/>
 
 			<AuthPromptModal

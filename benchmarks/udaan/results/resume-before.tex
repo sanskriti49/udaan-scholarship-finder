@@ -1,0 +1,158 @@
+\documentclass[letterpaper,11pt]{article}
+
+% ATS-friendly, single-column resume. Compile with pdfLaTeX.
+\usepackage{cmap}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage[letterpaper,left=0.50in,right=0.50in,top=0.35in,bottom=0.35in]{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{etoolbox}
+\input{glyphtounicode}
+\pdfgentounicode=1
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\raggedright
+\urlstyle{same}
+
+% BALANCED SECTION HEADINGS:
+% \vspace{2.5pt} creates clean padding between heading text and the rule.
+% 4.5pt in titlespacing creates clean separation between the rule and the content below.
+\titleformat{\section}
+  {\large\bfseries\raggedright}
+  {}{0em}{}
+  [\vspace{1pt}\titlerule]
+\titlespacing*{\section}{0pt}{2.5pt}{1pt}
+
+% ATS-safe clean links
+\newcommand{\resumeLink}[2]{\href{#1}{\underline{#2}}}
+
+\newcommand{\resumeSubheading}[4]{%
+  \item
+  \textbf{#1} \hfill {\small #2}\par
+  {\small\textit{#3} \hfill \textit{#4}}\par
+}
+
+\newcommand{\resumeProjectHeading}[4]{%
+  \item
+  \textbf{#1} \hfill {\small #2}\par
+  {\small\textit{#3} \hfill #4}\par
+}
+
+% Predictable list wrappers without stacked negative vspaces
+\newcommand{\resumeSubHeadingListStart}{%
+  \begin{itemize}[leftmargin=0pt,label={},itemsep=1pt,topsep=0pt,parsep=0pt,partopsep=0pt]
+}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+
+\newcommand{\resumeItemListStart}{%
+  \begin{itemize}[leftmargin=0.18in,label=\textbullet,itemsep=0.3pt,topsep=1pt,parsep=0pt,partopsep=0pt]
+}
+\newcommand{\resumeItemListEnd}{\end{itemize}}
+
+\newcommand{\resumeItem}[1]{\item\small #1}
+
+\begin{document}
+
+% ---------- Contact ----------
+\begin{center}
+  {\fontsize{20pt}{23pt}\selectfont\bfseries SANSKRITI GUPTA}\par
+  \vspace{2.5pt}
+  {\small
+  +91 6306642481 \quad \textbar{} \quad
+  \resumeLink{mailto:sanskriti0409@gmail.com}{sanskriti0409@gmail.com} \quad \textbar{} \quad
+  \resumeLink{https://linkedin.com/in/sanskriti49}{linkedin.com/in/sanskriti49} \quad \textbar{} \quad
+  \resumeLink{https://github.com/sanskriti49}{github.com/sanskriti49} \quad \textbar{} \quad
+  \resumeLink{https://leetcode.com/u/sanskriti49}{leetcode.com/sanskriti49}\par
+  }
+\end{center}
+\vspace{-4pt}
+
+% ---------- Education ----------
+\section{EDUCATION}
+\resumeSubHeadingListStart
+  \resumeSubheading
+    {VIT Bhopal University}{\textbf{Sep. 2023 -- May 2027}}
+    {Bachelor of Technology (B.Tech) in Computer Science and Engineering \textbar{} CGPA: 8.54/10}{Bhopal, India}
+  \resumeSubheading
+    {Dr. Virendra Swarup Education Centre}{\textbf{2021 -- 2023}}
+    {ISC (Class XII): 89.6\% (2023) \textbar{} ICSE (Class X): 87.67\% (2021)}{Kanpur, India}
+\resumeSubHeadingListEnd
+
+% ---------- Technical Skills ----------
+\section{TECHNICAL SKILLS}
+{\small
+\begin{itemize}[leftmargin=0pt,label={},itemsep=1.2pt,topsep=1pt,parsep=0pt,partopsep=0pt]
+  \item \textbf{Languages:} Java, JavaScript, TypeScript, Python, SQL, HTML, CSS
+  \item \textbf{Frameworks \& Technologies:} Spring Boot, React.js, Node.js, Express.js, Socket.IO, BullMQ, Tailwind CSS
+  \item \textbf{Databases:} PostgreSQL (PostGIS), MongoDB, Redis
+  \item \textbf{Cloud \& Tools:} AWS (EC2, S3, IAM), Docker, Git, GitHub Actions, Postman, Playwright, Linux
+  \item \textbf{CS Fundamentals:} Data Structures \& Algorithms, OOP, DBMS, Operating Systems, Computer Networks
+\end{itemize}
+}
+
+% ---------- Experience ----------
+\section{EXPERIENCE}
+\resumeSubHeadingListStart
+  \resumeSubheading
+    {GeekyAnts}{Jun. 2026 -- Aug. 2026}
+    {Software Engineer Intern}{Remote}
+  \resumeItemListStart
+    \resumeItem{Built real-time messaging with Socket.IO and React, implementing optimistic UI updates and message reconciliation to handle connection drops and failed deliveries.}
+    \resumeItem{Developed backend credit ledger APIs in Node.js and PostgreSQL, using row-level locking and transactions to prevent race conditions during checkout.}
+    \resumeItem{Implemented product search with multi-parameter filtering and URL-synced state; wrote Jest unit tests covering ledger balance calculations and CSV exports.}
+  \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+% ---------- Projects ----------
+\section{PROJECTS}
+\resumeSubHeadingListStart
+  \resumeProjectHeading
+  {TaskGenie -- Service Discovery and Booking Platform}{Nov. 2025}
+  {React.js, Node.js, PostgreSQL, Redis, Docker, AWS}
+  {\resumeLink{https://taskgenieee.vercel.app/}{Live Demo} \textbar{} \resumeLink{https://github.com/sanskriti49/service-provider}{GitHub}}
+\resumeItemListStart
+\resumeItem{Engineered booking APIs using PostgreSQL transaction locks and overlap constraints; prevented double bookings during local load tests with 200 concurrent requests.}
+\resumeItem{Optimized location-based provider search with PostGIS spatial indexes and caching, using Redis invalidation to refresh results after provider updates.}
+\resumeItem{Secured Razorpay payments with HMAC-SHA256 signature verification and duplicate-payment checks; implemented reconciliation and refund tracking to recover from missed callbacks.}
+\resumeItem{Built real-time booking chat with Socket.IO and PostgreSQL, adding participant authorization, message deduplication, and reconnect recovery so users can retrieve missed messages.}
+\resumeItemListEnd
+
+\resumeProjectHeading
+    {Udaan -- Scholarship Intelligence Platform}{Jun. 2026}
+    {React.js, Node.js, MongoDB, Redis, BullMQ, Playwright}
+    {\resumeLink{https://udaan-scholarships.vercel.app/}{Live Demo} \textbar{} \resumeLink{https://github.com/sanskriti49/udaan-scholarship-finder}{GitHub}}
+  \resumeItemListStart
+    \resumeItem{Built an automated scholarship ingestion pipeline using Playwright for JavaScript-rendered pages and Cheerio for HTML parsing, with SHA-256 hashing for source change detection.}
+    \resumeItem{Developed a rule-based eligibility engine to match student profiles against scholarship criteria, with explanations linked to official sources.}
+\resumeItem{Implemented Redis caching for scholarship APIs and automated deadline reminders using BullMQ, with database-level deduplication to prevent duplicate notifications.}
+\resumeItem{Developed a privacy-first client-side certificate scanner using PDF.js and Tesseract.js (WebAssembly), extracting text without uploading sensitive documents.}
+  \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% ---------- Achievements ----------
+\section{CERTIFICATIONS \& ACHIEVEMENTS}
+\resumeItemListStart
+  \resumeItem{\textbf{AWS Certified Cloud Practitioner} -- Official AWS Certification demonstrating proficiency in cloud architecture, IAM security, compute (EC2), and storage (S3) services (Score: 827/1000).}
+  \resumeItem{\textbf{TCS CodeVita Season 12} -- Ranked in the \textbf{Top 2\% globally} (Global Rank: 10,298 out of 669,000+ registered participants), solving complex algorithmic challenges under timed contest constraints.}
+  \resumeItem{\textbf{Competitive Programming} -- Solved \textbf{400+ problems} in Java across LeetCode, GFG and Codeforces, with demonstrated consistency in Graph Theory, Dynamic Programming, and Tree data structures.}
+\resumeItemListEnd
+  
+% ---------- Leadership ----------
+\section{EXTRACURRICULAR ACTIVITIES}
+\resumeSubHeadingListStart
+  \resumeSubheading
+    {Google Developer Groups on Campus (GDG)}{Nov. 2024 -- Jul. 2025}
+    {Core Technical Member}{Bhopal, India}
+  \resumeItemListStart
+    \resumeItem{Conducted hands-on web development workshops and collaborated in multi-functional development teams.}
+  \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+\end{document}

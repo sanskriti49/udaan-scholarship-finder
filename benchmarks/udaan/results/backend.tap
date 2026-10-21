@@ -1,0 +1,933 @@
+
+> backend@1.0.0 test
+> node --test "test/**/*.test.js"
+
+TAP version 13
+# Subtest: real pipeline stores cited rule versions, including operator-only changes, without alerts for first observation
+ok 1 - real pipeline stores cited rule versions, including operator-only changes, without alerts for first observation
+  ---
+  duration_ms: 39.9579
+  type: 'test'
+  ...
+# Subtest: forged evidence and legacy uncited rules never establish verified versions
+ok 2 - forged evidence and legacy uncited rules never establish verified versions
+  ---
+  duration_ms: 1.9177
+  type: 'test'
+  ...
+# Subtest: failed scholarship save leaves a recoverable version with stable identity on retry
+ok 3 - failed scholarship save leaves a recoverable version with stable identity on retry
+  ---
+  duration_ms: 10.491
+  type: 'test'
+  ...
+# Subtest: up_state_scholarship: failed primary uses cited government records with honest partial health
+ok 4 - up_state_scholarship: failed primary uses cited government records with honest partial health
+  ---
+  duration_ms: 216.478
+  type: 'test'
+  ...
+# Subtest: karnataka_ssp_scholarship: failed primary uses cited government records with honest partial health
+ok 5 - karnataka_ssp_scholarship: failed primary uses cited government records with honest partial health
+  ---
+  duration_ms: 88.0426
+  type: 'test'
+  ...
+# Subtest: aicte_ugc_national: failed primary uses cited government records with honest partial health
+ok 6 - aicte_ugc_national: failed primary uses cited government records with honest partial health
+  ---
+  duration_ms: 110.817
+  type: 'test'
+  ...
+# Subtest: empty fallback is rejected and leaves existing catalogue intact
+ok 7 - empty fallback is rejected and leaves existing catalogue intact
+  ---
+  duration_ms: 6.0974
+  type: 'test'
+  ...
+# Subtest: a fallback whose writes all fail never reports a successful catalogue
+ok 8 - a fallback whose writes all fail never reports a successful catalogue
+  ---
+  duration_ms: 16.6607
+  type: 'test'
+  ...
+# Subtest: partial fallback does not age absent primary records; portal recovery clears fallback health
+ok 9 - partial fallback does not age absent primary records; portal recovery clears fallback health
+  ---
+  duration_ms: 217.5726
+  type: 'test'
+  ...
+# Subtest: one unavailable alternative does not discard the other cited schemes
+ok 10 - one unavailable alternative does not discard the other cited schemes
+  ---
+  duration_ms: 25.9422
+  type: 'test'
+  ...
+# Subtest: Karnataka transport failure can use native rendering, while HTTP refusal cannot
+ok 11 - Karnataka transport failure can use native rendering, while HTTP refusal cannot
+  ---
+  duration_ms: 965.0381
+  type: 'test'
+  ...
+# {"ts":"2026-10-21T11:31:38.549Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"nsp_central_sector","runId":"71387a8c37ff12e7","entries":2}
+# {"ts":"2026-10-21T11:31:39.087Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"nsp_central_sector","runId":"71387a8c37ff12e7","status":"success","counts":{"discovered":31,"published":31,"needsReview":0,"created":31,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":31,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.088Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"up_state_scholarship","runId":"970aeb9bf947ad5e","entries":1}
+# {"ts":"2026-10-21T11:31:39.121Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"up_state_scholarship","runId":"970aeb9bf947ad5e","status":"success","counts":{"discovered":4,"published":4,"needsReview":0,"created":4,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":4,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.121Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"bbcbdc58fda5151a","entries":1}
+# {"ts":"2026-10-21T11:31:39.171Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"bbcbdc58fda5151a","status":"success","counts":{"discovered":4,"published":4,"needsReview":0,"created":4,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":4,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.172Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"karnataka_ssp_scholarship","runId":"9e40b8fcdfafb0a9","entries":1}
+# {"ts":"2026-10-21T11:31:39.195Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"karnataka_ssp_scholarship","runId":"9e40b8fcdfafb0a9","status":"success","counts":{"discovered":3,"published":3,"needsReview":0,"created":3,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":3,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.195Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"wb_svmcm_scholarship","runId":"3eb4700e7a3b9163","entries":1}
+# {"ts":"2026-10-21T11:31:39.220Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"wb_svmcm_scholarship","runId":"3eb4700e7a3b9163","status":"success","counts":{"discovered":3,"published":3,"needsReview":0,"created":3,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":3,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.221Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"bihar_pms_scholarship","runId":"feeafd94ce2d7ff8","entries":1}
+# {"ts":"2026-10-21T11:31:39.236Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"bihar_pms_scholarship","runId":"feeafd94ce2d7ff8","status":"success","counts":{"discovered":3,"published":3,"needsReview":0,"created":3,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":3,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.237Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"dst_inspire_scholarship","runId":"7cb879e9dfe9eccc","entries":1}
+# {"ts":"2026-10-21T11:31:39.244Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"dst_inspire_scholarship","runId":"7cb879e9dfe9eccc","status":"success","counts":{"discovered":1,"published":1,"needsReview":0,"created":1,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":1,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.244Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"aicte_ugc_national","runId":"cdc684794dbe7f9c","entries":1}
+# {"ts":"2026-10-21T11:31:39.266Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"aicte_ugc_national","runId":"cdc684794dbe7f9c","status":"success","counts":{"discovered":2,"published":2,"needsReview":0,"created":2,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":2,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:39.267Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"premier_foundations_csr","runId":"5ba8ec1a3cf247ff","entries":1}
+# {"ts":"2026-10-21T11:31:39.314Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"premier_foundations_csr","runId":"5ba8ec1a3cf247ff","status":"success","counts":{"discovered":4,"published":4,"needsReview":0,"created":4,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":4,"missingFromSource":0},"errors":[]}
+# Subtest: integration: normalized JSON samples exercise feed mappings (not proof of live portal support)
+ok 12 - integration: normalized JSON samples exercise feed mappings (not proof of live portal support)
+  ---
+  duration_ms: 1730.7396
+  type: 'test'
+  ...
+# Subtest: integration: initial crawl ingests all 31 schemes with valid cycles and evidence
+ok 13 - integration: initial crawl ingests all 31 schemes with valid cycles and evidence
+  ---
+  duration_ms: 453.1778
+  type: 'test'
+  ...
+# Subtest: integration: failure policy - crawl failure aborts without corrupting stored data
+ok 14 - integration: failure policy - crawl failure aborts without corrupting stored data
+  ---
+  duration_ms: 119.758
+  type: 'test'
+  ...
+# Subtest: integration: stale data & vanished scheme - missing schemes are retained and flagged for review
+ok 15 - integration: stale data & vanished scheme - missing schemes are retained and flagged for review
+  ---
+  duration_ms: 958.3244
+  type: 'test'
+  ...
+# Subtest: integration: academic-year rollover creates new cycle and preserves historical cycles
+ok 16 - integration: academic-year rollover creates new cycle and preserves historical cycles
+  ---
+  duration_ms: 277.2216
+  type: 'test'
+  ...
+# Subtest: integration: legacy adoption adopts old record by slug and updates verified provenance
+ok 17 - integration: legacy adoption adopts old record by slug and updates verified provenance
+  ---
+  duration_ms: 158.3063
+  type: 'test'
+  ...
+# Subtest: integration: evidence verification detects quote match and tampering
+ok 18 - integration: evidence verification detects quote match and tampering
+  ---
+  duration_ms: 266.189
+  type: 'test'
+  ...
+# Subtest: integration: live status computation transitions correctly by date
+ok 19 - integration: live status computation transitions correctly by date
+  ---
+  duration_ms: 0.7848
+  type: 'test'
+  ...
+# Subtest: auto: sufficient static content is parsed without launching a browser
+ok 20 - auto: sufficient static content is parsed without launching a browser
+  ---
+  duration_ms: 331.949
+  type: 'test'
+  ...
+# Subtest: auto: a large navigation shell triggers rendering when the parser finds no schemes
+ok 21 - auto: a large navigation shell triggers rendering when the parser finds no schemes
+  ---
+  duration_ms: 117.8651
+  type: 'test'
+  ...
+# Subtest: auto: thin HTML triggers rendering
+ok 22 - auto: thin HTML triggers rendering
+  ---
+  duration_ms: 79.8877
+  type: 'test'
+  ...
+# Subtest: render failure preserves scholarships and records an actionable error
+ok 23 - render failure preserves scholarships and records an actionable error
+  ---
+  duration_ms: 191.1225
+  type: 'test'
+  ...
+# Subtest: 304 from a static shell cannot freeze previously rendered data
+ok 24 - 304 from a static shell cannot freeze previously rendered data
+  ---
+  duration_ms: 451.8493
+  type: 'test'
+  ...
+# Subtest: static 304 reuses citations and skips rendering
+ok 25 - static 304 reuses citations and skips rendering
+  ---
+  duration_ms: 351.3447
+  type: 'test'
+  ...
+# Subtest: HTTP failures are not bypassed with browser rendering
+ok 26 - HTTP failures are not bypassed with browser rendering
+  ---
+  duration_ms: 2.2184
+  type: 'test'
+  ...
+# Subtest: recorded transports cannot invoke a live browser on layout errors
+ok 27 - recorded transports cannot invoke a live browser on layout errors
+  ---
+  duration_ms: 9.3649
+  type: 'test'
+  ...
+# Subtest: HTML cannot be mistaken for a mapped JSON feed
+ok 28 - HTML cannot be mistaken for a mapped JSON feed
+  ---
+  duration_ms: 2.8384
+  type: 'test'
+  ...
+# Subtest: production replay excludes unverified normalized feed samples
+ok 29 - production replay excludes unverified normalized feed samples
+  ---
+  duration_ms: 20.3762
+  type: 'test'
+  ...
+# Subtest: unsupported sources fail explicitly instead of reporting a healthy crawl
+ok 30 - unsupported sources fail explicitly instead of reporting a healthy crawl
+  ---
+  duration_ms: 16.0104
+  type: 'test'
+  ...
+# Subtest: crawler leases are shared within a database, isolated across environments, and omit credentials
+ok 31 - crawler leases are shared within a database, isolated across environments, and omit credentials
+  ---
+  duration_ms: 19.202
+  type: 'test'
+  ...
+# Subtest: HTML is normalised to the same shape as captured text and parsed by the NSP adapter
+ok 32 - HTML is normalised to the same shape as captured text and parsed by the NSP adapter
+  ---
+  duration_ms: 115.3957
+  type: 'test'
+  ...
+# Subtest: a page without the scheme section is rejected, not parsed as zero schemes
+ok 33 - a page without the scheme section is rejected, not parsed as zero schemes
+  ---
+  duration_ms: 4.3335
+  type: 'test'
+  ...
+# Subtest: real PDF bytes: text extracted per page and citations carry page numbers (synthetic PDF)
+ok 34 - real PDF bytes: text extracted per page and citations carry page numbers (synthetic PDF)
+  ---
+  duration_ms: 8498.9556
+  type: 'test'
+  ...
+# Subtest: evidence verification detects tampering and wrong snapshots
+ok 35 - evidence verification detects tampering and wrong snapshots
+  ---
+  duration_ms: 2.1537
+  type: 'test'
+  ...
+# Subtest: whitespace-tolerant quote location stores the exact matched text
+ok 36 - whitespace-tolerant quote location stores the exact matched text
+  ---
+  duration_ms: 1.1547
+  type: 'test'
+  ...
+# Subtest: buildRequiredDocuments generates suggestions without invented mandatory requirements
+ok 37 - buildRequiredDocuments generates suggestions without invented mandatory requirements
+  ---
+  duration_ms: 12.7786
+  type: 'test'
+  ...
+# Subtest: ruleEvaluator matches student held documents using code aliases
+ok 38 - ruleEvaluator matches student held documents using code aliases
+  ---
+  duration_ms: 31.6525
+  type: 'test'
+  ...
+# Subtest: actual change processor explains the personal impact and deduplicates repeated events
+ok 39 - actual change processor explains the personal impact and deduplicates repeated events
+  ---
+  duration_ms: 118.0399
+  type: 'test'
+  ...
+# Subtest: disabled preferences, removed bookmarks, missing profiles and unchanged outcomes suppress delivery
+ok 40 - disabled preferences, removed bookmarks, missing profiles and unchanged outcomes suppress delivery
+  ---
+  duration_ms: 6.9747
+  type: 'test'
+  ...
+# Subtest: forged evidence, mismatched versions, unpublished and superseded schemes are suppressed
+ok 41 - forged evidence, mismatched versions, unpublished and superseded schemes are suppressed
+  ---
+  duration_ms: 20.6769
+  type: 'test'
+  ...
+# Subtest: delivery failures propagate to BullMQ and a subsequent attempt completes
+ok 42 - delivery failures propagate to BullMQ and a subsequent attempt completes
+  ---
+  duration_ms: 4.2524
+  type: 'test'
+  ...
+# Subtest: actual delivery resumes failed email without creating another notification
+ok 43 - actual delivery resumes failed email without creating another notification
+  ---
+  duration_ms: 21.7668
+  type: 'test'
+  ...
+# Subtest: permanent receipts prevent repeat delivery after the inbox item is dismissed
+ok 44 - permanent receipts prevent repeat delivery after the inbox item is dismissed
+  ---
+  duration_ms: 1.3273
+  type: 'test'
+  ...
+# Subtest: email-only settings preserve skipped in-app delivery and schema accepts it
+ok 45 - email-only settings preserve skipped in-app delivery and schema accepts it
+  ---
+  duration_ms: 3.5095
+  type: 'test'
+  ...
+# Subtest: dismissal during a failed email is preserved and retries use the original assessed payload
+ok 46 - dismissal during a failed email is preserved and retries use the original assessed payload
+  ---
+  duration_ms: 1.2283
+  type: 'test'
+  ...
+# Subtest: illustrative ceiling change explains failed to passed without promising eligibility
+ok 47 - illustrative ceiling change explains failed to passed without promising eligibility
+  ---
+  duration_ms: 109.8016
+  type: 'test'
+  ...
+# Subtest: unchanged personal results and income unknown in both versions suppress alerts
+ok 48 - unchanged personal results and income unknown in both versions suppress alerts
+  ---
+  duration_ms: 2.5564
+  type: 'test'
+  ...
+# Subtest: new criteria request missing information; no category or disability defaults
+ok 49 - new criteria request missing information; no category or disability defaults
+  ---
+  duration_ms: 1.2861
+  type: 'test'
+  ...
+# Subtest: tightened rules and exact LT/LTE boundaries are meaningful
+ok 50 - tightened rules and exact LT/LTE boundaries are meaningful
+  ---
+  duration_ms: 0.877
+  type: 'test'
+  ...
+# Subtest: evidence-only edits and reordered category sets do not produce alerts
+ok 51 - evidence-only edits and reordered category sets do not produce alerts
+  ---
+  duration_ms: 0.8655
+  type: 'test'
+  ...
+# Subtest: eligibility email includes both sources and escapes profile/source content
+ok 52 - eligibility email includes both sources and escapes profile/source content
+  ---
+  duration_ms: 3.5195
+  type: 'test'
+  ...
+# [EmailService] Logo found: C:\\Users\\sansk\\Downloads\\udaan-scholarship-finder\\frontend\\src\\assets\\images\\logo.png
+# [EmailService] Running in simulated mode (logs to database).
+# ◇ injected env (19) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+# [Redis] Client closed gracefully.
+# (node:16352) [MONGOOSE] Warning: Mongoose: `Document.prototype.validateSync()` is deprecated and will be removed in Mongoose 10. Use `Document.prototype.validate()` instead.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# [Redis] Initial connection unavailable. Cache layer operating in fail-open mode.
+# Subtest: actual inbox dismissal hides eligibility alerts instead of deleting an email retry's record
+ok 53 - actual inbox dismissal hides eligibility alerts instead of deleting an email retry's record
+  ---
+  duration_ms: 5.7031
+  type: 'test'
+  ...
+# Subtest: other notifications keep their deletion behavior with user ownership enforced
+ok 54 - other notifications keep their deletion behavior with user ownership enforced
+  ---
+  duration_ms: 1.1223
+  type: 'test'
+  ...
+# Subtest: inbox lists and unread counts exclude dismissed eligibility records
+ok 55 - inbox lists and unread counts exclude dismissed eligibility records
+  ---
+  duration_ms: 2.8036
+  type: 'test'
+  ...
+# Subtest: real schemas default eligibility opt-in off and accept email-only eligibility notifications
+ok 56 - real schemas default eligibility opt-in off and accept email-only eligibility notifications
+  ---
+  duration_ms: 25.0217
+  type: 'test'
+  ...
+# Subtest: missing domicile, category and disability remain unknown
+ok 57 - missing domicile, category and disability remain unknown
+  ---
+  duration_ms: 24.1393
+  type: 'test'
+  ...
+# Subtest: national catalogue selection cannot pass a state domicile requirement
+ok 58 - national catalogue selection cannot pass a state domicile requirement
+  ---
+  duration_ms: 3.1037
+  type: 'test'
+  ...
+# Subtest: a scholarship's national scope imposes no domicile constraint
+ok 59 - a scholarship's national scope imposes no domicile constraint
+  ---
+  duration_ms: 1.3863
+  type: 'test'
+  ...
+# Subtest: blank and invalid numbers stay unknown while explicit zero stays zero
+ok 60 - blank and invalid numbers stay unknown while explicit zero stays zero
+  ---
+  duration_ms: 93.2549
+  type: 'test'
+  ...
+# Subtest: income boundary respects exclusive LT and inclusive LTE
+ok 61 - income boundary respects exclusive LT and inclusive LTE
+  ---
+  duration_ms: 3.1155
+  type: 'test'
+  ...
+# Subtest: a scheme without recorded eligibility conditions stays unverified
+ok 62 - a scheme without recorded eligibility conditions stays unverified
+  ---
+  duration_ms: 0.6603
+  type: 'test'
+  ...
+# Subtest: explicit false and string false are preserved; arbitrary truthy disability values are unknown
+ok 63 - explicit false and string false are preserved; arbitrary truthy disability values are unknown
+  ---
+  duration_ms: 0.8008
+  type: 'test'
+  ...
+# Subtest: legacy and inferred document lists never establish official requirements or readiness
+ok 64 - legacy and inferred document lists never establish official requirements or readiness
+  ---
+  duration_ms: 1.595
+  type: 'test'
+  ...
+# Subtest: explicit document requirements need an item-specific excerpt; optional cited items are not mandatory
+ok 65 - explicit document requirements need an item-specific excerpt; optional cited items are not mandatory
+  ---
+  duration_ms: 1.6303
+  type: 'test'
+  ...
+# Subtest: relay leaves pending events durable while Redis is down or the record save is uncommitted
+ok 66 - relay leaves pending events durable while Redis is down or the record save is uncommitted
+  ---
+  duration_ms: 7.3726
+  type: 'test'
+  ...
+# Subtest: relay suppresses a published ancestor superseded by a later committed version
+ok 67 - relay suppresses a published ancestor superseded by a later committed version
+  ---
+  duration_ms: 0.825
+  type: 'test'
+  ...
+# Subtest: queue retries use stable version IDs and recover exhausted failed jobs
+ok 68 - queue retries use stable version IDs and recover exhausted failed jobs
+  ---
+  duration_ms: 1.368
+  type: 'test'
+  ...
+# [EmailService] Logo found: C:\\Users\\sansk\\Downloads\\udaan-scholarship-finder\\frontend\\src\\assets\\images\\logo.png
+# [EmailService] Running in simulated mode (logs to database).
+# ◇ injected env (19) from .env // tip: ⌘ suppress logs { quiet: true }
+# [ReminderQueue] Redis unavailable. Operating in fail-open mode, skipping change alert enqueue.
+# [ReminderQueue] Queue closed gracefully.
+# [Redis] Client closed gracefully.
+# [Redis] Initial connection unavailable. Cache layer operating in fail-open mode.
+# Subtest: notificationService: sendTestNotification method is defined and dispatches test notifications
+ok 69 - notificationService: sendTestNotification method is defined and dispatches test notifications
+  ---
+  duration_ms: 1.7203
+  type: 'test'
+  ...
+# Subtest: notificationService: preference gating suppresses notifications when alert categories are disabled
+ok 70 - notificationService: preference gating suppresses notifications when alert categories are disabled
+  ---
+  duration_ms: 0.8679
+  type: 'test'
+  ...
+# Subtest: notificationService: channel suppression drops notifications when both inApp and email are disabled
+ok 71 - notificationService: channel suppression drops notifications when both inApp and email are disabled
+  ---
+  duration_ms: 0.3075
+  type: 'test'
+  ...
+# Subtest: ruleEvaluator: minMatchScore filters eligibility match alerts accurately
+ok 72 - ruleEvaluator: minMatchScore filters eligibility match alerts accurately
+  ---
+  duration_ms: 33.7309
+  type: 'test'
+  ...
+# Subtest: ruleEvaluator: null, undefined, or empty target values safely fail without coercing to zero
+ok 73 - ruleEvaluator: null, undefined, or empty target values safely fail without coercing to zero
+  ---
+  duration_ms: 0.5105
+  type: 'test'
+  ...
+# Subtest: ruleEvaluator: NaN inputs safely fail comparison operators
+ok 74 - ruleEvaluator: NaN inputs safely fail comparison operators
+  ---
+  duration_ms: 0.3363
+  type: 'test'
+  ...
+# Subtest: ruleEvaluator: state aliases and domicile matching work accurately
+ok 75 - ruleEvaluator: state aliases and domicile matching work accurately
+  ---
+  duration_ms: 0.3991
+  type: 'test'
+  ...
+# Subtest: trustVerificationService: analyzeLinkOrText defends against ReDoS and handles domain verification
+ok 76 - trustVerificationService: analyzeLinkOrText defends against ReDoS and handles domain verification
+  ---
+  duration_ms: 4.1898
+  type: 'test'
+  ...
+# Subtest: buildDeterministicCacheKey: sorts query parameters alphabetically and normalizes casing
+ok 77 - buildDeterministicCacheKey: sorts query parameters alphabetically and normalizes casing
+  ---
+  duration_ms: 1.7534
+  type: 'test'
+  ...
+# Subtest: buildDeterministicCacheKey: strips marketing/tracking and cache-busting params
+ok 78 - buildDeterministicCacheKey: strips marketing/tracking and cache-busting params
+  ---
+  duration_ms: 1.1721
+  type: 'test'
+  ...
+# Subtest: buildDeterministicCacheKey: normalizes trailing slashes on paths
+ok 79 - buildDeterministicCacheKey: normalizes trailing slashes on paths
+  ---
+  duration_ms: 0.364
+  type: 'test'
+  ...
+# Subtest: scheduleDeadlineChangeAlert: exports function and handles fail-open gracefully when Redis offline
+ok 80 - scheduleDeadlineChangeAlert: exports function and handles fail-open gracefully when Redis offline
+  ---
+  duration_ms: 0.7994
+  type: 'test'
+  ...
+# ◇ injected env (19) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+# [Redis] Client closed gracefully.
+# [Redis] Initial connection unavailable. Cache layer operating in fail-open mode.
+# Subtest: the actual evaluation controller restricts national-only requests to all-India listings
+ok 81 - the actual evaluation controller restricts national-only requests to all-India listings
+  ---
+  duration_ms: 5.9101
+  type: 'test'
+  ...
+# Subtest: the actual evaluation controller leaves unknown domicile in the missing-information results
+ok 82 - the actual evaluation controller leaves unknown domicile in the missing-information results
+  ---
+  duration_ms: 1.7607
+  type: 'test'
+  ...
+# Subtest: CSSS: two distinct official rates, historical 'Note:' rate ignored
+ok 83 - CSSS: two distinct official rates, historical 'Note:' rate ignored
+  ---
+  duration_ms: 12.9892
+  type: 'test'
+  ...
+# Subtest: income ceilings: 'upto', 'not more than', 'below' with lakh conversion
+ok 84 - income ceilings: 'upto', 'not more than', 'below' with lakh conversion
+  ---
+  duration_ms: 4.2393
+  type: 'test'
+  ...
+# Subtest: income sentences are not mistaken for award amounts
+ok 85 - income sentences are not mistaken for award amounts
+  ---
+  duration_ms: 1.2418
+  type: 'test'
+  ...
+# Subtest: MahaDBT inclusive income ceilings keep equality eligible
+ok 86 - MahaDBT inclusive income ceilings keep equality eligible
+  ---
+  duration_ms: 0.6492
+  type: 'test'
+  ...
+# Subtest: monthly amounts keep their month count
+ok 87 - monthly amounts keep their month count
+  ---
+  duration_ms: 2.9391
+  type: 'test'
+  ...
+# Subtest: wrapped LIC income ceilings are not treated as scholarship awards
+ok 88 - wrapped LIC income ceilings are not treated as scholarship awards
+  ---
+  duration_ms: 3.9683
+  type: 'test'
+  ...
+# Subtest: disability threshold
+ok 89 - disability threshold
+  ---
+  duration_ms: 1.4529
+  type: 'test'
+  ...
+# Subtest: OCR-garbled NMMSS text is detected; clean guideline text is not
+ok 90 - OCR-garbled NMMSS text is detected; clean guideline text is not
+  ---
+  duration_ms: 3.5135
+  type: 'test'
+  ...
+# Subtest: document date labels
+ok 91 - document date labels
+  ---
+  duration_ms: 4.2735
+  type: 'test'
+  ...
+# Subtest: title-derived facts are conservative
+ok 92 - title-derived facts are conservative
+  ---
+  duration_ms: 5.6541
+  type: 'test'
+  ...
+# {"ts":"2026-10-21T11:31:48.996Z","level":"warn","msg":"fetch retry","component":"http","url":"https://scholarships.gov.in/","attempt":1,"code":"HTTP_STATUS","delayMs":2000}
+# {"ts":"2026-10-21T11:31:49.007Z","level":"warn","msg":"fetch retry","component":"http","url":"https://scholarships.gov.in/","attempt":2,"code":"HTTP_STATUS","delayMs":2000}
+# {"ts":"2026-10-21T11:31:49.013Z","level":"warn","msg":"fetch retry","component":"http","url":"https://scholarships.gov.in/","attempt":1,"code":"NETWORK","delayMs":17}
+# {"ts":"2026-10-21T11:31:49.013Z","level":"warn","msg":"fetch retry","component":"http","url":"https://scholarships.gov.in/","attempt":2,"code":"NETWORK","delayMs":21}
+# {"ts":"2026-10-21T11:31:49.014Z","level":"warn","msg":"fetch retry","component":"http","url":"https://scholarships.gov.in/","attempt":3,"code":"NETWORK","delayMs":44}
+# Subtest: rejects hosts outside the allowlist before any request
+ok 93 - rejects hosts outside the allowlist before any request
+  ---
+  duration_ms: 7.4471
+  type: 'test'
+  ...
+# Subtest: a redirect to a foreign domain is blocked
+ok 94 - a redirect to a foreign domain is blocked
+  ---
+  duration_ms: 3.9514
+  type: 'test'
+  ...
+# Subtest: allowed redirects are followed and the final URL recorded
+ok 95 - allowed redirects are followed and the final URL recorded
+  ---
+  duration_ms: 6.5417
+  type: 'test'
+  ...
+# Subtest: retries 503 with Retry-After, then succeeds
+ok 96 - retries 503 with Retry-After, then succeeds
+  ---
+  duration_ms: 15.3709
+  type: 'test'
+  ...
+# Subtest: exponential backoff for network errors, gives up after retries
+ok 97 - exponential backoff for network errors, gives up after retries
+  ---
+  duration_ms: 4.6072
+  type: 'test'
+  ...
+# Subtest: 404 is not retried and is an error (never parsed as content)
+ok 98 - 404 is not retried and is an error (never parsed as content)
+  ---
+  duration_ms: 2.0496
+  type: 'test'
+  ...
+# Subtest: timeouts abort the request
+ok 99 - timeouts abort the request
+  ---
+  duration_ms: 36.0788
+  type: 'test'
+  ...
+# Subtest: conditional request returns notModified on 304
+ok 100 - conditional request returns notModified on 304
+  ---
+  duration_ms: 3.0282
+  type: 'test'
+  ...
+# Subtest: robots.txt disallow is honoured
+ok 101 - robots.txt disallow is honoured
+  ---
+  duration_ms: 3.0738
+  type: 'test'
+  ...
+# Subtest: robots parser picks the most specific rule
+ok 102 - robots parser picks the most specific rule
+  ---
+  duration_ms: 1.0333
+  type: 'test'
+  ...
+# Subtest: requests to one host are spaced by the rate limit
+ok 103 - requests to one host are spaced by the rate limit
+  ---
+  duration_ms: 2.4855
+  type: 'test'
+  ...
+# {"ts":"2026-10-21T11:31:50.990Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"1fee5ae596b59e0d","entries":1}
+# {"ts":"2026-10-21T11:31:51.020Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"1fee5ae596b59e0d","status":"success","counts":{"discovered":2,"published":2,"needsReview":0,"created":2,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":0,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:51.022Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"1da90ad6bd3ce141","entries":1}
+# {"ts":"2026-10-21T11:31:51.036Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"1da90ad6bd3ce141","status":"success","counts":{"discovered":2,"published":2,"needsReview":0,"created":2,"updated":0,"unchanged":0,"dataChanged":0,"newCycles":0,"missingFromSource":0},"errors":[]}
+# {"ts":"2026-10-21T11:31:51.036Z","level":"info","msg":"source run started","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"a2a67ce5b556f4f8","entries":1}
+# {"ts":"2026-10-21T11:31:51.047Z","level":"info","msg":"source run finished","component":"pipeline","sourceId":"mahadbt_state_scholarship","runId":"a2a67ce5b556f4f8","status":"success","counts":{"discovered":2,"published":2,"needsReview":0,"created":0,"updated":0,"unchanged":2,"dataChanged":0,"newCycles":0,"missingFromSource":0},"errors":[]}
+# Subtest: MahaDBT: department identity, official deep links, and exact citations survive extraction
+ok 104 - MahaDBT: department identity, official deep links, and exact citations survive extraction
+  ---
+  duration_ms: 39.237
+  type: 'test'
+  ...
+# Subtest: MahaDBT: changed layout is rejected rather than interpreted as an empty catalogue
+ok 105 - MahaDBT: changed layout is rejected rather than interpreted as an empty catalogue
+  ---
+  duration_ms: 2.2506
+  type: 'test'
+  ...
+# Subtest: MahaDBT: scheme facts exclude unrelated portal help and retain full-snapshot citations
+ok 106 - MahaDBT: scheme facts exclude unrelated portal help and retain full-snapshot citations
+  ---
+  duration_ms: 50.6669
+  type: 'test'
+  ...
+# Subtest: quarantined sample can be re-ingested without resurrecting its old income rules or deadlines
+ok 107 - quarantined sample can be re-ingested without resurrecting its old income rules or deadlines
+  ---
+  duration_ms: 39.1566
+  type: 'test'
+  ...
+# Subtest: MahaDBT: original public HTML survives conditional-request snapshot reuse
+ok 108 - MahaDBT: original public HTML survives conditional-request snapshot reuse
+  ---
+  duration_ms: 27.2644
+  type: 'test'
+  ...
+# Subtest: official up.html: real page structure, exact citations and provisional matching
+ok 109 - official up.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 542.5734
+  type: 'test'
+  ...
+# Subtest: official karnataka.html: real page structure, exact citations and provisional matching
+ok 110 - official karnataka.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 157.2201
+  type: 'test'
+  ...
+# Subtest: official wb.json: real page structure, exact citations and provisional matching
+ok 111 - official wb.json: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 144.8483
+  type: 'test'
+  ...
+# Subtest: official bihar.html: real page structure, exact citations and provisional matching
+ok 112 - official bihar.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 138.8922
+  type: 'test'
+  ...
+# Subtest: official inspire.html: real page structure, exact citations and provisional matching
+ok 113 - official inspire.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 58.5511
+  type: 'test'
+  ...
+# Subtest: official aicte.html: real page structure, exact citations and provisional matching
+ok 114 - official aicte.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 30.2419
+  type: 'test'
+  ...
+# Subtest: official ongc.html: real page structure, exact citations and provisional matching
+ok 115 - official ongc.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 168.1589
+  type: 'test'
+  ...
+# Subtest: official reliance-ug.html: real page structure, exact citations and provisional matching
+ok 116 - official reliance-ug.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 70.7071
+  type: 'test'
+  ...
+# Subtest: official reliance-pg.html: real page structure, exact citations and provisional matching
+ok 117 - official reliance-pg.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 71.988
+  type: 'test'
+  ...
+# Subtest: official lic.html: real page structure, exact citations and provisional matching
+ok 118 - official lic.html: real page structure, exact citations and provisional matching
+  ---
+  duration_ms: 152.3972
+  type: 'test'
+  ...
+# Subtest: Bihar: dated window beats open banner; opening dates and deadline are IST
+ok 119 - Bihar: dated window beats open banner; opening dates and deadline are IST
+  ---
+  duration_ms: 33.866
+  type: 'test'
+  ...
+# Subtest: LIC: latest notice, not archived scheme; calendar year is not invented academic year
+ok 120 - LIC: latest notice, not archived scheme; calendar year is not invented academic year
+  ---
+  duration_ms: 14.9491
+  type: 'test'
+  ...
+# Subtest: Reliance: total degree awards and SPA application links retain program choice
+ok 121 - Reliance: total degree awards and SPA application links retain program choice
+  ---
+  duration_ms: 31.2279
+  type: 'test'
+  ...
+# Subtest: WB: course rates stay variable and income-proof exception is not converted to a blanket rejection
+ok 122 - WB: course rates stay variable and income-proof exception is not converted to a blanket rejection
+  ---
+  duration_ms: 4.389
+  type: 'test'
+  ...
+# Subtest: all portal adapters reject a changed layout instead of a false successful empty crawl
+ok 123 - all portal adapters reject a changed layout instead of a false successful empty crawl
+  ---
+  duration_ms: 2.469
+  type: 'test'
+  ...
+# Subtest: INSPIRE: expanded SHE section supplies its annual award, not the school-child award
+ok 124 - INSPIRE: expanded SHE section supplies its annual award, not the school-child award
+  ---
+  duration_ms: 14.5415
+  type: 'test'
+  ...
+# Subtest: provenance migration: fresh installs do not seed notices, and cleanup leaves live captures alone
+ok 125 - provenance migration: fresh installs do not seed notices, and cleanup leaves live captures alone
+  ---
+  duration_ms: 11.4383
+  type: 'test'
+  ...
+# Subtest: provenance migration: sample data is archived under the same record ID and its cycles are excluded
+ok 126 - provenance migration: sample data is archived under the same record ID and its cycles are excluded
+  ---
+  duration_ms: 6.4896
+  type: 'test'
+  ...
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] User student has unbookmarked scholarship scheme. Skipping reminder.
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] User student has deadlineAlerts disabled. Skipping.
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (48_hours).
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] Scholarship scheme no longer exists. Skipping job job-1.
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] Scholarship 'Example grant' has expired. Suppressing reminder.
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (48_hours).
+# [ReminderWorker] Processing reminder job job-1 for user student on 'Example grant' (7_days).
+# [ReminderWorker] Reminder already delivered for user student on Example grant (deadline_7_days:student:scheme:2026-10-31). Skipping cleanly.
+# Subtest: actual reminder processor suppresses removed bookmarks and disabled preferences before dispatch
+ok 127 - actual reminder processor suppresses removed bookmarks and disabled preferences before dispatch
+  ---
+  duration_ms: 15.5684
+  type: 'test'
+  ...
+# Subtest: actual reminder processor checks existence, publication and expiry
+ok 128 - actual reminder processor checks existence, publication and expiry
+  ---
+  duration_ms: 3.9653
+  type: 'test'
+  ...
+# Subtest: actual reminder dispatch uses the current scheme data and a deterministic deduplication key
+ok 129 - actual reminder dispatch uses the current scheme data and a deterministic deduplication key
+  ---
+  duration_ms: 202.2073
+  type: 'test'
+  ...
+# Subtest: a suppressed or previously recorded notification produces no success telemetry
+ok 130 - a suppressed or previously recorded notification produces no success telemetry
+  ---
+  duration_ms: 0.9824
+  type: 'test'
+  ...
+# Subtest: status transitions follow official dates in IST
+ok 131 - status transitions follow official dates in IST
+  ---
+  duration_ms: 22.632
+  type: 'test'
+  ...
+# Subtest: missing dates give unknown, never open
+ok 132 - missing dates give unknown, never open
+  ---
+  duration_ms: 1.9617
+  type: 'test'
+  ...
+# Subtest: conflicting official closing dates → unknown between the two dates
+ok 133 - conflicting official closing dates → unknown between the two dates
+  ---
+  duration_ms: 5.1961
+  type: 'test'
+  ...
+# Subtest: staleness is flagged but does not change the date-derived status
+ok 134 - staleness is flagged but does not change the date-derived status
+  ---
+  duration_ms: 2.5545
+  type: 'test'
+  ...
+# Subtest: degree and diploma variants are never merged
+ok 135 - degree and diploma variants are never merged
+  ---
+  duration_ms: 2.7777
+  type: 'test'
+  ...
+# Subtest: same key with different dates is blocked, identical duplicates collapse
+ok 136 - same key with different dates is blocked, identical duplicates collapse
+  ---
+  duration_ms: 0.6096
+  type: 'test'
+  ...
+# Subtest: near-identical titles raise a review issue instead of merging
+ok 137 - near-identical titles raise a review issue instead of merging
+  ---
+  duration_ms: 0.6181
+  type: 'test'
+  ...
+# Subtest: scheme keys ignore the NSP merit/welfare suffix and punctuation variants
+ok 138 - scheme keys ignore the NSP merit/welfare suffix and punctuation variants
+  ---
+  duration_ms: 1.1661
+  type: 'test'
+  ...
+# Subtest: official dates parse as IST, closing dates run to end of day
+ok 139 - official dates parse as IST, closing dates run to end of day
+  ---
+  duration_ms: 11.2683
+  type: 'test'
+  ...
+# Subtest: invalid or ambiguous dates are unknown, never guessed
+ok 140 - invalid or ambiguous dates are unknown, never guessed
+  ---
+  duration_ms: 0.6142
+  type: 'test'
+  ...
+# Subtest: academic year only comes from explicit statements
+ok 141 - academic year only comes from explicit statements
+  ---
+  duration_ms: 5.3077
+  type: 'test'
+  ...
+# Subtest: academic-year plausibility window
+ok 142 - academic-year plausibility window
+  ---
+  duration_ms: 2.612
+  type: 'test'
+  ...
+# Subtest: official URL validation rejects placeholders and foreign domains
+ok 143 - official URL validation rejects placeholders and foreign domains
+  ---
+  duration_ms: 3.4959
+  type: 'test'
+  ...
+1..143
+# tests 143
+# suites 0
+# pass 143
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 32944.5483

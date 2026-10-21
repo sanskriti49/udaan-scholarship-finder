@@ -1,0 +1,106 @@
+{
+  "filters": [
+    "state=All%20India&level=UG&minAmount=10000&sort=amount_high&limit=20",
+    "state=Uttar%20Pradesh&level=UG&minAmount=10000&sort=amount_high&limit=20",
+    "state=Maharashtra&level=UG&minAmount=10000&sort=amount_high&limit=20",
+    "state=Karnataka&level=UG&minAmount=10000&sort=amount_high&limit=20",
+    "state=Bihar&level=UG&minAmount=10000&sort=amount_high&limit=20"
+  ],
+  "profiles": [
+    {
+      "state": "All India",
+      "educationLevel": "PG",
+      "familyIncome": 200000,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Uttar Pradesh",
+      "educationLevel": "UG",
+      "familyIncome": 250000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Maharashtra",
+      "educationLevel": "PG",
+      "familyIncome": 300000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Karnataka",
+      "educationLevel": "UG",
+      "familyIncome": 200000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Bihar",
+      "educationLevel": "PG",
+      "familyIncome": 250000,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "West Bengal",
+      "educationLevel": "UG",
+      "familyIncome": 300000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Delhi",
+      "educationLevel": "PG",
+      "familyIncome": 200000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "All India",
+      "educationLevel": "UG",
+      "familyIncome": 250000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Uttar Pradesh",
+      "educationLevel": "PG",
+      "familyIncome": 300000,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Maharashtra",
+      "educationLevel": "UG",
+      "familyIncome": 200000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Karnataka",
+      "educationLevel": "PG",
+      "familyIncome": 250000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    },
+    {
+      "state": "Bihar",
+      "educationLevel": "UG",
+      "familyIncome": 300000,
+      "percentage": 75,
+      "gender": "Female",
+      "documentsHeld": []
+    }
+  ],
+  "scholarships": 300,
+  "seededAt": "2026-10-21T11:42:51.258Z"
+}

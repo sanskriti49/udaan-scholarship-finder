@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ruleTreeSchema } from "../engine/ruleSchema.js";
 
 /**
  * A scholarship SCHEME (stable identity across academic years).
@@ -115,6 +116,9 @@ const scholarshipSchema = new mongoose.Schema(
 			age: { min: Number, max: Number },
 		},
 		eligibilityVersion: { type: mongoose.Schema.Types.ObjectId, ref: "EligibilityRuleVersion", default: null },
+		// Optional authoritative policy expression. Legacy rules remain supported.
+		ruleTree: { type: mongoose.Schema.Types.Mixed, default: null,
+			validate: { validator: tree => tree == null || ruleTreeSchema.safeParse(tree).success, message: "Invalid eligibility rule tree" } },
 		rules: [
 			{
 				id: { type: String, required: true },

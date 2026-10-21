@@ -1,0 +1,3 @@
+- Engineered an automated scholarship ingestion pipeline using Cheerio and Playwright, with SHA-256 change detection and MongoDB version history to track updates with source evidence.
+- Built explainable eligibility matching with source-linked rules and missing-data checks; used Redis and BullMQ to send deduplicated in-app alerts when rule changes affected saved profiles.
+- Implemented a privacy-first certificate scanner using PDF.js and Tesseract.js, with browser-local text extraction, editable fields, and manual review without uploading documents.

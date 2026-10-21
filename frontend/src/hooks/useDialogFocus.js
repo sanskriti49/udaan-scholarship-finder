@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 const dialogs = [];
-const focusableSelector = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]';
+const focusableSelector = 'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex="0"]';
 
 // Only the top dialog owns focus when a sign-in prompt opens over a file.
 export default function useDialogFocus(open, returnFocusRef) {

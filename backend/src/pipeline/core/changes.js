@@ -1,5 +1,8 @@
 import { sha256 } from "./http.js";
 import { formatIstDate } from "./time.js";
+import { ruleTreeSchema } from "../../engine/ruleSchema.js";
+import { eligibilityRules } from "../../engine/ruleEvaluator.js";
+import { canonicalPolicyValue, samePolicyValue, meaningfulPolicyDeltas, isEligibilityField, POLICY_DATE_FIELDS, relevantPolicyEvidence, isComparablePolicyDelta } from "./policyValues.js";
 
 /**
  * Change detection distinguishes:
@@ -63,12 +66,13 @@ function stable(value) {
 }
 
 const same = (a, b) => JSON.stringify(stable(a)) === JSON.stringify(stable(b));
-const isEmpty = (v) => v === null || v === undefined || (Array.isArray(v) && v.length === 0);
+const isEmpty = (v) => v === null || v === undefined || (typeof v === "string" && !v.trim()) || (Array.isArray(v) && v.length === 0);
 
 export function recordDataHash(record) {
 	const picked = {};
-	for (const f of TRACKED_FIELDS) picked[f] = get(record, f) ?? null;
-	picked.rules = semanticRules(record.rules);
+	for (const f of TRACKED_FIELDS) picked[f] = canonicalPolicyValue(f, get(record, f));
+	picked.rules = canonicalPolicyValue("rules", record.rules || []);
+	if (record.ruleTree != null) picked.ruleTree = canonicalPolicyValue("ruleTree", ruleTreeSchema.parse(record.ruleTree));
 	return sha256(JSON.stringify(stable(picked)));
 }
 
@@ -122,7 +126,7 @@ export function mergeRecordFields(stored, incoming, { reconfirmedFields = new Se
 			}
 			continue;
 		}
-		if (!same(oldValue, newValue)) {
+		if (!samePolicyValue(field, oldValue, newValue)) {
 			set(merged, field, newValue);
 			deltas.push({ field, oldValue: oldValue ?? null, newValue });
 		}
@@ -136,16 +140,38 @@ export function mergeRecordFields(stored, incoming, { reconfirmedFields = new Se
 	];
 
 	// Rules/quotes follow the same "only replace when re-observed" rule.
+	if (incoming.ruleTree != null) {
+		const tree = ruleTreeSchema.parse(incoming.ruleTree);
+		if (!samePolicyValue("ruleTree", stored.ruleTree || null, tree)) {
+			deltas.push({ field: "ruleTree", oldValue: stored.ruleTree || null, newValue: tree });
+		}
+		merged.ruleTree = tree;
+	}
 	const incomingRuleIds = new Set(incoming.rules.map((r) => r.id));
+	if (stored.ruleTree && incoming.ruleTree == null) {
+		const oldRules = new Map(eligibilityRules(stored).map(rule => [rule.id, rule]));
+		if (incoming.rules.some(rule => !oldRules.has(rule.id) || !same(semanticRules([oldRules.get(rule.id)]), semanticRules([rule])))) {
+			issues.push({ code: "rule_tree_requires_review", severity: "blocking",
+				message: "Fresh flat criteria differ from the recorded policy tree. Review the complete policy expression before republishing." });
+		}
+	}
 	const keptRules = (stored.rules || []).filter((r) => !incomingRuleIds.has(r.id));
 	merged.rules = [...keptRules, ...incoming.rules];
-	if (!same(semanticRules(stored.rules), semanticRules(merged.rules))) {
+	if (merged.ruleTree) merged.rules = eligibilityRules(merged).map(({ type, ...rule }) => rule);
+	if (!samePolicyValue("rules", stored.rules || [], merged.rules)) {
 		deltas.push({ field: "rules", oldValue: semanticRules(stored.rules), newValue: semanticRules(merged.rules) });
 	}
-	const keptQuotes = (stored.provenanceQuotes || []).filter((q) => !incomingRuleIds.has(q.ruleId));
+	const quoteIds = new Set(incoming.provenanceQuotes.map(q => q.ruleId));
+	const keptQuotes = (stored.provenanceQuotes || []).filter((q) => !quoteIds.has(q.ruleId));
 	merged.provenanceQuotes = [...keptQuotes, ...incoming.provenanceQuotes];
 
-	for (const k of ["officialTitle", "summary", "description", "tags", "sourceUrl", "sourceSite", "primarySourceId", "authorityTier", "sourceType", "officialLinks", "applicationLink", "requiredDocuments"]) {
+	// A partial extraction must not erase an earlier cited link through a later
+	// whole-object assignment, after the tracked-field merge retained it.
+	merged.officialLinks = { ...(stored.officialLinks || {}) };
+	for (const [key, value] of Object.entries(incoming.officialLinks || {})) {
+		if (!isEmpty(value)) merged.officialLinks[key] = value;
+	}
+	for (const k of ["officialTitle", "summary", "description", "tags", "sourceUrl", "sourceSite", "primarySourceId", "authorityTier", "sourceType", "applicationLink", "requiredDocuments"]) {
 		if (!isEmpty(incoming[k])) merged[k] = incoming[k];
 	}
 	return { merged, deltas, issues };
@@ -174,13 +200,83 @@ export function diffCycle(stored, incoming) {
 	if (close && close.oldValue && close.newValue) {
 		changeType = close.newValue > close.oldValue ? "DEADLINE_EXTENSION" : "DEADLINE_SHORTENED";
 	}
-	return { deltas, changeType };
+	const semanticCategory = classifySemanticChange(deltas, changeType);
+	return { deltas, changeType, semanticCategory };
 }
 
 export function classifyFieldDeltas(deltas) {
 	if (deltas.some((d) => d.field === "eligibility.familyIncome")) return "INCOME_CEILING_CHANGE";
 	if (deltas.some((d) => d.field === "amount")) return "AWARD_UPDATE";
-	if (deltas.some((d) => d.field === "rules" || d.field === "state" || d.field === "level" || d.field.startsWith("eligibility."))) return "CRITERIA_MODIFIED";
+	if (deltas.some((d) => d.field === "rules" || d.field === "ruleTree" || d.field === "state" || d.field === "level" || d.field.startsWith("eligibility."))) return "CRITERIA_MODIFIED";
 	if (deltas.some((d) => /link|Url/i.test(d.field))) return "LINK_UPDATED";
 	return "FIELD_UPDATED";
+}
+
+/**
+ * Classifies changes into standardized semantic categories:
+ *   RELAXATION: Criteria broadened (income limit raised, minimum marks/CGPA lowered, eligible courses/categories expanded)
+ *   RESTRICTION: Criteria narrowed (income limit lowered, minimum marks/CGPA increased, disability requirement tightened)
+ *   DATE_EXTENSION: Cycle closing date extended without a criteria change
+ *   MIXED_CHANGE: Known criteria expanded in some ways and narrowed in others
+ *   PROCEDURAL_UPDATE: Application links, guidelines, official title/summary, or documents updated without eligibility restriction
+ */
+export function classifySemanticChange(deltas = [], changeType = "") {
+	const changes = meaningfulPolicyDeltas(deltas);
+	const criteria = changes.filter(delta => isEligibilityField(delta.field));
+	const directions = new Set();
+	let unknownDirection = false;
+	for (const delta of criteria) {
+		const { field, oldValue, newValue } = delta;
+		if (["eligibility.familyIncome", "familyIncome"].includes(field)) {
+			const before = typeof oldValue === "number" ? oldValue : oldValue?.max;
+			const after = typeof newValue === "number" ? newValue : newValue?.max;
+			if (Number.isFinite(before) && Number.isFinite(after) && before !== after) directions.add(after > before ? 1 : -1);
+			else if (before === after && oldValue?.operator === "LT" && newValue?.operator === "LTE") directions.add(1);
+			else if (before === after && oldValue?.operator === "LTE" && newValue?.operator === "LT") directions.add(-1);
+			else unknownDirection = true;
+		} else if (["eligibility.minCGPA", "minCGPA", "cgpa", "eligibility.percentage", "minPercentage", "percentage"].includes(field)) {
+			if (Number.isFinite(oldValue) && Number.isFinite(newValue) && oldValue !== newValue) directions.add(newValue < oldValue ? 1 : -1);
+			else unknownDirection = true;
+		} else if (["eligibility.casteCategories", "casteCategories"].includes(field) && Array.isArray(oldValue) && Array.isArray(newValue) && oldValue.length && newValue.length) {
+			if (newValue.some(value => !oldValue.includes(value))) directions.add(1);
+			if (oldValue.some(value => !newValue.includes(value))) directions.add(-1);
+		} else if (["eligibility.disabilityRequired", "disabilityRequired"].includes(field) && typeof oldValue === "boolean" && typeof newValue === "boolean") {
+			directions.add(newValue ? -1 : 1);
+		} else unknownDirection = true;
+	}
+	if (directions.size > 1) return "MIXED_CHANGE";
+	// Unknown structural changes must never be described as a global expansion.
+	if (criteria.length) return unknownDirection ? "PROCEDURAL_UPDATE" : directions.has(1) ? "RELAXATION" : directions.has(-1) ? "RESTRICTION" : "PROCEDURAL_UPDATE";
+	const close = changes.find(delta => delta.field === "closesAt");
+	if (close?.oldValue && close?.newValue) {
+		if (new Date(close.newValue) > new Date(close.oldValue)) return "DATE_EXTENSION";
+		if (new Date(close.newValue) < new Date(close.oldValue)) return "RESTRICTION";
+	}
+	// Award changes do not imply broader or narrower eligibility.
+	return "PROCEDURAL_UPDATE";
+}
+
+/** A read projection: immutable stored history is kept intact for audit. */
+export function publicPolicyVersion(version) {
+	const original = Array.isArray(version.deltas) ? version.deltas : [];
+	const deltas = meaningfulPolicyDeltas(original);
+	const unchangedFields = [...new Set([...(version.unchangedFields || []), ...original.filter(delta => isComparablePolicyDelta(delta) && !deltas.includes(delta)).map(delta => delta.field)])];
+	const comparisonIncomplete = Boolean(version.comparisonIncomplete || original.some(delta => !isComparablePolicyDelta(delta)));
+	const routineRefresh = !comparisonIncomplete && Boolean(version.routineRefresh || (version.changeType !== "FIRST_OBSERVED" && version.changeType !== "NEW_CYCLE" && original.length > 0 && deltas.length === 0));
+	let changeType = version.changeType;
+	if (deltas.length) {
+		const close = deltas.find(delta => delta.field === "closesAt");
+		changeType = close && close.oldValue && close.newValue && !deltas.some(delta => isEligibilityField(delta.field))
+			? new Date(close.newValue) > new Date(close.oldValue) ? "DEADLINE_EXTENSION" : "DEADLINE_SHORTENED"
+			: classifyFieldDeltas(deltas);
+	}
+	const names = { amount: "Award terms", applicationLink: "Application website", "officialLinks.guidelinesUrl": "Guidelines document", "officialLinks.faqUrl": "FAQ document", "eligibility.familyIncome": "Annual family income", rules: "Eligibility criteria", ruleTree: "Eligibility routes", level: "Course level", state: "Domicile", closesAt: "Application deadline", opensAt: "Application opening date" };
+	const datesOnly = deltas.length > 0 && deltas.every(delta => POLICY_DATE_FIELDS.has(delta.field));
+	const summary = datesOnly ? changeType === "DEADLINE_EXTENSION" ? "Application deadline extended." : changeType === "DEADLINE_SHORTENED" ? "Application deadline moved earlier." : "Application and verification dates updated."
+		: `${[...new Set(deltas.map(delta => names[delta.field] || delta.field.split(".").at(-1).replace(/([A-Z])/g, " $1")))].join(", ")} updated.`;
+	return { ...version, deltas, unchangedFields, routineRefresh, comparisonIncomplete,
+		...(Array.isArray(version.evidence) ? { relatedEvidence: relevantPolicyEvidence(version.evidence, deltas.flatMap(delta => delta.field === "rules" ? [...(Array.isArray(delta.oldValue) ? delta.oldValue : []), ...(Array.isArray(delta.newValue) ? delta.newValue : [])].map(rule => rule?.field).filter(field => typeof field === "string") : [delta.field])) } : {}),
+		...(deltas.length ? { changeType, semanticCategory: classifySemanticChange(deltas, changeType) } : {}),
+		...(deltas.length && (datesOnly || unchangedFields.length || /^Official values changed:/i.test(version.summary || "")) ? { summary } : {}),
+	};
 }

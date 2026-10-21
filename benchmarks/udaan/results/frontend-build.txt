@@ -1,0 +1,84 @@
+
+> frontend@0.0.0 prebuild
+> npm run scanner:assets
+
+
+> frontend@0.0.0 scanner:assets
+> node scripts/scanner-assets.mjs
+
+
+> frontend@0.0.0 build
+> vite build
+
+vite v8.1.0 building client environment for production...
+[2K
+transforming...✓ 294 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                       0.79 kB │ gzip:   0.40 kB
+dist/assets/local-font-4-DjL33-gN.woff2               7.42 kB
+dist/assets/local-font-6-6IgcOCM7.woff2               8.00 kB
+dist/assets/local-font-10-qRpaaN48.woff2              8.35 kB
+dist/assets/local-font-1-D9N6E8K1.woff2              12.98 kB
+dist/assets/local-font-5-BEAKL7Jp.woff2              15.08 kB
+dist/assets/ClashDisplay-Bold-DPMaIpsk.woff2         15.42 kB
+dist/assets/local-font-7-DC-KSUi6.woff2              16.51 kB
+dist/assets/local-font-15-CQp67-c8.woff2             19.05 kB
+dist/assets/local-font-13-BPKP5Kxy.woff2             19.89 kB
+dist/assets/local-font-11-DmpS2jIq.woff2             21.72 kB
+dist/assets/local-font-12-eXO_dkmS.woff2             27.34 kB
+dist/assets/local-font-8-BgDaEnEv.woff2              29.40 kB
+dist/assets/ClashDisplay-Variable-BID3Ydx1.woff2     29.42 kB
+dist/assets/local-font-2-IcJDqblK.woff2              30.73 kB
+dist/assets/local-font-16-CSVMndht.woff2             47.44 kB
+dist/assets/local-font-14-CXHZlqYU.woff2             48.91 kB
+dist/assets/edu-DfXWk4lR.jpg                         56.16 kB
+dist/assets/faq-CSi8XPHK.webp                        58.69 kB
+dist/assets/logo-GiF-_6a8.png                        63.03 kB
+dist/assets/local-font-3-Cre6nC2_.woff2              76.88 kB
+dist/assets/login-DuqiKoi-.webp                     119.05 kB
+dist/assets/support2-D9otGAQa.webp                  122.59 kB
+dist/assets/signup-s-TlPPML.webp                    370.46 kB
+dist/assets/error-B-8UWIXG.png                      384.27 kB
+dist/assets/pdf.worker.min-CjEcRF4W.mjs           1,264.34 kB
+dist/assets/Settings-DNik1rwd.css                     5.31 kB │ gzip:   1.45 kB
+dist/assets/Scholarships-M32S0MJi.css                 7.54 kB │ gzip:   2.17 kB
+dist/assets/Scanner-BvvXcCD_.css                     12.39 kB │ gzip:   3.08 kB
+dist/assets/index-DMkZp2sA.css                      195.21 kB │ gzip:  32.50 kB
+dist/assets/pdf.worker.min--Ao2iAXA.js                0.06 kB │ gzip:   0.08 kB
+dist/assets/eligibilityDraft-CWhx8DVa.js              0.23 kB │ gzip:   0.19 kB
+dist/assets/bookmarkSync-xWZy9vfa.js                  0.91 kB │ gzip:   0.52 kB
+dist/assets/preload-helper-CZgWQFsJ.js                1.25 kB │ gzip:   0.70 kB
+dist/assets/rolldown-runtime-DAXXjFlN.js              1.26 kB │ gzip:   0.70 kB
+dist/assets/NotFoundPage-CVAhgMvq.js                  1.75 kB │ gzip:   0.83 kB
+dist/assets/index.esm-DwPAdxzS.js                     5.92 kB │ gzip:   2.56 kB
+dist/assets/Login-BUCIOK4J.js                         8.32 kB │ gzip:   3.41 kB
+dist/assets/HowToApply-C7j7Jppf.js                    8.93 kB │ gzip:   3.40 kB
+dist/assets/SignUp-C6oQ9V4B.js                       10.06 kB │ gzip:   3.80 kB
+dist/assets/PreFlightChecklist-CmFo55jB.js           10.20 kB │ gzip:   3.58 kB
+dist/assets/src-BHyPwket.js                          17.24 kB │ gzip:   7.31 kB
+dist/assets/TrustShield-BaZYyEnl.js                  19.50 kB │ gzip:   6.15 kB
+dist/assets/EvidenceModal-D8q-iUWp.js                20.02 kB │ gzip:   5.15 kB
+dist/assets/ui-icons-Cr9OC4H0.js                     20.34 kB │ gzip:   7.10 kB
+dist/assets/Eligibility-DADheEwM.js                  24.84 kB │ gzip:   8.01 kB
+dist/assets/SavedScholarships-BaeRMygP.js            26.07 kB │ gzip:   7.90 kB
+dist/assets/Resources-6v0nxbdk.js                    26.42 kB │ gzip:   8.79 kB
+dist/assets/DocumentVault-CiBlOWuB.js                28.98 kB │ gzip:   8.89 kB
+dist/assets/Support-DZMeBAX1.js                      28.99 kB │ gzip:   8.34 kB
+dist/assets/Scanner-DlBtGiOF.js                      31.24 kB │ gzip:  11.77 kB
+dist/assets/ApplicationGuide-ih6HvDkn.js             32.78 kB │ gzip:   8.76 kB
+dist/assets/Settings-_gdrjVjh.js                     34.26 kB │ gzip:   8.78 kB
+dist/assets/Scholarships-pTHMueBW.js                 35.86 kB │ gzip:  10.08 kB
+dist/assets/animation-gsap-CZHr_r2B.js               73.11 kB │ gzip:  28.66 kB
+dist/assets/react-vendor-DUVq_3mI.js                189.64 kB │ gzip:  59.65 kB
+dist/assets/index-5w4AKkRj.js                       333.84 kB │ gzip: 103.12 kB
+dist/assets/pdf-4fTgpoCq.js                         431.11 kB │ gzip: 129.40 kB
+
+[PLUGIN_TIMINGS] Your build spent significant time in plugins. Here is a breakdown:
+  - vite:asset (44%)
+  - vite:css (23%)
+  - @tailwindcss/vite:generate:build (22%)
+  - rolldown:vite-resolve (4%)
+See https://rolldown.rs/reference/InputOptions.checks#plugintimings for more details.
+
+✓ built in 6.42s

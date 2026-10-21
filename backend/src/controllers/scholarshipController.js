@@ -9,11 +9,17 @@ import SourceSnapshot from "../models/SourceSnapshot.js";
 import IngestionIssue from "../models/IngestionIssue.js";
 import SourceState from "../models/SourceState.js";
 import CrawlRun from "../models/CrawlRun.js";
+import EligibilityRuleVersion from "../models/EligibilityRuleVersion.js";
+import { explainEligibilityImpact } from "../engine/eligibilityImpact.js";
 import { crawlerScheduler } from "../pipeline/scheduler.js";
 import { SOURCE_REGISTRY } from "../pipeline/sources.js";
 import { computeStatus } from "../pipeline/core/status.js";
 import { verifyEvidence } from "../pipeline/core/evidence.js";
 import { evaluationCacheKey } from "../pipeline/lock.js";
+import { canonicalizeCatalogueQuery } from "../engine/catalogueQuery.js";
+import { evaluationProfileSchema, treeEvaluationSchema, validationIssues } from "../engine/ruleSchema.js";
+import { publicPolicyVersion } from "../pipeline/core/changes.js";
+import { getPublicUpdateIndex, withPublicUpdateState } from "../services/policyUpdates.js";
 
 const PUBLIC_FILTER = { "publication.state": "published" };
 const HIDDEN_FIELDS = { legacySnapshot: 0, fieldEvidence: 0, dataHash: 0 };
@@ -26,19 +32,6 @@ function withLiveStatus(doc, now = new Date()) {
 	return { ...doc, status: s.status, statusReason: s.reason, stale: s.stale };
 }
 
-let cachedRecentUpdates = { count: 0, expiresAt: 0 };
-async function getRecentUpdatesCount() {
-	const now = Date.now();
-	if (now < cachedRecentUpdates.expiresAt) {
-		return cachedRecentUpdates.count;
-	}
-	const count = await Scholarship.countDocuments({
-		...PUBLIC_FILTER,
-		hasChanges: true,
-	});
-	cachedRecentUpdates = { count, expiresAt: now + 60000 };
-	return count;
-}
 import { clearScholarshipCache } from "../middlewares/cacheMiddleware.js";
 import { getRedisClient, isRedisAvailable } from "../config/redis.js";
 
@@ -156,9 +149,10 @@ export const getScholarships = async (req, res) => {
 			sort = "deadline",
 			page = 1,
 			limit = 12,
-		} = req.query;
+		} = canonicalizeCatalogueQuery(req.query);
 
 		const conditions = [PUBLIC_FILTER];
+		const updateIndex = await getPublicUpdateIndex();
 
 		let isTextSearch = false;
 		if (search && search.trim()) {
@@ -236,7 +230,7 @@ export const getScholarships = async (req, res) => {
 			conditions.push({ sourceType: { $in: Array.from(resolvedSources) } });
 		}
 
-		if (hasChanges === "true" || hasChanges === true) conditions.push({ hasChanges: true });
+		if (hasChanges === "true" || hasChanges === true) conditions.push({ hasChanges: true, _id: { $in: updateIndex.ids } });
 		
 		const now = new Date();
 		if (status === "all") {
@@ -354,12 +348,12 @@ export const getScholarships = async (req, res) => {
 			if (Object.keys(sortStage).length === 0) Object.assign(sortStage, { _noDeadline: 1, sortDeadline: 1 });
 			[scholarships, total] = await runQuery(fallbackConditions);
 		}
-		scholarships = scholarships.map((d) => withLiveStatus(d, now));
+		scholarships = scholarships.map((d) => withLiveStatus(withPublicUpdateState(d, updateIndex), now));
 		if (!status || status === "active") {
 			scholarships = scholarships.filter((d) => d.status !== "closed");
 		}
 
-		const recentUpdatesCount = await getRecentUpdatesCount();
+		const recentUpdatesCount = updateIndex.count;
 
 		return res.status(200).json({
 			success: true,
@@ -385,6 +379,7 @@ export const getScholarships = async (req, res) => {
  */
 export const getFeaturedScholarships = async (req, res) => {
 	try {
+		const updateIndex = await getPublicUpdateIndex();
 		let featured = await Scholarship.find({
 			...PUBLIC_FILTER,
 			verified: true,
@@ -403,7 +398,7 @@ export const getFeaturedScholarships = async (req, res) => {
 				.lean();
 		}
 
-		return res.status(200).json({ success: true, data: featured.map((d) => withLiveStatus(d)) });
+		return res.status(200).json({ success: true, data: featured.map((d) => withLiveStatus(withPublicUpdateState(d, updateIndex))) });
 	} catch (error) {
 		return res
 			.status(500)
@@ -449,13 +444,14 @@ export const getScholarshipById = async (req, res) => {
 				? ScholarshipCycle.find({ schemeKey: scholarship.schemeKey }).sort({ academicYear: -1 }).lean()
 				: [],
 		]);
+		const updateIndex = await getPublicUpdateIndex();
 
 		return res.status(200).json({
 			success: true,
 			data: {
-				...withLiveStatus(scholarship),
+				...withLiveStatus(withPublicUpdateState(scholarship, updateIndex)),
 				cycles: cycles.map(({ evidence, ...c }) => c),
-				history,
+				history: history.map(publicPolicyVersion),
 			},
 		});
 	} catch (error) {
@@ -492,7 +488,7 @@ export const getScholarshipHistory = async (req, res) => {
 		return res.status(200).json({
 			success: true,
 			count: history.length,
-			data: history,
+			data: history.map(publicPolicyVersion),
 		});
 	} catch (error) {
 		return res
@@ -508,12 +504,20 @@ export const getScholarshipHistory = async (req, res) => {
  */
 export const evaluateScholarships = async (req, res) => {
 	try {
-		let profile = req.body;
+		const request = evaluationProfileSchema.safeParse(req.body === undefined ? {} : req.body);
+		if (!request.success) return res.status(400).json({ success: false, message: "Invalid eligibility profile", errors: validationIssues(request.error) });
+		let profile = request.data;
 
 		// Fallback to user's saved profile if logged in and body is empty
 		if (!profile || Object.keys(profile).length === 0) {
 			if (req.user) {
-				profile = await UserProfile.findOne({ user: req.user._id }).lean();
+				const saved = await UserProfile.findOne({ user: req.user._id }).lean();
+				if (saved) {
+					const fields = Object.fromEntries(Object.keys(evaluationProfileSchema.shape).filter(key => saved[key] !== undefined).map(key => [key, saved[key]]));
+					const parsed = evaluationProfileSchema.safeParse(fields);
+					if (!parsed.success) return res.status(400).json({ success: false, message: "Please review your saved eligibility profile", errors: validationIssues(parsed.error) });
+					profile = parsed.data;
+				} else profile = null;
 			}
 		}
 
@@ -525,12 +529,23 @@ export const evaluateScholarships = async (req, res) => {
 		}
 
 		// Auto-save/sync profile in background if user is authenticated
-		if (req.user && req.body && Object.keys(req.body).length > 0) {
+		if (req.user && Object.keys(request.data).length > 0) {
+			const normalized = normalizeProfile(profile);
+			const updates = { ...request.data };
+			const supplied = (...fields) => fields.some(field => Object.hasOwn(request.data, field));
+			// Partial API submissions must not erase unrelated saved answers. Keep
+			// canonical fields and legacy aliases synchronized only when supplied.
+			if (supplied("educationLevel", "level")) updates.educationLevel = normalized.educationLevel;
+			if (supplied("stream", "courseStream", "eligibleStreams")) Object.assign(updates, { stream: normalized.stream, courseStream: normalized.stream || null });
+			if (supplied("familyIncome", "income")) Object.assign(updates, { familyIncome: normalized.familyIncome, income: normalized.familyIncome });
+			if (supplied("casteCategory", "caste_category", "category")) Object.assign(updates, { casteCategory: normalized.casteCategory, caste_category: normalized.casteCategory });
+			if (supplied("hasDisability", "disabilityRequired")) updates.hasDisability = normalized.hasDisability;
+			for (const field of ["cgpa", "percentage", "gender"]) if (supplied(field)) updates[field] = normalized[field];
 			UserProfile.findOneAndUpdate(
 				{ user: req.user._id },
 				{
 					$set: {
-						...req.body,
+						...updates,
 						user: req.user._id,
 					},
 				},
@@ -547,7 +562,7 @@ export const evaluateScholarships = async (req, res) => {
 			...normalizedProfile,
 			documentsHeld: normalizedProfile.documentsHeld.slice().sort(),
 			nationalOnly: profile.state === "All India",
-			evaluatorVersion: 2,
+			evaluatorVersion: 3,
 		};
 		const profileHash = crypto
 			.createHash("sha256")
@@ -578,12 +593,12 @@ export const evaluateScholarships = async (req, res) => {
 			// The UI's national-only option does not claim any state domicile.
 			query.state = "All India";
 		} else if (profile.state) {
-			query.state = { $in: [profile.state, "All India"] };
+			query.$and = [{ $or: [{ ruleTree: { $ne: null } }, { state: { $in: [profile.state, "All India"] } }] }];
 		}
 		if (profile.gender === "Male") {
-			query["eligibility.gender"] = { $ne: "Female" };
+			(query.$and ||= []).push({ $or: [{ ruleTree: { $ne: null } }, { "eligibility.gender": { $ne: "Female" } }] });
 		} else if (profile.gender === "Female") {
-			query["eligibility.gender"] = { $ne: "Male" };
+			(query.$and ||= []).push({ $or: [{ ruleTree: { $ne: null } }, { "eligibility.gender": { $ne: "Male" } }] });
 		}
 
 		const candidateScholarships = (await Scholarship.find(query).select(HIDDEN_FIELDS).lean())
@@ -601,6 +616,8 @@ export const evaluateScholarships = async (req, res) => {
 				...scholarship,
 				evaluation: {
 					isEligible: evaluation.isEligible,
+					status: evaluation.status,
+					evaluationTree: evaluation.evaluationTree,
 					matchConfidence: evaluation.matchConfidence,
 					documentReadiness: evaluation.documentReadiness,
 					readinessScore: evaluation.readinessScore,
@@ -611,9 +628,9 @@ export const evaluateScholarships = async (req, res) => {
 				},
 			};
 
-			if (evaluation.failedRules.length > 0) {
+			if (evaluation.status === "failed") {
 				ineligible.push(cardData);
-			} else if (evaluation.unknownRules.length > 0) {
+			} else if (evaluation.status === "unknown") {
 				missingProfileData.push(cardData);
 			} else if (evaluation.isEligible) {
 				matched.push(cardData);
@@ -667,6 +684,13 @@ export const evaluateScholarships = async (req, res) => {
 			error: error.message,
 		});
 	}
+};
+
+/** Admin-only, read-only preview. Submitted trees never alter published schemes. */
+export const evaluateRuleTree = (req, res) => {
+	const parsed = treeEvaluationSchema.safeParse(req.body);
+	if (!parsed.success) return res.status(400).json({ success: false, message: "Invalid rule tree or profile", errors: validationIssues(parsed.error) });
+	return res.status(200).json({ success: true, data: evaluateEligibility(parsed.data.profile, { ruleTree: parsed.data.ruleTree }) });
 };
 
 /**
@@ -893,3 +917,175 @@ export const getScholarshipSuggestions = async (req, res) => {
 	}
 };
 
+
+
+/**
+ * POST /api/scholarships/:id/replay
+ * Time-Travel Historical Policy Replay
+ * Evaluates a student profile against a historical EligibilityRuleVersion snapshot
+ * and compares it to the current live version.
+ */
+export const replayScholarshipEligibility = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const query = mongoose.Types.ObjectId.isValid(id) ? { _id: id } : { slug: id };
+		const scholarship = await Scholarship.findOne({ ...query, ...PUBLIC_FILTER }).lean();
+		if (!scholarship) {
+			return res.status(404).json({ success: false, message: "Scholarship not found" });
+		}
+
+		const body = req.body || {};
+		const rawProfile = body.profile;
+		let profile = null;
+
+		if (rawProfile && Object.keys(rawProfile).length > 0) {
+			const parsed = evaluationProfileSchema.safeParse(rawProfile);
+			if (!parsed.success) {
+				return res.status(400).json({ success: false, message: "Invalid eligibility profile", errors: validationIssues(parsed.error) });
+			}
+			profile = parsed.data;
+		} else if (req.user) {
+			const saved = await UserProfile.findOne({ user: req.user._id }).lean();
+			if (saved) {
+				const fields = Object.fromEntries(
+					Object.keys(evaluationProfileSchema.shape)
+						.filter((key) => saved[key] !== undefined)
+						.map((key) => [key, saved[key]])
+				);
+				const parsed = evaluationProfileSchema.safeParse(fields);
+				if (parsed.success) profile = parsed.data;
+			}
+		}
+
+		if (!profile) {
+			return res.status(400).json({
+				success: false,
+				message: "Please provide student profile details to replay eligibility.",
+			});
+		}
+
+		const { targetDate, versionKey } = body;
+		if (!targetDate && !versionKey) {
+			return res.status(400).json({
+				success: false,
+				message: "Provide either targetDate or versionKey for historical replay.",
+			});
+		}
+
+		let historicalVersion = null;
+		if (versionKey) {
+			historicalVersion = await EligibilityRuleVersion.findOne({
+				versionKey,
+				scholarship: scholarship._id,
+			}).lean();
+			if (!historicalVersion) {
+				historicalVersion = await EligibilityRuleVersion.findOne({ versionKey }).lean();
+			}
+		} else if (targetDate) {
+			const targetDateObj = new Date(targetDate);
+			if (Number.isNaN(targetDateObj.getTime())) {
+				return res.status(400).json({ success: false, message: "Invalid targetDate format" });
+			}
+			historicalVersion = await EligibilityRuleVersion.findOne({
+				scholarship: scholarship._id,
+				observedAt: { $lte: targetDateObj },
+			})
+				.sort({ observedAt: -1 })
+				.lean();
+
+			if (!historicalVersion) {
+				historicalVersion = await EligibilityRuleVersion.findOne({
+					scholarship: scholarship._id,
+				})
+					.sort({ observedAt: 1 })
+					.lean();
+			}
+		}
+
+		if (!historicalVersion) {
+			return res.status(404).json({
+				success: false,
+				message: "No historical rule version found for the requested criteria.",
+			});
+		}
+
+		let currentVersion = null;
+		if (scholarship.eligibilityVersion) {
+			currentVersion = await EligibilityRuleVersion.findById(scholarship.eligibilityVersion).lean();
+		}
+		if (!currentVersion) {
+			currentVersion = await EligibilityRuleVersion.findOne({ scholarship: scholarship._id })
+				.sort({ observedAt: -1 })
+				.lean();
+		}
+		if (!currentVersion) {
+			currentVersion = {
+				_id: null,
+				versionKey: "current_catalogue",
+				snapshot: scholarship,
+				evidence: scholarship.fieldEvidence || [],
+				verified: Boolean(scholarship.verified),
+				observedAt: scholarship.updatedAt || new Date(),
+			};
+		}
+
+		const historicalEval = evaluateEligibility(profile, historicalVersion.snapshot || historicalVersion);
+		const currentEval = evaluateEligibility(profile, currentVersion.snapshot || currentVersion);
+
+		const impact = explainEligibilityImpact(profile, historicalVersion, currentVersion);
+		const statusFlipped = historicalEval.status !== currentEval.status;
+
+		return res.status(200).json({
+			success: true,
+			scholarship: {
+				id: scholarship._id,
+				slug: scholarship.slug,
+				title: scholarship.title,
+				schemeKey: scholarship.schemeKey,
+			},
+			historical: {
+				versionKey: historicalVersion.versionKey || null,
+				observedAt: historicalVersion.observedAt || null,
+				verified: Boolean(historicalVersion.verified),
+				status: historicalEval.status,
+				isEligible: historicalEval.isEligible,
+				matchConfidence: historicalEval.matchConfidence,
+				passedRules: historicalEval.passedRules,
+				failedRules: historicalEval.failedRules,
+				unknownRules: historicalEval.unknownRules,
+				documentReadiness: historicalEval.documentReadiness,
+				evaluationTree: historicalEval.evaluationTree || null,
+			},
+			current: {
+				versionKey: currentVersion.versionKey || null,
+				observedAt: currentVersion.observedAt || null,
+				verified: Boolean(currentVersion.verified),
+				status: currentEval.status,
+				isEligible: currentEval.isEligible,
+				matchConfidence: currentEval.matchConfidence,
+				passedRules: currentEval.passedRules,
+				failedRules: currentEval.failedRules,
+				unknownRules: currentEval.unknownRules,
+				documentReadiness: currentEval.documentReadiness,
+				evaluationTree: currentEval.evaluationTree || null,
+			},
+			statusFlipped,
+			transition: {
+				from: historicalEval.status,
+				to: currentEval.status,
+				summary: statusFlipped
+					? `Your eligibility changed from ${historicalEval.status} to ${currentEval.status} between versions.`
+					: `Your eligibility remained ${currentEval.status} across versions.`,
+			},
+			impact,
+			changes: impact?.changes || [],
+		});
+	} catch (error) {
+		console.error("Error running historical replay:", error);
+		return res.status(500).json({
+			success: false,
+			message: "Failed to replay eligibility",
+			error: error.message,
+		});
+	}
+};

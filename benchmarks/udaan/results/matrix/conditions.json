@@ -1,0 +1,27 @@
+{
+  "startedAt": "2026-10-21T11:54:12.735Z",
+  "cpu": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+  "logicalCpus": 8,
+  "ramBytes": 16952647680,
+  "platform": "win32",
+  "node": "v22.22.0",
+  "k6": "k6.exe v2.3.0 (commit/e088784614, go1.26.8, windows/amd64)",
+  "revision": "df4c51e2dd02426f089101cc2c87f21aa1e382f0",
+  "conditions": {
+    "mongoCpu": 2,
+    "mongoRam": "2GiB",
+    "redisCpu": 1,
+    "redisRam": "256MiB",
+    "mongoPoolMaxPerApi": 20,
+    "apiProcesses": 2,
+    "activeLoadTargets": 1,
+    "perIpQuotaExcluded": true,
+    "backgroundSchedulersExcluded": true,
+    "guestEligibility": true,
+    "warmupSeconds": 5,
+    "measurementSeconds": 15,
+    "thinkTime": 0,
+    "closedLoop": true,
+    "fixtureScholarships": 300
+  }
+}

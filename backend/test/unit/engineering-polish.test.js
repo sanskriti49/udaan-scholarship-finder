@@ -151,7 +151,7 @@ test("ruleEvaluator: minMatchScore filters eligibility match alerts accurately",
 	assert.equal(typeof passesHigh, "boolean");
 });
 
-test("ruleEvaluator: null, undefined, or empty target values safely fail without coercing to zero", () => {
+test("ruleEvaluator: corrupt target values stay unknown without coercing to zero", () => {
 	const profile = {
 		familyIncome: 100000,
 		cgpa: 8.5,
@@ -180,10 +180,10 @@ test("ruleEvaluator: null, undefined, or empty target values safely fail without
 	};
 
 	const result = evaluateEligibility(profile, scholarshipWithNullTarget);
-	// Null target must NOT be coerced to 0 (which would cause unexpected comparison), must fail condition
+	// Corrupt policy data is unverified, rather than a student's failed criterion.
 	assert.equal(result.isEligible, false);
-	assert.equal(result.failedRules.length, 1);
-	assert.equal(result.failedRules[0].ruleId, "rule_corrupt_income");
+	assert.equal(result.failedRules.length, 0);
+	assert.equal(result.unknownRules[0].ruleId, "rule_corrupt_income");
 });
 
 test("ruleEvaluator: NaN inputs safely fail comparison operators", () => {
@@ -277,7 +277,7 @@ test("buildDeterministicCacheKey: sorts query parameters alphabetically and norm
 	const keyB = buildDeterministicCacheKey("udaan:cache:scholarships", reqB);
 
 	assert.equal(keyA, keyB, "Different query param ordering and casing must yield the same cache key");
-	assert.ok(keyA.includes("category=stem&page=1&state=delhi"));
+	assert.ok(keyA.includes("category=STEM&page=1&state=Delhi"));
 });
 
 test("buildDeterministicCacheKey: strips marketing/tracking and cache-busting params", () => {

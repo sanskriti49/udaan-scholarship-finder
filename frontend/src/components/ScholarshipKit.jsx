@@ -11,6 +11,7 @@ import { formatGrant } from "../utils/formatGrant";
 import { cleanOfficialUrl, formatChangeNotice } from "../utils/formatEvidence";
 import { deadlineInfo, whyItFits } from "../utils/scholarshipMeta";
 import AddToCalendarButton from "./AddToCalendarButton";
+import ScholarshipTranslator from "./ScholarshipTranslator";
 
 export const focusRing =
 	"focus:outline-none focus-visible:ring-4 focus-visible:ring-yellow-200 focus-visible:ring-offset-0";
@@ -213,6 +214,7 @@ export function ScholarshipCard({
 						{s.title}
 					</button>
 				</h3>
+				<ScholarshipTranslator title={s.title} scholarshipId={s._id || s.id || s.slug} compact className="mt-1.5" />
 				{s.organization && (
 					<p className="mt-1 line-clamp-1 text-sm font-medium text-emerald-950/55">
 						{s.organization}

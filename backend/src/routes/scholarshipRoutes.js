@@ -5,14 +5,18 @@ import {
 	getScholarshipById,
 	getScholarshipHistory,
 	evaluateScholarships,
+	evaluateRuleTree,
 	getCrawlerStatus,
 	runCrawler,
 	flushScholarshipCache,
 	getScholarshipSuggestions,
 	getIngestionIssues,
 	getScholarshipEvidence,
+	replayScholarshipEligibility,
 } from "../controllers/scholarshipController.js";
 import { cacheMiddleware } from "../middlewares/cacheMiddleware.js";
+import { translateScholarshipTitle } from "../controllers/translationController.js";
+import { rateLimiter } from "../middlewares/rateLimiterMiddleware.js";
 import {
 	protect,
 	authorizeRoles,
@@ -37,8 +41,11 @@ router.get("/crawler/issues", protect, authorizeRoles("admin"), getIngestionIssu
 router.get("/:id", cacheMiddleware({ ttl: 300 }), getScholarshipById);
 router.get("/:id/history", cacheMiddleware({ ttl: 300 }), getScholarshipHistory);
 router.get("/:id/evidence", cacheMiddleware({ ttl: 300 }), getScholarshipEvidence);
+router.post("/:id/translate", rateLimiter({ windowMs: 60000, max: 30, keyPrefix: "translation" }), translateScholarshipTitle);
+router.post("/:id/replay", optionalAuth, replayScholarshipEligibility);
 
 router.post("/evaluate", optionalAuth, evaluateScholarships);
 router.post("/match", optionalAuth, evaluateScholarships);
+router.post("/evaluate-tree", protect, authorizeRoles("admin"), evaluateRuleTree);
 
 export default router;

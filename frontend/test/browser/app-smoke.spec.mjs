@@ -39,11 +39,12 @@ for (const width of [390, 1440]) {
     await page.locator('a[href="/scholarships"]').filter({ visible: true }).first().click();
     await expect(page.getByRole("heading", { name: /Let’s find a scholarship/ })).toBeVisible();
     await page.getByRole("button", { name: scholarship.title, exact: true }).first().click();
-    await page.getByRole("button", { name: "Full rules", exact: true }).click();
     const dialog = page.getByRole("dialog");
+    await dialog.getByRole("tab", { name: "Eligibility", exact: true }).click();
+    await dialog.locator("summary").filter({ hasText: "Source excerpts" }).click();
     await expect(dialog.getByText(excerpt, { exact: true })).toBeVisible();
     await expect(dialog.getByText("Generated income explanation", { exact: true })).toHaveCount(0);
-    await dialog.getByRole("button", { name: /Documents/ }).click();
+    await dialog.getByRole("tab", { name: "Documents", exact: true }).click();
     await expect(dialog.getByText("Preparation suggestion — not verified", { exact: true })).toBeVisible();
     await page.keyboard.press("Escape");
     await page.goto("/eligibility");
@@ -60,7 +61,8 @@ test("empty source evidence never turns generated criteria into verified quotati
   await page.goto("/scholarships");
   await page.getByRole("button", { name: scholarship.title, exact: true }).first().click();
   await expect(page.getByRole("heading", { name: "Stored source excerpts", exact: true })).toHaveCount(0);
-  await page.getByRole("button", { name: "Full rules", exact: true }).click();
+  await page.getByRole("dialog").getByRole("tab", { name: "Eligibility", exact: true }).click();
+  await page.getByRole("dialog").locator("summary").filter({ hasText: "Source excerpts" }).click();
   await expect(page.getByRole("dialog").getByText(/No source excerpt is available/)).toBeVisible();
   await expect(page.getByRole("dialog").locator("blockquote")).toHaveCount(0);
 });

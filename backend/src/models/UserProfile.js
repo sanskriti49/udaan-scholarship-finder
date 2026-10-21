@@ -11,7 +11,7 @@ const profileSchema = new mongoose.Schema(
 		fullName: String,
 		educationLevel: {
 			type: String,
-			enum: ["Class 10", "Class 12", "UG", "PG", "PhD"],
+			enum: ["Class 10", "Class 12", "UG", "PG", "PhD", "Diploma"],
 		},
 		courseStream: {
 			type: String,
@@ -19,6 +19,7 @@ const profileSchema = new mongoose.Schema(
 				"Engineering",
 				"Medical",
 				"Arts",
+				"Humanities",
 				"Commerce",
 				"Science",
 				"Diploma",

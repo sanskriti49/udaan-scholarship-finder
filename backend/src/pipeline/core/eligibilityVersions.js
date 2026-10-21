@@ -1,6 +1,7 @@
 import { sha256 } from "./http.js";
 import { verifyEvidence } from "./evidence.js";
 import { eligibilityRules } from "../../engine/ruleEvaluator.js";
+import { ruleTreeSchema, semanticRuleTree } from "../../engine/ruleSchema.js";
 
 const serialize = (value) => JSON.parse(JSON.stringify(value));
 const canonical = (value) => {
@@ -10,7 +11,7 @@ const canonical = (value) => {
 };
 
 export function eligibilitySnapshot(record) {
-	return serialize({ rules: eligibilityRules(record), provenanceQuotes: record.provenanceQuotes || [],
+	return serialize({ rules: eligibilityRules(record), ...(record.ruleTree != null ? { ruleTree: ruleTreeSchema.parse(record.ruleTree) } : {}), provenanceQuotes: record.provenanceQuotes || [],
 		eligibility: record.eligibility || {}, state: record.state, level: record.level,
 		dataQuality: { unknownFields: record.dataQuality?.unknownFields || [] } });
 }
@@ -18,11 +19,22 @@ export function eligibilitySnapshot(record) {
 export function ruleContentHash(snapshot) {
 	const rules = snapshot.rules.map(({ id, field, operator, targetValue }) => ({ id, field, operator,
 		targetValue: operator === "IN" && Array.isArray(targetValue) ? [...targetValue].sort() : targetValue })).sort((a, b) => a.id.localeCompare(b.id));
-	return sha256(JSON.stringify(canonical({ rules, manualReview: snapshot.dataQuality?.unknownFields?.includes("eligibility") === true })));
+	return sha256(JSON.stringify(canonical({ rules, ...(snapshot.ruleTree != null ? { ruleTree: semanticRuleTree(snapshot.ruleTree) } : {}), manualReview: snapshot.dataQuality?.unknownFields?.includes("eligibility") === true })));
 }
 
 export async function checkedRuleEvidence(snapshot, store) {
 	const evidence = [];
+	// Leaf excerpts alone cannot establish how alternatives/negations are joined.
+	// Tree versions also need an excerpt covering the overall policy expression.
+	if (snapshot.ruleTree != null) {
+		const quote = snapshot.provenanceQuotes.find(q => q.ruleId === "policy_tree");
+		if (!quote?.quote?.trim() || !quote.snapshotId || !/^https?:\/\//i.test(quote.sourceUrl || "")) return null;
+		const source = await store.getSnapshot(String(quote.snapshotId));
+		const fullPolicy = snapshot._fieldEvidence?.find(e => e.field === "eligibility" &&
+			String(e.snapshotId) === String(quote.snapshotId) && e.quote === quote.quote && e.url === quote.sourceUrl);
+		if (!source || !fullPolicy || !verifyEvidence(fullPolicy, source).ok) return null;
+		evidence.push({ ...fullPolicy, ruleId: "policy_tree" });
+	}
 	for (const rule of snapshot.rules) {
 		const quote = snapshot.provenanceQuotes.find(q => q.ruleId === rule.id);
 		if (!quote?.quote?.trim() || !quote.snapshotId || !/^https?:\/\//i.test(quote.sourceUrl || "")) return null;

@@ -1,0 +1,84 @@
+TAP version 13
+# [EmailService] Logo found: C:\\Users\\sansk\\Downloads\\udaan-scholarship-finder\\frontend\\src\\assets\\images\\logo.png
+# [EmailService] Running in simulated mode (logs to database).
+# [Redis] Client connected successfully.
+# [Redis] Client ready for operations.
+# Subtest: actual MongoStore persists recorded ingestion, reuses hashes, versions changed deadlines and survives upstream failure
+ok 1 - actual MongoStore persists recorded ingestion, reuses hashes, versions changed deadlines and survives upstream failure
+  ---
+  duration_ms: 10875.882
+  type: 'test'
+  ...
+# Subtest: actual MongoStore keeps immutable cited eligibility versions and a pending recoverable change event
+ok 2 - actual MongoStore keeps immutable cited eligibility versions and a pending recoverable change event
+  ---
+  duration_ms: 215.5817
+  type: 'test'
+  ...
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderQueue] Enqueued '7_days' reminder for 'Synthetic reminder fixture' (Job ID: reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21, Delay: 0 mins).
+# [ReminderWorker] Processing reminder job reminder_6ad8a79c58abf9d819389472_6ad8a79c58abf9d819389473_7_days_2026-10-21 for user 6ad8a79c58abf9d819389472 on 'Synthetic reminder fixture' (7_days).
+# [ReminderWorker] Processing reminder job synthetic-replay for user 6ad8a79c58abf9d819389472 on 'Synthetic reminder fixture' (7_days).
+# [ReminderWorker] Reminder already delivered for user 6ad8a79c58abf9d819389472 on Synthetic reminder fixture (deadline_7_days:6ad8a79c58abf9d819389472:6ad8a79c58abf9d819389473:2026-10-21). Skipping cleanly.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: real BullMQ retries a transient failure, retains work without a worker, and MongoDB suppresses replayed reminders
+ok 3 - real BullMQ retries a transient failure, retains work without a worker, and MongoDB suppresses replayed reminders
+  ---
+  duration_ms: 5262.4333
+  type: 'test'
+  ...
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# Subtest: actual MongoDB eligibility delivery retries transport failure without duplicating inbox records and retains its receipt after dismissal
+ok 4 - actual MongoDB eligibility delivery retries transport failure without duplicating inbox records and retains its receipt after dismissal
+  ---
+  duration_ms: 97.9683
+  type: 'test'
+  ...
+# [ReminderWorker] Worker initialized with concurrency: 5.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# [ReminderWorker] Job eligibility_4b908f9d1a8597782c143ddc_6ad8a79c2e2b8943e1643c08 completed successfully: COMPLETED
+# (node:28376) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# [ReminderWorker] Job synthetic-eligibility-replay completed successfully: COMPLETED
+# [ReminderWorker] Worker closed gracefully.
+# Subtest: real pending-event relay and BullMQ worker deliver a cited rule-change alert only to an opted-in affected student
+ok 5 - real pending-event relay and BullMQ worker deliver a cited rule-change alert only to an opted-in affected student
+  ---
+  duration_ms: 313.7511
+  type: 'test'
+  ...
+# [ReminderQueue] Queue closed gracefully.
+# [Redis] Client closed gracefully.
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19944.1199

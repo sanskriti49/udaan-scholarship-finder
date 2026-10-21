@@ -1,0 +1,45 @@
+{
+  "measuredAt": "2026-10-21T11:52:49.824Z",
+  "transport": "Recorded captures and synthetic data; no live portal or SMTP delivery",
+  "checks": {
+    "ingestion": {
+      "published": 31,
+      "initialSnapshots": 9,
+      "initialVersions": 31,
+      "unchangedCreatesNoVersions": true,
+      "changedDeadlineRecords": 29,
+      "upstreamFailurePreservesData": true
+    },
+    "ruleVersions": {
+      "linkedVersions": 2,
+      "oldRulePreserved": true,
+      "pendingEvent": true,
+      "repeatDoesNotDuplicate": true
+    },
+    "reminders": {
+      "concurrentEnqueues": 20,
+      "uniqueQueuedJobs": 1,
+      "processorAttemptsBeforeSuccess": 2,
+      "replaySuppressed": true,
+      "notifications": 1,
+      "emailDisabled": true,
+      "workerRestartRetainsQueuedJob": true
+    },
+    "delivery": {
+      "inboxRecords": 1,
+      "simulatedTransportAttempts": 2,
+      "completedReceiptSuppressesRetry": true,
+      "realEmailSent": false
+    },
+    "eligibilityFanout": {
+      "pendingEventRelayed": true,
+      "realWorker": true,
+      "recipients": 2,
+      "optedInAffectedNotifications": 1,
+      "optedOutSkipped": true,
+      "sourceQuotePresent": true,
+      "replayDoesNotDuplicate": true,
+      "emailDisabled": true
+    }
+  }
+}

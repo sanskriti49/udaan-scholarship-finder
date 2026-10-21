@@ -1,0 +1,194 @@
+
+> frontend@0.0.0 test
+> node --test test/*.test.mjs
+
+TAP version 13
+# Subtest: auth return paths stay local and avoid auth loops
+ok 1 - auth return paths stay local and avoid auth loops
+  ---
+  duration_ms: 5.6556
+  type: 'test'
+  ...
+# Subtest: switching auth forms preserves query strings, percent signs and anchors
+ok 2 - switching auth forms preserves query strings, percent signs and anchors
+  ---
+  duration_ms: 1.3139
+  type: 'test'
+  ...
+# Subtest: post-auth navigation decodes only once and tolerates literal percent signs
+ok 3 - post-auth navigation decodes only once and tolerates literal percent signs
+  ---
+  duration_ms: 2.4936
+  type: 'test'
+  ...
+# Subtest: descriptions and generated rules cannot become quotations
+ok 4 - descriptions and generated rules cannot become quotations
+  ---
+  duration_ms: 4.4211
+  type: 'test'
+  ...
+# Subtest: stored quotations keep their exact text and are unverified until checked
+ok 5 - stored quotations keep their exact text and are unverified until checked
+  ---
+  duration_ms: 3.0647
+  type: 'test'
+  ...
+# Subtest: empty or failed server checks never inherit a verified local fallback
+ok 6 - empty or failed server checks never inherit a verified local fallback
+  ---
+  duration_ms: 0.6618
+  type: 'test'
+  ...
+# Subtest: unsafe and missing URLs cannot become source links
+ok 7 - unsafe and missing URLs cannot become source links
+  ---
+  duration_ms: 0.6514
+  type: 'test'
+  ...
+# Subtest: legacy mandatory flags become suggestions, and failed source checks downgrade cited requirements
+ok 8 - legacy mandatory flags become suggestions, and failed source checks downgrade cited requirements
+  ---
+  duration_ms: 0.7745
+  type: 'test'
+  ...
+# Subtest: course-specific annual rates use a compact range and preserve every tier
+ok 9 - course-specific annual rates use a compact range and preserve every tier
+  ---
+  duration_ms: 75.3634
+  type: 'test'
+  ...
+# Subtest: different payment periods are not presented as a comparable range
+ok 10 - different payment periods are not presented as a comparable range
+  ---
+  duration_ms: 0.4275
+  type: 'test'
+  ...
+# Subtest: monthly range text keeps its actual period and course qualification
+ok 11 - monthly range text keeps its actual period and course qualification
+  ---
+  duration_ms: 0.5859
+  type: 'test'
+  ...
+# Subtest: monthly award duration stays visible and a total award is not annualized
+ok 12 - monthly award duration stays visible and a total award is not annualized
+  ---
+  duration_ms: 1.3475
+  type: 'test'
+  ...
+# Subtest: long explanations remain available without becoming oversized headings
+ok 13 - long explanations remain available without becoming oversized headings
+  ---
+  duration_ms: 1.0522
+  type: 'test'
+  ...
+# Subtest: missing or invalid numeric amounts do not invent a figure
+ok 14 - missing or invalid numeric amounts do not invent a figure
+  ---
+  duration_ms: 0.6505
+  type: 'test'
+  ...
+# Subtest: semester numbers and ambiguous degrees never become guessed courses
+ok 15 - semester numbers and ambiguous degrees never become guessed courses
+  ---
+  duration_ms: 15.2185
+  type: 'test'
+  ...
+# Subtest: transfer only offers valid income and exact category codes
+ok 16 - transfer only offers valid income and exact category codes
+  ---
+  duration_ms: 1.9086
+  type: 'test'
+  ...
+# Subtest: draft transfer copies only selected fields and can be cleared
+ok 17 - draft transfer copies only selected fields and can be cleared
+  ---
+  duration_ms: 0.9832
+  type: 'test'
+  ...
+# Subtest: Indian dates are strict and never use JS date guessing
+ok 18 - Indian dates are strict and never use JS date guessing
+  ---
+  duration_ms: 8.0008
+  type: 'test'
+  ...
+# Subtest: Indian currency and year ranges
+ok 19 - Indian currency and year ranges
+  ---
+  duration_ms: 4.9669
+  type: 'test'
+  ...
+# Subtest: income extraction distinguishes issue, birth and expiry dates
+ok 20 - income extraction distinguishes issue, birth and expiry dates
+  ---
+  duration_ms: 1.7296
+  type: 'test'
+  ...
+# Subtest: ambiguous values require review; manual edits retain original evidence
+ok 21 - ambiguous values require review; manual edits retain original evidence
+  ---
+  duration_ms: 0.5902
+  type: 'test'
+  ...
+# Subtest: explicit FY and validity labels do not manufacture an expiry date
+ok 22 - explicit FY and validity labels do not manufacture an expiry date
+  ---
+  duration_ms: 0.49
+  type: 'test'
+  ...
+# Subtest: bonafide extracts session, study and optional AISHE without confusing names
+ok 23 - bonafide extracts session, study and optional AISHE without confusing names
+  ---
+  duration_ms: 2.8144
+  type: 'test'
+  ...
+# Subtest: provenance gate, verified pass/mismatch and incomplete evidence
+ok 24 - provenance gate, verified pass/mismatch and incomplete evidence
+  ---
+  duration_ms: 1.3878
+  type: 'test'
+  ...
+# Subtest: general dates and invalid manual values never fabricate compliance
+ok 25 - general dates and invalid manual values never fabricate compliance
+  ---
+  duration_ms: 0.3243
+  type: 'test'
+  ...
+# Subtest: file signatures, extension and size are checked
+ok 26 - file signatures, extension and size are checked
+  ---
+  duration_ms: 5.2882
+  type: 'test'
+  ...
+# Subtest: scanner contains no persistence, API upload, or console logging sinks
+ok 27 - scanner contains no persistence, API upload, or console logging sinks
+  ---
+  duration_ms: 150.1344
+  type: 'test'
+  ...
+# Subtest: caste extraction detects OBC, Central DoPT OM 36012/22/93 clause, subcaste and authority
+ok 28 - caste extraction detects OBC, Central DoPT OM 36012/22/93 clause, subcaste and authority
+  ---
+  duration_ms: 5.0104
+  type: 'test'
+  ...
+# Subtest: catalogue metadata cannot manufacture certificate compliance
+ok 29 - catalogue metadata cannot manufacture certificate compliance
+  ---
+  duration_ms: 1.8286
+  type: 'test'
+  ...
+# Subtest: explicit labelled course wording has evidence and can support a degree prefill
+ok 30 - explicit labelled course wording has evidence and can support a degree prefill
+  ---
+  duration_ms: 0.3769
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 827.3463

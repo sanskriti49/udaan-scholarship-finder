@@ -1,4 +1,11 @@
 import api from "./api";
+import { createTitleTranslator } from "../utils/translator";
+
+export const translateScholarshipTitle = createTitleTranslator(async ({ scholarshipId, ...languages }, signal) => {
+	const response = await api.post(`/scholarships/${encodeURIComponent(scholarshipId)}/translate`, languages, { signal, timeout: 12000 });
+	if (!response.data?.success) throw new Error("Translation is unavailable. Please try again.");
+	return response.data.data;
+});
 
 export const getScholarships = async (params = {}) => {
 	const response = await api.get("/scholarships", { params });
@@ -15,8 +22,18 @@ export const evaluateProfile = async (profileData) => {
 	return response.data;
 };
 
-export const getScholarshipHistory = async (id) => {
-	const response = await api.get(`/scholarships/${id}/history`);
+export const getScholarshipHistory = async (id, options = {}) => {
+	const response = await api.get(`/scholarships/${encodeURIComponent(id)}/history`, options);
+	return response.data;
+};
+
+export const getScholarshipEvidence = async (id, options = {}) => {
+	const response = await api.get(`/scholarships/${encodeURIComponent(id)}/evidence`, options);
+	return response.data;
+};
+
+export const replayScholarshipEligibility = async (id, payload, options = {}) => {
+	const response = await api.post(`/scholarships/${encodeURIComponent(id)}/replay`, payload, options);
 	return response.data;
 };
 

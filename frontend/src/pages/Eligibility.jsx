@@ -67,6 +67,7 @@ const STREAMS = [
 	{ value: "Science", label: "Science" },
 	{ value: "Commerce", label: "Commerce" },
 	{ value: "Arts", label: "Arts" },
+	{ value: "Humanities", label: "Humanities" },
 	{ value: "Other", label: "Other" },
 ];
 
@@ -394,6 +395,7 @@ export default function EligibilityPage() {
 		casteCategory: "",
 		state: "",
 		cgpa: "",
+		percentage: "",
 		hasDisability: null,
 		...scannerDraft?.prefill,
 	});
@@ -442,6 +444,7 @@ export default function EligibilityPage() {
 				...activeForm,
 				familyIncome: activeForm.familyIncome == null || String(activeForm.familyIncome).trim() === "" ? null : Number(activeForm.familyIncome),
 				cgpa: activeForm.cgpa == null || String(activeForm.cgpa).trim() === "" ? null : Number(activeForm.cgpa),
+				percentage: activeForm.percentage == null || String(activeForm.percentage).trim() === "" ? null : Number(activeForm.percentage),
 				documentsHeld: activeDocs,
 			};
 			const response = await evaluateProfile(payload);
@@ -498,6 +501,7 @@ export default function EligibilityPage() {
 							p.casteCategory || p.caste_category || prev.casteCategory,
 						state: p.state || prev.state,
 						cgpa: p.cgpa ?? prev.cgpa,
+						percentage: p.percentage ?? prev.percentage,
 						hasDisability:
 							p.hasDisability !== undefined
 								? p.hasDisability
@@ -553,9 +557,10 @@ export default function EligibilityPage() {
 		if (
 			step === 2 &&
 			((formData.familyIncome !== "" && (!Number.isFinite(Number(formData.familyIncome)) || Number(formData.familyIncome) < 0)) ||
-				(formData.cgpa !== "" && (!Number.isFinite(Number(formData.cgpa)) || Number(formData.cgpa) < 0 || Number(formData.cgpa) > 10)))
+				(formData.cgpa !== "" && (!Number.isFinite(Number(formData.cgpa)) || Number(formData.cgpa) < 0 || Number(formData.cgpa) > 10)) ||
+				(formData.percentage !== "" && (!Number.isFinite(Number(formData.percentage)) || Number(formData.percentage) < 0 || Number(formData.percentage) > 100)))
 		) {
-			toast.info("Use a non-negative income and CGPA from 0 to 10, or leave unknown values blank.");
+			toast.info("Use a non-negative income, CGPA from 0 to 10, and marks from 0 to 100%, or leave unknown values blank.");
 			return;
 		}
 		if (step < last) goTo(step + 1);
@@ -577,7 +582,7 @@ export default function EligibilityPage() {
 		],
 		[
 			2,
-			`${formData.familyIncome === "" ? "Income not entered" : `${inr(formData.familyIncome)} / yr`} · ${formData.cgpa === "" ? "CGPA not entered" : `CGPA ${formData.cgpa}`}`,
+			`${formData.familyIncome === "" ? "Income not entered" : `${inr(formData.familyIncome)} / yr`} · ${formData.cgpa === "" ? "CGPA not entered" : `CGPA ${formData.cgpa}`} · ${formData.percentage === "" ? "Marks not entered" : `${formData.percentage}% marks`}`,
 		],
 		[3, `${documentsHeld.length} of ${COMMON_DOCUMENTS.length} certificates`],
 	];
@@ -808,6 +813,15 @@ export default function EligibilityPage() {
 											display={(v) => Number(v).toFixed(1)}
 											hint="Enter the CGPA reported by your institution; leave blank if unavailable"
 										/>
+										<DualNumber
+											id="elig-percentage"
+											label="Latest marks percentage (out of 100)"
+											value={formData.percentage}
+											onChange={(v) => set("percentage", v)}
+											min={0} max={100} step={0.1}
+											display={(v) => `${Number(v)}%`}
+											hint="Use your institution's reported percentage. CGPA is not converted automatically; leave blank if unavailable."
+										/>
 									</>
 								)}
 								{step === 3 && (
@@ -1026,6 +1040,7 @@ export default function EligibilityPage() {
 					isOpen={isEvidenceOpen}
 					onClose={() => setIsEvidenceOpen(false)}
 					scholarship={evidenceScholarship}
+					userProfile={{ ...formData, documentsHeld }}
 				/>
 			)}
 		</main>

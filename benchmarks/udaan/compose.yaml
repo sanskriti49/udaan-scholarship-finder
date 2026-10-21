@@ -1,0 +1,13 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: udaan-audit-mongo
+    ports: ["127.0.0.1:27028:27017"]
+    cpus: 2
+    mem_limit: 2g
+  redis:
+    image: redis:7-alpine
+    container_name: udaan-audit-redis
+    ports: ["127.0.0.1:6385:6379"]
+    cpus: 1
+    mem_limit: 256m

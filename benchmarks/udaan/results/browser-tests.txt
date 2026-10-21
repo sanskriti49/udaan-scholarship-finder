@@ -1,0 +1,30 @@
+
+> frontend@0.0.0 test:scanner:ui
+> playwright test
+
+[WebServer] (node:12392) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:6904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 15 tests using 1 worker
+
+(node:16260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 test\browser\app-smoke.spec.mjs:31:3 › homepage, scholarships, evidence, eligibility and scanner work at 390px (4.8s)
+  ok  2 test\browser\app-smoke.spec.mjs:31:3 › homepage, scholarships, evidence, eligibility and scanner work at 1440px (5.3s)
+  ok  3 test\browser\app-smoke.spec.mjs:58:1 › empty source evidence never turns generated criteria into verified quotations (2.5s)
+  ok  4 test\browser\app-smoke.spec.mjs:68:1 › blank numeric fields and omitted disability stay unknown in the eligibility request (3.5s)
+  ok  5 test\browser\app-smoke.spec.mjs:113:3 › eligibility-change opt-in and evidence card work at 390px (2.4s)
+  ok  6 test\browser\app-smoke.spec.mjs:113:3 › eligibility-change opt-in and evidence card work at 1440px (2.6s)
+  ok  7 test\browser\scanner-journey.spec.mjs:3:1 › mobile stages, explicit download and selective in-memory handoff (6.3s)
+  ok  8 test\browser\scanner-journey.spec.mjs:13:1 › semester number has no guessed eligibility bridge and edits update the report (6.2s)
+  ok  9 test\browser\scanner-journey.spec.mjs:17:1 › document checklist deep links preserve the selected document type (4.0s)
+  ok 10 test\browser\scanner.spec.mjs:73:1 › manual review, edit, evidence and reset at mobile width (5.0s)
+  ok 11 test\browser\scanner.spec.mjs:118:1 › searchable PDF uses native text; corrections retain evidence; privacy (2.6s)
+  ok 12 test\browser\scanner.spec.mjs:169:1 › real local English image OCR and asset isolation (4.0s)
+  ok 13 test\browser\scanner.spec.mjs:210:1 › corrupt/unsupported/over-page-limit files and cancellation never leave stale results (2.9s)
+  ok 14 test\browser\scanner.spec.mjs:263:1 › scanned PDF and JPEG bonafide use real OCR; failed OCR cleans up (7.4s)
+  ok 15 test\browser\scanner.spec.mjs:333:1 › drag-and-drop, oversized dimensions and empty text provide safe review (4.8s)
+
+  15 passed (1.2m)

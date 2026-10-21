@@ -1,4 +1,5 @@
-import { evaluateEligibility } from "./ruleEvaluator.js";
+import { describeRuleTree, eligibilityRules, evaluateEligibility } from "./ruleEvaluator.js";
+import { ruleTreeSchema } from "./ruleSchema.js";
 
 const semantic = rule => JSON.stringify([rule.field, rule.operator,
 	rule.operator === "IN" && Array.isArray(rule.targetValue) ? [...rule.targetValue].sort() : rule.targetValue]);
@@ -13,6 +14,22 @@ const brief = r => ({ ruleId: r.ruleId, field: r.field, requirement: r.required,
 export function explainEligibilityImpact(profile, previous, current) {
 	const before = evaluateEligibility(profile, previous.snapshot);
 	const after = evaluateEligibility(profile, current.snapshot);
+	// An alternative route may change without changing the student's outcome.
+	// For tree policies, report an overall transition rather than falsely treating
+	// each leaf as an independent mandatory criterion.
+	if (previous.snapshot.ruleTree != null || current.snapshot.ruleTree != null) {
+		if (before.status === after.status || before.ruleResults.some(r => r.reason === "invalid_rule_tree") || after.ruleResults.some(r => r.reason === "invalid_rule_tree")) return null;
+		const requirement = snapshot => snapshot.ruleTree ? describeRuleTree(ruleTreeSchema.parse(snapshot.ruleTree)) :
+			eligibilityRules(snapshot).map(r => describeRuleTree({ ...r, type: "CONDITION" })).join(" AND ");
+		return { changes: [{ ruleId: "policy_tree", field: "eligibility", oldRequirement: requirement(previous.snapshot),
+			newRequirement: requirement(current.snapshot), previousStatus: before.status, currentStatus: after.status,
+			profileValue: [...new Set(after.ruleResults.filter(r => r.actual !== "Not specified").map(r => `${r.field}: ${r.actual}`))].join("; ") || "Missing profile details",
+			oldEvidence: previous.evidence[0] || null, newEvidence: current.evidence[0] || null }],
+			remainingUnknown: after.unknownRules.map(brief), remainingFailed: after.failedRules.map(brief),
+			previousVersionId: String(previous.id || previous._id), currentVersionId: String(current.id || current._id),
+			profileUpdatedAt: profile.updatedAt || null, assessedAt: new Date().toISOString(),
+			caveat: "This checks recorded policy branches against your saved profile. Source excerpts support individual criteria; confirm the full provider policy and other conditions. It does not confirm an award." };
+	}
 	const oldChecks = checks(before), newChecks = checks(after);
 	const oldRules = new Map(previous.snapshot.rules.map(r => [r.id, r]));
 	const changes = [];
@@ -37,7 +54,8 @@ export function explainEligibilityImpact(profile, previous, current) {
 
 export function eligibilityImpactMessage(impact) {
 	const first = impact.changes[0];
-	const outcome = first.currentStatus === "passed" ? "this criterion now passes" : first.currentStatus === "failed" ? "this criterion no longer passes" : "more profile information is needed to check this criterion";
+	const subject = first.field === "eligibility" ? "recorded policy" : "criterion";
+	const outcome = first.currentStatus === "passed" ? `this ${subject} now passes` : first.currentStatus === "failed" ? `this ${subject} no longer passes` : `more profile information is needed to check this ${subject}`;
 	const unknown = impact.remainingUnknown.length;
 	return `${first.oldRequirement} → ${first.newRequirement}. With your saved answer (${first.profileValue}), ${outcome}. ${impact.changes.length > 1 ? `${impact.changes.length - 1} other checks changed. ` : ""}${unknown} ${unknown === 1 ? "check still needs" : "checks still need"} review; ${impact.remainingFailed.length} recorded criteria do not pass. Confirm the provider's current instructions.`;
 }

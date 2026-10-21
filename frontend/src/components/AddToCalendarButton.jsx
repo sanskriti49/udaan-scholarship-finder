@@ -54,7 +54,12 @@ export default function AddToCalendarButton({
 	};
 
 	return (
-		<div className={`relative inline-block text-left ${className}`} ref={menuRef}>
+		<div className={`relative inline-block text-left ${className}`} ref={menuRef} onKeyDown={(event) => {
+			if (event.key === "Escape" && isOpen) {
+				event.preventDefault(); event.stopPropagation(); setIsOpen(false);
+				menuRef.current?.querySelector("button")?.focus();
+			}
+		}}>
 			{variant === "mini" || variant === "icon" ? (
 				<button
 					type="button"

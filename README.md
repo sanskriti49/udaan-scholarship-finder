@@ -11,11 +11,11 @@ These are deployment links. A successful local build does not establish their cu
 - Scholarship search, filters, scheme details, official application links and calendar exports.
 - Source-specific ingestion adapters using HTTP/Cheerio with bounded Playwright rendering where required. Eleven enabled source configurations cover selected government and foundation pages; configuration does not establish complete portal coverage or a successful current crawl.
 - Stored source snapshots, verbatim excerpts, source URLs, observed changes and academic-year application cycles. The evidence endpoint checks excerpts against stored snapshots; it does not certify a provider or guarantee current application terms.
-- A deterministic evaluator of a **flat list of conditions**, with passed, failed and unknown checks. Recorded criteria can be incomplete. The percentage describes evaluated rules, not award probability or an ML prediction.
+- A deterministic recursive policy evaluator with **AND, OR, NOT and conditional branches**, using passed/failed/unknown logic. Existing flat conditions remain an implicit AND. Alternative routes are shown as groups, and the profile form accepts marks percentage separately from CGPA. [Rule format, safeguards and demo](backend/RULE_ENGINE.md). Recorded criteria can be incomplete; match percentages are a rule-based heuristic, not award probability or an ML prediction.
 - Browser-local PDF.js text extraction and English Tesseract OCR. Students edit extracted fields and explicitly choose which supported fields to carry into eligibility.
 - Bookmarks, in-app notifications, alert preferences and optional SMTP email. BullMQ job IDs and database keys reduce duplicate notification records; delivery depends on service availability and does not provide an exactly-once email guarantee.
 - Opt-in personalized eligibility-change alerts for saved schemes: compare source-backed rule versions against the same saved profile, explain changed checks with old/new evidence, and retain pending events for retry. [Design, limitations and offline demo](backend/ELIGIBILITY_ALERTS.md).
-- Redis response and eligibility caching, invalidation after catalogue changes, request limits and protected account/admin endpoints.
+- Redis response and eligibility caching with shared enum normalization in queries and cache keys, invalidation after catalogue changes, request limits and protected account/admin endpoints.
 
 ## Eligibility and evidence semantics
 
@@ -64,6 +64,8 @@ Use Node.js 22 and npm (the runtime used for local checks and CI), MongoDB, and 
 Backend environment names include `PORT`, `NODE_ENV`, `MONGO_URI`, `JWT_SECRET`, `FRONTEND_URL`, `REDIS_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` and `GOOGLE_CLIENT_ID`. Configure the services you actually use.
 
 ## Checks and builds
+
+Public scholarship titles can be translated on demand with automatic source-language detection. See [translation setup and provider limits](backend/TRANSLATION.md) for Google Cloud configuration and the best-effort demo fallback. Official titles and evidence remain intact.
 
 From `backend/`:
 

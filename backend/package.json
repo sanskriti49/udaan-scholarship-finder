@@ -9,6 +9,7 @@
     "dev": "nodemon server.js",
     "test": "node --test \"test/**/*.test.js\"",
     "demo:eligibility": "node src/scripts/demoEligibilityChanges.js",
+    "demo:rules": "node src/scripts/demoRuleTree.js",
     "test:pipeline": "node --test test/unit/*.test.js test/integration/*.test.js",
     "test:pipeline:browser": "node --test test/browser/adaptive-rendering.test.mjs",
     "pipeline": "node src/scripts/runPipeline.js",
@@ -40,7 +41,8 @@
     "morgan": "^1.11.0",
     "nodemailer": "^10.0.9",
     "pdf-parse": "^2.4.5",
-    "playwright": "^1.61.1"
+    "playwright": "^1.61.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
