@@ -273,6 +273,16 @@ test("application desk offers explicit local name reuse, accessible disclosures 
   await page.getByLabel("Issue date", { exact: true }).fill("2025-03-31");
   await expect(page.locator(".scanner-compared-names mark")).toHaveText(["Kumar"]);
   await expect(page.locator(".scanner-compared-names > div p")).toHaveText(["Anil Sharma", "Anil Kumar Sharma"]);
+  await expect(page.locator(".audit-review-scene")).toHaveAttribute("aria-hidden", "true");
+  await page.locator(".audit-review-scene").scrollIntoViewIfNeeded();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(page.locator(".audit-scene-paper")).toHaveCSS("animation-name", "audit-paper-float");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator(".audit-scene-paper")).toHaveCSS("animation-name", "none");
+  await expect(page.locator(".audit-scene-sweep")).not.toBeVisible();
+  await expect(page.locator(".scanner-compared-names mark")).toHaveCSS("animation-name", "none");
+  await expect(page.getByText("A middle name part is missing", { exact: true })).toBeVisible();
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   const explanation = page.locator(".audit-finding .audit-explanation").first();
   await explanation.locator("summary").focus();
   await page.keyboard.press("Enter");
