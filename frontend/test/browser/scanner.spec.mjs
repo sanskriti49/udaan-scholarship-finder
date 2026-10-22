@@ -1,4 +1,11 @@
 import { test, expect } from "@playwright/test";
+import { schemas } from "../../src/scanner/extract.js";
+
+async function chooseDocumentType(page, type) {
+  await page.getByLabel("Document type", { exact: true }).selectOption(type);
+  // The native select changes before a router transition commits its keyed workflow.
+  await expect(page.locator(".scanner-workspace-top > span")).toHaveText(schemas[type].label);
+}
 
 async function open(page) {
   await page.addInitScript(() => {
@@ -100,9 +107,7 @@ test("manual review, edit, evidence and reset at mobile width", async ({
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBeTruthy();
-  await page
-    .getByLabel("Document type", { exact: true })
-    .selectOption("bonafide");
+  await chooseDocumentType(page, "bonafide");
   await page.getByRole("button", { name: "Enter details manually" }).click();
   await page
     .getByLabel("Institution name", { exact: true })
@@ -218,15 +223,13 @@ test("private auditor compares successive real PDFs without uploading or persist
   await page.setViewportSize({ width: 1440, height: 1000 });
   await open(page);
   await page.getByLabel("Name on your application (optional, local only)", { exact: true }).fill("Anil Kumar Sharma");
-  await page.getByLabel("Document type", { exact: true }).selectOption("identity");
-  await expect(page.locator(".scanner-workspace-top > span")).toHaveText("ID / Marksheet / Bank Document");
+  await chooseDocumentType(page, "identity");
   await page.locator("#certificate").setInputFiles({ name: "private-id-sentinel.pdf", mimeType: "application/pdf", buffer: pdf("AADHAAR\nApplicant name: A. Kumar Sharma\nThis synthetic document contains no real identity information.") });
   await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("A. Kumar Sharma");
   await expect(page.getByText("Initials and expanded names differ", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Keep reviewed name for comparison", exact: true }).click();
   await expect(page.getByText("1 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
-  await page.getByLabel("Document type", { exact: true }).selectOption("income");
-  await expect(page.locator(".scanner-workspace-top > span")).toHaveText("Income Certificate");
+  await chooseDocumentType(page, "income");
   await page.locator("#certificate").setInputFiles({ name: "private-income-sentinel.pdf", mimeType: "application/pdf", buffer: pdf("INCOME CERTIFICATE\nName: Anil Sharma\nIssue date: 31/03/2025\nAnnual family income: Rs. 180000\nFinancial year: 2024-25\nTehsildar") });
   await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("Anil Sharma");
   await expect(page.getByText("Issued before the current financial year", { exact: true })).toBeVisible();
@@ -305,7 +308,7 @@ test("application desk offers explicit local name reuse, accessible disclosures 
 
 test("comparison names survive an explicit next-document action and clear on reload and leaving", async ({ page }) => {
   await open(page);
-  await page.getByLabel("Document type", { exact: true }).selectOption("identity");
+  await chooseDocumentType(page, "identity");
   await page.getByLabel("Name on your application (optional, local only)", { exact: true }).fill("Pooja Sharma");
   await page.getByRole("button", { name: "Enter details manually", exact: true }).click();
   await page.getByLabel("Name on this document", { exact: true }).fill("Puja Sharma");
@@ -383,21 +386,36 @@ test("corrupt/unsupported/over-page-limit files and cancellation never leave sta
   await expect(page.getByLabel("Issue date", { exact: true })).toHaveValue(
     "2025-01-14",
   );
-  await page
-    .getByLabel("Document type", { exact: true })
-    .selectOption("bonafide");
+  await chooseDocumentType(page, "bonafide");
   await expect(
     page.getByRole("button", { name: "Enter details manually" }),
   ).toBeVisible();
+});
+
+test("an immediate upload after a type change belongs to the new workflow", async ({ page }) => {
+  await open(page);
+  // Intentionally no chooseDocumentType wait: switching must commit before upload.
+  await page.getByLabel("Document type", { exact: true }).selectOption("bonafide");
+  await page.locator("#certificate").setInputFiles({
+    name: "immediate-bonafide.pdf", mimeType: "application/pdf",
+    buffer: pdf("BONAFIDE CERTIFICATE\nInstitution: Synthetic Engineering College\nAcademic session: 2025-26\nSemester: 3\nPrincipal"),
+  });
+  await expect(page.getByLabel("Institution name", { exact: true })).toHaveValue("Synthetic Engineering College");
+  await page.getByLabel("Document type", { exact: true }).selectOption("income");
+  await page.locator("#certificate").setInputFiles({
+    name: "immediate-income.pdf", mimeType: "application/pdf",
+    buffer: pdf("INCOME CERTIFICATE\nAnnual family income: Rs. 180000\nDate of Issue: 14/01/2025\nFinancial year: 2024-25\nTehsildar"),
+  });
+  await expect(page.getByLabel("Annual family income (INR)", { exact: true })).toHaveValue("180000");
+  await expect(page.getByLabel("Institution name", { exact: true })).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => window.__activeWorkers)).toBe(0);
 });
 
 test("scanned PDF and JPEG bonafide use real OCR; failed OCR cleans up", async ({
   page,
 }) => {
   await open(page);
-  await page
-    .getByLabel("Document type", { exact: true })
-    .selectOption("bonafide");
+  await chooseDocumentType(page, "bonafide");
   const jpeg = Buffer.from(
     await page.evaluate(() => {
       const c = document.createElement("canvas");
@@ -433,17 +451,17 @@ test("scanned PDF and JPEG bonafide use real OCR; failed OCR cleans up", async (
     { name: "synthetic.pdf", mimeType: "application/pdf", buffer: scanned },
     { name: "synthetic.jpg", mimeType: "image/jpeg", buffer: jpeg },
   ]) {
-    await page.locator("#certificate").setInputFiles(file);
-    await expect(
-      page.getByLabel("Institution name", { exact: true }),
-    ).toHaveValue("Synthetic Engineering College", { timeout: 90000 });
-    await expect(
-      page.getByLabel("Academic year / session", { exact: true }),
-    ).toHaveValue("2025-2026");
-    await expect
-      .poll(() => page.evaluate(() => window.__activeWorkers))
-      .toBe(0);
-    await page.getByRole("button", { name: "Reset check" }).click();
+    await test.step(`Real OCR: ${file.mimeType}`, async () => {
+      await page.locator("#certificate").setInputFiles(file);
+      // Report an actual scan error immediately instead of waiting for an absent field.
+      await expect(page.locator("#review-title, .scanner-error").first()).toBeVisible({ timeout: 90000 });
+      await expect(page.locator(".scanner-error"), `${file.mimeType} should reach review without a scan error`).toHaveCount(0);
+      await expect(page.getByLabel("Institution name", { exact: true })).toHaveValue("Synthetic Engineering College");
+      await expect(page.getByLabel("Academic year / session", { exact: true })).toHaveValue("2025-2026");
+      await expect.poll(() => page.evaluate(() => window.__activeWorkers)).toBe(0);
+      await page.getByRole("button", { name: "Reset check" }).click();
+      await expect(page.locator("#input-title")).toBeVisible();
+    });
   }
   await page.route("**/scanner-assets/eng.traineddata.gz", (route) =>
     route.abort(),
@@ -474,10 +492,7 @@ test("drag-and-drop, oversized dimensions and empty text provide safe review", a
       "BONAFIDE CERTIFICATE\nInstitution: Sample College\nAcademic session: 2025-26\nSemester: 2\nPrincipal",
     ),
   ];
-  await page
-    .getByLabel("Document type", { exact: true })
-    .selectOption("bonafide");
-  await expect(page.locator(".scanner-workspace-top > span")).toHaveText("Bonafide Certificate");
+  await chooseDocumentType(page, "bonafide");
   const transfer = await page.evaluateHandle((bytes) => {
     const dt = new DataTransfer();
     dt.items.add(

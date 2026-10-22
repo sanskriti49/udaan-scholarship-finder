@@ -66,7 +66,8 @@ export default function Scanner() {
 	function setType(value) {
 		const next = new URLSearchParams(params);
 		next.set("type", value);
-		setParams(next);
+		// Replace the keyed workflow before a newly chosen file can reach the old one.
+		setParams(next, { flushSync: true });
 	}
 	const selected = params.get("scholarship") || "";
 	const [schemes, setSchemes] = useState([]);

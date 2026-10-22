@@ -50,7 +50,6 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     env:
-      NODE_ENV: test
       REDIS_URL: redis://127.0.0.1:6399
       SMTP_HOST: 127.0.0.1
       SMTP_PORT: 6398
@@ -68,6 +67,8 @@ jobs:
         run: npm ci
       - name: Backend unit and integration tests
         working-directory: backend
+        env:
+          NODE_ENV: test
         run: npm test
       - name: Install frontend
         working-directory: frontend
@@ -75,10 +76,10 @@ jobs:
       - name: Install browser for application tests
         working-directory: frontend
         run: npx playwright install --with-deps chromium
-      - name: Frontend lint, unit tests, build and browser smoke checks
+      - name: Frontend lint, unit tests and production build
         working-directory: frontend
-        run: npm run check
-      - name: Scanner browser regressions
+        run: npm run lint && npm test && npm run build
+      - name: Application and scanner browser regressions
         working-directory: frontend
         run: npm run test:scanner:ui
       - uses: actions/upload-artifact@v4
@@ -86,3 +87,4 @@ jobs:
         with:
           name: browser-failures
           path: frontend/test-results/
+          retention-days: 7

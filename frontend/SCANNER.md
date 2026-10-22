@@ -117,3 +117,22 @@ reload/navigation cleanup, and absence of document/name data in requests or
 browser storage. These checks use synthetic documents, not personal records.
 Presentation regressions also cover Unicode-preserving highlights, chronology,
 ambiguous dates, explicit local name reuse and keyboard disclosure controls.
+
+### CI timing and failure diagnostics
+
+The frontend browser suite checks the production build. `NODE_ENV=test` is scoped
+to backend tests in the workflow; inheriting it during `vite build` selects a
+different React runtime from the default production build.
+
+Document-type selection commits the new keyed workspace synchronously before a
+new file can reach the previous workspace. Browser tests normally use
+`chooseDocumentType` to wait for the matching workspace label. A separate
+immediate-upload regression deliberately omits that wait to protect the actual
+UI behavior. The scanned-PDF/JPEG test still performs real local OCR, checks
+worker cleanup between documents, and explicitly tests failed initialization.
+
+On CI, failed browser tests retain traces and screenshots in `browser-failures`
+for seven days. Open a downloaded trace with `npx playwright show-trace` followed
+by its `trace.zip` path. These artifacts contain synthetic test fixtures; they
+are not telemetry from students using the scanner. The full browser suite
+includes smoke coverage and runs once per verification job.
