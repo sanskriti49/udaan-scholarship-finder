@@ -6,6 +6,7 @@ import useBodyScrollLock from "../hooks/useBodyScrollLock";
 import useDialogFocus from "../hooks/useDialogFocus";
 import { getScholarshipEvidence, getScholarshipHistory } from "../services/scholarshipService";
 import { documentItems, evidenceQuotes } from "../utils/evidencePresentation.js";
+import { citationLink, scholarshipSourceLinks } from "../utils/sourceNavigation.js";
 import { cleanOfficialUrl, formatClauseTitle, formatFieldLabel, formatRuleRequirement } from "../utils/formatEvidence";
 import { formatGrant } from "../utils/formatGrant";
 import { deadlineInfo } from "../utils/scholarshipMeta";
@@ -36,7 +37,7 @@ export default function EvidenceModal({ isOpen, scholarship, initialSection = "e
 	return <ScholarshipDialog key={scholarship._id || scholarship.id || scholarship.slug || scholarship.title} scholarship={scholarship} initialSection={initialSection} {...props} />;
 }
 
-function SourceExcerpts({ quotes, loading, error, onRetry }) {
+function SourceExcerpts({ quotes, loading, error, onRetry, title }) {
 	return <details className="sch-disclosure sch-evidence-disclosure">
 		<summary>Source excerpts <span>{quotes.length}</span></summary>
 		<div className="sch-disclosure-body">
@@ -44,13 +45,14 @@ function SourceExcerpts({ quotes, loading, error, onRetry }) {
 			{loading && <p className="sch-loading" role="status"><Loader2 size={15} className="animate-spin" />Checking stored excerpts…</p>}
 			{error && <p className="sch-inline-error" role="alert">Source checking is unavailable. Stored excerpts remain unverified. <button type="button" className="sch-text-action" onClick={onRetry}>Try again</button></p>}
 			{!loading && !quotes.length && <p className="sch-muted">No source excerpt is available for this listing. Check the provider's current instructions.</p>}
-			{quotes.map((quote, index) => <figure className="sch-source-quote" key={index}>
+			{quotes.map((quote, index) => { const link = citationLink(quote, { title }); return <figure className="sch-source-quote" key={index}>
 				<p className="sch-source-title">{formatClauseTitle(quote.clause, quote.field, index + 1)}</p>
 				<blockquote>{quote.quote}</blockquote>
 				<figcaption><span>{quote.verified ? "Excerpt checked against stored source" : "Not verified"}{quote.page ? ` · Page ${quote.page}` : ""}</span>
-					{quote.url && <a href={quote.url} target="_blank" rel="noopener noreferrer">Open source <ArrowUpRight size={13} /></a>}
+					{link.href && <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label} <ArrowUpRight size={13} /></a>}
+					{link.rawUrl && <a href={link.rawUrl} target="_blank" rel="noopener noreferrer">Source data <ArrowUpRight size={13} /></a>}
 				</figcaption>
-			</figure>)}
+			</figure>; })}
 		</div>
 	</details>;
 }
@@ -134,8 +136,7 @@ function ScholarshipDialog({ scholarship, onClose, returnFocusRef, initialSectio
 	const grant = formatGrant(scholarship.amount);
 	const deadlineDate = policyDate(scholarship.deadline);
 	const deadline = deadlineInfo(deadlineDate ? scholarship.deadline : null, scholarship.status);
-	const sourceUrl = [evidence.data?.sourceUrl, scholarship.sourceUrl, scholarship.officialPortal].map(cleanOfficialUrl).find(Boolean);
-	const guidelinesUrl = cleanOfficialUrl(evidence.data?.officialLinks?.guidelinesUrl || scholarship.officialLinks?.guidelinesUrl);
+	const { sourceUrl, sourceLabel, guidelinesUrl, guidelinesLabel } = scholarshipSourceLinks(scholarship, evidence.data);
 	const applicationUrl = cleanOfficialUrl(scholarship.applicationLink);
 	const evaluation = scholarship.evaluation;
 	const status = evaluation?.status || (evaluation ? evaluation.isEligible ? "passed" : evaluation.failedRules?.length ? "failed" : "unknown" : null);
@@ -172,13 +173,13 @@ function ScholarshipDialog({ scholarship, onClose, returnFocusRef, initialSectio
 					{grant.options?.length > 1 && <details className="sch-disclosure"><summary>Award breakdown</summary><ul className="sch-disclosure-body sch-rate-list">{grant.options.map((option, index) => <li key={index}><span>{option.course || option.label || `Rate ${index + 1}`}</span><span>₹{option.value?.toLocaleString("en-IN")}{option.period ? ` / ${option.period}` : ""}{option.months ? ` · ${option.months} months` : ""}</span></li>)}</ul></details>}
 					<section className="sch-about-section"><SectionHeading icon={NotebookPen} title="About this scholarship" /><p className="sch-about">{scholarship.description || scholarship.summary || "A description has not been recorded. Check the provider's current instructions."}</p></section>
 					{latestChange && <button type="button" className="sch-update-note" onClick={() => selectSection("changes")}><span><strong>Recently updated</strong><span>{latestChange}</span></span><span className="sch-update-link">View changes →</span></button>}
-					<section className="sch-official-info"><h3>Official information</h3><div className="sch-source-links">{guidelinesUrl && <a href={guidelinesUrl} target="_blank" rel="noopener noreferrer">Read guidelines <ArrowUpRight size={14} /></a>}{sourceUrl && sourceUrl !== guidelinesUrl && <a href={sourceUrl} target="_blank" rel="noopener noreferrer">Provider's source page <ArrowUpRight size={14} /></a>}{!sourceUrl && !guidelinesUrl && <p className="sch-muted">An official source link has not been recorded.</p>}</div><p className="sch-muted">Confirm the current terms with the provider before applying.</p></section>
+					<section className="sch-official-info"><h3>Official information</h3><div className="sch-source-links">{sourceUrl && <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceLabel} <ArrowUpRight size={14} /></a>}{guidelinesUrl && sourceUrl !== guidelinesUrl && <a href={guidelinesUrl} target="_blank" rel="noopener noreferrer">{guidelinesLabel} <ArrowUpRight size={14} /></a>}{!sourceUrl && !guidelinesUrl && <p className="sch-muted">An official source link has not been recorded.</p>}</div><p className="sch-muted">Some providers publish several schemes on one page. Passage links help locate this scholarship; confirm the current terms before applying.</p></section>
 				</div>}
 				{activeSection === "eligibility" && <div className="sch-section-stack">
 					<SectionHeading icon={ListChecks} title="Who can apply">These are the recorded criteria. Additional conditions may apply.</SectionHeading>
 					{status && <p className={`sch-profile-outcome is-${status}`}>{status === "passed" ? "Your profile meets the recorded criteria." : status === "failed" ? "Your profile does not meet this recorded policy." : "More information or review is needed to check your profile."}</p>}
 					{scholarship.ruleTree ? <PolicyRuleTree tree={scholarship.ruleTree} evaluation={evaluation?.evaluationTree} /> : rules.length > 0 ? <dl className="sch-criteria">{rules.map((rule, index) => <div key={rule.id || index}><dt>{formatFieldLabel(rule.field)}</dt><dd>{formatRuleRequirement(rule) || "Needs review"}</dd></div>)}</dl> : <p className="sch-empty-state">Eligibility criteria have not been recorded. Check the provider's current instructions.</p>}
-					<SourceExcerpts quotes={quotes} loading={evidence.loading} error={evidence.error} onRetry={retryEvidence} />
+					<SourceExcerpts quotes={quotes} loading={evidence.loading} error={evidence.error} onRetry={retryEvidence} title={scholarship.officialTitle || scholarship.title} />
 					{!evaluation && <Link className="sch-text-action" to="/eligibility" onClick={onClose}>Check against my profile <ArrowUpRight size={14} /></Link>}
 				</div>}
 				{activeSection === "documents" && <div className="sch-section-stack">

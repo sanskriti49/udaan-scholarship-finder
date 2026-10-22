@@ -16,14 +16,17 @@ export function cleanPortalUrl(raw) {
 	if (!raw || typeof raw !== "string") return "";
 	try {
 		const parsed = new URL(raw);
-		if (parsed.pathname.toLowerCase().startsWith("/api/schemes")) {
-			parsed.pathname = "/";
+		if (!["http:", "https:"].includes(parsed.protocol) || parsed.username || parsed.password) return "";
+		// The catalogue's documented slug identifies a public scheme page. Never
+		// turn an arbitrary API URL into a homepage and discard its identity.
+		if (/^(?:www\.)?myscheme\.gov\.in$/i.test(parsed.hostname) && parsed.pathname === "/api/apisetu/schemes" && /^[a-z0-9-]+$/i.test(parsed.searchParams.get("slug") || "")) {
+			parsed.pathname = `/schemes/${parsed.searchParams.get("slug")}`;
 			parsed.search = "";
 			return parsed.toString();
 		}
 		return parsed.toString();
 	} catch {
-		return raw;
+		return "";
 	}
 }
 
@@ -46,6 +49,7 @@ export function canonicalizeUrl(raw, base, { preserveHash = false } = {}) {
 	try {
 		const url = new URL(trimmed.replace(/ /g, "%20"), base);
 		if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+		if (url.username || url.password) return null;
 		if (!preserveHash) url.hash = "";
 		return url.toString();
 	} catch {

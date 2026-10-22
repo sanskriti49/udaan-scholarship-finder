@@ -5,6 +5,7 @@ import crypto from "crypto";
  *
  *   getSourceState(sourceId) / saveSourceState(state)
  *   getLatestSnapshot(url) / getSnapshot(id) / saveSnapshot(snapshot) / touchSnapshot(id, at)
+ *   saveDocumentExtraction(artifact) / getLatestDocumentExtraction(url, canonicalTextHash)
  *   getScholarship(schemeKey) / findByLegacySlug(slug) / listScholarships({ primarySourceId })
  *   saveScholarship(record)
  *   getCycle(schemeKey, academicYear, applicationType) / listCycles(schemeKey) / saveCycle(cycle)
@@ -25,6 +26,7 @@ export class MemoryStore {
 	constructor() {
 		this.sourceStates = new Map();
 		this.snapshots = new Map();
+		this.documentExtractions = new Map();
 		this.scholarships = new Map();
 		this.cycles = new Map();
 		this.versions = [];
@@ -68,6 +70,17 @@ export class MemoryStore {
 	async touchSnapshot(id, at) {
 		const s = this.snapshots.get(String(id));
 		if (s) s.lastSeenAt = at;
+	}
+	async saveDocumentExtraction(artifact) {
+		const existing = this.documentExtractions.get(artifact.key);
+		if (existing) { existing.lastSeenAt = artifact.seenAt; return clone(existing); }
+		const { seenAt, ...data } = artifact;
+		const saved = { ...clone(data), id: newId(), firstSeenAt: seenAt, lastSeenAt: seenAt };
+		this.documentExtractions.set(artifact.key, saved);
+		return clone(saved);
+	}
+	async getLatestDocumentExtraction(url, canonicalTextHash) {
+		return clone([...this.documentExtractions.values()].reverse().filter(a => a.url === url && a.canonicalTextHash === canonicalTextHash).sort((a, b) => b.lastSeenAt - a.lastSeenAt).at(0)) || null;
 	}
 
 	async getScholarship(schemeKey) {

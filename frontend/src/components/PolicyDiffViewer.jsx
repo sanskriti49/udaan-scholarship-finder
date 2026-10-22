@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight, GitCompareArrows, History, Loader2, Minus, Plus } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { replayScholarshipEligibility } from "../services/scholarshipService";
-import { cleanOfficialUrl } from "../utils/formatEvidence";
+import { citationLink } from "../utils/sourceNavigation.js";
 import { formatPolicyRowValue, policyHistoryEntries, policyVersionPresentation, policyEvidence, policyDate, policyFieldLabel, policyUpdateSummary } from "../utils/policyDiff.js";
 const outcomes = { passed: "Meets recorded criteria", failed: "Does not meet recorded criteria", unknown: "Needs information or review" };
 
@@ -71,7 +71,7 @@ export default function PolicyDiffViewer({ history = [], scholarship, userProfil
 							<div className="sch-diff-after"><span className="sch-diff-caption"><Plus size={13} aria-hidden="true" />After this update</span><p>{row.newValue == null ? "No longer recorded" : <ins>{formatPolicyRowValue(row, "newValue")}</ins>}</p></div>
 						</div>
 					</section>)}</div> : <p className="sch-muted">{version.changeType === "FIRST_OBSERVED" ? "This is the first saved observation. An earlier policy was not recorded, so a comparison is unavailable." : "This entry contains an update summary, but no structured before-and-after values were saved."}</p>}
-					<SourceExcerpts evidence={rows.length && Array.isArray(version.relatedEvidence) ? version.relatedEvidence : version.evidence} fields={rows.length ? rows.map(row => row.field) : null} />
+					<SourceExcerpts evidence={rows.length && Array.isArray(version.relatedEvidence) ? version.relatedEvidence : version.evidence} fields={rows.length ? rows.map(row => row.field) : null} title={scholarship?.officialTitle || scholarship?.title} />
 					{canReplay && <div className="sch-replay">
 						{user || hasProfile ? <button type="button" className="sch-text-action" disabled={replay?.loading} onClick={() => compareProfile(version, key)}>{replay?.key === key && replay.loading && <Loader2 size={14} className="animate-spin" />}Compare my eligibility at this date</button> : <Link className="sch-text-action" to="/eligibility" onClick={onNavigate}>Add a profile to compare your eligibility <ArrowUpRight size={14} /></Link>}
 						{replay?.key === key && replay.loading && <p role="status" className="sch-muted">Checking the recorded rules against your profile…</p>}
@@ -89,20 +89,20 @@ export default function PolicyDiffViewer({ history = [], scholarship, userProfil
 			<p>These saved entries contain no change to the recorded terms. They are kept here for reference.</p>
 			{routine.map(({ version }, index) => <div className="sch-routine-entry" key={String(version._id || version.id || index)}>
 				<p><time dateTime={version.observedAt}>{policyDate(version.observedAt) || "Observation date not recorded"}</time> · Recorded terms unchanged</p>
-				<SourceExcerpts evidence={version.evidence} />
+				<SourceExcerpts evidence={version.evidence} title={scholarship?.officialTitle || scholarship?.title} />
 			</div>)}
 		</details>}
 	</div>;
 }
 
-function SourceExcerpts({ evidence = [], fields = null }) {
+function SourceExcerpts({ evidence = [], fields = null, title }) {
 	const excerpts = policyEvidence(Array.isArray(evidence) ? evidence : [], fields);
 	if (!excerpts.length) return fields?.length ? <p className="sch-muted">No matching source excerpt was saved for these changed details. Check the official source before relying on this record.</p> : null;
 	return <details className="sch-disclosure">
 		<summary>Source excerpts for this update <span>{excerpts.length}</span></summary>
 		<div className="sch-disclosure-body">{excerpts.map((item, index) => {
-			const url = cleanOfficialUrl(item.url || item.sourceUrl);
-			return <figure className="sch-source-quote" key={index}><blockquote>{item.quote}</blockquote><figcaption><span>Stored excerpt · Not verified{item.page ? ` · Page ${item.page}` : ""}</span>{url && <a href={url} target="_blank" rel="noopener noreferrer">Open source <ArrowUpRight size={13} /></a>}</figcaption></figure>;
+			const link = citationLink(item, { title });
+			return <figure className="sch-source-quote" key={index}><blockquote>{item.quote}</blockquote><figcaption><span>Stored excerpt · Not verified{item.page ? ` · Page ${item.page}` : ""}</span>{link.href && <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label} <ArrowUpRight size={13} /></a>}{link.rawUrl && <a href={link.rawUrl} target="_blank" rel="noopener noreferrer">Source data <ArrowUpRight size={13} /></a>}</figcaption></figure>;
 		})}</div>
 	</details>;
 }

@@ -181,6 +181,7 @@ test("real local English image OCR and asset isolation", async ({ page }) => {
     c.font = "36px Arial";
     [
       "INCOME CERTIFICATE",
+      "Applicant name: Anil Kumar",
       "Date of Issue: 14/01/2025",
       "Annual family income: Rs. 250000",
       "Financial year: 2025-26",
@@ -202,10 +203,88 @@ test("real local English image OCR and asset isolation", async ({ page }) => {
   expect(
     urls.filter((url) => new URL(url).hostname !== "localhost"),
   ).toEqual([]);
+  await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("Anil Kumar");
   expect(
     await page.evaluate(async () => (await indexedDB.databases()).length),
   ).toBe(0);
   await expect.poll(() => page.evaluate(() => window.__activeWorkers)).toBe(0);
+});
+
+test("private auditor compares successive real PDFs without uploading or persisting names", async ({ page }) => {
+  const requests = [], errors = [];
+  page.on("request", request => requests.push({ url: request.url(), method: request.method(), body: request.postData() }));
+  page.on("pageerror", error => errors.push(error.message));
+  await page.clock.setFixedTime(new Date("2026-10-22T10:00:00Z"));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await open(page);
+  await page.getByLabel("Name on your application (optional, local only)", { exact: true }).fill("Anil Kumar Sharma");
+  await page.getByLabel("Document type", { exact: true }).selectOption("identity");
+  await page.locator("#certificate").setInputFiles({ name: "private-id-sentinel.pdf", mimeType: "application/pdf", buffer: pdf("AADHAAR\nApplicant name: A. Kumar Sharma\nThis synthetic document contains no real identity information.") });
+  await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("A. Kumar Sharma");
+  await expect(page.getByText("Initials and expanded names differ", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Keep reviewed name for comparison", exact: true }).click();
+  await expect(page.getByText("1 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
+  await page.getByLabel("Document type", { exact: true }).selectOption("income");
+  await page.locator("#certificate").setInputFiles({ name: "private-income-sentinel.pdf", mimeType: "application/pdf", buffer: pdf("INCOME CERTIFICATE\nName: Anil Sharma\nIssue date: 31/03/2025\nAnnual family income: Rs. 180000\nFinancial year: 2024-25\nTehsildar") });
+  await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("Anil Sharma");
+  await expect(page.getByText("Issued before the current financial year", { exact: true })).toBeVisible();
+  await expect(page.getByText("A middle name part is missing", { exact: true })).toBeVisible();
+  await expect(page.getByText("Compared with ID / Marksheet / Bank Document", { exact: true })).toBeVisible();
+  await page.getByLabel("Name on this document", { exact: true }).fill("Vikram Mehta");
+  await expect(page.getByText("Names differ substantially", { exact: true })).toHaveCount(2);
+  await page.getByRole("button", { name: "Review next steps", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Download review", exact: true })).toBeEnabled();
+  await page.locator(".scanner-audit").screenshot({ path: "test-results/scanner-auditor-desktop.png", animations: "disabled" });
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page.locator(".scanner-audit").screenshot({ path: "test-results/scanner-auditor-mobile.png", animations: "disabled" });
+  expect(requests.every(request => request.method === "GET" && !request.body)).toBe(true);
+  expect(JSON.stringify(requests)).not.toMatch(/private-id-sentinel|private-income-sentinel|Anil%20|Vikram%20|Anil Kumar|Vikram Mehta/);
+  expect(await page.evaluate(async () => ({ local: localStorage.length, session: sessionStorage.length, db: (await indexedDB.databases()).length }))).toEqual({ local: 0, session: 0, db: 0 });
+  expect(JSON.stringify(await page.evaluate(() => history.state))).not.toMatch(/Anil|Vikram|180000/);
+  await page.getByRole("button", { name: "Reset check", exact: true }).click();
+  await expect(page.getByLabel("Name on your application (optional, local only)", { exact: true })).toHaveValue("");
+  await expect(page.getByText("0 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("comparison names survive an explicit next-document action and clear on reload and leaving", async ({ page }) => {
+  await open(page);
+  await page.getByLabel("Document type", { exact: true }).selectOption("identity");
+  await page.getByLabel("Name on your application (optional, local only)", { exact: true }).fill("Pooja Sharma");
+  await page.getByRole("button", { name: "Enter details manually", exact: true }).click();
+  await page.getByLabel("Name on this document", { exact: true }).fill("Puja Sharma");
+  await expect(page.getByText("Possible spelling variation", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Keep reviewed name for comparison", exact: true }).click();
+  await page.getByRole("button", { name: "Review another document", exact: true }).click();
+  await expect(page.getByText("1 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("0 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("Name on your application (optional, local only)", { exact: true })).toHaveValue("");
+  await page.getByLabel("Name on your application (optional, local only)", { exact: true }).fill("Private Declaration");
+  await page.getByRole("button", { name: "Enter details manually", exact: true }).click();
+  await page.getByLabel("Name on this document", { exact: true }).fill("Private Holder");
+  await page.getByRole("button", { name: "Keep reviewed name for comparison", exact: true }).click();
+  await page.getByRole("button", { name: "Review next steps", exact: true }).click();
+  await page.locator('a[href="/scholarships"]').first().click();
+  await page.waitForURL("**/scholarships");
+  await page.goBack();
+  await expect(page.getByText("0 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("Name on your application (optional, local only)", { exact: true })).toHaveValue("");
+});
+
+test("FY and format observations share India's calendar at the April boundary", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-03-31T18:30:00Z"));
+  await open(page);
+  await page.getByRole("button", { name: "Enter details manually", exact: true }).click();
+  await page.getByLabel("Issue date", { exact: true }).fill("2026-04-01");
+  await expect(page.getByText("Issued during the current financial year", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Review next steps", exact: true }).click();
+  await expect(page.getByText("The issue date is in the future.", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Issued during the current financial year", { exact: true })).toBeVisible();
 });
 test("corrupt/unsupported/over-page-limit files and cancellation never leave stale results", async ({
   page,

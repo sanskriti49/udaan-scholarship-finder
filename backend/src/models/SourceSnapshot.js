@@ -28,6 +28,8 @@ const sourceSnapshotSchema = new mongoose.Schema(
 		pages: [{ _id: false, page: Number, start: Number }],
 		quality: mongoose.Schema.Types.Mixed,
 		documentDate: mongoose.Schema.Types.Mixed,
+		documentExtractionId: String,
+		extractionMethod: String,
 		authorityTier: Number,
 	},
 	{ timestamps: true },

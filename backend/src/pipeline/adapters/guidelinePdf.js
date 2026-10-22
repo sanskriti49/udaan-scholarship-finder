@@ -63,6 +63,10 @@ export const guidelinePdfAdapter = {
 			}
 		}
 
+		if (doc.quality.requiresManualReview) {
+			issues.push({ code: "guideline_layout_review", severity: "warning", message: "Structured tables, OCR or incomplete pages require source review before amounts or eligibility thresholds can be applied automatically." });
+			return { facts, issues };
+		}
 		if (doc.quality.ocrSuspect) {
 			issues.push({
 				code: "ocr_low_quality",

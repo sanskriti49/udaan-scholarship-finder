@@ -19,8 +19,7 @@ complex layouts and mixed text/image PDFs may need manual entry.
 The server only supplies public scholarship metadata, fetched without credentials.
 Files, names, OCR text and editable fields are never API arguments. No document
 upload endpoint is used. Tesseract persistence is disabled. Google OAuth is now
-mounted only on sign-in/sign-up pages, not on the scanner. Application fonts are self-hosted with their licenses, preserving the existing typefaces without remote font requests. Reset, type changes,
-unmount and pagehide cancel processing and clear scanner state. Worker cleanup
+mounted only on sign-in/sign-up pages, not on the scanner. Application fonts are self-hosted with their licenses, preserving the existing typefaces without remote font requests. Reset, unmount and pagehide clear document state. Type changes clear the active document; names explicitly kept for comparison survive type changes within this mounted scanner. Worker cleanup
 and memory reclamation are best effort, not secure erasure.
 
 ## Decisions and provenance
@@ -28,10 +27,54 @@ and memory reclamation are best effort, not secure erasure.
 General observations check format, conflicting values, future issue dates and
 explicit expiry dates. Optional fields are not universal document requirements.
 Catalogue amounts, application years, category names and document lists do not
-establish legal certificate requirements. Removed the inferred April 1, universal
-notary/NCL and approval/rejection assertions. Production `verifiedRules` remains
+establish legal certificate requirements. April 1 is used only for advisory FY freshness, never as a universal legal expiry rule. No universal notary/NCL or approval/rejection assertions are made. Production `verifiedRules` remains
 empty until explicit, reviewed source excerpts and scoped requirements exist.
 Only valid sourced rules can produce scholarship-specific results.
+
+## Private pre-submission auditor
+
+`documentAudit.js` contains pure date and name comparisons; `identitySession.js`
+whitelists the minimal name-set fields. `PreSubmissionAudit.jsx` presents the results
+inside the existing editable review and next-steps stages. No backend, cloud OCR,
+translation service, account profile lookup or persistence was added.
+
+- The FY boundary and general date checks use the calendar in `Asia/Kolkata`,
+  including the March 31 / April 1 instant. Income, EWS and explicitly detected
+  OBC-NCL wording receive a prior-FY review prompt. Old SC/ST certificates and
+  plain OBC status are not automatically treated as annual NCL evidence.
+- Income assessment year, explicit certificate-validity FY, issue date and expiry
+  are separate fields. A previous income year alone is not an expiry finding.
+  The [official DoPT EWS FAQ](https://doptcirculars.nic.in/OM/ViewOMNew.aspx?id=471)
+  illustrates this distinction in recruitment; it is not imported as a universal
+  scholarship requirement.
+- Explicit expiry, conflicting/future dates and a narrowly recognized
+  issue-relative validity clause produce observations. Relative durations use
+  calendar arithmetic with leap/month-end clamping and report an anniversary,
+  not a substituted legal expiry. Unrecognized clauses require manual reading.
+- Names come only from explicit holder/student labels or manual entry. Parent
+  names and unlabeled OCR lines are not guessed. Source excerpts and ambiguity
+  survive editing. EWS and identity/marksheet/bank document modes are available.
+- Unicode normalization preserves Indic vowel marks. Bounded edit distance,
+  token alignment, initial expansion and a conservative Latin vowel-pattern
+  heuristic distinguish spelling, spacing/order, missing middle parts, initials,
+  partial overlap and substantial differences. Different/unsupported scripts,
+  bad OCR and initials alone remain uncertain. No fuzzy result verifies identity
+  or predicts portal acceptance; there is no confidence percentage.
+- The application name is declared locally. Keeping a reviewed name is explicit,
+  with at most six entries containing only a generated local ID, name, document
+  type and read/edit method. Files, filenames and full OCR/evidence text are not
+  copied into this comparison set. Current-document evidence remains transient.
+  “Review another document” keeps the set; individual forget controls, “Reset
+  check”, reload, leaving the scanner and pagehide clear it as indicated.
+- Names, FY observations and validity wording never enter the eligibility
+  bridge. Existing explicit income/category/study handoff stays separate.
+  The user-requested text download can save the current reviewed fields and
+  advisory findings on the user's own device; it does not upload them.
+
+Demo: enter “Anil Kumar Sharma” as the local application name, scan an identity
+document with “A. Kumar Sharma”, keep that reviewed name, then scan an income
+certificate with “Anil Sharma” and a prior-FY issue date. Correct the spelling to
+see observations update, continue despite warnings, then reset to forget the set.
 
 ## Eligibility handoff
 
@@ -57,4 +100,8 @@ Downloading a text review saves an explicit user-requested snapshot on their dev
 Browser tests use synthetic documents and public metadata mocks, exercise real
 PDF/OCR processing, errors, cancellation and cleanup, and check network/storage
 privacy. Additional mobile/handoff checks cover 320/390/768/1440 widths, consent,
-no auto-evaluation, no fields in history state and downloadable results.
+no auto-evaluation, no fields in history state and downloadable results. Auditor
+regressions exercise actual searchable PDFs and English OCR, successive scans,
+India-time FY rollover, live edits, non-blocking warnings, in-tab name retention,
+reload/navigation cleanup, and absence of document/name data in requests or
+browser storage. These checks use synthetic documents, not personal records.

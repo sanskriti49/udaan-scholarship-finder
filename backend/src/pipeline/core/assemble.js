@@ -1,6 +1,7 @@
 import { formatIstDate, isWithinAcademicYearWindow } from "./time.js";
 import { canonicalTitle } from "./dedupe.js";
 import { cleanPortalUrl } from "./urls.js";
+import { preferredSourceUrl } from "./sourceLinks.js";
 import { buildRequiredDocuments } from "./requiredDocuments.js";
 
 /**
@@ -246,9 +247,10 @@ export function assembleRecord(candidate, { source, guideline, assertions = [] }
 		authorityTier: source.authorityTier,
 		primarySourceId: source.id,
 		sourceSite: source.name,
-		sourceUrl: cleanPortalUrl(candidate.links.guidelinesUrl || candidate.links.listingUrl || candidate.links.applyUrl),
+		sourceUrl: preferredSourceUrl(candidate.links),
 		applicationLink: cleanPortalUrl(candidate.links.applyUrl || candidate.links.listingUrl || null),
 		officialLinks: {
+			detailUrl: cleanPortalUrl(candidate.links.detailUrl || null),
 			listingUrl: cleanPortalUrl(candidate.links.listingUrl),
 			guidelinesUrl: cleanPortalUrl(candidate.links.guidelinesUrl || null),
 			faqUrl: cleanPortalUrl(candidate.links.faqUrl || null),

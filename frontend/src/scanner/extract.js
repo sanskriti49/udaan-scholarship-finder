@@ -3,9 +3,11 @@ export const schemas = {
     label: "Income Certificate",
     fields: {
       documentLabel: "Document wording",
+      studentName: "Name on this document",
       issueDate: "Issue date",
       expiryDate: "Expiry date",
       validity: "Stated validity",
+      validForYear: "Certificate valid for FY (if stated)",
       annualIncome: "Annual family income (INR)",
       authority: "Issuing designation",
       period: "Financial year / applicable period",
@@ -15,6 +17,7 @@ export const schemas = {
     label: "Bonafide Certificate",
     fields: {
       documentLabel: "Enrollment / document wording",
+      studentName: "Name on this document",
       institution: "Institution name",
       period: "Academic year / session",
       course: "Course / degree (if stated)",
@@ -28,12 +31,36 @@ export const schemas = {
     label: "Caste / Category Certificate",
     fields: {
       documentLabel: "Category / document wording",
+      studentName: "Name on this document",
       casteCategory: "Category (OBC / SC / ST / EWS)",
       subCaste: "Caste / community name",
       nonCreamyLayer: "Central NCL clause / validity",
       issueDate: "Issue date",
+      expiryDate: "Expiry date",
+      validity: "Stated validity",
+      validForYear: "Certificate valid for FY (if stated)",
       period: "Financial year / validity period",
       authority: "Issuing designation",
+    },
+  },
+  ews: {
+    label: "EWS / Income and Asset Certificate",
+    fields: {
+      documentLabel: "Document wording",
+      studentName: "Name on this document",
+      issueDate: "Issue date",
+      expiryDate: "Expiry date",
+      validity: "Stated validity",
+      validForYear: "Certificate valid for FY (if stated)",
+      period: "Income assessment financial year",
+      authority: "Issuing designation",
+    },
+  },
+  identity: {
+    label: "ID / Marksheet / Bank Document",
+    fields: {
+      documentLabel: "Document wording",
+      studentName: "Name on this document",
     },
   },
 };
@@ -115,6 +142,7 @@ export function editField(field, value) {
 export function extract(type, pages) {
   const fields = emptyFields(type);
   function add(key, value, line, page) {
+    if (!fields[key]) return;
     if (value === null || value === undefined || value === "") return;
     const f = fields[key];
     value = String(value);
@@ -134,6 +162,20 @@ export function extract(type, pages) {
     for (const original of page.text.split(/\r?\n/)) {
       const line = original.replace(/[\t ]+/g, " ").trim();
       if (!line) continue;
+      // Explicit holder/student labels only. Parent, issuer and institution
+      // names are never guessed as the applicant's identity.
+      const named = line.match(/^(?:(?:(?:student|applicant|candidate|beneficiary|holder|account holder)(?:'s)?\s+(?:full\s+)?name)|(?:name of (?:the )?(?:student|applicant|candidate|beneficiary|account holder))|(?:full name)|name)\s*[:=]\s*(.+)$/iu);
+      if (named) {
+        const name = named[1].split(/[,;]?\s+(?:s\/o|d\/o|w\/o|son of|daughter of|father(?:'s)? name|mother(?:'s)? name|dob\b|date of birth)/iu)[0].trim();
+        if (name.length <= 200) add("studentName", name, line, page);
+      }
+      if (fields.validity) {
+        const validity = line.match(/\b(?:valid (?:for|from)\s+|validity(?: period)?\s*:\s*)(.+)/i);
+        if (validity) add("validity", validity[0], line, page);
+      }
+      const validityYearLine = /\b(?:valid for (?:the )?(?:financial year|f\.?y\.?|year)|(?:certificate )?validity(?: period)?\s*[:=-]?\s*(?:for\s+)?(?:the )?(?:financial year|f\.?y\.?|year))(?=\s|:)/i.test(line);
+      if (validityYearLine)
+        add("validForYear", parsePeriod(line), line, page);
       // Only dates attached to an explicit label; DOB and unlabeled dates are never issue dates.
       for (const [key, label] of [
         [
@@ -170,10 +212,16 @@ export function extract(type, pages) {
             line,
             page,
           );
-        if (/financial year|\bf\.?y\.?(?=\s|:|-)|applicable period/i.test(line))
+        if (!validityYearLine && /financial year|\bf\.?y\.?(?=\s|:|-)|applicable period/i.test(line))
           add("period", parsePeriod(line), line, page);
-        const validity = line.match(/\b(?:valid (?:for|from)\s+|validity(?: period)?\s*:\s*)(.+)/i);
-        if (validity) add("validity", validity[0], line, page);
+      } else if (type === "ews") {
+        if (/\bews\b|economically weaker section|income (?:and|&) asset certificate/i.test(line))
+          add("documentLabel", "EWS / Income and Asset certificate", line, page);
+        if (!validityYearLine && /financial year|\bf\.?y\.?(?=\s|:|-)|income (?:assessment|earned)/i.test(line))
+          add("period", parsePeriod(line), line, page);
+      } else if (type === "identity") {
+        const kind = line.match(/\b(?:aadhaar|aadhar|pan card|passport|marksheet|mark sheet|statement of marks|bank passbook|pass book|bank statement)\b/i);
+        if (kind) add("documentLabel", kind[0], line, page);
       } else if (type === "bonafide") {
         if (
           /bona\s?fide|bonafide|currently enrolled|is a (?:regular )?student|studying in/i.test(
@@ -238,7 +286,7 @@ export function extract(type, pages) {
         else if (/belongs to (?:the )?creamy layer/i.test(line) && !/does not/i.test(line))
           add("nonCreamyLayer", "Creamy Layer indicated", line, page);
 
-        if (/financial year|\bf\.?y\.?(?=\s|:|-)|valid for the year|validity period/i.test(line))
+        if (!validityYearLine && /financial year|\bf\.?y\.?(?=\s|:|-)|valid for the year|validity period/i.test(line))
           add("period", parsePeriod(line), line, page);
       }
     }

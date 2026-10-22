@@ -13,6 +13,7 @@ These are deployment links. A successful local build does not establish their cu
 - Stored source snapshots, verbatim excerpts, source URLs, observed changes and academic-year application cycles. The evidence endpoint checks excerpts against stored snapshots; it does not certify a provider or guarantee current application terms.
 - A deterministic recursive policy evaluator with **AND, OR, NOT and conditional branches**, using passed/failed/unknown logic. Existing flat conditions remain an implicit AND. Alternative routes are shown as groups, and the profile form accepts marks percentage separately from CGPA. [Rule format, safeguards and demo](backend/RULE_ENGINE.md). Recorded criteria can be incomplete; match percentages are a rule-based heuristic, not award probability or an ML prediction.
 - Browser-local PDF.js text extraction and English Tesseract OCR. Students edit extracted fields and explicitly choose which supported fields to carry into eligibility.
+- A private pre-submission auditor: India-time financial-year freshness, stated validity and explainable name comparisons across up to six reviewed document names. Initials, missing middle parts, spelling variations and substantial differences produce advisory observations. Comparison names stay in memory and clear when the scanner is left. [Design, privacy boundaries and demo](frontend/SCANNER.md#private-pre-submission-auditor).
 - Bookmarks, in-app notifications, alert preferences and optional SMTP email. BullMQ job IDs and database keys reduce duplicate notification records; delivery depends on service availability and does not provide an exactly-once email guarantee.
 - Opt-in personalized eligibility-change alerts for saved schemes: compare source-backed rule versions against the same saved profile, explain changed checks with old/new evidence, and retain pending events for retry. [Design, limitations and offline demo](backend/ELIGIBILITY_ALERTS.md).
 - Redis response and eligibility caching with shared enum normalization in queries and cache keys, invalidation after catalogue changes, request limits and protected account/admin endpoints.
@@ -39,6 +40,7 @@ See [scanner behavior and tests](frontend/SCANNER.md), [feature access](frontend
 flowchart LR
     Browser[React / Vite client] --> API[Express API]
     Browser --> Scanner[Local PDF.js / Tesseract workers]
+    Scanner --> Auditor[In-memory FY and name audit]
     API --> Mongo[(MongoDB)]
     API --> Redis[(Redis cache)]
     Crawler[HTTP / browser ingestion] --> Mongo
@@ -89,13 +91,16 @@ npm run check
 npm run test:scanner:ui
 ```
 
-`check` runs lint with zero warnings allowed, all frontend unit tests, and the production build. **Every `npm run build` runs application browser smoke checks through `postbuild`.** The smoke journey covers homepage, scholarships, source evidence, eligibility and scanner on desktop and mobile, plus empty-evidence and missing-input regressions. API responses are synthetic; production accounts and document uploads are not used. The scanner suite also exercises actual local PDF/OCR processing, privacy, cancellation and handoff.
+`check` runs lint with zero warnings allowed, all frontend unit tests, the production build and application browser smoke checks. `npm run build` alone builds the app and its self-hosted scanner assets. The smoke journey covers homepage, scholarships, source evidence, eligibility and scanner on desktop and mobile, plus empty-evidence and missing-input regressions. API responses are synthetic; production accounts and document uploads are not used. The scanner suite also exercises actual local PDF/OCR processing, privacy, cancellation, the pre-submission auditor and handoff.
 
 GitHub Actions repeats backend tests and frontend checks on pushes and pull requests, and runs the scanner browser suite. Reminder regressions execute the processor used by the BullMQ worker with isolated dependencies; they do not copy its decision logic or dispatch real emails.
 
 ## Project layout
 
+Source navigation keeps the fetched URL on every quotation for snapshot verification. Scholarship-specific pages and guideline PDFs are discovered within the matching listing block, constrained to the source's allowed domains and existing follow-up budget. A `detailUrl` is stored separately from the shared listing URL; ambiguous duplicate titles never borrow another card's documents. PDF citations open the cited page, myScheme API citations link to the exact public slug with a separate raw-data link, and shared HTML listings use browser text fragments to locate the scholarship. Some providers expose only a shared page or JavaScript interaction, so passage navigation depends on browser/provider support. Existing records gain the richer discovery links on their next crawl; the modal can already recover myScheme public pages from saved evidence.
+
 - `backend/src/pipeline/`: sources, adapters, fetching, normalization, evidence and storage.
+- `services/gazette/`: optional Python/FastAPI public-guideline PDF service with table geometry, clause hierarchy, metadata candidates, OCR and bounded worker processes. [Setup, contract and verification](services/gazette/README.md). Enable with `GAZETTE_SERVICE_URL`; failures fall back to `pdf-parse` and enter the ingestion-issue queue. Student document scanning remains browser-local.
 - `backend/src/engine/`: eligibility condition evaluation.
 - `backend/src/workers/`: BullMQ wiring and tested reminder processor.
 - `backend/src/models/`, `controllers/`, `routes/`: persistence and API behavior.

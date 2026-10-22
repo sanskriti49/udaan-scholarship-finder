@@ -68,9 +68,11 @@ const scholarshipSchema = new mongoose.Schema(
 		authorityTier: Number,
 		applicationLink: { type: String, default: null },
 		officialLinks: {
+			detailUrl: String,
 			listingUrl: String,
 			guidelinesUrl: String,
 			faqUrl: String,
+			applyUrl: String,
 		},
 		fieldEvidence: [evidenceSchema],
 
