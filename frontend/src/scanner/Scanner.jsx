@@ -42,8 +42,16 @@ export default function Scanner() {
 	const privateId = useRef(0);
 	useEffect(() => {
 		const clear = () => setPrivateSet({ declaredName: "", documents: [] });
+		const onPageShow = () => clear();
 		window.addEventListener("pagehide", clear);
-		return () => window.removeEventListener("pagehide", clear);
+		window.addEventListener("pageshow", onPageShow);
+		window.addEventListener("popstate", clear);
+		return () => {
+			clear();
+			window.removeEventListener("pagehide", clear);
+			window.removeEventListener("pageshow", onPageShow);
+			window.removeEventListener("popstate", clear);
+		};
 	}, []);
 	const forgetAll = () => setPrivateSet({ declaredName: "", documents: [] });
 	function keepName(type, field, existingId) {
@@ -96,6 +104,7 @@ export default function Scanner() {
 							Catch date concerns and name differences across your application
 							papers, with private checks that run entirely on your device.
 						</p>
+						<a className="scanner-start-review" href="#document-workbench">Start document review <ArrowRight size={16} /></a>
 					</div>
 					<aside className="scanner-purpose">
 						<FileText size={27} />
@@ -317,6 +326,8 @@ function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 			</nav>
 			<section
 				className="scanner-workspace"
+				id="document-workbench"
+				tabIndex={-1}
 				aria-labelledby={
 					report ? "results-title" : reviewing ? "review-title" : "input-title"
 				}

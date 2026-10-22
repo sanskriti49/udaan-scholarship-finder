@@ -7,7 +7,7 @@
 		"scanner:assets": "node scripts/scanner-assets.mjs",
 		"predev": "npm run scanner:assets",
 		"prebuild": "npm run scanner:assets",
-		"test:scanner": "node --test test/scanner.test.mjs test/scanner-handoff.test.mjs test/document-audit.test.mjs",
+		"test:scanner": "node --test test/scanner.test.mjs test/scanner-handoff.test.mjs test/document-audit.test.mjs test/audit-presentation.test.mjs",
 		"test": "node --test test/*.test.mjs",
 		"test:smoke": "playwright test app-smoke.spec.mjs",
 		"check": "npm run lint && npm test && npm run build && npm run test:smoke",

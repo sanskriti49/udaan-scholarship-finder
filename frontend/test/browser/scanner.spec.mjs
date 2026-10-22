@@ -210,21 +210,23 @@ test("real local English image OCR and asset isolation", async ({ page }) => {
   await expect.poll(() => page.evaluate(() => window.__activeWorkers)).toBe(0);
 });
 
-test("private auditor compares successive real PDFs without uploading or persisting names", async ({ page }) => {
+test("private auditor compares successive real PDFs without uploading or persisting names", async ({ page }, testInfo) => {
   const requests = [], errors = [];
   page.on("request", request => requests.push({ url: request.url(), method: request.method(), body: request.postData() }));
   page.on("pageerror", error => errors.push(error.message));
-  await page.clock.setFixedTime(new Date("2026-10-22T10:00:00Z"));
+  await page.clock.setSystemTime(new Date("2026-10-22T10:00:00Z"));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await open(page);
   await page.getByLabel("Name on your application (optional, local only)", { exact: true }).fill("Anil Kumar Sharma");
   await page.getByLabel("Document type", { exact: true }).selectOption("identity");
+  await expect(page.locator(".scanner-workspace-top > span")).toHaveText("ID / Marksheet / Bank Document");
   await page.locator("#certificate").setInputFiles({ name: "private-id-sentinel.pdf", mimeType: "application/pdf", buffer: pdf("AADHAAR\nApplicant name: A. Kumar Sharma\nThis synthetic document contains no real identity information.") });
   await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("A. Kumar Sharma");
   await expect(page.getByText("Initials and expanded names differ", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Keep reviewed name for comparison", exact: true }).click();
   await expect(page.getByText("1 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
   await page.getByLabel("Document type", { exact: true }).selectOption("income");
+  await expect(page.locator(".scanner-workspace-top > span")).toHaveText("Income Certificate");
   await page.locator("#certificate").setInputFiles({ name: "private-income-sentinel.pdf", mimeType: "application/pdf", buffer: pdf("INCOME CERTIFICATE\nName: Anil Sharma\nIssue date: 31/03/2025\nAnnual family income: Rs. 180000\nFinancial year: 2024-25\nTehsildar") });
   await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("Anil Sharma");
   await expect(page.getByText("Issued before the current financial year", { exact: true })).toBeVisible();
@@ -234,13 +236,13 @@ test("private auditor compares successive real PDFs without uploading or persist
   await expect(page.getByText("Names differ substantially", { exact: true })).toHaveCount(2);
   await page.getByRole("button", { name: "Review next steps", exact: true }).click();
   await expect(page.getByRole("button", { name: "Download review", exact: true })).toBeEnabled();
-  await page.locator(".scanner-audit").screenshot({ path: "test-results/scanner-auditor-desktop.png", animations: "disabled" });
+  await page.locator(".scanner-audit").screenshot({ path: testInfo.outputPath("scanner-auditor-desktop.png"), animations: "disabled" });
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
   await page.setViewportSize({ width: 390, height: 1000 });
-  await page.locator(".scanner-audit").screenshot({ path: "test-results/scanner-auditor-mobile.png", animations: "disabled" });
+  await page.locator(".scanner-audit").screenshot({ path: testInfo.outputPath("scanner-auditor-mobile.png"), animations: "disabled" });
   expect(requests.every(request => request.method === "GET" && !request.body)).toBe(true);
   expect(JSON.stringify(requests)).not.toMatch(/private-id-sentinel|private-income-sentinel|Anil%20|Vikram%20|Anil Kumar|Vikram Mehta/);
   expect(await page.evaluate(async () => ({ local: localStorage.length, session: sessionStorage.length, db: (await indexedDB.databases()).length }))).toEqual({ local: 0, session: 0, db: 0 });
@@ -249,6 +251,56 @@ test("private auditor compares successive real PDFs without uploading or persist
   await expect(page.getByLabel("Name on your application (optional, local only)", { exact: true })).toHaveValue("");
   await expect(page.getByText("0 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test("application desk offers explicit local name reuse, accessible disclosures and responsive comparisons", async ({ page }, testInfo) => {
+  const requests = [];
+  page.on("request", request => requests.push({ url: request.url(), method: request.method(), body: request.postData() }));
+  await page.clock.setSystemTime(new Date("2026-10-22T10:00:00Z"));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await open(page);
+  await page.getByRole("link", { name: "Start document review", exact: true }).click();
+  await expect(page.locator("#document-workbench")).toBeFocused();
+  await page.locator(".scanner-private-set").screenshot({ path: testInfo.outputPath("application-desk-empty.png"), animations: "disabled" });
+  const reference = page.getByLabel("Name on your application (optional, local only)", { exact: true });
+  await reference.fill("Anil Kumar Sharma");
+  await page.getByRole("button", { name: "Enter details manually", exact: true }).click();
+  const name = page.getByLabel("Name on this document", { exact: true });
+  await name.fill("Anil Sharma");
+  await page.getByLabel("Issue date", { exact: true }).fill("2025-03-31");
+  await expect(page.locator(".scanner-compared-names mark")).toHaveText(["Kumar"]);
+  await expect(page.locator(".scanner-compared-names > div p")).toHaveText(["Anil Sharma", "Anil Kumar Sharma"]);
+  const explanation = page.locator(".audit-finding .audit-explanation").first();
+  await explanation.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(explanation).toHaveJSProperty("open", true);
+  await expect(explanation).toContainText("This alone does not mean the certificate has expired.");
+  await page.keyboard.press("Space");
+  await expect(explanation).toHaveJSProperty("open", false);
+  await page.getByRole("button", { name: "Keep reviewed name for comparison", exact: true }).click();
+  const use = page.getByRole("button", { name: "Use Anil Sharma for application name", exact: true });
+  await expect(use).toHaveAttribute("aria-pressed", "false");
+  await page.locator(".scanner-private-set").screenshot({ path: testInfo.outputPath("application-desk-desktop.png"), animations: "disabled" });
+  await use.click();
+  await expect(reference).toHaveValue("Anil Sharma");
+  await expect(use).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("Same recorded spelling", { exact: true })).toBeVisible();
+  await expect(page.locator(".scanner-compared-names mark")).toHaveCount(0);
+  await reference.fill("Anil Kumar Sharma");
+  await page.setViewportSize({ width: 390, height: 1000 });
+  await page.locator(".scanner-private-set").screenshot({ path: testInfo.outputPath("application-desk-mobile.png"), animations: "disabled" });
+  await name.fill("Anil ".repeat(38).trim());
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  expect(requests.every(request => request.method === "GET" && !request.body)).toBe(true);
+  expect(JSON.stringify(requests)).not.toMatch(/Anil|Sharma/);
+  expect(await page.evaluate(async () => ({ local: localStorage.length, session: sessionStorage.length, db: (await indexedDB.databases()).length }))).toEqual({ local: 0, session: 0, db: 0 });
+  await page.getByRole("button", { name: "Forget comparison names", exact: true }).click();
+  await expect(reference).toHaveValue("");
+  await expect(page.getByText("0 of 6 reviewed names kept in this tab", { exact: true })).toBeVisible();
+  await expect(name).not.toHaveValue("");
 });
 
 test("comparison names survive an explicit next-document action and clear on reload and leaving", async ({ page }) => {
@@ -277,7 +329,7 @@ test("comparison names survive an explicit next-document action and clear on rel
 });
 
 test("FY and format observations share India's calendar at the April boundary", async ({ page }) => {
-  await page.clock.setFixedTime(new Date("2026-03-31T18:30:00Z"));
+  await page.clock.setSystemTime(new Date("2026-03-31T18:30:00Z"));
   await open(page);
   await page.getByRole("button", { name: "Enter details manually", exact: true }).click();
   await page.getByLabel("Issue date", { exact: true }).fill("2026-04-01");
@@ -425,6 +477,7 @@ test("drag-and-drop, oversized dimensions and empty text provide safe review", a
   await page
     .getByLabel("Document type", { exact: true })
     .selectOption("bonafide");
+  await expect(page.locator(".scanner-workspace-top > span")).toHaveText("Bonafide Certificate");
   const transfer = await page.evaluateHandle((bytes) => {
     const dt = new DataTransfer();
     dt.items.add(

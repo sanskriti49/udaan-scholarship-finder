@@ -227,8 +227,11 @@ export async function processDocument(file, { signal, progress = () => {} }) {
         canvas = document.createElement("canvas");
         canvas.width = Math.ceil(viewport.width);
         canvas.height = Math.ceil(viewport.height);
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         renderTask = page.render({
-          canvasContext: canvas.getContext("2d"),
+          canvasContext: ctx,
           viewport,
         });
         await renderTask.promise;

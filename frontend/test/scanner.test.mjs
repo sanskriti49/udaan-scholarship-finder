@@ -186,6 +186,7 @@ test("scanner contains no persistence, API upload, or console logging sinks", as
     "documentAudit.js",
     "identitySession.js",
     "PreSubmissionAudit.jsx",
+    "auditPresentation.js",
   ]) {
     const code = await readFile(
       new URL(`../src/scanner/${name}`, import.meta.url),

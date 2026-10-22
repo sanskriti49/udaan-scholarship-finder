@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowUpRight, GitCompareArrows, History, Loader2, Minus, Plus } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { replayScholarshipEligibility } from "../services/scholarshipService";
+import { cleanOfficialUrl } from "../utils/formatEvidence.js";
 import { citationLink } from "../utils/sourceNavigation.js";
 import { formatPolicyRowValue, policyHistoryEntries, policyVersionPresentation, policyEvidence, policyDate, policyFieldLabel, policyUpdateSummary } from "../utils/policyDiff.js";
 const outcomes = { passed: "Meets recorded criteria", failed: "Does not meet recorded criteria", unknown: "Needs information or review" };
@@ -101,8 +102,9 @@ function SourceExcerpts({ evidence = [], fields = null, title }) {
 	return <details className="sch-disclosure">
 		<summary>Source excerpts for this update <span>{excerpts.length}</span></summary>
 		<div className="sch-disclosure-body">{excerpts.map((item, index) => {
+			const raw = cleanOfficialUrl(item.url || item.sourceUrl);
 			const link = citationLink(item, { title });
-			return <figure className="sch-source-quote" key={index}><blockquote>{item.quote}</blockquote><figcaption><span>Stored excerpt · Not verified{item.page ? ` · Page ${item.page}` : ""}</span>{link.href && <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label} <ArrowUpRight size={13} /></a>}{link.rawUrl && <a href={link.rawUrl} target="_blank" rel="noopener noreferrer">Source data <ArrowUpRight size={13} /></a>}</figcaption></figure>;
+			return <figure className="sch-source-quote" key={index}><blockquote>{item.quote}</blockquote><figcaption><span>Stored excerpt · Not verified{item.page ? ` · Page ${item.page}` : ""}</span>{raw && <a href={raw} target="_blank" rel="noopener noreferrer">Open source <ArrowUpRight size={13} /></a>}{link.href && link.href !== raw && <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label} <ArrowUpRight size={13} /></a>}{link.rawUrl && <a href={link.rawUrl} target="_blank" rel="noopener noreferrer">Source data <ArrowUpRight size={13} /></a>}</figcaption></figure>;
 		})}</div>
 	</details>;
 }

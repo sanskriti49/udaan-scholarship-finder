@@ -38,6 +38,16 @@ whitelists the minimal name-set fields. `PreSubmissionAudit.jsx` presents the re
 inside the existing editable review and next-steps stages. No backend, cloud OCR,
 translation service, account profile lookup or persistence was added.
 
+The illustrated application desk groups the local reference name and kept paper
+cards. “Use for application” copies a reviewed name into that local reference
+only; it never edits the account. A top-level “Start document review” shortcut
+jumps directly to the file/manual-entry workspace. The pre-submission review
+uses a chronological date trail, word-level name highlights and action-first
+observations. Explanations and original source excerpts remain available in
+keyboard-operable native disclosures. Date observations and name comparisons
+are counts, not a readiness score or verification badge. All highlighting is
+presentation-only; the existing audit decisions remain unchanged.
+
 - The FY boundary and general date checks use the calendar in `Asia/Kolkata`,
   including the March 31 / April 1 instant. Income, EWS and explicitly detected
   OBC-NCL wording receive a prior-FY review prompt. Old SC/ST certificates and
@@ -105,3 +115,5 @@ regressions exercise actual searchable PDFs and English OCR, successive scans,
 India-time FY rollover, live edits, non-blocking warnings, in-tab name retention,
 reload/navigation cleanup, and absence of document/name data in requests or
 browser storage. These checks use synthetic documents, not personal records.
+Presentation regressions also cover Unicode-preserving highlights, chronology,
+ambiguous dates, explicit local name reuse and keyboard disclosure controls.

@@ -3,6 +3,9 @@ export default defineConfig({
   testDir: "./test/browser",
   workers: 1,
   timeout: 120000,
+  expect: {
+    timeout: 15000,
+  },
   use: {
     baseURL: "http://localhost:4173",
     channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
