@@ -6,6 +6,7 @@ import SourceSnapshot from "../../models/SourceSnapshot.js";
 import SourceState from "../../models/SourceState.js";
 import CrawlRun from "../../models/CrawlRun.js";
 import IngestionIssue from "../../models/IngestionIssue.js";
+import DocumentExtraction from "../../models/DocumentExtraction.js";
 import { issueKey } from "./memoryStore.js";
 
 /**
@@ -60,6 +61,15 @@ export class MongoStore {
 	}
 	async touchSnapshot(id, at) {
 		await SourceSnapshot.updateOne({ _id: id }, { $set: { lastSeenAt: at } });
+	}
+	async saveDocumentExtraction(artifact) {
+		const { seenAt, ...data } = artifact;
+		return plain(await DocumentExtraction.findOneAndUpdate({ key: artifact.key }, {
+			$setOnInsert: { ...data, firstSeenAt: seenAt }, $set: { lastSeenAt: seenAt },
+		}, { upsert: true, returnDocument: "after", lean: true }));
+	}
+	async getLatestDocumentExtraction(url, canonicalTextHash) {
+		return plain(await DocumentExtraction.findOne({ url, canonicalTextHash }).sort({ lastSeenAt: -1, _id: -1 }).lean());
 	}
 
 	async getScholarship(schemeKey) {

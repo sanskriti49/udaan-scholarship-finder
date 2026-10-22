@@ -5,6 +5,48 @@ on:
 permissions:
   contents: read
 jobs:
+  gazette:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: services/gazette/requirements*.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install document dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-hin
+          python -m pip install -r services/gazette/requirements-dev.txt
+          npm ci --prefix backend
+      - name: Python geometry, OCR and process-isolation checks
+        working-directory: services/gazette
+        run: python -m pytest -q
+      - name: Real Python-to-Node HTTP contract
+        working-directory: services/gazette
+        shell: bash
+        run: |
+          python -m uvicorn gazette.app:app --host 127.0.0.1 --port 8000 > /tmp/udaan-gazette.log 2>&1 &
+          GAZETTE_PID=$!
+          trap 'kill "$GAZETTE_PID"' EXIT
+          python - <<'PY'
+          import time, urllib.request
+          for attempt in range(30):
+              try:
+                  urllib.request.urlopen("http://127.0.0.1:8000/readyz", timeout=1)
+                  break
+              except Exception:
+                  time.sleep(.5)
+          else:
+              raise SystemExit("Gazette service did not become ready")
+          PY
+          npm run test:gazette --prefix ../../backend
   verify:
     runs-on: ubuntu-latest
     env:

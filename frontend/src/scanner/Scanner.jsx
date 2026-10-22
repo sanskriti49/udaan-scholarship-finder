@@ -16,6 +16,9 @@ import { eligiblePrefill } from "./prefill";
 import { loadScholarships } from "./scholarships";
 import { useScanner } from "./useScanner";
 import { stageEligibilityDraft } from "../utils/eligibilityDraft";
+import PreSubmissionAudit, { PrivateDocumentSet } from "./PreSubmissionAudit.jsx";
+import { rememberName } from "./identitySession.js";
+import { auditCertificate, auditNames } from "./documentAudit.js";
 import "./scanner.css";
 import {
 	PaperReader,
@@ -35,6 +38,19 @@ const origins = {
 	missing: "Not detected",
 };
 export default function Scanner() {
+	const [privateSet, setPrivateSet] = useState({ declaredName: "", documents: [] });
+	const privateId = useRef(0);
+	useEffect(() => {
+		const clear = () => setPrivateSet({ declaredName: "", documents: [] });
+		window.addEventListener("pagehide", clear);
+		return () => window.removeEventListener("pagehide", clear);
+	}, []);
+	const forgetAll = () => setPrivateSet({ declaredName: "", documents: [] });
+	function keepName(type, field, existingId) {
+		const id = existingId || `private-${++privateId.current}`;
+		setPrivateSet(previous => ({ ...previous, documents: rememberName(previous.documents, { id, type, field }) }));
+		return id;
+	}
 	const [params, setParams] = useSearchParams();
 	const type = Object.hasOwn(schemas, params.get("type"))
 		? params.get("type")
@@ -77,8 +93,8 @@ export default function Scanner() {
 							<em>Know your next step.</em>
 						</h1>
 						<p>
-							Check the details in your certificate, spot reading or date
-							issues, and leave with a review summary for your next application.
+							Catch date concerns and name differences across your application
+							papers, with private checks that run entirely on your device.
 						</p>
 					</div>
 					<aside className="scanner-purpose">
@@ -86,7 +102,7 @@ export default function Scanner() {
 						<strong>What you’ll leave with</strong>
 						<ul>
 							<li>Editable details with source text</li>
-							<li>Date and format issues to review</li>
+							<li>Financial-year and name-consistency observations</li>
 							<li>A summary you can download</li>
 						</ul>
 						<small>A review aid, not certificate verification.</small>
@@ -152,7 +168,8 @@ export default function Scanner() {
 						)}
 					</details>
 				</section>
-				<Workflow key={type} type={type} scheme={scheme} />
+				<PrivateDocumentSet {...privateSet} onDeclare={declaredName => setPrivateSet(previous => ({ ...previous, declaredName }))} onForget={id => setPrivateSet(previous => ({ ...previous, documents: previous.documents.filter(doc => doc.id !== id) }))} onClear={forgetAll} />
+				<Workflow key={type} type={type} scheme={scheme} privateSet={privateSet} onKeep={keepName} onClearPrivate={forgetAll} />
 				<p className="scanner-disclaimer">
 					<Info size={17} />
 					OCR can miss text. A missing field does not mean a document is
@@ -163,12 +180,13 @@ export default function Scanner() {
 		</div>
 	);
 }
-function Workflow({ type, scheme }) {
+function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 	const scanner = useScanner(type);
 	const navigate = useNavigate();
 	const [dragging, setDragging] = useState(false);
 	const [approved, setApproved] = useState({});
 	const [consent, setConsent] = useState(false);
+	const [savedId, setSavedId] = useState(null);
 	const reviewHeading = useRef(null),
 		resultHeading = useRef(null);
 	const busy = scanner.stage === "processing";
@@ -192,9 +210,12 @@ function Workflow({ type, scheme }) {
 	}, [scanner.stage]);
 	const reset = () => {
 		scanner.reset();
+		onClearPrivate();
+		setSavedId(null);
 		setApproved({});
 		setConsent(false);
 	};
+	const another = () => { scanner.reset(); setApproved({}); setConsent(false); setSavedId(null); };
 	function transfer() {
 		const selected = Object.fromEntries(
 			transferable.filter(([key]) => approved[key]),
@@ -218,6 +239,8 @@ function Workflow({ type, scheme }) {
 			);
 		for (const item of report.results)
 			lines.push(`\n${item.label}: ${item.interpretation}\nNext: ${item.next}`);
+		for (const item of auditCertificate(type, scanner.fields).findings) lines.push(`\nAdvisory: ${item.title}\n${item.detail}\nNext: ${item.next}`);
+		for (const item of auditNames(scanner.fields.studentName, privateSet.documents, privateSet.declaredName, savedId)) lines.push(`\nName comparison (${item.label}): ${item.title}\n${item.detail}`);
 		const url = URL.createObjectURL(
 			new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" }),
 		);
@@ -241,6 +264,7 @@ function Workflow({ type, scheme }) {
 			) || [];
 	const other =
 		report?.results.filter((item) => !important.includes(item)) || [];
+	const auditor = <PreSubmissionAudit type={type} fields={scanner.fields} {...privateSet} savedId={savedId} onKeep={() => setSavedId(onKeep(type, scanner.fields.studentName, savedId))} onNext={another} renderEvidence={field => <Evidence field={field} />} />;
 	function observation(item) {
 		const value = scanner.fields[item.field];
 		return (
@@ -456,6 +480,7 @@ function Workflow({ type, scheme }) {
 								</button>
 							</div>
 						</form>
+						{auditor}
 					</>
 				)}
 				{report && (
@@ -484,6 +509,7 @@ function Workflow({ type, scheme }) {
 								<Download size={16} /> Download review
 							</button>
 						</div>
+						{auditor}
 						<div className="scanner-results">
 							{important.length ? (
 								important.map(observation)
@@ -522,7 +548,7 @@ function Workflow({ type, scheme }) {
 								</a>
 							)}
 						</div>
-						<section className="scanner-handoff">
+						{["income", "caste", "bonafide"].includes(type) && <section className="scanner-handoff">
 							{prefill.familyIncome && (
 								<CoinHugger size={64} className="scanner-handoff-art" />
 							)}
@@ -531,7 +557,8 @@ function Workflow({ type, scheme }) {
 								<>
 									<p>
 										Choose what to carry into the eligibility form. We’ll open
-										the form for your review; no match runs automatically.
+										the form for your review; no match runs automatically. Names
+										and audit observations are never carried over.
 									</p>
 									{transferable.map(([key, value]) => (
 										<label className="scanner-check" key={key}>
@@ -589,7 +616,7 @@ function Workflow({ type, scheme }) {
 							<Link className="scanner-checklist-link" to="/documents">
 								Keep track of your remaining papers <ArrowUpRight size={14} />
 							</Link>
-						</section>
+						</section>}
 					</>
 				)}
 			</section>

@@ -125,7 +125,8 @@ export const nspSchemeListAdapter = {
 			const t = line.text.trim();
 			if (!t) continue;
 			if (isHeading6(t)) {
-				current = { title: t.replace(/^#{6}\s+/, "").trim(), titleLine: line, ministry, ministryLine };
+				const heading = t.replace(/^#{6}\s+/, "").trim();
+				current = { title: heading.replace(/^\[([^\n]+)\]\(.+\)$/, "$1"), titleLine: line, ministry, ministryLine, linkLines: [] };
 				blocks.push(current);
 				continue;
 			}
@@ -135,7 +136,7 @@ export const nspSchemeListAdapter = {
 				continue;
 			}
 			if (current && isLinkLine(t)) {
-				current.linkLine = line;
+				current.linkLines.push(line);
 				continue;
 			}
 			if (/^[-[#]/.test(t) || /^Last update/i.test(t)) continue;
@@ -187,26 +188,28 @@ export const nspSchemeListAdapter = {
 			// Links
 			const links = { listingUrl: snapshot.url, guidelinesUrl: null, faqUrl: null, applyUrl };
 			if (applyEvidence) evidence.push(applyEvidence);
-			if (block.linkLine) {
-				const linkText = block.linkLine.text.trim();
-				for (const [label, key] of [
-					["Specifications", "guidelinesUrl"],
-					["FAQ", "faqUrl"],
-				]) {
-					const target = extractLinkTarget(linkText, label);
-					if (target === null) continue;
-					const checked = validateOfficialUrl(target, allowedDomains);
-					if (checked.ok) {
-						links[key] = checked.url;
-						const ev = makeEvidence(snapshot, linkText, { field: key, locator: `${label} link`, fromIndex: block.linkLine.offset });
-						if (ev) evidence.push(ev);
-					} else {
-						recordIssues.push({
-							code: "official_link_invalid",
-							severity: "warning",
-							message: `${label} link on the listing is not usable (${checked.reason}: ${target}); it was not stored.`,
-							details: { label, target, reason: checked.reason },
-						});
+			if (block.linkLines.length) {
+				for (const linkLine of block.linkLines) {
+					const linkText = linkLine.text.trim();
+					for (const [label, key] of [
+						["Specifications", "guidelinesUrl"],
+						["FAQ", "faqUrl"],
+					]) {
+						const target = extractLinkTarget(linkText, label);
+						if (target === null) continue;
+						const checked = validateOfficialUrl(target, allowedDomains);
+						if (checked.ok) {
+							links[key] = checked.url;
+							const ev = makeEvidence(snapshot, linkText, { field: key, locator: `${label} link`, fromIndex: linkLine.offset });
+							if (ev) evidence.push(ev);
+						} else {
+							recordIssues.push({
+								code: "official_link_invalid",
+								severity: "warning",
+								message: `${label} link on the listing is not usable (${checked.reason}: ${target}); it was not stored.`,
+								details: { label, target, reason: checked.reason },
+							});
+						}
 					}
 				}
 			} else {

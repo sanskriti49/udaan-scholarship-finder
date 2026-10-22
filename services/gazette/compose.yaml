@@ -1,0 +1,23 @@
+services:
+  gazette:
+    init: true
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      GAZETTE_OCR_LANGUAGES: ${GAZETTE_OCR_LANGUAGES:-eng+hin}
+      GAZETTE_API_KEY: ${GAZETTE_API_KEY:-}
+      GAZETTE_MAX_WORKERS: "2"
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 96
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped

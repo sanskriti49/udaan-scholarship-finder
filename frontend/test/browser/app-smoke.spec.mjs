@@ -67,6 +67,28 @@ test("empty source evidence never turns generated criteria into verified quotati
   await expect(page.getByRole("dialog").locator("blockquote")).toHaveCount(0);
 });
 
+for (const width of [390, 1440]) test(`source navigation retains scheme identity and PDF pages at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const raw = "https://www.myscheme.gov.in/api/apisetu/schemes?slug=example-degree&lang=en";
+  await mockApi(page, [
+    { quote: "A catalogue quotation", url: raw, field: "title", verified: true },
+    { quote: excerpt, url: "https://example.gov.in/guidelines.pdf?revision=2", page: 4, field: "familyIncome", verified: true },
+    { quote: "Applications close in October", url: scholarship.sourceUrl, field: "cycle", verified: true },
+  ]);
+  await page.goto("/scholarships");
+  await page.getByRole("button", { name: scholarship.title, exact: true }).first().click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("tab", { name: "Eligibility", exact: true }).click();
+  await dialog.locator("summary").filter({ hasText: "Source excerpts" }).click();
+  await expect(dialog.getByRole("link", { name: "Scholarship page", exact: true })).toHaveAttribute("href", "https://www.myscheme.gov.in/schemes/example-degree");
+  await expect(dialog.getByRole("link", { name: "Source data", exact: true })).toHaveAttribute("href", raw);
+  await expect(dialog.getByRole("link", { name: "Open PDF · page 4", exact: true })).toHaveAttribute("href", "https://example.gov.in/guidelines.pdf?revision=2#page=4");
+  await expect(dialog.getByRole("link", { name: "Open cited passage", exact: true })).toHaveAttribute("href", /#:~:text=Example%20Scholarship&text=Applications/);
+  await dialog.getByRole("tab", { name: "Overview", exact: true }).click();
+  await expect(dialog.getByRole("link", { name: "Find this scholarship", exact: true })).toHaveAttribute("href", /myscheme\.gov\.in\/schemes\/example-degree/);
+  expect(await dialog.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true);
+});
+
 test("blank numeric fields and omitted disability stay unknown in the eligibility request", async ({ page }) => {
   const evaluations = await mockApi(page);
   await page.goto("/eligibility");

@@ -4,6 +4,8 @@ import { prepareEligibilityVersion } from "./core/eligibilityVersions.js";
 import { SafeFetcher, FetchError } from "./core/http.js";
 import { fetchRendered } from "./core/dynamic.js";
 import { toDocument, assessTextQuality } from "./core/documents.js";
+import { createGazetteClient } from "./core/gazetteClient.js";
+import { enrichSourceLinks } from "./core/sourceLinks.js";
 import { dedupeCandidates } from "./core/dedupe.js";
 import { assembleRecord, selectCurrentCycle } from "./core/assemble.js";
 import {
@@ -39,7 +41,7 @@ function stripSnapshotText(snapshot) {
 	return meta;
 }
 
-function docFromSnapshot(snapshot) {
+function docFromSnapshot(snapshot, artifact = null) {
 	return {
 		url: snapshot.url,
 		finalUrl: snapshot.finalUrl,
@@ -48,9 +50,11 @@ function docFromSnapshot(snapshot) {
 		pages: snapshot.pages,
 		json: snapshot.kind === "json" ? JSON.parse(snapshot.text) : null,
 		textHash: snapshot.textHash,
-		quality: snapshot.quality || assessTextQuality(snapshot.text),
+		quality: { ...(snapshot.quality || assessTextQuality(snapshot.text)), ...(artifact ? { requiresManualReview: artifact.data.requires_review } : {}) },
 		documentDate: snapshot.documentDate,
 		html: snapshot.html || null,
+		documentIntelligence: artifact?.data || null,
+		extractionMethod: artifact?.extractionMethod || snapshot.extractionMethod || null,
 	};
 }
 
@@ -71,10 +75,11 @@ export class Pipeline {
 	 * @param {Function} [opts.now]          clock (for tests)
 	 * @param {Function} [opts.onDataChange] async ({ record, changeType, summary, deltas, isNew })
 	 */
-	constructor({ store, fetcherFactory = createDefaultFetcher, renderer = fetchRendered, now = () => new Date(), onDataChange = null, logger } = {}) {
+	constructor({ store, fetcherFactory = createDefaultFetcher, renderer = fetchRendered, gazetteClient = createGazetteClient(), now = () => new Date(), onDataChange = null, logger } = {}) {
 		this.store = store;
 		this.fetcherFactory = fetcherFactory;
 		this.renderer = renderer;
+		this.gazetteClient = gazetteClient;
 		this.now = now;
 		this.onDataChange = onDataChange;
 		this.logger = logger || rootLogger;
@@ -85,6 +90,13 @@ export class Pipeline {
 		const started = Date.now();
 		const page = { url: entry.url, role: entry.role, adapter: entry.adapter };
 		run.pages.push(page);
+		const onDocumentIssue = async issue => {
+			const full = { ...issue, details: { ...issue.details, url: entry.url, label: entry.url } };
+			(page.documentIssues ||= []).push(full);
+			await this.store.upsertIssue({ ...full, sourceId: source.id, seenAt: this.now(), runId: run.runId });
+			this.logger.warn("PDF extraction issue", { sourceId: source.id, code: issue.code, reason: issue.details?.reason, url: entry.url });
+		};
+		const parseDocument = result => toDocument(result, { gazetteClient: this.gazetteClient, ocrLanguages: entry.gazette?.ocrLanguages || source.gazette?.ocrLanguages, onIssue: onDocumentIssue });
 		try {
 			const strategy = entry.strategy || source.strategy || "static";
 			if (!["static", "auto", "dynamic"].includes(strategy)) throw new FetchError("SOURCE_CONFIG", `Unknown strategy: ${strategy}`);
@@ -109,7 +121,8 @@ export class Pipeline {
 				page.transportError = { code: error.code };
 				result = await render();
 			}
-			let doc = result.notModified && previous ? docFromSnapshot(previous) : await toDocument(result);
+			const previousArtifact = result.notModified && previous?.kind === "pdf" ? await this.store.getLatestDocumentExtraction(entry.url, previous.textHash) : null;
+			let doc = result.notModified && previous ? docFromSnapshot(previous, previousArtifact) : await parseDocument(result);
 			let fallbackReason = null;
 			if (doc.kind === "html") {
 				if (doc.text.length < MIN_TEXT_CHARS.html) fallbackReason = "thin_content";
@@ -124,7 +137,7 @@ export class Pipeline {
 			if (strategy === "auto" && fallbackReason && result.fetchMethod !== "dynamic" && fetcher.allowRendering !== false && !result.capturedSourceType) {
 				page.fallbackReason = fallbackReason;
 				result = await render();
-				doc = await toDocument(result);
+				doc = await parseDocument(result);
 			}
 			page.fetchMethod = result.fetchMethod || (dynamic ? "dynamic" : "static");
 			page.httpStatus = result.status;
@@ -135,9 +148,23 @@ export class Pipeline {
 				await this.store.touchSnapshot(previous.id, result.fetchedAt);
 				page.pageChanged = false;
 				page.notModified = true;
-				return { doc: docFromSnapshot(previous), snapshot: { ...previous, fetchedAt: result.fetchedAt } };
+				page.documentExtractionId = previousArtifact?.id || previous.documentExtractionId;
+				return { doc, snapshot: { ...previous, fetchedAt: result.fetchedAt } };
 			}
 
+			// A degraded parser must not silently clear a previously known layout/OCR safeguard.
+			if (doc.extractionMethod === "baseline" && previous) {
+				const knownArtifact = await this.store.getLatestDocumentExtraction(entry.url, previous.textHash);
+				if (previous.quality?.requiresManualReview || knownArtifact?.data?.requires_review) doc.quality.requiresManualReview = true;
+			}
+			let artifact = null;
+			if (doc.documentIntelligence) {
+				const payload = JSON.stringify(doc.documentIntelligence);
+				artifact = await this.store.saveDocumentExtraction({ key: crypto.createHash("sha256").update(`${entry.url}\n${payload}`).digest("hex"), sourceId: source.id, url: entry.url,
+					sourceSha256: doc.documentIntelligence.source_sha256, canonicalTextHash: doc.textHash, extractionMethod: doc.extractionMethod, data: doc.documentIntelligence, seenAt: result.fetchedAt });
+				page.documentExtractionId = artifact.id;
+			}
+			page.extractionMethod = doc.extractionMethod;
 			if (doc.text.length < (MIN_TEXT_CHARS[doc.kind] ?? 100)) {
 				throw new FetchError("THIN_CONTENT", `Only ${doc.text.length} characters of text; page may require rendering or be broken`);
 			}
@@ -161,6 +188,8 @@ export class Pipeline {
 				text: doc.text,
 				pages: doc.pages,
 				quality: doc.quality,
+				documentExtractionId: artifact?.id,
+				extractionMethod: doc.extractionMethod,
 				documentDate: doc.documentDate,
 				authorityTier: source.authorityTier,
 			});
@@ -295,7 +324,7 @@ export class Pipeline {
 				return finish("rejected", error);
 			}
 			if (entry.role === "listing") {
-				candidates.push(...out.records);
+				candidates.push(...enrichSourceLinks(out.records, fetched.doc, source));
 				academicYear = out.pageFacts?.academicYear || academicYear;
 			}
 			assertions.push(...(out.assertions || []));
@@ -396,6 +425,9 @@ export class Pipeline {
 		for (const issue of pageIssues) {
 			await this.store.upsertIssue({ ...noteIssue(null, issue), seenAt: at, runId });
 		}
+		// These were persisted during fetching, including failed optional PDFs.
+		// Keep their keys open without counting the same occurrence twice.
+		for (const issue of run.pages.flatMap(page => page.documentIssues || [])) noteIssue(null, issue);
 
 		// ---- Freshness: records that disappeared from the source ----
 		const stored = await this.store.listScholarships({ primarySourceId: source.id });

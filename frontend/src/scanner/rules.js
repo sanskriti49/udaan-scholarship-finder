@@ -1,4 +1,5 @@
 import { parseDate, parseMoney, parsePeriod, schemas } from "./extract.js";
+import { indiaDate } from "./documentAudit.js";
 
 // Certificate requirements need source excerpts, not inferred catalogue metadata.
 // Keep production decisions disabled until cycle-scoped rules are reviewed.
@@ -36,7 +37,7 @@ export function evaluate(
   fields,
   scholarshipOrId,
   rules = verifiedRules,
-  today = new Date().toISOString().slice(0, 10),
+  today = indiaDate(),
 ) {
   const scholarship =
     typeof scholarshipOrId === "object" && scholarshipOrId !== null
@@ -51,7 +52,7 @@ export function evaluate(
       if (f.ambiguous) issue = "Conflicting evidence was found.";
       else if (!String(f.value).trim())
         issue =
-          ["aishe", "course", "expiryDate", "validity", "nonCreamyLayer", "subCaste"].includes(key)
+          ["aishe", "course", "expiryDate", "validity", "validForYear", "nonCreamyLayer", "subCaste"].includes(key)
             ? "Optional detail not recorded. Check the original and the scheme’s requirements."
             : "No reliable value was identified.";
       else if (/Date$/.test(key) && !parseDate(f.value))
@@ -59,7 +60,7 @@ export function evaluate(
       else if (key === "annualIncome" && parseMoney(f.value) === null)
         issue =
           "Enter a numeric annual family income; do not substitute monthly or individual income.";
-      else if (key === "period" && !parsePeriod(f.value))
+      else if (["period", "validForYear"].includes(key) && !parsePeriod(f.value))
         issue = "Review the year range (for example 2024-2025).";
       else if (key === "issueDate" && parseDate(f.value) > today)
         issue = "The issue date is in the future.";
@@ -77,7 +78,7 @@ export function evaluate(
         id: key,
         field: key,
         label,
-        optional: ["aishe", "course", "expiryDate", "validity", "nonCreamyLayer", "subCaste"].includes(key),
+        optional: ["aishe", "course", "expiryDate", "validity", "validForYear", "nonCreamyLayer", "subCaste"].includes(key),
         state: issue
           ? f.value && !f.ambiguous
             ? "Needs attention"
@@ -101,7 +102,7 @@ export function evaluate(
         ? parseDate(value)
         : r.field === "annualIncome"
           ? parseMoney(value)
-          : r.field === "period"
+          : ["period", "validForYear"].includes(r.field)
             ? parsePeriod(value)
             : String(value ?? "").trim().toLowerCase();
     const actual = normalize(f.value),

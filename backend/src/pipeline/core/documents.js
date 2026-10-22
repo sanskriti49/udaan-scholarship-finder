@@ -176,13 +176,15 @@ export function detectDocumentDateLabel(text) {
  * Build a document from a fetch result.
  * kind: html | pdf | json | text
  */
-export async function toDocument(fetchResult) {
+export async function toDocument(fetchResult, { gazetteClient = null, ocrLanguages, onIssue = async () => {} } = {}) {
 	const contentType = fetchResult.contentType || "";
 	const body = fetchResult.body;
 	let kind;
 	let text;
 	let pages = null;
 	let json = null;
+	let documentIntelligence = null;
+	let extractionMethod = null;
 
 	if (contentType.startsWith("text/x-captured-text")) {
 		// Recorded capture: the text was extracted at capture time.
@@ -198,7 +200,36 @@ export async function toDocument(fetchResult) {
 		}
 	} else if (contentType.includes("pdf") || body.subarray(0, 5).toString("latin1") === "%PDF-") {
 		kind = "pdf";
-		({ text, pages } = await pdfToText(body));
+		if (gazetteClient?.enabled) {
+			try { documentIntelligence = await gazetteClient.extract(body, { ocrLanguages }); }
+			catch (error) {
+				await onIssue({ code: "gazette_service_fallback", severity: "warning", message: "Document intelligence was unavailable or rejected this PDF; baseline text extraction was attempted.", details: { reason: error.code || "GAZETTE_UNAVAILABLE", httpStatus: error.status || null } });
+			}
+		}
+		if (documentIntelligence?.status === "complete") {
+			text = documentIntelligence.text;
+			pages = documentIntelligence.pages.map(page => ({ page: page.number, start: page.start }));
+			extractionMethod = "gazette";
+		} else {
+			try { ({ text, pages } = await pdfToText(body)); extractionMethod = "baseline"; }
+			catch {
+				if (!documentIntelligence?.text) {
+					await onIssue({ code: "gazette_pdf_unreadable", severity: "warning", message: "This PDF could not be read by the available extractors. Existing verified scholarship values are preserved." });
+					throw Object.assign(new Error("The PDF could not be read by the available extractors."), { code: "PDF_UNREADABLE" });
+				}
+			}
+			if (!text?.trim() && documentIntelligence?.text) {
+				text = documentIntelligence.text;
+				pages = documentIntelligence.pages.map(page => ({ page: page.number, start: page.start }));
+				extractionMethod = "partial_gazette";
+			}
+		}
+		if (documentIntelligence?.status === "partial") await onIssue({ code: "gazette_partial_extraction", severity: "warning", message: "Some page content or geometry could not be extracted. Numeric policy fields require manual source review." });
+		if (documentIntelligence?.requires_review) await onIssue({ code: "gazette_review_required", severity: "warning", message: "The PDF contains OCR, structured tables or incomplete content. Extracted policy values require source review.", details: { ocrPages: documentIntelligence.pages.filter(p => p.method === "ocr").map(p => p.number), tableCount: documentIntelligence.tables.length, warnings: documentIntelligence.warnings.map(w => ({ code: w.code, page: w.page })) } });
+		if (!text?.trim()) {
+			await onIssue({ code: "gazette_pdf_unreadable", severity: "warning", message: "No readable PDF text was found. Existing verified scholarship values are preserved." });
+			throw Object.assign(new Error("No readable PDF text was found."), { code: "PDF_UNREADABLE" });
+		}
 	} else if (contentType.includes("json")) {
 		kind = "json";
 		const raw = body.toString("utf8");
@@ -221,8 +252,10 @@ export async function toDocument(fetchResult) {
 		pages,
 		json,
 		textHash: sha256(text),
-		quality: assessTextQuality(text),
+		quality: { ...assessTextQuality(text), ...(documentIntelligence?.requires_review ? { requiresManualReview: true } : {}) },
 		documentDate: kind === "pdf" ? detectDocumentDateLabel(text) : null,
+		documentIntelligence,
+		extractionMethod,
 	};
 }
 

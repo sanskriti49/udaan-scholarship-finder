@@ -11,6 +11,7 @@
     "demo:eligibility": "node src/scripts/demoEligibilityChanges.js",
     "demo:rules": "node src/scripts/demoRuleTree.js",
     "test:pipeline": "node --test test/unit/*.test.js test/integration/*.test.js",
+    "test:gazette": "node --test test/contract/gazette-service.test.mjs",
     "test:pipeline:browser": "node --test test/browser/adaptive-rendering.test.mjs",
     "pipeline": "node src/scripts/runPipeline.js",
     "pipeline:browser:install": "playwright install chromium",

@@ -850,3 +850,39 @@
 	transform: rotate(-0.5deg) translateY(-3px);
 	box-shadow: 5px 8px 0 #d0d9be;
 }
+.scanner-private-set { background: #f8faf2; border: 1px solid #b5c4aa; border-radius: 12px; padding: 22px; margin: 0 0 36px; }
+.scanner-audit-title { display: flex; align-items: flex-start; gap: 13px; }
+.scanner-audit-title > svg { flex: 0 0 auto; margin-top: 3px; color: #356a4c; }
+.scanner-audit-title h2 { font-family: Georgia, serif; font-size: 23px; line-height: 1.3; font-weight: 400; margin: 0 0 7px; }
+.scanner-audit-title p { font-size: 12px; line-height: 1.7; color: #50654f; margin: 0 0 14px; }
+.scanner-private-set > label { display: block; font-size: 12px; font-weight: 650; margin: 8px 0; }
+.scanner-private-set > input { box-sizing: border-box; width: 100%; max-width: 580px; min-height: 44px; border: 1px solid #a3b69a; border-radius: 6px; background: white; padding: 11px 12px; font: inherit; font-size: 14px; }
+.scanner-private-set-meta { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-top: 12px; font-size: 11px; color: #52674c; }
+.scanner-name-set { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 7px; }
+.scanner-name-set li { display: flex; align-items: center; gap: 10px; justify-content: space-between; padding: 10px 12px; border: 1px solid #cfdbc4; background: #fffef9; border-radius: 6px; min-width: 0; }
+.scanner-name-set li > div { min-width: 0; }
+.scanner-name-set strong { display: block; font-size: 13px; overflow-wrap: anywhere; }
+.scanner-name-set span { display: block; font-size: 11px; color: #596c52; margin-top: 4px; }
+.scanner-name-set button { min-width: 44px; min-height: 44px; display: grid; place-items: center; border: 1px solid #c3cfb9; border-radius: 6px; cursor: pointer; background: white; color: #325a42; }
+.scanner-audit { margin: 28px 0; padding: 23px; border: 1px solid #c2caac; border-radius: 12px; background: #fffdf4; scroll-margin-top: 100px; }
+.scanner-workspace h2[tabindex="-1"] { scroll-margin-top: 100px; }
+.scanner-audit .scanner-eyebrow { font-size: 9px !important; margin-bottom: 5px !important; }
+.scanner-audit-group + .scanner-audit-group { border-top: 1px solid #d3d8c2; margin-top: 20px; padding-top: 20px; }
+.scanner-audit-group h3 { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 15px; margin: 5px 0 10px; }
+.scanner-audit-group h3 span { font-size: 10px; font-weight: 500; padding: 4px 8px; background: #e9efdf; border-radius: 4px; }
+.scanner-audit-caption, .scanner-audit-empty { font-size: 12px; line-height: 1.75; color: #52654e; margin: 8px 0 14px; }
+.scanner-audit-findings { list-style: none; padding: 0; margin: 16px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.scanner-audit-findings > li { min-width: 0; border: 1px solid #c7d4bc; border-left: 3px solid #8ca777; border-radius: 7px; padding: 15px; background: #f0f5e9; overflow-wrap: anywhere; }
+.scanner-audit-findings > li.is-review { background: #fff5d7; border-color: #dbcd93; border-left-color: #b18d2f; }
+.scanner-audit-findings > li.is-attention { background: #fff0e7; border-color: #d7b49b; border-left-color: #ac6844; }
+.scanner-audit-findings strong { font-size: 13px; }
+.scanner-audit-findings p { font-size: 12px; line-height: 1.8; margin: 8px 0; }
+.scanner-audit-findings details { margin-top: 12px; font-size: 11px; }
+.scanner-audit-findings summary { cursor: pointer; min-height: 32px; }
+.scanner-audit-reference { display: block; font-size: 10px; color: #64724f; margin-bottom: 8px; }
+.scanner-compared-names { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; font-family: Georgia, serif; }
+.scanner-compared-names span:not([aria-label]) { padding: 3px 7px; background: #ffffff99; border: 1px solid #d8d4bb; border-radius: 4px; }
+.scanner-audit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; }
+.scanner-audit-actions button { min-height: 44px; }
+.scanner-private-set input:focus-visible, .scanner-name-set button:focus-visible, .scanner-audit summary:focus-visible { outline: 3px solid #a59236; outline-offset: 3px; }
+@media (max-width: 620px) { .scanner-audit, .scanner-private-set { padding: 17px; } .scanner-audit-findings { grid-template-columns: minmax(0, 1fr); } .scanner-audit-title h2 { font-size: 21px; } .scanner-audit-actions { align-items: stretch; } .scanner-audit-actions button { max-width: 100%; white-space: normal; } }
