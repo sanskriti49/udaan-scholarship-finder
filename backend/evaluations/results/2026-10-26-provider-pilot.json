@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "synthetic": true,
+  "comparisonType": "fixed-evidence component comparison; not a full discovery benchmark",
+  "calls": 2,
+  "maxCalls": 4,
+  "stopped": "PROVIDER_UNAVAILABLE",
+  "summaries": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "reservedCalls": 1,
+      "responsesValidated": 0,
+      "expectedConditions": 0,
+      "correctConditions": 0,
+      "unsupportedClaims": 0,
+      "unsupportedProposals": 0,
+      "unknownConditions": 0,
+      "meanLatencyMs": 1967,
+      "inputTokens": 1431,
+      "outputTokens": 419,
+      "usageIncomplete": false,
+      "estimatedCostUsd": null
+    },
+    {
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "reservedCalls": 1,
+      "responsesValidated": 0,
+      "expectedConditions": 0,
+      "correctConditions": 0,
+      "unsupportedClaims": 0,
+      "unsupportedProposals": 0,
+      "unknownConditions": 0,
+      "meanLatencyMs": 3028,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "usageIncomplete": true,
+      "estimatedCostUsd": null
+    }
+  ],
+  "coverage": [
+    {
+      "caseId": "category-exclusion",
+      "answerPacketAvailable": true,
+      "excludedByRecordedRules": false,
+      "omittedCandidates": 0
+    }
+  ],
+  "results": [
+    {
+      "caseId": "category-exclusion",
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "stage": "research_intent",
+      "inputFingerprint": "cdf976aa89e4b1c0ac6ddcd76f3f3c61abbc50b8d7468fd82240ff7eca0d77be",
+      "inputCharacters": 4719,
+      "charged": true,
+      "pricing": "account billing not verified",
+      "estimatedCostUsd": null,
+      "usage": {
+        "inputTokens": 1431,
+        "outputTokens": 419
+      },
+      "error": "INVALID_RESEARCH_INTENT",
+      "latencyMs": 1967
+    },
+    {
+      "caseId": "category-exclusion",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "stage": "research_intent",
+      "inputFingerprint": "cdf976aa89e4b1c0ac6ddcd76f3f3c61abbc50b8d7468fd82240ff7eca0d77be",
+      "inputCharacters": 4719,
+      "charged": true,
+      "pricing": "account billing not verified",
+      "estimatedCostUsd": null,
+      "error": "PROVIDER_UNAVAILABLE",
+      "latencyMs": 3028
+    }
+  ],
+  "execution": "live-api-pilot",
+  "dataset": "synthetic policies",
+  "approvedMaximumRequests": 4,
+  "requestsReserved": 2,
+  "liveAnswerQualityEstablished": false,
+  "limitations": [
+    "No evidence-answer request ran before the stopping condition.",
+    "The Groq interpretation did not pass current local validation; its detailed validation category was not retained in this initial pilot.",
+    "The Gemini request was unavailable; the initial pilot did not retain whether this was transport or HTTP service failure.",
+    "No retries or fallback requests were made. Two approved requests remained unused."
+  ]
+}

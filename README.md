@@ -65,7 +65,25 @@ Use Node.js 22 and npm (the runtime used for local checks and CI), MongoDB, and 
 
 Backend environment names include `PORT`, `NODE_ENV`, `MONGO_URI`, `JWT_SECRET`, `FRONTEND_URL`, `REDIS_URL`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` and `GOOGLE_CLIENT_ID`. Configure the services you actually use.
 
+For deployment, set Render's HTTP health-check path to **`/api/health`**, configure Atlas network access, and select **`noeviction`** for BullMQ's Redis instance. Database startup retries transient failures within a finite recovery window without replaying requests; safe failure categories and retry timing appear in health diagnostics. See [deployment and recovery settings](DEPLOYMENT.md). Render Free sleeps when idle, so it cannot provide continuous background scheduling.
+
+For automatic catalogue maintenance, configure the backend (and restart it after changing environment values):
+
+```dotenv
+ENABLE_CRAWLER=true
+PIPELINE_BOOTSTRAP=off
+CRAWLER_INTERVAL_MS=86400000
+CRAWLER_CHECK_INTERVAL_MS=900000
+CRAWLER_MAX_SOURCES_PER_RUN=2
+```
+
+This checks for due sources shortly after startup, then every 15 minutes, refreshing at most two sources per check. Successful source attempts are normally due again after 24 hours; persisted attempts prevent a restart from launching another full crawl. Failed attempts back off, and existing records/citations remain available with their actual verification dates. Startup catch-up suppresses change notifications; later intervals retain the existing notification behavior. `PIPELINE_BOOTSTRAP=off` skips bootstrap ingestion, not the independently enabled scheduler. Set `ENABLE_CRAWLER=false` to disable automatic fetching. Refresh uses the ingestion pipeline, not Groq inference. Timers run only while the backend process is running; Redis coordinates locks across replicas, with process-local locking when Redis is unavailable.
+
 ## Checks and builds
+
+Navigator connects an authenticated research UI to a bounded LangGraph service with owned MongoDB checkpoints, leases and persistent quotas. Its adaptive loop chooses research actions from evidence gaps, inspected sources and remaining resources, with optional model guidance after reading policy. It can retrieve registered official guideline links, preserve immutable document versions and re-read targeted clauses without publishing inferred rules. Results separate recorded checks, cited interpretations, missing student information and source-coverage gaps. Simple work uses interpretation and answering; one optional research decision raises the default ceiling to three model calls. See [setup, safeguards and verification](backend/NAVIGATOR.md). Run `npm run test:navigator --prefix backend` and `npm run demo:navigator --prefix backend`; use `npm run test:navigator:durable --prefix backend` for disposable-MongoDB/HTTP checks (Docker required).
+
+Open **Tools → Navigator** to start research, recover saved progress and review source notes. The backend requires an explicitly selected Groq or Gemini provider, model, backend key and `NAVIGATOR_ENABLED=true`; unavailable configurations fail closed. There is no automatic provider fallback or extra agent hosting service. `npm run compare:navigator --prefix backend` prints the offline comparison manifest without loading credentials or calling either API; live comparisons require an explicit bounded opt-in. See [Gemini setup and comparison](backend/NAVIGATOR.md#gemini-provider-and-fixed-evidence-comparison--26-october-2026). After building the frontend, run `npm run test:navigator:ui --prefix frontend` for fixture-backed browser checks. The separate `check:navigator:live` command uses real backend credentials and consumes model quota only when explicitly invoked.
 
 Public scholarship titles can be translated on demand with automatic source-language detection. See [translation setup and provider limits](backend/TRANSLATION.md) for Google Cloud configuration and the best-effort demo fallback. Official titles and evidence remain intact.
 

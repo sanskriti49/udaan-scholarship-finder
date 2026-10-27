@@ -30,7 +30,7 @@ export function computeStatus(record, now = new Date(), { closingSoonDays = 7 } 
 		computedAt: now,
 	});
 
-	if (!cycle) return result("unknown", "No official application window has been published for this scheme.");
+	if (!cycle) return result("unknown", "Udaan has no recorded application window for this scheme. Check the official portal for current dates.");
 
 	const opensAt = cycle.opensAt ? new Date(cycle.opensAt).getTime() : null;
 	const closesAt = cycle.closesAt ? new Date(cycle.closesAt).getTime() : null;
@@ -51,10 +51,10 @@ export function computeStatus(record, now = new Date(), { closingSoonDays = 7 } 
 		return result("upcoming", `Applications${ay}${renewal} open on ${formatIstDate(new Date(opensAt))}.`);
 	}
 	if (opensAt === null) {
-		return result("unknown", "The official opening date has not been published.");
+		return result("unknown", "Udaan has no recorded official opening date. Check the provider's current instructions.");
 	}
 	if (closesAt === null) {
-		return result("unknown", `Opened on ${formatIstDate(new Date(opensAt))}; the official closing date has not been published.`);
+		return result("unknown", `Recorded opening date: ${formatIstDate(new Date(opensAt))}; Udaan has no recorded official closing date.`);
 	}
 	const remaining = closesAt - nowMs;
 	if (remaining <= closingSoonDays * DAY_MS) {

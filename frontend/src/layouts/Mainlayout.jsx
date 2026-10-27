@@ -9,6 +9,9 @@ import { forceUnlockBodyScroll } from "../hooks/useBodyScrollLock";
 function Mainlayout() {
   const location = useLocation();
   const { loading } = useAuth();
+  // Keep the Navigator's active request and draft alive between its three pages.
+  // Leaving this area still unmounts it and clears its in-memory inputs.
+  const pageKey = /^\/navigator(?:\/|$)/.test(location.pathname) ? "/navigator" : location.pathname;
 
   useEffect(() => {
     forceUnlockBodyScroll();
@@ -20,7 +23,7 @@ function Mainlayout() {
       {loading && <FullScreenLoader />}
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <div key={location.pathname} className="grow flex flex-col min-h-[calc(100vh-5rem)] animate-page-enter">
+        <div key={pageKey} className="grow flex flex-col min-h-[calc(100vh-5rem)] animate-page-enter">
           <Outlet />
         </div>
         <Footer />

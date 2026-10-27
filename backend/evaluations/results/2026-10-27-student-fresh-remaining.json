@@ -1,0 +1,2323 @@
+{
+  "version": 1,
+  "recordedAt": "2026-10-27T07:05:44.517Z",
+  "execution": "live configured model; frozen-source research graph; memory checkpoints; real persistent inference quotas",
+  "latencyScope": "Research core plus provider/quota persistence, excludes browser/HTTP and production checkpoint storage. Not comparable to the earlier 293-second full journey.",
+  "notice": "Frozen historical official-source corpus; not current-year verification. Candidate-pool research, not a benchmark of the production Mongo search query.",
+  "selectedCases": [
+    "renewal-fourth-year",
+    "missing-mode-guidance"
+  ],
+  "maxCalls": 2,
+  "actualRequests": 2,
+  "transport": [
+    {
+      "request": 1,
+      "httpStatus": 200,
+      "responseHeadersMs": 2916
+    },
+    {
+      "request": 2,
+      "httpStatus": 200,
+      "responseHeadersMs": 2559
+    }
+  ],
+  "observations": [
+    {
+      "caseId": "renewal-fourth-year",
+      "question": "I received AICTE Pragati (Technical Degree) from my first year and have been promoted to my fourth year. Can it continue this year, and what must I submit for renewal?",
+      "conversation": [],
+      "provider": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "completed",
+      "error": null,
+      "elapsedMs": 3700,
+      "usage": {
+        "modelCalls": 1,
+        "toolCalls": 5,
+        "inputTokens": 2033,
+        "outputTokens": 663,
+        "reportedModelCalls": 1,
+        "tokenUsageIncomplete": false
+      },
+      "events": [
+        {
+          "type": "tool_started",
+          "tool": "searchScholarships"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "searchScholarships"
+        },
+        {
+          "type": "tool_started",
+          "tool": "findGuidelinePassages",
+          "actionId": "df6880742c3f3acb38964e06"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "findGuidelinePassages",
+          "resultCount": 4
+        },
+        {
+          "type": "tool_started",
+          "tool": "findGuidelinePassages",
+          "actionId": "2172755e52001adc4d426c81"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "findGuidelinePassages",
+          "resultCount": 4
+        },
+        {
+          "type": "tool_started",
+          "tool": "evaluateMatches",
+          "actionId": "2172755e52001adc4d426c81"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "evaluateMatches"
+        },
+        {
+          "type": "tool_started",
+          "tool": "finishInvestigation",
+          "actionId": "2172755e52001adc4d426c81"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "finishInvestigation"
+        },
+        {
+          "type": "model_started",
+          "action": "answer_evidence"
+        },
+        {
+          "type": "model_completed",
+          "action": "answer_evidence",
+          "validation": {
+            "accepted": 1,
+            "rejected": 2,
+            "codes": [
+              "QUOTE_NOT_FOUND"
+            ]
+          }
+        }
+      ],
+      "intent": {
+        "objective": "Research renewal of AICTE Pragati scholarship for the fourth year of a technical degree",
+        "searchQuery": "AICTE Pragati Scholarship",
+        "constraints": [
+          {
+            "field": "scheme",
+            "role": "scholarship",
+            "operator": "include",
+            "value": "AICTE Pragati (Technical Degree)",
+            "source": {
+              "messageIndex": 0,
+              "quote": "AICTE Pragati (Technical Degree)"
+            }
+          },
+          {
+            "field": "studyYear",
+            "role": "applicant_current",
+            "operator": "include",
+            "value": 4,
+            "source": {
+              "messageIndex": 0,
+              "quote": "fourth year"
+            }
+          },
+          {
+            "field": "applicationType",
+            "role": "applicant_current",
+            "operator": "include",
+            "value": "renewal",
+            "source": {
+              "messageIndex": 0,
+              "quote": "renewal"
+            }
+          }
+        ],
+        "questions": [
+          {
+            "text": "Can it continue this year, and what must I submit for renewal?",
+            "source": {
+              "messageIndex": 0,
+              "quote": "Can it continue this year, and what must I submit for renewal?"
+            }
+          }
+        ],
+        "ambiguities": []
+      },
+      "plan": {
+        "kind": "plan",
+        "generatedAt": "2026-10-27T05:57:59.623Z",
+        "entries": [
+          {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+            "organization": "All India Council For Technical Education",
+            "region": "All India",
+            "academicYear": "2026-27",
+            "applicationType": "general",
+            "deadline": "2026-10-31T18:29:59.999Z",
+            "applicationLink": "https://scholarships.gov.in/ApplicationForm/",
+            "status": "closing_soon",
+            "statusReason": "Applications for AY 2026-27 close on 31-10-2026.",
+            "stale": false,
+            "lastVerifiedAt": "2026-10-26T15:09:03.216Z",
+            "targetIds": [
+              "s0"
+            ],
+            "matching": {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "unknown",
+              "missingFields": [
+                "familyIncome",
+                "gender",
+                "educationLevel"
+              ],
+              "policyVersion": 3,
+              "passedCount": 0,
+              "failedCount": 0,
+              "unknownCount": 3,
+              "requiresManualReview": false,
+              "reasons": {
+                "supported": [],
+                "excluded": [],
+                "unresolved": [
+                  "Annual family income ≤ ₹8,00,000",
+                  "Restricted to Female candidates only",
+                  "UG degree required"
+                ]
+              }
+            },
+            "citations": [
+              {
+                "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4491,
+                  "charEnd": 4582,
+                  "page": 4,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "renewal",
+                  "education"
+                ],
+                "policyRole": "renewal",
+                "policyPriority": 6,
+                "sectionTitle": "RENEWALS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "scheme_context",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 660,
+                  "charEnd": 1136,
+                  "page": 2,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility",
+                  "residence",
+                  "education",
+                  "income",
+                  "gender",
+                  "documents"
+                ],
+                "policyRole": "eligibility",
+                "policyPriority": 7,
+                "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4237,
+                  "charEnd": 4491,
+                  "page": 3,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "renewal",
+                  "documents"
+                ],
+                "policyRole": "renewal",
+                "policyPriority": 6,
+                "sectionTitle": "RENEWALS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4582,
+                  "charEnd": 5919,
+                  "page": 4,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility",
+                  "category",
+                  "education",
+                  "income",
+                  "benefits"
+                ],
+                "policyRole": "conditions",
+                "policyPriority": 5,
+                "sectionTitle": "TERMS AND CONDITIONS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 3154,
+                  "charEnd": 3629,
+                  "page": 3,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "residence",
+                  "education"
+                ],
+                "policyRole": "context",
+                "policyPriority": 0,
+                "sectionTitle": "CRITERIA OF SELECTION",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              }
+            ],
+            "sourceChecks": [],
+            "retrieval": {
+              "status": "unknown",
+              "conditions": [
+                {
+                  "id": "c1",
+                  "label": "Current enrollment / context — Study year: 4",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_61abe31fa2657fd512e1653b6f745d2149695454"
+                  ]
+                },
+                {
+                  "id": "c2",
+                  "label": "Current enrollment / context — Application type: renewal",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011"
+                  ]
+                },
+                {
+                  "id": "q0",
+                  "label": "Can it continue this year, and what must I submit for renewal?",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                    "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                    "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                    "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd"
+                  ]
+                }
+              ]
+            },
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [],
+              "unresolved": [
+                "Confirm: Current enrollment / context — Study year: 4",
+                "Confirm: Current enrollment / context — Application type: renewal",
+                "Confirm: Can it continue this year, and what must I submit for renewal?",
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required",
+                "Some requested conditions could not be established from the available evidence."
+              ],
+              "reasons": []
+            },
+            "nextSteps": [
+              "Review the cited official instructions and any unresolved conditions.",
+              "Prepare documents explicitly required by the current provider instructions.",
+              "Confirm the current application window on the official portal before applying."
+            ],
+            "sourceRevision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+            "answer": {
+              "conditions": [
+                {
+                  "requirementId": "c1",
+                  "label": "Current enrollment / context — Study year: 4",
+                  "status": "supported",
+                  "basis": "source_interpretation",
+                  "explanation": "The student has been promoted to their fourth year, and scholarship continuation requires promotion to the next class or level.",
+                  "evidence": [
+                    {
+                      "evidenceId": "ev_4aaa58b34aa5556257b349185314749664667218",
+                      "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+                      "relation": "supports",
+                      "span": {
+                        "charStart": 4491,
+                        "charEnd": 4582
+                      }
+                    }
+                  ],
+                  "dependsOn": []
+                },
+                {
+                  "requirementId": "c2",
+                  "label": "Current enrollment / context — Application type: renewal",
+                  "status": "unknown",
+                  "basis": "unresolved",
+                  "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                },
+                {
+                  "requirementId": "q0",
+                  "label": "Can it continue this year, and what must I submit for renewal?",
+                  "status": "unknown",
+                  "basis": "unresolved",
+                  "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                }
+              ],
+              "concern": false,
+              "limitation": "Source interpretations are AI-assisted and may be mistaken. Only the quoted text and recorded checks are established here; full current eligibility is not certified."
+            }
+          }
+        ],
+        "outcome": "review_required",
+        "caveat": "This is a research shortlist, not an eligibility certificate, application submission or award guarantee. No profile, bookmark or notification was changed.",
+        "preparation": "catalogue",
+        "aiAssistance": "search_planning",
+        "intent": {
+          "status": "interpreted",
+          "reason": null,
+          "constraints": [
+            "AICTE Pragati (Technical Degree)",
+            "fourth year",
+            "renewal"
+          ],
+          "questions": [
+            "Can it continue this year, and what must I submit for renewal?"
+          ],
+          "unresolved": [
+            "fourth year",
+            "renewal"
+          ],
+          "ambiguities": [],
+          "requirements": [
+            {
+              "field": "studyYear",
+              "role": "applicant_current",
+              "operator": "include",
+              "value": 4,
+              "source": {
+                "messageIndex": 0,
+                "quote": "fourth year"
+              },
+              "id": "c1",
+              "label": "Current enrollment / context — Study year: 4",
+              "stage": "evidence"
+            },
+            {
+              "field": "applicationType",
+              "role": "applicant_current",
+              "operator": "include",
+              "value": "renewal",
+              "source": {
+                "messageIndex": 0,
+                "quote": "renewal"
+              },
+              "id": "c2",
+              "label": "Current enrollment / context — Application type: renewal",
+              "stage": "evidence"
+            },
+            {
+              "text": "Can it continue this year, and what must I submit for renewal?",
+              "source": {
+                "messageIndex": 0,
+                "quote": "Can it continue this year, and what must I submit for renewal?"
+              },
+              "id": "q0",
+              "label": "Can it continue this year, and what must I submit for renewal?",
+              "field": "question",
+              "stage": "evidence"
+            }
+          ],
+          "targets": [
+            {
+              "id": "s0",
+              "name": "AICTE Pragati (Technical Degree)",
+              "operator": "include",
+              "source": {
+                "messageIndex": 0,
+                "quote": "AICTE Pragati (Technical Degree)"
+              }
+            }
+          ]
+        },
+        "research": {
+          "version": 1,
+          "stopReason": "available_actions_exhausted",
+          "decisions": 0,
+          "actions": [
+            {
+              "tool": "searchScholarships",
+              "status": "completed",
+              "resultCount": null
+            },
+            {
+              "tool": "findGuidelinePassages",
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "completed",
+              "resultCount": 4
+            },
+            {
+              "tool": "findGuidelinePassages",
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "completed",
+              "resultCount": 4
+            },
+            {
+              "tool": "evaluateMatches",
+              "status": "completed",
+              "resultCount": null
+            }
+          ],
+          "gaps": [
+            {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+              "requirementIds": [],
+              "kind": "missing_student",
+              "missingFields": [
+                "familyIncome",
+                "gender",
+                "educationLevel"
+              ],
+              "attemptedOfficialSource": false,
+              "message": "Some conditions still need interpretation or additional information."
+            }
+          ]
+        },
+        "targets": [
+          {
+            "id": "s0",
+            "name": "AICTE Pragati (Technical Degree)",
+            "status": "reviewed",
+            "candidateIds": [
+              "6aa58e923d52461bb6eb9e9a"
+            ],
+            "excludedIds": []
+          }
+        ],
+        "coverage": {
+          "reviewed": [
+            {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+              "status": "unknown",
+              "conditions": [
+                {
+                  "id": "c1",
+                  "label": "Current enrollment / context — Study year: 4",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c2",
+                  "label": "Current enrollment / context — Application type: renewal",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "q0",
+                  "label": "Can it continue this year, and what must I submit for renewal?",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd"
+                  ]
+                }
+              ],
+              "qualification": {
+                "status": "needs_verification",
+                "supported": [],
+                "unresolved": [
+                  "Confirm: Current enrollment / context — Study year: 4",
+                  "Confirm: Current enrollment / context — Application type: renewal",
+                  "Confirm: Can it continue this year, and what must I submit for renewal?",
+                  "Annual family income ≤ ₹8,00,000",
+                  "Restricted to Female candidates only",
+                  "UG degree required"
+                ],
+                "reasons": []
+              },
+              "examined": true
+            }
+          ],
+          "deferred": [],
+          "excluded": [],
+          "discovery": {
+            "candidates": 1,
+            "snapshots": 2,
+            "characters": 33528,
+            "sourceLimitReached": false
+          }
+        },
+        "answer": {
+          "version": 2,
+          "status": "partial",
+          "reason": "PARTIAL_VALIDATION",
+          "fingerprint": "2e8619538771d2b9e44838e460cd859cfa3d872757ff2953d35d87696074f43c",
+          "assessedConditions": 1,
+          "acceptedAssessments": 1,
+          "rejectedAssessments": 2,
+          "diagnostics": [
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 1,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "c2"
+            },
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 2,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "q0"
+            }
+          ],
+          "recoverable": true,
+          "inputCharacters": 8849,
+          "message": "Some source interpretations were retained below. Other parts remain open and have not been used to recommend eligibility."
+        }
+      },
+      "clarification": null,
+      "modelResponses": [
+        {
+          "mode": "evidence_answer",
+          "message": {
+            "content": "{\n  \"assessments\": [\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c1\",\n      \"status\": \"supported\",\n      \"explanation\": \"The student has been promoted to their fourth year, and scholarship continuation requires promotion to the next class or level.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_4aaa58b34aa5556257b349185314749664667218\",\n          \"quote\": \"2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\\n\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c2\",\n      \"status\": \"supported\",\n      \"explanation\": \"Renewals are processed on the National Scholarship Portal by submitting a passing certificate or mark sheet along with a letter from the Head of the Institution.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011\",\n          \"quote\": \"10.0 RENEWALS:\\n1) The scholarship will be renewed for the next year of study on receipt of renewal\\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\\natong with letter from the Head of the Institution on the online portal.\\n\\n\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"q0\",\n      \"status\": \"supported\",\n      \"explanation\": \"The scholarship can continue for the next year of study provided the student is promoted and submits the required renewal documents through the National Scholarship Portal.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011\",\n          \"quote\": \"10.0 RENEWALS:\\n1) The scholarship will be renewed for the next year of study on receipt of renewal\\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\\natong with letter from the Head of the Institution on the online portal.\\n\\n\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": [\n        \"c1\",\n        \"c2\"\n      ]\n    }\n  ]\n}"
+          },
+          "intentFormat": "json_schema",
+          "usage": {
+            "inputTokens": 2033,
+            "outputTokens": 663
+          }
+        }
+      ],
+      "reusedIntentFrom": "77b8a9eaa3c4607eb5102279aa6957cb5e9c3026e7bad8cf98fbbf31e40ebdb7",
+      "retrievedPassages": [
+        {
+          "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4491,
+            "charEnd": 4582,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "renewal",
+            "education"
+          ],
+          "policyRole": "renewal",
+          "policyPriority": 6,
+          "sectionTitle": "RENEWALS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "scheme_context",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 660,
+            "charEnd": 1136,
+            "page": 2,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "residence",
+            "education",
+            "income",
+            "gender",
+            "documents"
+          ],
+          "policyRole": "eligibility",
+          "policyPriority": 7,
+          "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4237,
+            "charEnd": 4491,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "renewal",
+            "documents"
+          ],
+          "policyRole": "renewal",
+          "policyPriority": 6,
+          "sectionTitle": "RENEWALS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4582,
+            "charEnd": 5919,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "category",
+            "education",
+            "income",
+            "benefits"
+          ],
+          "policyRole": "conditions",
+          "policyPriority": 5,
+          "sectionTitle": "TERMS AND CONDITIONS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 3154,
+            "charEnd": 3629,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "residence",
+            "education"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "CRITERIA OF SELECTION",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "n favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 5719,
+            "charEnd": 6894,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility"
+          ],
+          "policyRole": "conditions",
+          "policyPriority": 5,
+          "sectionTitle": "TERMS AND CONDITIONS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 2694,
+            "charEnd": 3154,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "residence",
+            "education",
+            "application"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "PROCEDURE FOR APPLYING",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_89add0151f8081f7b17c8cc800617487c6373bb3",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "8.0 METHODS OF RESOLVING TIES:\nThe procedure to be adopted for breaking ties (similar percentiles) shall be as under: -\n1) Percentage of Marks in 10th Examination: In case qualifying examination percentile\ndoes not break ties, then higher percentage of marks in 10th examination will be ranked\nhigher.\n2) Age: In case 10th examination percentile does not break ties, then the candidate of elder\nage will be ranked higher.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 3629,
+            "charEnd": 4051,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "education"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "METHODS OF RESOLVING TIES",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "scheme_context",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        }
+      ],
+      "corpusFingerprint": "42f085027ac1ede6dc7dc2b2c0aa9a4af862a1c4fc5b910513c6d9fd5d6c75ba",
+      "corpusFingerprintVersion": 2,
+      "corpusVersion": 2,
+      "selectedSchemeVersions": [
+        {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "dataHash": "f68459a81b361fac72fb536ec7acf9ff5e71893fdff798f0ba875b18fb0cb773",
+          "lastVerifiedAt": "2026-10-26T15:09:03.216Z"
+        }
+      ]
+    },
+    {
+      "caseId": "missing-mode-guidance",
+      "question": "I am a girl considering a part-time B.Tech degree. Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+      "conversation": [],
+      "provider": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "completed",
+      "error": null,
+      "elapsedMs": 3063,
+      "usage": {
+        "modelCalls": 1,
+        "toolCalls": 5,
+        "inputTokens": 2095,
+        "outputTokens": 595,
+        "reportedModelCalls": 1,
+        "tokenUsageIncomplete": false
+      },
+      "events": [
+        {
+          "type": "tool_started",
+          "tool": "searchScholarships"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "searchScholarships"
+        },
+        {
+          "type": "tool_started",
+          "tool": "findGuidelinePassages",
+          "actionId": "aba4f34163496a9d42915e93"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "findGuidelinePassages",
+          "resultCount": 4
+        },
+        {
+          "type": "tool_started",
+          "tool": "findGuidelinePassages",
+          "actionId": "767ed00b2306b996f4ec7f6d"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "findGuidelinePassages",
+          "resultCount": 4
+        },
+        {
+          "type": "tool_started",
+          "tool": "evaluateMatches",
+          "actionId": "767ed00b2306b996f4ec7f6d"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "evaluateMatches"
+        },
+        {
+          "type": "tool_started",
+          "tool": "finishInvestigation",
+          "actionId": "767ed00b2306b996f4ec7f6d"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "finishInvestigation"
+        },
+        {
+          "type": "model_started",
+          "action": "answer_evidence"
+        },
+        {
+          "type": "model_completed",
+          "action": "answer_evidence",
+          "validation": {
+            "accepted": 4,
+            "rejected": 0,
+            "codes": []
+          }
+        }
+      ],
+      "intent": {
+        "objective": "Research AICTE Pragati scholarship eligibility for part-time B.Tech study",
+        "searchQuery": "AICTE Pragati",
+        "constraints": [
+          {
+            "field": "gender",
+            "role": "applicant_current",
+            "operator": "include",
+            "value": "Female",
+            "source": {
+              "messageIndex": 0,
+              "quote": "girl"
+            }
+          },
+          {
+            "field": "educationLevel",
+            "role": "funding",
+            "operator": "include",
+            "value": "UG",
+            "source": {
+              "messageIndex": 0,
+              "quote": "B.Tech"
+            }
+          },
+          {
+            "field": "scheme",
+            "role": "scholarship",
+            "operator": "include",
+            "value": "AICTE Pragati (Technical Degree)",
+            "source": {
+              "messageIndex": 0,
+              "quote": "AICTE Pragati (Technical Degree)"
+            }
+          },
+          {
+            "field": "other",
+            "role": "investigate",
+            "operator": "include",
+            "value": "part-time study",
+            "source": {
+              "messageIndex": 0,
+              "quote": "part-time B.Tech degree"
+            }
+          }
+        ],
+        "questions": [
+          {
+            "text": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+            "source": {
+              "messageIndex": 0,
+              "quote": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?"
+            }
+          }
+        ],
+        "ambiguities": []
+      },
+      "plan": {
+        "kind": "plan",
+        "generatedAt": "2026-10-27T05:57:59.623Z",
+        "entries": [
+          {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+            "organization": "All India Council For Technical Education",
+            "region": "All India",
+            "academicYear": "2026-27",
+            "applicationType": "general",
+            "deadline": "2026-10-31T18:29:59.999Z",
+            "applicationLink": "https://scholarships.gov.in/ApplicationForm/",
+            "status": "closing_soon",
+            "statusReason": "Applications for AY 2026-27 close on 31-10-2026.",
+            "stale": false,
+            "lastVerifiedAt": "2026-10-26T15:09:03.216Z",
+            "targetIds": [
+              "s0"
+            ],
+            "matching": {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "unknown",
+              "missingFields": [
+                "familyIncome",
+                "gender",
+                "educationLevel"
+              ],
+              "policyVersion": 3,
+              "passedCount": 0,
+              "failedCount": 0,
+              "unknownCount": 3,
+              "requiresManualReview": false,
+              "reasons": {
+                "supported": [],
+                "excluded": [],
+                "unresolved": [
+                  "Annual family income ≤ ₹8,00,000",
+                  "Restricted to Female candidates only",
+                  "UG degree required"
+                ]
+              }
+            },
+            "citations": [
+              {
+                "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4237,
+                  "charEnd": 4491,
+                  "page": 3,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "renewal",
+                  "documents"
+                ],
+                "policyRole": "renewal",
+                "policyPriority": 6,
+                "sectionTitle": "RENEWALS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 660,
+                  "charEnd": 1136,
+                  "page": 2,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility",
+                  "residence",
+                  "education",
+                  "income",
+                  "gender",
+                  "documents"
+                ],
+                "policyRole": "eligibility",
+                "policyPriority": 7,
+                "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4491,
+                  "charEnd": 4582,
+                  "page": 4,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "renewal",
+                  "education"
+                ],
+                "policyRole": "renewal",
+                "policyPriority": 6,
+                "sectionTitle": "RENEWALS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "scheme_context",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4582,
+                  "charEnd": 5919,
+                  "page": 4,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility",
+                  "category",
+                  "education",
+                  "income",
+                  "benefits"
+                ],
+                "policyRole": "conditions",
+                "policyPriority": 5,
+                "sectionTitle": "TERMS AND CONDITIONS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "n favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 5719,
+                  "charEnd": 6894,
+                  "page": 4,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility"
+                ],
+                "policyRole": "conditions",
+                "policyPriority": 5,
+                "sectionTitle": "TERMS AND CONDITIONS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": false,
+                  "endComplete": true
+                }
+              }
+            ],
+            "sourceChecks": [],
+            "retrieval": {
+              "status": "unknown",
+              "conditions": [
+                {
+                  "id": "c0",
+                  "label": "Current enrollment / context — Gender: Female",
+                  "stage": "rules",
+                  "status": "match",
+                  "reason": "recorded_rules",
+                  "evidenceIds": [],
+                  "ruleRequirements": [
+                    "Restricted to Female candidates only"
+                  ],
+                  "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+                },
+                {
+                  "id": "c1",
+                  "label": "Education level: UG",
+                  "stage": "metadata",
+                  "status": "match",
+                  "reason": "recorded_metadata",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c3",
+                  "label": "Funding need: part-time study",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                    "ev_61abe31fa2657fd512e1653b6f745d2149695454"
+                  ]
+                },
+                {
+                  "id": "q0",
+                  "label": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                    "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                    "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                    "ev_76641255dfac467b703a4ed47a58cfe50b442caf"
+                  ]
+                }
+              ]
+            },
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [
+                "Current enrollment / context — Gender: Female",
+                "Education level: UG"
+              ],
+              "unresolved": [
+                "Confirm: Funding need: part-time study",
+                "Confirm: Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required",
+                "Some requested conditions could not be established from the available evidence."
+              ],
+              "reasons": []
+            },
+            "nextSteps": [
+              "Review the cited official instructions and any unresolved conditions.",
+              "Prepare documents explicitly required by the current provider instructions.",
+              "Confirm the current application window on the official portal before applying."
+            ],
+            "sourceRevision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+            "answer": {
+              "conditions": [
+                {
+                  "requirementId": "c0",
+                  "label": "Current enrollment / context — Gender: Female",
+                  "status": "supported",
+                  "basis": "recorded_check",
+                  "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only",
+                  "evidence": [],
+                  "dependsOn": []
+                },
+                {
+                  "requirementId": "c1",
+                  "label": "Education level: UG",
+                  "status": "supported",
+                  "basis": "recorded_check",
+                  "explanation": "The guidelines state that candidates must be admitted to a degree level course, supporting the undergraduate education level requirement.",
+                  "evidence": [
+                    {
+                      "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                      "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                      "relation": "supports",
+                      "span": {
+                        "charStart": 660,
+                        "charEnd": 1136
+                      }
+                    }
+                  ],
+                  "dependsOn": []
+                },
+                {
+                  "requirementId": "c3",
+                  "label": "Funding need: part-time study",
+                  "status": "unknown",
+                  "basis": "source_interpretation",
+                  "explanation": "The available evidence does not establish this condition. Check it with the scholarship provider.",
+                  "evidence": [],
+                  "dependsOn": []
+                },
+                {
+                  "requirementId": "q0",
+                  "label": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+                  "status": "unknown",
+                  "basis": "source_interpretation",
+                  "explanation": "The available evidence does not establish this condition. Check it with the scholarship provider.",
+                  "evidence": [],
+                  "dependsOn": []
+                }
+              ],
+              "concern": false,
+              "fundingRelevance": "supported",
+              "limitation": "Source interpretations are AI-assisted and may be mistaken. Only the quoted text and recorded checks are established here; full current eligibility is not certified."
+            }
+          }
+        ],
+        "outcome": "review_required",
+        "caveat": "This is a research shortlist, not an eligibility certificate, application submission or award guarantee. No profile, bookmark or notification was changed.",
+        "preparation": "catalogue",
+        "aiAssistance": "search_planning",
+        "intent": {
+          "status": "interpreted",
+          "reason": null,
+          "constraints": [
+            "girl",
+            "B.Tech",
+            "AICTE Pragati (Technical Degree)",
+            "part-time B.Tech degree"
+          ],
+          "questions": [
+            "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?"
+          ],
+          "unresolved": [
+            "girl",
+            "part-time B.Tech degree"
+          ],
+          "ambiguities": [],
+          "requirements": [
+            {
+              "field": "gender",
+              "role": "applicant_current",
+              "operator": "include",
+              "value": "Female",
+              "source": {
+                "messageIndex": 0,
+                "quote": "girl"
+              },
+              "id": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "stage": "rules"
+            },
+            {
+              "field": "educationLevel",
+              "role": "funding",
+              "operator": "include",
+              "value": "UG",
+              "source": {
+                "messageIndex": 0,
+                "quote": "B.Tech"
+              },
+              "id": "c1",
+              "label": "Education level: UG",
+              "stage": "metadata"
+            },
+            {
+              "field": "other",
+              "role": "investigate",
+              "operator": "include",
+              "value": "part-time study",
+              "source": {
+                "messageIndex": 0,
+                "quote": "part-time B.Tech degree"
+              },
+              "id": "c3",
+              "label": "Funding need: part-time study",
+              "stage": "evidence"
+            },
+            {
+              "text": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+              "source": {
+                "messageIndex": 0,
+                "quote": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?"
+              },
+              "id": "q0",
+              "label": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+              "field": "question",
+              "stage": "evidence"
+            }
+          ],
+          "targets": [
+            {
+              "id": "s0",
+              "name": "AICTE Pragati (Technical Degree)",
+              "operator": "include",
+              "source": {
+                "messageIndex": 0,
+                "quote": "AICTE Pragati (Technical Degree)"
+              }
+            }
+          ]
+        },
+        "research": {
+          "version": 1,
+          "stopReason": "available_actions_exhausted",
+          "decisions": 0,
+          "actions": [
+            {
+              "tool": "searchScholarships",
+              "status": "completed",
+              "resultCount": null
+            },
+            {
+              "tool": "findGuidelinePassages",
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "completed",
+              "resultCount": 4
+            },
+            {
+              "tool": "findGuidelinePassages",
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "completed",
+              "resultCount": 4
+            },
+            {
+              "tool": "evaluateMatches",
+              "status": "completed",
+              "resultCount": null
+            }
+          ],
+          "gaps": [
+            {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+              "requirementIds": [],
+              "kind": "missing_student",
+              "missingFields": [
+                "familyIncome",
+                "educationLevel"
+              ],
+              "attemptedOfficialSource": false,
+              "message": "Some conditions still need interpretation or additional information."
+            }
+          ]
+        },
+        "targets": [
+          {
+            "id": "s0",
+            "name": "AICTE Pragati (Technical Degree)",
+            "status": "reviewed",
+            "candidateIds": [
+              "6aa58e923d52461bb6eb9e9a"
+            ],
+            "excludedIds": []
+          }
+        ],
+        "coverage": {
+          "reviewed": [
+            {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+              "status": "unknown",
+              "conditions": [
+                {
+                  "id": "c0",
+                  "label": "Current enrollment / context — Gender: Female",
+                  "stage": "rules",
+                  "status": "match",
+                  "reason": "recorded_rules",
+                  "evidenceIds": [],
+                  "ruleRequirements": [
+                    "Restricted to Female candidates only"
+                  ],
+                  "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+                },
+                {
+                  "id": "c1",
+                  "label": "Education level: UG",
+                  "stage": "metadata",
+                  "status": "match",
+                  "reason": "recorded_metadata",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c3",
+                  "label": "Funding need: part-time study",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "q0",
+                  "label": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+                    "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+                    "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266"
+                  ]
+                }
+              ],
+              "qualification": {
+                "status": "needs_verification",
+                "supported": [
+                  "Current enrollment / context — Gender: Female",
+                  "Education level: UG"
+                ],
+                "unresolved": [
+                  "Confirm: Funding need: part-time study",
+                  "Confirm: Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+                  "Annual family income ≤ ₹8,00,000",
+                  "Restricted to Female candidates only",
+                  "UG degree required"
+                ],
+                "reasons": []
+              },
+              "examined": true
+            }
+          ],
+          "deferred": [],
+          "excluded": [],
+          "discovery": {
+            "candidates": 1,
+            "snapshots": 2,
+            "characters": 33528,
+            "sourceLimitReached": false
+          }
+        },
+        "answer": {
+          "version": 2,
+          "status": "partial",
+          "reason": "EVIDENCE_GAPS",
+          "fingerprint": "558582b0ec772e22f9bc7851a45c51cc0c32268d24c46ef4f70b867a012ad7b2",
+          "assessedConditions": 4,
+          "acceptedAssessments": 4,
+          "rejectedAssessments": 0,
+          "diagnostics": [],
+          "recoverable": true,
+          "inputCharacters": 9120,
+          "message": "Some source interpretations were retained below. Other parts remain open and have not been used to recommend eligibility."
+        }
+      },
+      "clarification": null,
+      "modelResponses": [
+        {
+          "mode": "evidence_answer",
+          "message": {
+            "content": "{\n  \"assessments\": [\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c0\",\n      \"status\": \"unknown\",\n      \"explanation\": \"The provided text specifies eligibility for girl candidates generally but does not contain an explicit gender clause or rule check within the source text passages provided for this specific evaluation.\",\n      \"evidence\": [],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c1\",\n      \"status\": \"supported\",\n      \"explanation\": \"The guidelines state that candidates must be admitted to a degree level course, supporting the undergraduate education level requirement.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce\",\n          \"quote\": \"2.0 ELIGIBILITY FOR SCHOLARSHIP:\\n1) The girl candidate should be admitted to First year of Degree level course\\nOR\\nSecond year of Degree level course through lateral entry in any of the AICTE\\napproved Institution of respective year.\\n2) Maximum two girl child per family are eligible.\\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\\nthe current financial year. A valid income certificate issued by State/ UT Government\\nneed to be enclosed.\\n\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c3\",\n      \"status\": \"unknown\",\n      \"explanation\": \"The provided guidelines mention admission to degree-level courses but do not explicitly address whether part-time study is allowed or restricted.\",\n      \"evidence\": [],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"q0\",\n      \"status\": \"unknown\",\n      \"explanation\": \"The guidelines do not explicitly state whether part-time B.Tech study is permitted under the AICTE Pragati scheme, leaving this question unclear based on the provided text.\",\n      \"evidence\": [],\n      \"dependsOn\": []\n    }\n  ]\n}"
+          },
+          "intentFormat": "json_schema",
+          "usage": {
+            "inputTokens": 2095,
+            "outputTokens": 595
+          }
+        }
+      ],
+      "reusedIntentFrom": "b2bd8b50af32a68fa1ac6bba1766981a15fa8adc359992519c9b42fa62d93e42",
+      "retrievedPassages": [
+        {
+          "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4237,
+            "charEnd": 4491,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "renewal",
+            "documents"
+          ],
+          "policyRole": "renewal",
+          "policyPriority": 6,
+          "sectionTitle": "RENEWALS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 660,
+            "charEnd": 1136,
+            "page": 2,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "residence",
+            "education",
+            "income",
+            "gender",
+            "documents"
+          ],
+          "policyRole": "eligibility",
+          "policyPriority": 7,
+          "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4491,
+            "charEnd": 4582,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "renewal",
+            "education"
+          ],
+          "policyRole": "renewal",
+          "policyPriority": 6,
+          "sectionTitle": "RENEWALS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "scheme_context",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4582,
+            "charEnd": 5919,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "category",
+            "education",
+            "income",
+            "benefits"
+          ],
+          "policyRole": "conditions",
+          "policyPriority": 5,
+          "sectionTitle": "TERMS AND CONDITIONS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "n favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 5719,
+            "charEnd": 6894,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility"
+          ],
+          "policyRole": "conditions",
+          "policyPriority": 5,
+          "sectionTitle": "TERMS AND CONDITIONS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 3154,
+            "charEnd": 3629,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "residence",
+            "education"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "CRITERIA OF SELECTION",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 2694,
+            "charEnd": 3154,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "residence",
+            "education",
+            "application"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "PROCEDURE FOR APPLYING",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_89add0151f8081f7b17c8cc800617487c6373bb3",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "8.0 METHODS OF RESOLVING TIES:\nThe procedure to be adopted for breaking ties (similar percentiles) shall be as under: -\n1) Percentage of Marks in 10th Examination: In case qualifying examination percentile\ndoes not break ties, then higher percentage of marks in 10th examination will be ranked\nhigher.\n2) Age: In case 10th examination percentile does not break ties, then the candidate of elder\nage will be ranked higher.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 3629,
+            "charEnd": 4051,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "education"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "METHODS OF RESOLVING TIES",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "scheme_context",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        }
+      ],
+      "corpusFingerprint": "42f085027ac1ede6dc7dc2b2c0aa9a4af862a1c4fc5b910513c6d9fd5d6c75ba",
+      "corpusFingerprintVersion": 2,
+      "corpusVersion": 2,
+      "selectedSchemeVersions": [
+        {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "dataHash": "f68459a81b361fac72fb536ec7acf9ff5e71893fdff798f0ba875b18fb0cb773",
+          "lastVerifiedAt": "2026-10-26T15:09:03.216Z"
+        }
+      ]
+    }
+  ],
+  "scores": [
+    {
+      "caseId": "renewal-fourth-year",
+      "tags": [
+        "renewal"
+      ],
+      "status": "completed",
+      "reviewStatus": "awaiting_source_review",
+      "relevance": {
+        "targetFound": true,
+        "precision": 1,
+        "presentedCandidates": 1,
+        "relevant": 1,
+        "supportedRecommendations": 1
+      },
+      "intent": {
+        "expected": 1,
+        "matched": 1,
+        "missing": [],
+        "forbidden": []
+      },
+      "evidence": {
+        "expectedFacts": 3,
+        "retrievedFacts": [
+          "renewal",
+          "progress"
+        ],
+        "citedFacts": [
+          "progress"
+        ],
+        "retrievalCoverage": 0.6666666666666666,
+        "citationCoverage": 0.3333333333333333
+      },
+      "answer": {
+        "explainedFacts": null,
+        "unansweredFacts": null,
+        "unknownsExplained": null,
+        "missingUnknowns": null,
+        "incorrectClaims": null,
+        "claimsChecked": null,
+        "nextStepUseful": null,
+        "rejectedAssessments": 2,
+        "quotationDiagnostics": {
+          "exact": 1,
+          "whitespaceOnlyDifferences": 0,
+          "otherDifferences": 2,
+          "unknownEvidence": 0
+        }
+      },
+      "usefulCompletion": null,
+      "interactiveSuccess": null,
+      "latencyMs": 3700,
+      "inference": {
+        "modelCalls": 1,
+        "toolCalls": 5,
+        "inputTokens": 2033,
+        "outputTokens": 663,
+        "reportedModelCalls": 1,
+        "tokenUsageIncomplete": false
+      },
+      "error": null,
+      "verdict": "awaiting_review"
+    },
+    {
+      "caseId": "missing-mode-guidance",
+      "tags": [
+        "missing-guidance"
+      ],
+      "status": "completed",
+      "reviewStatus": "awaiting_source_review",
+      "relevance": {
+        "targetFound": true,
+        "precision": 1,
+        "presentedCandidates": 1,
+        "relevant": 1,
+        "supportedRecommendations": 1
+      },
+      "intent": {
+        "expected": 1,
+        "matched": 1,
+        "missing": [],
+        "forbidden": []
+      },
+      "evidence": {
+        "expectedFacts": 1,
+        "retrievedFacts": [
+          "entry"
+        ],
+        "citedFacts": [
+          "entry"
+        ],
+        "retrievalCoverage": 1,
+        "citationCoverage": 1
+      },
+      "answer": {
+        "explainedFacts": null,
+        "unansweredFacts": null,
+        "unknownsExplained": null,
+        "missingUnknowns": null,
+        "incorrectClaims": null,
+        "claimsChecked": null,
+        "nextStepUseful": null,
+        "rejectedAssessments": 0,
+        "quotationDiagnostics": {
+          "exact": 1,
+          "whitespaceOnlyDifferences": 0,
+          "otherDifferences": 0,
+          "unknownEvidence": 0
+        }
+      },
+      "usefulCompletion": null,
+      "interactiveSuccess": null,
+      "latencyMs": 3063,
+      "inference": {
+        "modelCalls": 1,
+        "toolCalls": 5,
+        "inputTokens": 2095,
+        "outputTokens": 595,
+        "reportedModelCalls": 1,
+        "tokenUsageIncomplete": false
+      },
+      "error": null,
+      "verdict": "awaiting_review"
+    }
+  ],
+  "reviewTemplate": [
+    {
+      "caseId": "renewal-fourth-year",
+      "responseFingerprint": "a7ad2dc22164f7230de2356224787a4e4ed42a2b345619582e060e203d124007",
+      "oracleFingerprint": "2412e2d59e18979916c1ccf9ab589b136009713ab1ecd63fe71cfe0a065660fc",
+      "reviewer": "",
+      "allExplanationsReviewed": false,
+      "facts": [
+        {
+          "id": "duration",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        },
+        {
+          "id": "renewal",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        },
+        {
+          "id": "progress",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "current-application-window",
+          "communicated": false,
+          "excerpt": ""
+        }
+      ],
+      "claimsChecked": 0,
+      "incorrectClaims": [],
+      "nextStep": {
+        "useful": false,
+        "excerpt": ""
+      }
+    },
+    {
+      "caseId": "missing-mode-guidance",
+      "responseFingerprint": "d69929e076662ce0103c28d5f75b62957e6db0ea0c6d530bf10ad33759b529f3",
+      "oracleFingerprint": "6b4c4d8d08db61011e1d4e2e37aef7e7c0d5156415c1ed5e4b930666d4c00f0b",
+      "reviewer": "",
+      "allExplanationsReviewed": false,
+      "facts": [
+        {
+          "id": "entry",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "part-time-mode",
+          "communicated": false,
+          "excerpt": ""
+        }
+      ],
+      "claimsChecked": 0,
+      "incorrectClaims": [],
+      "nextStep": {
+        "useful": false,
+        "excerpt": ""
+      }
+    }
+  ],
+  "summary": {
+    "totalCases": 2,
+    "attempted": 2,
+    "notRun": 0,
+    "reviewed": 0,
+    "usefulCompletions": 0,
+    "usefulRateAcrossAttemptedLowerBound": 0,
+    "interactiveSuccesses": 0,
+    "targetFound": 2,
+    "selectedCandidatePrecision": 1,
+    "retrievedFactCoverage": 0.75,
+    "citedFactCoverage": 0.5,
+    "explainedFactCoverageLowerBound": 0,
+    "incorrectClaims": null,
+    "claimsReviewed": 0,
+    "incorrectClaimRate": null,
+    "unreviewedAnswers": 2,
+    "medianLatencyMs": 3063,
+    "p95LatencyMs": 3700,
+    "latencySampleCount": 2,
+    "modelCalls": 2,
+    "inputTokens": 4128,
+    "outputTokens": 1258,
+    "usageIncomplete": false,
+    "estimatedCostUsd": null,
+    "measurementNote": "Small sample, not a production latency distribution. No monetary estimate without verified billing/prices. Unreviewed answers are not credited as useful or error-free."
+  },
+  "stopped": null,
+  "notRun": []
+}

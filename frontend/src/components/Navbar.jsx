@@ -14,7 +14,8 @@ import {
 	ScanLine,
 	ClipboardCheck,
 	ShieldCheck,
-	SlidersHorizontal,
+	BookOpen,
+	Sparkles,
 } from "lucide-react";
 import Logo from "./Logo";
 import NotificationCenter from "./NotificationCenter";
@@ -23,12 +24,13 @@ import { PUBLIC_TOOLS, ACCOUNT_FEATURES } from "../config/navigation";
 import { authDestination } from "../utils/authNavigation";
 import "./navigation.css";
 
+// Home is the logo; Saved lives in the account menu.
 const MAIN_LINKS = [
-	{ label: "Home", path: "/" },
 	{ label: "Scholarships", path: "/scholarships" },
-	{ label: "Resources", path: "/resources" },
+	{ label: "Eligibility", path: "/eligibility" },
+	{ label: "Navigator", path: "/navigator", isAgent: true },
 ];
-const TOOL_ICONS = [SlidersHorizontal, ScanLine, ClipboardCheck, ShieldCheck];
+const TOOL_ICONS = [ScanLine, ClipboardCheck, ShieldCheck, BookOpen];
 const ACCOUNT_ICONS = [Bookmark, Bell, Settings];
 
 export default function Navbar() {
@@ -106,6 +108,14 @@ export default function Navbar() {
 			.map((p) => p[0])
 			.join("")
 			.toUpperCase() || "U";
+	const resourcesActive =
+		location.pathname === "/resources" ||
+		location.pathname.startsWith("/resources/") ||
+		PUBLIC_TOOLS.some(
+			(item) =>
+				item.path === location.pathname ||
+				location.pathname.startsWith(`${item.path}/`),
+		);
 
 	const searchForm = (
 		<form onSubmit={submitSearch} className="site-nav-search-form">
@@ -150,9 +160,17 @@ export default function Navbar() {
 							<NavLink
 								key={link.path}
 								to={link.path}
-								end={link.path === "/"}
+								className={link.isAgent ? "site-nav-agent-link" : undefined}
+								aria-label={link.isAgent ? "AI Navigator" : undefined}
 								onClick={close}
 							>
+								{link.isAgent && (
+									<Sparkles
+										size={14}
+										className="site-nav-spark"
+										aria-hidden="true"
+									/>
+								)}
 								{link.label}
 							</NavLink>
 						))}
@@ -160,11 +178,7 @@ export default function Navbar() {
 						<div className="site-nav-anchor">
 							<button
 								type="button"
-								className={
-									PUBLIC_TOOLS.some((item) => item.path === location.pathname)
-										? "site-nav-tool-active"
-										: ""
-								}
+								className={resourcesActive ? "site-nav-tool-active" : ""}
 								aria-expanded={open === "tools"}
 								aria-controls="site-nav-tools"
 								onClick={(event) => toggle("tools", event)}
@@ -174,7 +188,7 @@ export default function Navbar() {
 							{open === "tools" && (
 								<nav
 									id="site-nav-tools"
-									aria-label="Public tools"
+									aria-label="Resources"
 									className="site-nav-panel site-nav-tools"
 								>
 									<p className="site-nav-panel-label">
@@ -195,15 +209,17 @@ export default function Navbar() {
 											</Link>
 										);
 									})}
+									<Link
+										className="site-nav-panel-foot"
+										to="/resources"
+										onClick={close}
+									>
+										Browse all resources
+										<ArrowUpRight size={15} />
+									</Link>
 								</nav>
 							)}
 						</div>
-
-						{user && (
-							<NavLink to="/saved" onClick={close}>
-								Saved
-							</NavLink>
-						)}
 					</nav>
 
 					<div className="site-nav-actions">
@@ -324,17 +340,26 @@ export default function Navbar() {
 							<NavLink
 								key={link.path}
 								to={link.path}
-								end={link.path === "/"}
 								className="site-nav-mobile-primary"
+								aria-label={link.isAgent ? "AI Navigator" : undefined}
 								onClick={close}
 							>
-								{link.label}
+								<span className="site-nav-mobile-link-text">
+									{link.isAgent && (
+										<Sparkles
+											size={18}
+											className="site-nav-spark"
+											aria-hidden="true"
+										/>
+									)}
+									{link.label}
+								</span>
 								<ArrowUpRight size={16} />
 							</NavLink>
 						))}
 
 						<p className="site-nav-panel-label">
-							Tools <span>No sign-in needed</span>
+							Resources <span>No sign-in needed</span>
 						</p>
 						{PUBLIC_TOOLS.map((item) => (
 							<NavLink key={item.path} to={item.path} onClick={close}>

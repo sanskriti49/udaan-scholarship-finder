@@ -105,21 +105,29 @@ function Sticker({
 
 /* ---------- tiny face parts shared by every character ---------- */
 
-const Eye = ({ cx, cy, r = 4.5 }) => (
-	<g>
-		<ellipse cx={cx} cy={cy} rx={r} ry={r * 1.18} fill={C.ink} />
-		<circle cx={cx - r * 0.38} cy={cy - r * 0.5} r={r * 0.42} fill="#fff" />
-		<circle cx={cx + r * 0.42} cy={cy + r * 0.45} r={r * 0.2} fill="#fff" />
-	</g>
-);
+// JSX callers also supply numeric strings. Convert before addition so an eye
+// at cy="70" stays at 72 rather than becoming a path at coordinate "702".
+const Eye = ({ cx, cy, r = 4.5 }) => {
+	const x = Number(cx), y = Number(cy), radius = Number(r);
+	return (
+		<g>
+			<ellipse cx={x} cy={y} rx={radius} ry={radius * 1.18} fill={C.ink} />
+			<circle cx={x - radius * 0.38} cy={y - radius * 0.5} r={radius * 0.42} fill="#fff" />
+			<circle cx={x + radius * 0.42} cy={y + radius * 0.45} r={radius * 0.2} fill="#fff" />
+		</g>
+	);
+};
 
-const Joy = ({ cx, cy, w = 5.5 }) => (
-	<path
-		d={`M${cx - w} ${cy + 2}Q${cx} ${cy - 6} ${cx + w} ${cy + 2}`}
-		stroke={C.ink}
-		strokeWidth="2.8"
-	/>
-);
+const Joy = ({ cx, cy, w = 5.5 }) => {
+	const x = Number(cx), y = Number(cy), width = Number(w);
+	return (
+		<path
+			d={`M${x - width} ${y + 2}Q${x} ${y - 6} ${x + width} ${y + 2}`}
+			stroke={C.ink}
+			strokeWidth="2.8"
+		/>
+	);
+};
 
 const Blush = ({ cx, cy, rx = 5.5, ry = 3.2 }) => (
 	<ellipse cx={cx} cy={cy} rx={rx} ry={ry} fill={C.blush} opacity=".8" />

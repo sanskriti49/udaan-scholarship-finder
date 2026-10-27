@@ -1,0 +1,356 @@
+/* An interactive research desk. Shell width and page tabs stay in navigator.css. */
+.nv-root .nv-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; margin-top: 28px; }
+.nv-root .nv-hero-actions .nv-text-link { min-height: 44px; }
+/* The compass is Navigator's primary illustration; the draft stays secondary. */
+.nv-root .nv-compass-scene { min-width: 0; width: 100%; }
+.nv-root .nv-compass-scene .nv-art { width: 100%; margin: 0; }
+.nv-root .nv-compass-draft { margin: 24px 12px 0; padding: 16px 20px; border-left: 3px solid #8da67d; background: #fffdf2; border-radius: 0 9px 9px 0; }
+.nv-root .nv-paper-tab { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .08em; font-weight: 700; }
+.nv-root .nv-compass-draft .nv-paper-question { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; font-size: 16px; line-height: 1.6; margin: 10px 0; }
+.nv-root .nv-compass-draft .nv-text-link { min-height: 44px; font-size: 14px; }
+.nv-root .nv-launchpad { padding: 15px 0 34px; }
+.nv-root .nv-launchpad-heading { display: flex; align-items: center; gap: 22px; margin-bottom: 20px; }
+.nv-root .nv-launchpad-heading p { margin: 0; font-size: 15px; color: #52674e; }
+.nv-root .nv-mission-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.nv-root .nv-mission { position: relative; display: flex; align-items: center; gap: 12px; padding: 22px 16px; text-align: left; min-width: 0; border: 1.5px solid #193f34; border-radius: 13px; box-shadow: 4px 5px 0 #b4c7ad; background: #f9e6a8; cursor: pointer; transition: transform .2s, box-shadow .2s; }
+.nv-root .nv-mission-1 { background: #e6dcf2; }
+.nv-root .nv-mission-2 { background: #d8e9e4; }
+.nv-root .nv-mission:hover, .nv-root .nv-mission:focus-visible { transform: translateY(-5px) rotate(-.5deg); box-shadow: 6px 10px 0 #b4c7ad; }
+.nv-root .nv-mission[aria-pressed=true] { outline: 3px solid #193f34; outline-offset: 4px; }
+.nv-root .nv-mission-art { flex: 0 0 78px; display: grid; place-items: center; }
+.nv-root .nv-mission-art svg { width: 95px; max-width: none; }
+.nv-root .nv-mission-copy { display: grid; gap: 10px; min-width: 0; }
+.nv-root .nv-mission-copy small { font-size: 12px; letter-spacing: .09em; font-weight: 700; }
+.nv-root .nv-mission-copy strong { font-size: 21px; line-height: 1.2; }
+.nv-root .nv-mission-copy > span { font-size: 14px; line-height: 1.6; color: #445a46; }
+.nv-root .nv-mission-arrow { position: absolute; top: 10px; right: 10px; }
+.nv-root .nv-independent-paths { position: relative; align-self: start; padding: 34px 22px 22px; border: 1.5px solid #193f34; border-radius: 8px; background: #dae9ef; box-shadow: 5px 5px 0 #aec6c9; margin-top: 28px; }
+.nv-root .nv-path-peeker { position: absolute; top: -47px; right: 18px; }
+.nv-root .nv-independent-paths h3 { font-size: 29px; line-height: 1.2; margin: 16px 0 24px; }
+.nv-root .nv-independent-paths > a { display: flex; align-items: center; gap: 13px; min-height: 82px; border-top: 1px dashed #9db5b7; padding: 16px 0; }
+.nv-root .nv-independent-paths > a > span { flex: 1; }
+.nv-root .nv-independent-paths strong { font-size: 15px; }
+.nv-root .nv-independent-paths small { display: block; font-size: 13px; line-height: 1.5; margin-top: 5px; color: #4b6565; }
+.nv-root .nv-independent-paths > p { font-size: 12px; line-height: 1.6; color: #4b6565; margin-top: 12px; }
+.nv-root .nv-results-character { margin-left: auto; transform: rotate(4deg); flex-shrink: 0; }
+.nv-root .nv-card-topline { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.nv-root .nv-compare-toggle { display: inline-flex; flex-shrink: 0; align-items: center; gap: 7px; min-height: 42px; padding: 8px 12px; border: 1px dashed #8da382; border-radius: 9px; font-size: 13px; cursor: pointer; }
+.nv-root .nv-compare-toggle[aria-pressed=true] { background: #e2ecd8; border: 1px solid #51754b; }
+.nv-root .nv-compare-toggle:disabled { opacity: .5; cursor: not-allowed; }
+.nv-root .nv-compare-tray { position: fixed; z-index: 60; bottom: 18px; left: 50%; transform: translateX(-50%); width: min(1176px, calc(100% - 48px)); display: grid; grid-template-columns: auto 1fr auto; gap: 6px 22px; align-items: center; padding: 17px 22px; background: #fff7d4; border: 1.5px solid #193f34; border-radius: 15px; box-shadow: 0 5px 25px #193f342b, 4px 4px 0 #193f34; }
+.nv-root .nv-compare-tray > span { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; }
+.nv-root .nv-compare-tray > small { grid-column: 3; font-size: 12px; text-align: center; }
+.nv-root .nv-tray-selections { display: flex; flex-wrap: wrap; gap: 7px; min-width: 0; }
+.nv-root .nv-tray-selections button { display: flex; align-items: center; gap: 8px; border: 1px solid #c5bc8b; background: #fffefa; border-radius: 7px; padding: 8px; min-height: 38px; font-size: 12px; cursor: pointer; min-width: 0; }
+.nv-root .nv-tray-selections button > span { max-width: 125px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nv-root:has(.nv-compare-tray) .nv-research-details { margin-bottom: 150px; }
+.nv-root .nv-comparison { min-width: 0; scroll-margin-top: 110px; margin: 22px 0 34px; border: 1.5px solid #193f34; border-radius: 14px; background: #fffdf3; box-shadow: 6px 6px 0 #c2b9d3; }
+.nv-root .nv-comparison:focus { outline: 3px solid #8973a2; outline-offset: 5px; }
+.nv-root .nv-comparison > header { display: flex; align-items: start; gap: 20px; justify-content: space-between; padding: 24px; background: #eee5f4; border-radius: 13px 13px 0 0; }
+.nv-root .nv-comparison h2 { font-size: clamp(24px, 3vw, 34px); line-height: 1.2; margin: 12px 0; }
+.nv-root .nv-comparison header p { font-size: 14px; line-height: 1.6; margin: 0; }
+.nv-root .nv-close-comparison { min-width: 44px; min-height: 44px; display: grid; place-items: center; border: 1px solid #afa2bc; border-radius: 50%; cursor: pointer; flex-shrink: 0; }
+.nv-root .nv-comparison-scroll { overflow: auto; max-width: 100%; border-top: 1px solid #193f34; }
+.nv-root .nv-comparison table { width: 100%; min-width: 760px; table-layout: fixed; border-collapse: collapse; font-size: 14px; line-height: 1.6; }
+.nv-root .nv-comparison th, .nv-root .nv-comparison td { vertical-align: top; text-align: left; padding: 20px; border-right: 1px solid #d0d9c3; border-bottom: 1px solid #d0d9c3; overflow-wrap: anywhere; }
+.nv-root .nv-comparison th:first-child { width: 175px; position: sticky; left: 0; z-index: 1; background: #f2f2e3; }
+.nv-root .nv-comparison-status { display: inline-block; font-size: 12px; font-weight: 600; padding: 4px 7px; border-radius: 5px; margin-bottom: 12px; background: #f4e6ad; color: #594f24; }
+.nv-root .nv-comparison-status.is-promising { background: #dceacc; color: #31583b; }
+.nv-root .nv-comparison-status.is-concern, .nv-root .nv-comparison-status.is-excluded { background: #f2d9ce; color: #873e31; }
+.nv-root .nv-comparison-title { display: block; font-size: 20px; line-height: 1.4; }
+.nv-root .nv-comparison small { display: block; font-size: 12px; font-weight: 400; margin-top: 8px; }
+.nv-root .nv-comparison-cell > strong { display: flex; align-items: start; gap: 7px; font-size: 13px; }
+.nv-root .nv-comparison-cell > strong svg { flex-shrink: 0; margin-top: 3px; }
+.nv-root .nv-comparison-cell.is-supported > strong { color: #365d37; }
+.nv-root .nv-comparison-cell.is-contradicted > strong { color: #904d3a; }
+.nv-root .nv-comparison-cell > p { font-size: 13px; color: #5c6e55; margin-top: 10px; }
+.nv-root .nv-comparison details { margin-top: 12px; }
+.nv-root .nv-comparison summary { cursor: pointer; font-size: 13px; }
+.nv-root .nv-comparison details p { font-size: 14px; line-height: 1.7; margin-block: 12px; }
+.nv-root .nv-comparison .nv-proof-button { display: flex; margin-top: 12px; min-height: 44px; }
+.nv-root .nv-comparison-footnote { padding: 16px 20px; margin: 0; font-size: 12px; color: #53684f; }
+.nv-root .nv-recovery-pocket { position: relative; width: 100%; max-width: 760px; margin: 24px auto; display: flex; align-items: center; gap: 20px; padding: 24px; background: #e2edf2; border: 1.5px dashed #597c80; border-radius: 13px; text-align: left; }
+.nv-root .nv-recovery-art { flex: 0 0 115px; transform: rotate(-5deg); }
+.nv-root .nv-recovery-stamp { display: inline-block; border: 1px solid #517176; padding: 3px 7px; border-radius: 3px; font-size: 12px; letter-spacing: .1em; font-weight: 700; }
+.nv-root .nv-recovery-pocket h3 { font-size: 26px; line-height: 1.2; margin: 12px 0; }
+.nv-root .nv-recovery-pocket p { font-size: 15px; line-height: 1.65; margin: 12px 0 18px; }
+.nv-root .nv-recovery-pocket .nv-button { font-size: 14px; }
+@media(min-width:781px) and (max-width:1120px) {
+  .nv-root .nv-mission { flex-direction: column; align-items: start; }
+}
+@media(max-width:780px) {
+  .nv-root .nv-compass-scene { width: min(480px, 100%); justify-self: center; }
+  .nv-root .nv-mission-grid { grid-template-columns: 1fr; gap: 16px; }
+  .nv-root .nv-mission { padding: 18px; }
+  .nv-root .nv-mission-copy strong { font-size: 23px; }
+  .nv-root .nv-independent-paths { display: block; }
+  .nv-root .nv-results-heading { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .nv-root .nv-results-heading > div { flex: 1; }
+  .nv-root .nv-results-character > svg { width: 95px; }
+  .nv-root .nv-compare-tray { display: flex; flex-wrap: wrap; gap: 10px; bottom: 12px; width: calc(100% - 28px); padding: 13px; }
+  .nv-root .nv-compare-tray > span { flex: 1; font-size: 13px; }
+  .nv-root .nv-compare-tray > .nv-button { min-height: 44px; font-size: 12px; padding: 10px; }
+  .nv-root .nv-tray-selections { order: 2; width: 100%; }
+  .nv-root .nv-tray-selections button { flex: 1; min-height: 44px; justify-content: space-between; max-width: 33%; }
+  .nv-root .nv-tray-selections button > span { max-width: 75px; }
+  .nv-root .nv-compare-tray > small { order: 3; width: 100%; text-align: left; }
+  .nv-root .nv-comparison th:first-child { width: 135px; }
+  .nv-root .nv-comparison th, .nv-root .nv-comparison td { padding: 15px; }
+  .nv-root .nv-comparison > header { padding: 18px; }
+}
+@media(max-width:480px) {
+  .nv-root .nv-launchpad-heading { align-items: start; flex-direction: column; gap: 8px; }
+  .nv-root .nv-mission-copy strong { font-size: 21px; }
+  .nv-root .nv-independent-paths { margin-top: 34px; }
+  .nv-root .nv-results-character > svg { width: 70px; }
+  .nv-root .nv-card-topline { align-items: start; gap: 8px; }
+  .nv-root .nv-card-topline .nv-result-badge { max-width: 62%; }
+  .nv-root .nv-compare-toggle { min-height: 44px; padding: 8px; font-size: 12px; }
+  .nv-root .nv-recovery-pocket { flex-direction: column; align-items: start; padding: 20px 16px; }
+  .nv-root .nv-recovery-art { position: absolute; right: 12px; top: 18px; }
+  .nv-root .nv-recovery-art svg { width: 70px; height: auto; }
+  .nv-root .nv-recovery-pocket h3 { max-width: calc(100% - 70px); font-size: 23px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .nv-root .nv-mission { transition: none; }
+  .nv-root .nv-mission:hover, .nv-root .nv-mission:focus-visible { transform: none; }
+  .nv-root .nv-connection-orbit { animation: none; }
+}
+
+/* ---------- Beginner Guide Card on Research Desk ---------- */
+.nv-root .nv-beginner-guide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 36px 0 16px;
+  padding: 22px 26px;
+  background: #f3f7ed;
+  border: 1.5px solid #a9c79a;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(44, 88, 57, 0.06), 3px 3px 0 #a9c79a;
+}
+.nv-root .nv-beginner-guide-art {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #c2d8b8;
+  color: #2c5839;
+  box-shadow: 0 2px 6px rgba(44, 88, 57, 0.05);
+}
+.nv-root .nv-beginner-guide-body {
+  flex: 1;
+  min-width: 0;
+}
+.nv-root .nv-beginner-guide-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #51754b;
+  margin-bottom: 4px;
+}
+.nv-root .nv-beginner-guide h3 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+  color: #193f34;
+  line-height: 1.3;
+}
+.nv-root .nv-beginner-guide p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #445a46;
+}
+.nv-root .nv-beginner-guide-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+@media (max-width: 780px) {
+  .nv-root .nv-beginner-guide {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 18px;
+  }
+  .nv-root .nv-beginner-guide-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ---------- Connection & Reconnect Banner ---------- */
+.nv-root .nv-connection-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 22px 0 16px;
+  padding: 18px 22px;
+  background: #fff8e8;
+  border: 1.5px solid #d8b448;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(216, 180, 72, 0.12);
+}
+.nv-root .nv-connection-orbit {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2.5px solid #d8b448;
+  border-top-color: transparent;
+  animation: nv-spin 1.1s linear infinite;
+}
+@keyframes nv-spin {
+  to { transform: rotate(360deg); }
+}
+.nv-root .nv-connection-card strong {
+  display: block;
+  font-size: 15px;
+  color: #685624;
+  margin-bottom: 4px;
+}
+.nv-root .nv-connection-card p {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #796634;
+  margin: 0;
+}
+.nv-root .nv-connection-card .nv-button {
+  flex-shrink: 0;
+}
+
+/* ---------- Live Error Banner ---------- */
+.nv-root .nv-live-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin: 20px 0 16px;
+  padding: 16px 20px;
+  background: #fdf3eb;
+  border: 1.5px solid #dfb2a2;
+  border-radius: 12px;
+  color: #8b4836;
+  font-size: 14px;
+  line-height: 1.55;
+  box-shadow: 0 2px 8px rgba(188, 120, 98, 0.1);
+}
+.nv-root .nv-live-error-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #bc7862;
+}
+.nv-root .nv-live-error-content {
+  flex: 1;
+}
+.nv-root .nv-live-error-content p {
+  margin: 0;
+  font-weight: 550;
+}
+.nv-root .nv-live-error button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 650;
+  background: #fff;
+  color: #8b4836;
+  border: 1px solid #dfb2a2;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nv-root .nv-live-error button:hover {
+  background: #8b4836;
+  color: #fff;
+}
+
+/* ---------- Privacy & Data Accordion ---------- */
+.nv-root .nv-privacy-note {
+  margin-top: 38px;
+  padding: 16px 20px;
+  background: var(--rp-wash, #f4f7ec);
+  border: 1px solid var(--rp-line, #d2dcc8);
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--rp-muted, #566a4d);
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.nv-root .nv-privacy-note[open] {
+  background: var(--rp-paper, #fffdf5);
+  border-color: var(--rp-rule-strong, rgba(25, 63, 52, 0.22));
+}
+.nv-root .nv-privacy-note summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--rp-ink, #193f34);
+  user-select: none;
+}
+.nv-root .nv-privacy-note summary:hover {
+  color: var(--rp-moss-text, #2c5839);
+}
+.nv-root .nv-privacy-note p {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.nv-root .nv-privacy-note p a {
+  color: var(--rp-ink, #193f34);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* ---------- Colophon & 404 ---------- */
+.nv-root .nv-colophon {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid var(--rp-line, #d2dcc8);
+  padding: 24px 0 32px;
+  margin-top: 26px;
+  color: var(--rp-muted, #566a4d);
+  font-size: 13px;
+}
+.nv-root .nv-colophon a {
+  color: var(--rp-ink, #193f34);
+  font-weight: 650;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: transform 0.15s ease;
+}
+.nv-root .nv-colophon a:hover {
+  transform: translateX(2px);
+}
+.nv-root .nv-empty.nv-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 64px 20px;
+  gap: 14px;
+}
+.nv-root .nv-empty-icon {
+  color: var(--rp-muted, #566a4d);
+  opacity: 0.5;
+}

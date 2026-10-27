@@ -5,7 +5,8 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import mongoose from "mongoose";
-import connectDB from "./src/config/db.js";
+import connectDB, { databaseConnection, databaseGate } from "./src/config/db.js";
+import { registerHealthRoutes } from './src/config/health.js';
 import authRoutes from "./src/routes/authRoutes.js";
 import scholarshipRoutes from "./src/routes/scholarshipRoutes.js";
 import notificationRoutes from "./src/routes/notificationRoutes.js";
@@ -27,6 +28,9 @@ import { browserHealth, checkBrowserHealth } from "./src/pipeline/core/browserHe
 import { enabledSources } from "./src/pipeline/sources.js";
 import SourceState from "./src/models/SourceState.js";
 import Scholarship from "./src/models/Scholarship.js";
+import { createNavigatorRouter } from "./src/agents/navigator/http.js";
+import { initializeNavigator } from "./src/agents/navigator/runtime.js";
+import { createNavigatorReadiness } from './src/agents/navigator/readiness.js';
 
 const app = express();
 checkBrowserHealth().catch(() => {});
@@ -39,6 +43,7 @@ const configuredFrontends = (process.env.FRONTEND_URL || "")
 
 const defaultAllowed = [
 	"http://localhost:5173",
+	"http://127.0.0.1:5173",
 	"http://localhost:3000",
 	"https://udaan-scholarships.vercel.app",
 ];
@@ -81,7 +86,7 @@ const corsOptions = {
 		"Authorization",
 		"X-Cache",
 	],
-	exposedHeaders: ["X-Cache"],
+	exposedHeaders: ["X-Cache", "Retry-After"],
 };
 
 // Security HTTP headers
@@ -95,14 +100,26 @@ app.use(
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 app.use(cors(corsOptions));
-app.use(express.json());
+const jsonParser = express.json();
+app.use((req, res, next) => req.path.startsWith("/api/navigator") ? next() : jsonParser(req, res, next));
 
 // Global API Rate Limiting
+// Readiness probes bypass Redis-backed throttling and never start/retry work.
+registerHealthRoutes(app, getHealthStatus);
 app.use("/api", apiLimiter);
 
-connectDB().then(() => {
-	bootstrapDatabase();
+const navigatorReadiness = createNavigatorReadiness();
+const startupController = new AbortController();
+navigatorReadiness.initialize(async () => {
+	await connectDB({ signal: startupController.signal });
+	if (startupController.signal.aborted) return null;
+	await bootstrapDatabase();
+	startBackgroundJobs();
+	return initializeNavigator({ connection: mongoose.connection });
+}).then(() => {
+	if (navigatorReadiness.status().state === 'failed') console.error("[Server] Database or research initialization is unavailable. Health endpoints remain available; check configuration and connectivity.");
 });
+app.use('/api', databaseGate());
 
 // Canonical API Endpoints
 app.use("/api/auth", authRoutes);
@@ -111,8 +128,10 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/verify", verifyRoutes);
 app.use("/api/user/profile", profileRoutes);
 app.use("/api/bookmarks", bookmarkRoutes);
+app.use("/api/navigator", createNavigatorRouter({ getRuntime: navigatorReadiness.getRuntime, getReadiness: navigatorReadiness.status }));
 
 // Fallback Aliases (protects against clients calling without /api prefix)
+app.use(['/auth', '/scholarships', '/notifications', '/verify', '/user/profile', '/bookmarks'], databaseGate());
 app.use("/auth", authRoutes);
 app.use("/scholarships", scholarshipRoutes);
 app.use("/notifications", notificationRoutes);
@@ -121,7 +140,7 @@ app.use("/user/profile", profileRoutes);
 app.use("/bookmarks", bookmarkRoutes);
 
 // Health and Readiness Check Endpoint
-const getHealthStatus = () => {
+function getHealthStatus() {
 	const mongoState = mongoose.connection.readyState;
 	const mongoStatusMap = {
 		0: "disconnected",
@@ -130,7 +149,7 @@ const getHealthStatus = () => {
 		3: "disconnecting",
 	};
 
-	const isDbHealthy = mongoState === 1;
+	const isDbHealthy = mongoState === 1 && databaseConnection.status().state === 'ready';
 	const isCacheHealthy = isRedisAvailable();
 
 	return {
@@ -144,6 +163,10 @@ const getHealthStatus = () => {
 			database: {
 				status: mongoStatusMap[mongoState] || "unknown",
 				healthy: isDbHealthy,
+				startup: databaseConnection.status().state,
+				attempt: databaseConnection.status().attempt,
+				lastFailure: databaseConnection.status().lastFailure,
+				nextRetryAt: databaseConnection.status().nextRetryAt,
 			},
 			redis: {
 				status: isCacheHealthy ? "connected" : "fallback_mode",
@@ -157,16 +180,7 @@ const getHealthStatus = () => {
 			},
 		},
 	};
-};
-
-app.get("/health", (req, res) => {
-	const health = getHealthStatus();
-	res.status(health.status === "healthy" ? 200 : 503).json(health);
-});
-app.get("/api/health", (req, res) => {
-	const health = getHealthStatus();
-	res.status(health.status === "healthy" ? 200 : 503).json(health);
-});
+}
 
 // Public source availability, without admin controls or private user records.
 app.get("/api/health/ingestion", async (req, res) => {
@@ -234,21 +248,21 @@ app.use((err, req, res, next) => {
 });
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-	console.log(`Server running safely on port ${PORT}`);
+function startBackgroundJobs() {
 	crawlerScheduler.start();
-	notificationScheduler.start();
+	if (process.env.ENABLE_NOTIFICATION_SCHEDULER !== "false") notificationScheduler.start();
+	if (process.env.ENABLE_BULLMQ_WORKER !== "false") startReminderWorker();
+}
 
-	// Initialize BullMQ worker if enabled (default true)
-	if (process.env.ENABLE_BULLMQ_WORKER !== "false") {
-		startReminderWorker();
-	}
+const server = app.listen(PORT, () => {
+	console.log(`HTTP listening on port ${PORT}; database readiness is reported by /api/health.`);
 });
 
 /**
  * Graceful Shutdown for Process Termination (SIGTERM / SIGINT)
  */
 const gracefulShutdown = async (signal) => {
+	startupController.abort();
 	console.log(`\n[Server] Received ${signal}. Commencing graceful shutdown...`);
 
 	crawlerScheduler.stop();

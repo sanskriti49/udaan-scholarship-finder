@@ -17,10 +17,23 @@
 	height: 2px;
 	background: currentColor;
 }
-.sd-highlight {
+/* .sd-highlight {
 	background: linear-gradient(transparent 68%, #fde047 68%);
 	box-decoration-break: clone;
 	-webkit-box-decoration-break: clone;
+} */
+.sd-highlight {
+	background: linear-gradient(transparent 68%, #fde047 68%) no-repeat 0 0 / 100%
+		100%;
+	box-decoration-break: clone;
+	-webkit-box-decoration-break: clone;
+	padding: 0 0.06em;
+	animation: sd-sweep 0.9s 0.25s cubic-bezier(0.3, 0.7, 0.2, 1) backwards;
+}
+@keyframes sd-sweep {
+	from {
+		background-size: 0 100%;
+	}
 }
 .sd-search {
 	border-radius: 5px;

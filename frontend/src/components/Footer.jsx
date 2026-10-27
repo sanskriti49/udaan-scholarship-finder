@@ -11,6 +11,7 @@ import { authDestination } from "../utils/authNavigation";
 
 const CATALOG = [
 	{ label: "All scholarships", path: "/scholarships" },
+	{ label: "AI Navigator (Research Agent)", path: "/navigator" },
 	{ label: "Government schemes", path: "/scholarships?category=Government" },
 	{ label: "Scholarships for women", path: "/scholarships?category=Women" },
 	{ label: "STEM scholarships", path: "/scholarships?category=STEM" },

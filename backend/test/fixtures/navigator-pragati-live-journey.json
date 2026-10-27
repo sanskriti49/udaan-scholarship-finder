@@ -1,0 +1,1157 @@
+{
+  "capturedAt": "2026-10-27T05:57:59.623Z",
+  "question": "I am a girl admitted to the first year of B.Tech at an AICTE-approved college. My annual family income is 500000 rupees. Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "plan": {
+    "kind": "plan",
+    "generatedAt": "2026-10-27T05:57:28.032Z",
+    "entries": [
+      {
+        "schemeId": "6aa58e923d52461bb6eb9e9a",
+        "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+        "organization": "All India Council For Technical Education",
+        "region": "All India",
+        "academicYear": "2026-27",
+        "applicationType": "general",
+        "deadline": "2026-10-31T18:29:59.999Z",
+        "applicationLink": "https://scholarships.gov.in/ApplicationForm/",
+        "status": "closing_soon",
+        "statusReason": "Applications for AY 2026-27 close on 31-10-2026.",
+        "stale": false,
+        "lastVerifiedAt": "2026-10-26T15:09:03.216Z",
+        "targetIds": [
+          "s0"
+        ],
+        "matching": {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "status": "unknown",
+          "missingFields": [
+            "familyIncome",
+            "gender",
+            "educationLevel"
+          ],
+          "policyVersion": 3,
+          "passedCount": 0,
+          "failedCount": 0,
+          "unknownCount": 3,
+          "requiresManualReview": false,
+          "reasons": {
+            "supported": [],
+            "excluded": [],
+            "unresolved": [
+              "Annual family income ≤ ₹8,00,000",
+              "Restricted to Female candidates only",
+              "UG degree required"
+            ]
+          }
+        },
+        "citations": [
+          {
+            "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 660,
+              "charEnd": 1136,
+              "page": 2,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "eligibility",
+              "residence",
+              "education",
+              "income",
+              "gender",
+              "documents"
+            ],
+            "policyRole": "eligibility",
+            "policyPriority": 7,
+            "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 4237,
+              "charEnd": 4491,
+              "page": 3,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "renewal",
+              "documents"
+            ],
+            "policyRole": "renewal",
+            "policyPriority": 6,
+            "sectionTitle": "RENEWALS",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 4491,
+              "charEnd": 4582,
+              "page": 4,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "renewal",
+              "education"
+            ],
+            "policyRole": "renewal",
+            "policyPriority": 6,
+            "sectionTitle": "RENEWALS",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "scheme_context",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 4582,
+              "charEnd": 5919,
+              "page": 4,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "eligibility",
+              "category",
+              "education",
+              "income",
+              "benefits"
+            ],
+            "policyRole": "conditions",
+            "policyPriority": 5,
+            "sectionTitle": "TERMS AND CONDITIONS",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 3154,
+              "charEnd": 3629,
+              "page": 3,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "residence",
+              "education"
+            ],
+            "policyRole": "context",
+            "policyPriority": 0,
+            "sectionTitle": "CRITERIA OF SELECTION",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          }
+        ],
+        "sourceChecks": [],
+        "retrieval": {
+          "status": "unknown",
+          "conditions": [
+            {
+              "id": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Restricted to Female candidates only"
+              ],
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+            },
+            {
+              "id": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": []
+            },
+            {
+              "id": "c2",
+              "label": "Current enrollment / context — Study year: 1",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd"
+              ]
+            },
+            {
+              "id": "c3",
+              "label": "Current enrollment / context — Annual family income: 500000",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Annual family income ≤ ₹8,00,000"
+              ],
+              "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹8,00,000"
+            },
+            {
+              "id": "q0",
+              "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd"
+              ]
+            }
+          ]
+        },
+        "qualification": {
+          "status": "needs_verification",
+          "supported": [
+            "Current enrollment / context — Gender: Female",
+            "Current enrollment / context — Annual family income: 500000"
+          ],
+          "unresolved": [
+            "Confirm: Current enrollment / context — Education level: UG",
+            "Confirm: Current enrollment / context — Study year: 1",
+            "Confirm: Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+            "Annual family income ≤ ₹8,00,000",
+            "Restricted to Female candidates only",
+            "UG degree required"
+          ],
+          "reasons": []
+        },
+        "nextSteps": [
+          "Review the cited official instructions and any unresolved conditions.",
+          "Prepare documents explicitly required by the current provider instructions.",
+          "Confirm the current application window on the official portal before applying."
+        ],
+        "sourceRevision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+        "answer": {
+          "conditions": [
+            {
+              "requirementId": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "The scheme explicitly requires that the candidate be a girl student.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "status": "supported",
+              "basis": "source_interpretation",
+              "explanation": "The applicant is admitted to a degree level course.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c2",
+              "label": "Current enrollment / context — Study year: 1",
+              "status": "supported",
+              "basis": "source_interpretation",
+              "explanation": "The applicant is admitted to the first year of the degree course.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c3",
+              "label": "Current enrollment / context — Annual family income: 500000",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "Family income must not be more than Rs. 8 lakh per annum, and the applicant's income is 500000 rupees.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "q0",
+              "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "status": "supported",
+              "basis": "source_interpretation",
+              "explanation": "The scheme covers girl candidates admitted to the first year of a degree-level course in an AICTE-approved institution with a family income not exceeding Rs. 8 lakh per annum.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": [
+                "c0",
+                "c1",
+                "c2",
+                "c3"
+              ]
+            }
+          ],
+          "concern": false,
+          "limitation": "Source interpretations are AI-assisted and may be mistaken. Only the quoted text and recorded checks are established here; full current eligibility is not certified."
+        }
+      }
+    ],
+    "outcome": "review_required",
+    "caveat": "This is a research shortlist, not an eligibility certificate, application submission or award guarantee. No profile, bookmark or notification was changed.",
+    "preparation": "catalogue",
+    "aiAssistance": "search_planning",
+    "intent": {
+      "status": "interpreted",
+      "reason": null,
+      "constraints": [
+        "I am a girl",
+        "B.Tech",
+        "first year",
+        "500000",
+        "AICTE Pragati (Technical Degree)"
+      ],
+      "questions": [
+        "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?"
+      ],
+      "unresolved": [
+        "I am a girl",
+        "B.Tech",
+        "first year",
+        "500000"
+      ],
+      "ambiguities": [],
+      "requirements": [
+        {
+          "field": "gender",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": "Female",
+          "source": {
+            "messageIndex": 0,
+            "quote": "I am a girl"
+          },
+          "id": "c0",
+          "label": "Current enrollment / context — Gender: Female",
+          "stage": "rules"
+        },
+        {
+          "field": "educationLevel",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": "UG",
+          "source": {
+            "messageIndex": 0,
+            "quote": "B.Tech"
+          },
+          "id": "c1",
+          "label": "Current enrollment / context — Education level: UG",
+          "stage": "evidence"
+        },
+        {
+          "field": "studyYear",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": 1,
+          "source": {
+            "messageIndex": 0,
+            "quote": "first year"
+          },
+          "id": "c2",
+          "label": "Current enrollment / context — Study year: 1",
+          "stage": "evidence"
+        },
+        {
+          "field": "incomeCeiling",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": 500000,
+          "source": {
+            "messageIndex": 0,
+            "quote": "500000"
+          },
+          "id": "c3",
+          "label": "Current enrollment / context — Annual family income: 500000",
+          "stage": "rules"
+        },
+        {
+          "text": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+          "source": {
+            "messageIndex": 0,
+            "quote": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?"
+          },
+          "id": "q0",
+          "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+          "field": "question",
+          "stage": "evidence"
+        }
+      ],
+      "targets": [
+        {
+          "id": "s0",
+          "name": "AICTE Pragati (Technical Degree)",
+          "operator": "include",
+          "source": {
+            "messageIndex": 0,
+            "quote": "AICTE Pragati (Technical Degree)"
+          }
+        }
+      ]
+    },
+    "research": {
+      "version": 1,
+      "stopReason": "available_actions_exhausted",
+      "decisions": 0,
+      "actions": [
+        {
+          "tool": "searchScholarships",
+          "status": "completed",
+          "resultCount": null
+        },
+        {
+          "tool": "findGuidelinePassages",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "status": "completed",
+          "resultCount": 4
+        },
+        {
+          "tool": "findGuidelinePassages",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "status": "completed",
+          "resultCount": 4
+        },
+        {
+          "tool": "evaluateMatches",
+          "status": "completed",
+          "resultCount": null
+        }
+      ],
+      "gaps": [
+        {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+          "requirementIds": [],
+          "kind": "interpretation_needed",
+          "missingFields": [],
+          "attemptedOfficialSource": false,
+          "message": "Some conditions still need interpretation or additional information."
+        }
+      ]
+    },
+    "targets": [
+      {
+        "id": "s0",
+        "name": "AICTE Pragati (Technical Degree)",
+        "status": "reviewed",
+        "candidateIds": [
+          "6aa58e923d52461bb6eb9e9a"
+        ],
+        "excludedIds": []
+      }
+    ],
+    "coverage": {
+      "reviewed": [
+        {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+          "status": "unknown",
+          "conditions": [
+            {
+              "id": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Restricted to Female candidates only"
+              ],
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+            },
+            {
+              "id": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": []
+            },
+            {
+              "id": "c2",
+              "label": "Current enrollment / context — Study year: 1",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+                "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266",
+                "ev_89add0151f8081f7b17c8cc800617487c6373bb3"
+              ]
+            },
+            {
+              "id": "c3",
+              "label": "Current enrollment / context — Annual family income: 500000",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Annual family income ≤ ₹8,00,000"
+              ],
+              "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹8,00,000"
+            },
+            {
+              "id": "q0",
+              "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+                "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+                "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266"
+              ]
+            }
+          ],
+          "qualification": {
+            "status": "needs_verification",
+            "supported": [
+              "Current enrollment / context — Gender: Female",
+              "Current enrollment / context — Annual family income: 500000"
+            ],
+            "unresolved": [
+              "Confirm: Current enrollment / context — Education level: UG",
+              "Confirm: Current enrollment / context — Study year: 1",
+              "Confirm: Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "Annual family income ≤ ₹8,00,000",
+              "Restricted to Female candidates only",
+              "UG degree required"
+            ],
+            "reasons": []
+          },
+          "examined": true
+        }
+      ],
+      "deferred": [],
+      "excluded": [],
+      "discovery": {
+        "candidates": 1,
+        "snapshots": 2,
+        "characters": 33528,
+        "sourceLimitReached": false
+      }
+    },
+    "answer": {
+      "version": 2,
+      "status": "answered",
+      "reason": null,
+      "fingerprint": "c73c6f716aafd99a6eb2dabd67981a4f5ef7681ef64a75b1bf370c1fa26d9f98",
+      "assessedConditions": 5,
+      "acceptedAssessments": 5,
+      "rejectedAssessments": 0,
+      "diagnostics": [],
+      "recoverable": false,
+      "inputCharacters": 9509,
+      "message": "The requested conditions have source-based findings below. These findings do not certify full eligibility."
+    },
+    "providedFields": [
+      "gender",
+      "educationLevel",
+      "familyIncome"
+    ]
+  },
+  "usage": {
+    "modelCalls": 2,
+    "toolCalls": 5,
+    "reportedModelCalls": 2,
+    "inputTokens": 3082,
+    "outputTokens": 1911,
+    "tokenUsageIncomplete": false
+  },
+  "catalogue": {
+    "scheme": {
+      "_id": "6aa58e923d52461bb6eb9e9a",
+      "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+      "organization": "All India Council For Technical Education",
+      "state": "All India",
+      "rules": [
+        {
+          "id": "nsp:all-india-council-for-technical-education:aicte-pragati-scholarship-scheme-for-girl-students-technical-degree#income",
+          "field": "familyIncome",
+          "operator": "LTE",
+          "targetValue": 800000,
+          "isMandatory": true,
+          "description": "Family income must not exceed ₹8,00,000 per year",
+          "failMessage": "Family income is above the official limit of ₹8,00,000",
+          "evidenceSnapshotId": "6aab6c3e7bb4a9b75421023d",
+          "_id": "6adadbcd016acde57a6219cd"
+        },
+        {
+          "id": "nsp:all-india-council-for-technical-education:aicte-pragati-scholarship-scheme-for-girl-students-technical-degree#gender",
+          "field": "gender",
+          "operator": "EQ",
+          "targetValue": "Female",
+          "isMandatory": true,
+          "description": "Open to girl students only",
+          "evidenceSnapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "_id": "6adf6d45f30dfd6dc837ba6b"
+        },
+        {
+          "id": "nsp:all-india-council-for-technical-education:aicte-pragati-scholarship-scheme-for-girl-students-technical-degree#level",
+          "field": "educationLevel",
+          "operator": "EQ",
+          "targetValue": "UG",
+          "isMandatory": true,
+          "description": "For UG students",
+          "evidenceSnapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "_id": "6adf6d45f30dfd6dc837ba6c"
+        }
+      ],
+      "requiredDocuments": [
+        {
+          "code": "AADHAAR",
+          "name": "Government identity proof",
+          "mandatory": false,
+          "verificationStatus": "suggested",
+          "evidence": null,
+          "_id": "6adf6d45f30dfd6dc837ba64"
+        },
+        {
+          "code": "MARKSHEET",
+          "name": "Academic marksheet",
+          "mandatory": false,
+          "verificationStatus": "suggested",
+          "evidence": null,
+          "_id": "6adf6d45f30dfd6dc837ba65"
+        },
+        {
+          "code": "BONAFIDE_CERT",
+          "name": "Bonafide student certificate",
+          "mandatory": false,
+          "verificationStatus": "suggested",
+          "evidence": null,
+          "_id": "6adf6d45f30dfd6dc837ba66"
+        },
+        {
+          "code": "ADMISSION_PROOF",
+          "name": "Admission proof or fee receipt",
+          "mandatory": false,
+          "verificationStatus": "suggested",
+          "evidence": null,
+          "_id": "6adf6d45f30dfd6dc837ba67"
+        },
+        {
+          "code": "BANK_PASSBOOK",
+          "name": "Bank account details",
+          "mandatory": false,
+          "verificationStatus": "suggested",
+          "evidence": null,
+          "_id": "6adf6d45f30dfd6dc837ba68"
+        },
+        {
+          "code": "AFFIDAVIT_FEMALE",
+          "name": "Declaration, if requested by the provider",
+          "mandatory": false,
+          "verificationStatus": "suggested",
+          "evidence": null,
+          "_id": "6adf6d45f30dfd6dc837ba69"
+        }
+      ],
+      "provenanceQuotes": [
+        {
+          "ruleId": "nsp:all-india-council-for-technical-education:aicte-pragati-scholarship-scheme-for-girl-students-technical-degree#income",
+          "sourceUrl": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+          "quote": "3) Family income from all sources should not be more than Rs. 8 lakh per annum during",
+          "clause": "eligibility clause",
+          "page": 2,
+          "snapshotId": "6aab6c3e7bb4a9b75421023d",
+          "verifiedAt": "2026-10-23T03:59:24.518Z",
+          "_id": "6adadbcd016acde57a6219c3"
+        },
+        {
+          "ruleId": "nsp:all-india-council-for-technical-education:aicte-pragati-scholarship-scheme-for-girl-students-technical-degree#gender",
+          "sourceUrl": "https://scholarships.gov.in/All-Scholarships",
+          "quote": "AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)",
+          "clause": "official scheme title",
+          "page": null,
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "verifiedAt": "2026-10-26T15:09:03.216Z",
+          "_id": "6adf6d45f30dfd6dc837ba62"
+        },
+        {
+          "ruleId": "nsp:all-india-council-for-technical-education:aicte-pragati-scholarship-scheme-for-girl-students-technical-degree#level",
+          "sourceUrl": "https://scholarships.gov.in/All-Scholarships",
+          "quote": "AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)",
+          "clause": "official scheme title",
+          "page": null,
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "verifiedAt": "2026-10-26T15:09:03.216Z",
+          "_id": "6adf6d45f30dfd6dc837ba63"
+        }
+      ],
+      "currentCycle": {
+        "academicYear": "2026-27",
+        "applicationType": "general",
+        "opensAt": "2026-05-31T18:30:00.000Z",
+        "closesAt": "2026-10-31T18:29:59.999Z",
+        "latestPossibleClosesAt": null,
+        "defectiveVerificationUntil": "2026-11-15T18:29:59.999Z",
+        "instituteVerificationUntil": "2026-11-15T18:29:59.999Z",
+        "officerVerificationUntil": "2026-11-30T18:29:59.999Z",
+        "hasConflict": false,
+        "evidence": [
+          {
+            "field": "cycle",
+            "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/All-Scholarships",
+            "fetchedAt": "2026-10-26T15:09:03.216Z",
+            "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+            "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+            "quote": "Scheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026",
+            "charStart": 8156,
+            "charEnd": 8374,
+            "page": null,
+            "locator": "application window",
+            "authorityTier": 1,
+            "documentDate": null
+          },
+          {
+            "field": "academicYear",
+            "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/All-Scholarships",
+            "fetchedAt": "2026-10-26T15:09:03.216Z",
+            "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+            "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+            "quote": "Academic Year 2026-27",
+            "charStart": 251,
+            "charEnd": 272,
+            "page": null,
+            "locator": "page banner",
+            "authorityTier": 1,
+            "documentDate": null
+          }
+        ]
+      },
+      "fieldEvidence": [
+        {
+          "field": "amount",
+          "snapshotId": "6aab6c3e7bb4a9b75421023d",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+          "fetchedAt": "2026-10-23T03:59:24.518Z",
+          "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+          "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+          "quote": "1) Rs. 50,000/- per annum for every year of study i.e. maximum 4 years for first year",
+          "charStart": 2107,
+          "charEnd": 2192,
+          "page": 2,
+          "locator": "amount clause",
+          "authorityTier": 1,
+          "documentDate": "July 2020"
+        },
+        {
+          "field": "familyIncome",
+          "snapshotId": "6aab6c3e7bb4a9b75421023d",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+          "fetchedAt": "2026-10-23T03:59:24.518Z",
+          "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+          "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+          "quote": "3) Family income from all sources should not be more than Rs. 8 lakh per annum during",
+          "charStart": 943,
+          "charEnd": 1028,
+          "page": 2,
+          "locator": "eligibility clause",
+          "authorityTier": 1,
+          "documentDate": "July 2020"
+        },
+        {
+          "field": "title",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)",
+          "charStart": 8061,
+          "charEnd": 8154,
+          "page": null,
+          "locator": "scheme heading",
+          "authorityTier": 1,
+          "documentDate": null
+        },
+        {
+          "field": "organization",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "All India Council For Technical Education",
+          "charStart": 6691,
+          "charEnd": 6732,
+          "page": null,
+          "locator": "ministry group heading",
+          "authorityTier": 1,
+          "documentDate": null
+        },
+        {
+          "field": "category",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)",
+          "charStart": 8061,
+          "charEnd": 8154,
+          "page": null,
+          "locator": "official scheme title",
+          "authorityTier": 1,
+          "documentDate": null
+        },
+        {
+          "field": "gender",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)",
+          "charStart": 8061,
+          "charEnd": 8154,
+          "page": null,
+          "locator": "official scheme title",
+          "authorityTier": 1,
+          "documentDate": null
+        },
+        {
+          "field": "level",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)",
+          "charStart": 8061,
+          "charEnd": 8154,
+          "page": null,
+          "locator": "official scheme title",
+          "authorityTier": 1,
+          "documentDate": null
+        },
+        {
+          "field": "applicationLink",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "- [Apply For Scholarship](https://scholarships.gov.in/ApplicationForm/)",
+          "charStart": 538,
+          "charEnd": 609,
+          "page": null,
+          "locator": "Students menu",
+          "authorityTier": 1,
+          "documentDate": null
+        },
+        {
+          "field": "guidelinesUrl",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_F.pdf)",
+          "charStart": 8375,
+          "charEnd": 8549,
+          "page": null,
+          "locator": "Specifications link",
+          "authorityTier": 1,
+          "documentDate": null
+        },
+        {
+          "field": "faqUrl",
+          "snapshotId": "6ade1ab7fa632d88a61e5fc0",
+          "sourceId": "nsp_central_sector",
+          "url": "https://scholarships.gov.in/All-Scholarships",
+          "fetchedAt": "2026-10-26T15:09:03.216Z",
+          "contentSha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+          "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+          "quote": "[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_F.pdf)",
+          "charStart": 8375,
+          "charEnd": 8549,
+          "page": null,
+          "locator": "FAQ link",
+          "authorityTier": 1,
+          "documentDate": null
+        }
+      ],
+      "legacy": false,
+      "publication": {
+        "state": "published",
+        "updatedAt": "2026-10-26T15:08:59.488Z"
+      },
+      "applicationLink": "https://scholarships.gov.in/ApplicationForm/",
+      "dataHash": "f68459a81b361fac72fb536ec7acf9ff5e71893fdff798f0ba875b18fb0cb773",
+      "dataQuality": {
+        "unknownFields": [
+          "amount",
+          "familyIncome"
+        ],
+        "completeness": 60
+      },
+      "eligibility": {
+        "gender": "Female",
+        "disabilityRequired": false,
+        "minDisabilityPercent": null,
+        "familyIncome": {
+          "max": 800000,
+          "operator": "LTE"
+        },
+        "casteCategories": [],
+        "eligibleLevels": [],
+        "eligibleStreams": []
+      },
+      "freshness": {
+        "firstSeenAt": "2026-09-17T04:27:28.194Z",
+        "lastSeenAt": "2026-10-26T15:09:03.216Z",
+        "lastVerifiedAt": "2026-10-26T15:09:03.216Z",
+        "lastSuccessfulCrawlAt": "2026-10-26T15:08:59.488Z",
+        "staleAfterHours": 72,
+        "missingRunCount": 0,
+        "missingSince": null
+      },
+      "level": "UG",
+      "officialLinks": {
+        "listingUrl": "https://scholarships.gov.in/All-Scholarships",
+        "guidelinesUrl": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+        "faqUrl": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_F.pdf",
+        "detailUrl": "https://scholarships.gov.in/All-Scholarships#:~:text=AICTE%20%2D%20Pragati%20Scholarship%20Scheme%20For%20Girl%20Students%20(%20Technical%20Degree)%20(Merit%20Based%20Scheme)",
+        "applyUrl": "https://scholarships.gov.in/ApplicationForm/"
+      },
+      "officialTitle": "AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)"
+    },
+    "snapshots": [
+      {
+        "_id": "6aab6c3e7bb4a9b75421023d",
+        "sourceId": "nsp_central_sector",
+        "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+        "fetchedAt": "2026-09-17T04:27:42.035Z",
+        "capturedSourceType": null,
+        "kind": "pdf",
+        "sha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+        "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+        "text": "July 2020\nGUIDELINES FOR\nAICTE – PRAGATI SCHOLARSHIP\nSCHEME FOR GIRL STUDENTS -\n(DEGREE)\n2020-21\n\nGUIDELINES FOR AICTE – PRAGATI SCHOLARSHIP SCHEME FOR GIRL\nSTUDENTS (DEGREE)\n1.0 OBJECTIVE OF THE SCHEME:\nScheme being implemented by AICTE aimed at providing assistance for advancement of\nGirls pursuing technical education. Education is one of the most important means of\nempowering women with the knowledge, skill and self-confidence necessary to participate\nfully in the development process. This is an attempt to give young women the opportunity to\nfurther her education and prepare for a successful future by “Empowering Women through\nTechnical Education”.\n2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n3.0 NUMBER OF SCHOLARSHIPS:\n1) A total of 5,000 scholarships are earmarked per annum under this scheme for pursuing\nFirst year of Degree level course OR Second year of Degree level course through\nlateral entry in any of the AICTE approved Institutions. The number of scholarships\nare transferred into AICTE – PRAGATI SCHOLARSHIP SCHEME FOR GIRL\nSTUDENTS (DIPLOMA), if sufficient number of online applications are not\nreceived.\n2) State/ Union Territory wise distribution of 5,000 scholarships is as per Annexure A.\n3) In addition to 5,000 scholarships at point number 2, all eligible girls who submit\nonline scholarship form, from following 13 Union Territories and North Eastern\nStates i.e. Andaman and Nicobar Islands (UT), Jammu and Kashmir (UT), Ladakh\n(UT), Dadra and Nagar Haveli & Daman and Diu (UT), Lakshadweep (UT),\nArunachal Pradesh, Assam, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim &\nTripura will be given scholarship by AICTE.\n4.0 AMOUNT OF SCHOLARSHIP:\n1) Rs. 50,000/- per annum for every year of study i.e. maximum 4 years for first year\nadmitted students and maximum 3 years for second year admitted students through\n\nlateral entry as lump sum amount towards payment of college fee, purchase of\ncomputer, stationeries, books, equipments, softwares etc. No other additional grant\nwill be payable in lieu of hostel charges and medical charges etc.\n2) No documentary proof need to be attached for the above while availing benefits.\n5.0 MODE OF PAYMENT:\nAfter selection, the awardee will be paid scholarship through DBT mode on annual basis.\n6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n8.0 METHODS OF RESOLVING TIES:\nThe procedure to be adopted for breaking ties (similar percentiles) shall be as under: -\n1) Percentage of Marks in 10th Examination: In case qualifying examination percentile\ndoes not break ties, then higher percentage of marks in 10th examination will be ranked\nhigher.\n2) Age: In case 10th examination percentile does not break ties, then the candidate of elder\nage will be ranked higher.\n9.0 RESERVATION:\n1) As per Government of India norms.\n2) If there is any vacant seat in any of the reserved category (SC/ ST/ OBC), the same will\nbe transferred to the General Category.\n10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\nAnnexure A\nState-wise Distribution of No. of Scholarships in the Degree Course\nS. No. State/ UT No. of Scholarships\n1 Andhra Pradesh 566\n2 Bihar 52\n3 Chandigarh (UT) 50\n4 Chhattisgarh 62\n5 Delhi (NCT) 50\n6 Goa 50\n7 Gujarat 219\n8 Haryana 134\n9 Himachal Pradesh 50\n10 Jharkhand 50\n11 Karnataka 398\n12 Kerala 196\n13 Madhya Pradesh 285\n14 Maharashtra 553\n15 Odisha 134\n16 Puducherry (UT) 50\n17 Punjab 124\n18 Rajasthan 152\n19 Tamil Nadu 800\n20 Telangana 424\n21 Uttar Pradesh 422\n22 Uttarakhand 50\n23 West Bengal 129\nTotal 5000\nS.No. State/ UT No. of Scholarships\n1 Andaman and Nicobar Islands (UT)\nAll Eligible Applicants\n2 Dadra and Nagar Haveli & Daman and Diu (UT)\n3 Jammu and Kashmir (UT)\n4 Ladakh (UT)\n5 Lakshadweep (UT)\n6 Arunachal Pradesh\n7 Assam\n8 Manipur\n9 Meghalaya\n10 Mizoram\n11 Nagaland\n12 Sikkim\n13 Tripura\nNote: State-wise distribution of scholarships is based upon proportionate share of allotted degree seats (in AICTE\napproved institutions) to that particular State/ UT with minimum 50 scholarships and maximum cap of 800\nscholarships.",
+        "pages": [
+          {
+            "page": 1,
+            "start": 0
+          },
+          {
+            "page": 2,
+            "start": 98
+          },
+          {
+            "page": 3,
+            "start": 2274
+          },
+          {
+            "page": 4,
+            "start": 4491
+          },
+          {
+            "page": 5,
+            "start": 6894
+          }
+        ],
+        "quality": {
+          "ocrSuspect": false,
+          "reasons": [],
+          "words": 1303
+        },
+        "documentDate": {
+          "label": "July 2020",
+          "year": 2020
+        },
+        "authorityTier": 1,
+        "fetchMethod": "static"
+      },
+      {
+        "_id": "6ade1ab7fa632d88a61e5fc0",
+        "sourceId": "nsp_central_sector",
+        "url": "https://scholarships.gov.in/All-Scholarships",
+        "fetchedAt": "2026-10-25T15:05:26.878Z",
+        "fetchMethod": "static",
+        "capturedSourceType": null,
+        "kind": "html",
+        "sha256": "e1e75e145c1121c2d79dc1460d02b709fc2349da809a3ffc4d193ceb8b8af4f7",
+        "textHash": "af74e3b6741c7f16ea851fe62bd5bfffccab2256e2955844bfce0602cd13d947",
+        "text": "NSP : National Scholarship Portal\n\n- Government of India\n\n- Ministry of Electronics & Information Technology\n\n- ![](https://scholarships.gov.in/public/assets2425/images/icons/Digital-India-Color.svg)\n\n-\n\n-\n[](https://scholarships.gov.in/home)\n\n###### Academic Year 2026-27\n\n- [Student](https://scholarships.gov.in/home)\n\n- [Institute](https://nsp.gov.in/)\n\n- [Officer](https://nsp.gov.in/NSPADMIN/loginPage)\n\n## Students\n\n##### Students\n\n- [Apply For One Time Registration (OTR)](https://scholarships.gov.in/otrapplication/#/login-page)\n\n- [Apply For Scholarship](https://scholarships.gov.in/ApplicationForm/)\n\n- [Schemes on NSP](https://scholarships.gov.in/All-Scholarships)\n\n- [Scholarship Eligibility](https://scholarships.gov.in/scholarshipEligibility)\n\n- [Application Status](https://scholarships.gov.in/payl/loginPage.action)\n\n- [Track Your Payment](https://pfms.nic.in/SitePages/KnowYourPayment_Dw_NewNew.aspx)\n\n- [Aadhaar Seva Kendra](https://bhuvan-app3.nrsc.gov.in/aadhaar/)\n\n- [Check Aadhaar Seeding Status](https://myaadhaar.uidai.gov.in/)\n\n- [NSP OTR APP](https://play.google.com/store/apps/details?id=in.gov.scholarships.nspotr&pli=1)\n\n- [Check UDID details](https://www.swavlambancard.gov.in/login)\n\n- [How to seed Aadhaar with the Bank Account](https://youtu.be/gjPkUF23UTg?si=8Y5qJofbSLeGVG4m)\n\n## Institute\n\n##### Institutes\n\n- [How to fill Registration Form](https://scholarships.gov.in/public/userManual/NSPInstituteKYCRegistrationUserManualV1.2.pdf)\n\n- [Registration Form](https://nsp.gov.in/institutekyciver)\n\n- [Login](https://nsp.gov.in/)\n\n- [Know your AISHE Code](https://dcf.aishe.nic.in/aishenew/#/details/knowAisheCode)\n\n- [Get AISHE code](https://dcf.aishe.nic.in/aishenew/#/requestAddInstitute)\n\n- [UDISE+ website details](https://udiseplus.gov.in/#/page/dcfdownload)\n\n## Officers\n\n##### Officers\n\n- [Login](https://nsp.gov.in/NSPADMIN/loginPage)\n\n- [Nodal Officers (Scheme-wise)](https://scholarships.gov.in/nodalofficerList)\n\n- [Grievance Redressal Officers (GROs)](https://scholarships.gov.in/public/nodalOfficersList/grievance_redressal_officer1.pdf)\n\n## Public\n\n##### Public\n\n- [Dashboard](https://nsp.gov.in/dashboard/)\n\n- [Find Institutes on NSP](https://scholarships.gov.in/onlineInstituteSearchIndex)\n\n- [List of Applicants Processed for Scholarships](https://scholarships.gov.in/onlineSanctionedList)\n\n- [Nodal Officers (Scheme-wise)](https://scholarships.gov.in/nodelOfficerDetails)\n\n- [Nodal Officers (District-wise )](https://scholarships.gov.in/districtNodelOfficerDetails)\n\n- [NSP Helpdesk](https://scholarships.gov.in/nsphelpdesk)\n\n- [PFMS Helpdesk](https://scholarships.gov.in/pfmshelpdesk)\n\n- [Grievance Registration](https://nsp.gov.in/grievanceregistration/)\n\n- [CSC Login](https://scholarships.gov.in/CSCURL)\n\n- [About NSP](https://scholarships.gov.in/aboutUs)\n\n- [Contact us](https://scholarships.gov.in/nsphelpdesk)\n\n- [Site map](https://scholarships.gov.in/siteMap)\n\n- FAQs\n\n- [Student](https://scholarships.gov.in/studentFAQs)\n\n- [Institute](https://scholarships.gov.in/InstituteFAQs)\n\n- [Officer](https://scholarships.gov.in/public/FAQ/DNO_SNO_FAQs_21122023_updated.pdf)\n\n- Announcements\n\n- [Student](https://scholarships.gov.in/student-announcements)\n\n- [Institute](https://scholarships.gov.in/institute-announcements)\n\n- [Officer](https://scholarships.gov.in/officer-announcements)\n\n- Helpdesk\n\n- [NSP Helpdesk.](https://scholarships.gov.in/nsphelpdesk)\n\n- [PFMS Helpdesk](https://scholarships.gov.in/pfmshelpdesk)\n\n![Vani](https://vani-hyd.nic.in/NspBot/images/vani-gif.gif)\n\n#### VANI - Virtual Assistance By NIC\n\nI am still learning.Please forgive me if you find any answer to be inappropriate.\n\n![Vani](https://vani-hyd.nic.in/NspBot/images/vani-gif.gif)\n\n#### Please Select Language\n\n×\n\nEnglish\n\nHindi\n\nGujarati\n\nTamil\n\nOK\n\nClose\n\n##### Accessibility Controls\n\nReset Filter\n\nResize Text\n\nDark Contrast\n\nLight Contrast\n\nInvert\n\nSaturation\n\nText Size Increase\n\nText Size Decrease\n\nHighlight Links\n\nUnhighlight Links\n\nHide Images\n\nShow Images\n\nDefault Cursor\n\nIncreased Cursor Size\n\n![](https://scholarships.gov.in/public/assets2425/images/banner/weferfe.svg) Schemes\n\n- [](https://scholarships.gov.in/Students)\n\n- [Schemes On NSP](https://scholarships.gov.in/All-Scholarships)\n\nSchemes On NSP Central Sector Schemes Centrally Sponsored Schemes State Schemes\n\nSearch\n\nCentral Sector Scheme Select Scheme All India Council For Technical Education Department of Agriculture Research and Education Department of Empowerment of Persons with Disabilities Department of Higher Education Department of School Education & Literacy Department of Social Justice & Empowerment Department of Social Justice & Empowerment(Backward Classes) Ministry of Home Affairs Ministry of Labour & Employment Ministry of Railways (Railway Board) Ministry of Statistics and Programme Implementation Ministry of Tribal Affairs North Eastern Council(NEC),DoNER UGC\n\nSearch\n\nState Scheme Select State State of Arunachal Pradesh State of Assam State of Chattisgarh State of Delhi State of Goa State of Haryana State of Himachal Pradesh State of Maharashtra State of Manipur State of Meghalaya State of Mizoram State of Nagaland State of Punjab State of Sikkim State of Tripura State of Uttarakhand State of West Bengal UT of Andaman and Nicobar Islands UT of Chandigarh UT of Jammu and Kashmir UT of Ladakh UT of Lakshadweep UT of Puducherry UT of The Dadra Nagar Haveli and Daman and Diu\n\nSearch\n\n##### Schemes On NSP\n\nMinistry of Home Affairs\n\n![](https://scholarships.gov.in/public/MinistryImages/Ministry-of-Home-Affairs.png)\n\n###### Prime Minister'S Scholarship Scheme For Wards Of States/UTs Police Personnel Martyred During Terror/Naxal Attacks (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/warb/PMSS_Guidelines_1197_3001-2023-24.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQonPMSSS.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/Ministry-of-Home-Affairs.png)\n\n###### Prime Minister'S Scholarship Scheme For Central Armed Police Forces And Assam Rifles (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/warb/PMSS_Guidelines_1197_3001-2023-24.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQonPMSSS.pdf)\n\nAll India Council For Technical Education\n\n![](https://scholarships.gov.in/public/MinistryImages/All-India-Council-For-Technical-Education.png)\n\n###### AICTE - Swanath Scholarship Scheme ( Technical Degree) (Welfare Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_3039_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_3039_F.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/All-India-Council-For-Technical-Education.png)\n\n###### PM USP Special Scholarship Scheme For Jammu Kashmir And Ladakh (Merit Based Scheme)\n\nScheme Open from : 22-10-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/PM_USPY(SSSJKL)SchemeSpecifications.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/PM_USPY(SSSJKL)SchemeSpecifications.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/All-India-Council-For-Technical-Education.png)\n\n###### AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Degree) (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_F.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/All-India-Council-For-Technical-Education.png)\n\n###### AICTE - Pragati Scholarship Scheme For Girl Students ( Technical Diploma) (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2011_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2011_F.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/All-India-Council-For-Technical-Education.png)\n\n###### AICTE - Saksham Scholarship Scheme For Specially Abled Student ( Technical Diploma) (Welfare Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2013_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2013_F.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/All-India-Council-For-Technical-Education.png)\n\n###### AICTE - Saksham Scholarship Scheme For Specially Abled Student ( Technical Degree) (Welfare Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2012_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2012_F.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/All-India-Council-For-Technical-Education.png)\n\n###### AICTE - Swanath Scholarship Scheme (Technical Diploma) (Welfare Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_3038_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_3038_F.pdf)\n\nUGC\n\n![](https://scholarships.gov.in/public/MinistryImages/UGC.png)\n\n###### National Scholarship For Post Graduate Studies (Merit Based Scheme)\n\nScheme Open from : 16-09-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/Guidelines_NATIONAL_SCHOLARSHIP_FOR_POSTGRADUATE_STUDIES_UGC_2324.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQ_NSPG.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/UGC.png)\n\n###### Ishan Uday Special Scholarship Scheme For NER (Merit Based Scheme)\n\nScheme Open from : 16-09-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/Guidelines_ISHAN UDAY_2324.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQ_Ishanuday.pdf)\n\nMinistry of Labour & Employment\n\n![](https://scholarships.gov.in/public/MinistryImages/Ministry-of-Labour&Employment.png)\n\n###### Financial Assistance For Education To The Wards Of Beedi/Cine/Iomc/Lsdm- Post Matric (Welfare Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/Labour_Ministry_Guidelines_of_scholarhsips schemes.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/MinistryofLabour_FAQ.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/Ministry-of-Labour&Employment.png)\n\n###### Financial Assistance For Education To The Wards Of Beedi/Cine/Iomc/Lsdm- Pre Matric (Welfare Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/Labour_Ministry_Guidelines_of_scholarhsips schemes.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/MinistryofLabour_FAQ.pdf)\n\nDepartment of Social Justice & Empowerment(Backward Classes)\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-Social-Justice&Empowerment(Backward-Classes).png)\n\n###### PM YASASVI Central Sector Scheme Of Top Class Education In Schools For OBC, EBC And DNT Students (Merit Based Scheme)\n\nScheme Open from : 22-10-2026 Student Application Open till : 30-11-2026 Defective Application Verification Open till:15-12-2026 Institute Verification Open till:15-12-2026 DNO/SNO/MNO Verification Open till:31-12-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/3061_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/not_available.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-Social-Justice&Empowerment(Backward-Classes).png)\n\n###### PM YASASVI Central Sector Scheme Of Top Class Education In College For OBC, EBC And DNT Students (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/ApprovedmodifieddraftofTopClassCollege.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/not_available.pdf)\n\nMinistry of New And Renewable Energy\n\n![](https://scholarships.gov.in/public/assets2425/images/scholarship1.jpg)\n\n###### National Renewable Energy Fellowship Scheme (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/null) [FAQ](https://scholarships.gov.in/null)\n\nMinistry of Statistics and Programme Implementation\n\n![](https://scholarships.gov.in/public/assets2425/images/scholarship1.jpg)\n\n###### Stipend Scheme For Under Graduate And Post Graduate Studies In Indian Statistical Institute-Kolkata (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/STIPEND_STATICAL_GUIDLLINES.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/not_available.pdf)\n\nDepartment of Agriculture Research and Education\n\n![](https://scholarships.gov.in/public/assets2425/images/scholarship1.jpg)\n\n###### Icar National Talent Scholarship(Nts-Ug) (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/GuidelinesforICAR_NTS_Scholarship_3103_3104.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQsforICAR_NTS-UG_3103.pdf)\n\n![](https://scholarships.gov.in/public/assets2425/images/scholarship1.jpg)\n\n###### Icar Post Graduate Scholarship(Pgs) (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/RevisedGuidelinesforICAR_JRF_SRFandPG_Scholarship_3105_3106.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQsforICAR _PGS_Scholarship_3105.pdf)\n\n![](https://scholarships.gov.in/public/assets2425/images/scholarship1.jpg)\n\n###### Icar National Talent Scholarship(Nts-Pg) (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/GuidelinesforICAR_NTS_Scholarship_3103_3104.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQsforICAR_NTS-PG_3104.pdf)\n\n![](https://scholarships.gov.in/public/assets2425/images/scholarship1.jpg)\n\n###### Icar Junior Research Fellowships(Jrf) And Senior Research Fellowships(Srf) (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/RevisedGuidelinesforICAR_JRF_SRFandPG_Scholarship_3105_3106.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQsforICAR_JRF(PGS)_SRF(PGS)forPh.Dstudents_3106.pdf)\n\nDepartment of Social Justice & Empowerment\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-Social-Justice&Empowerment.png)\n\n###### Central Sector Scholarship Of Top Class Education For SC Students (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/Top_Class_Education_Scheme_2018.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/Top_Class_Education_Scheme_2018_FAQ.pdf)\n\n![](https://scholarships.gov.in/public/assets2425/images/scholarship1.jpg)\n\n###### Free Coaching For Scs OBCs And Beneficiaries Of PM Cares Children Scheme (Welfare Based Scheme)\n\nScheme Open from : 03-08-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/guid_3108.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/faq_3108.pdf)\n\nDepartment of Empowerment of Persons with Disabilities\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-Empowerment-of-Persons-with-Disabilities.png)\n\n###### Pre Matric Scholarship For Students With Disabilities (Welfare Based Scheme)\n\nScheme Open from : 25-07-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/DEPDGuidelines_1.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/DEPDFAQ.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-Empowerment-of-Persons-with-Disabilities.png)\n\n###### Post Matric Scholarship For Students With Disabilities (Welfare Based Scheme)\n\nScheme Open from : 25-07-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/DEPDGuidelines_1.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/DEPDFAQ.pdf)\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-Empowerment-of-Persons-with-Disabilities.png)\n\n###### Scholarship For Top Class Education For Students With Disabilities (Welfare Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/DEPDGuidelines_1.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/DEPDFAQ.pdf)\n\nDepartment of School Education & Literacy\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-School-Education&Literacy.png)\n\n###### National Means Cum Merit Scholarship (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/NMMSSGuidelines.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/NMSSS_FAQ.pdf)\n\nDepartment of Higher Education\n\n![](https://scholarships.gov.in/public/MinistryImages/Department-of-Higher-Education.png)\n\n###### PM-USP – Central Sector Scheme Of Scholarship For College And University Students (CSSS) (Merit Based Scheme)\n\nScheme Open from (for Renewal): 01-06-2026 Student Application Open till (for Renewal): 31-10-2026 Defective Application Verification Open till (for Renewal):15-11-2026 Institute Verification Open till (for Renewal):15-11-2026 DNO/SNO/MNO Verification Open till (for Renewal):30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/CSSS_GUIDLINES_07022024_updated.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/FAQ_DOHE_CSSS.pdf)\n\nMinistry of Tribal Affairs\n\n![](https://scholarships.gov.in/public/MinistryImages/Ministry-of-Tribal-Affairs.png)\n\n###### National Fellowship And Scholarship For Higher Education Of ST Students - Scholarship (Formally Top Class Education For Schedule Tribe Students) (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/tribalfellowshipguideline.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/tribalfellowshipfaq.pdf)\n\nNorth Eastern Council(NEC),DoNER\n\n![](https://scholarships.gov.in/public/MinistryImages/North-Eastern-Council(NEC),DoNER.png)\n\n###### Financial Support To The Students Of NER For Higher Professional Courses(NEC Merit Scholarship) (Merit Based Scheme)\n\nScheme Open from (for Renewal): 15-07-2026 Student Application Open till (for Renewal): 31-10-2026 Defective Application Verification Open till (for Renewal):15-11-2026 Institute Verification Open till (for Renewal):15-11-2026 DNO/SNO/MNO Verification Open till (for Renewal):30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/NEC_1234_G.pdf) [FAQ](https://scholarships.gov.in/public/schemeGuidelines/NEC_1234_F.pdf)\n\nMinistry of Railways (Railway Board)\n\n![](https://scholarships.gov.in/public/MinistryImages/Ministry-of-Railways-(Railway-Board).png)\n\n###### Prime Minister'S Scholarship Scheme For Ministry Of Railways (Merit Based Scheme)\n\nScheme Open from : 01-06-2026 Student Application Open till : 31-10-2026 Defective Application Verification Open till:15-11-2026 Institute Verification Open till:15-11-2026 DNO/SNO/MNO Verification Open till:30-11-2026\n[Specifications](https://scholarships.gov.in/public/schemeGuidelines/MORB_GL.pdf) [FAQ](https://scholarships.gov.in/public/FAQ/FAQs_1198.pdf)\n\n![](https://scholarships.gov.in/public/assets2425/images/footer-logos/meity.png)\n\n![](https://scholarships.gov.in/public/assets2425/images/footer-logos/logo_nic.png)\n\n![](https://scholarships.gov.in/public/assets2425/images/footer-logos/mygov.png)\n\n![](https://scholarships.gov.in/public/assets2425/images/footer-logos/DBT.png)\n\n![](https://scholarships.gov.in/public/assets2425/images/footer-logos/indiagov.png)\n\n![](https://scholarships.gov.in/public/assets2425/images/footer-logos/di.png)\n\n![](https://scholarships.gov.in/public/assets2425/images/footer-logos/Umang_logo.png)\n\n- [Copyright Policy](https://scholarships.gov.in/copyright-policy)\n\n- [Privacy Policy](https://scholarships.gov.in/privacy-policy)\n\n- [Terms and Conditions](https://scholarships.gov.in/terms-conditions)\n\n- [Disclaimer](https://scholarships.gov.in/disclaimer_New)\n\n- [Hyperlink](https://scholarships.gov.in/hyperlinkPolicy_New)\n\n- [Site Map](https://scholarships.gov.in/siteMap)\n\nLast update on June 2026\n\nThe original text is in English. Translation into other languages is powered by the Bhashini service.",
+        "pages": null,
+        "quality": {
+          "ocrSuspect": false,
+          "reasons": [],
+          "words": 1869
+        },
+        "documentDate": null,
+        "authorityTier": 1
+      }
+    ]
+  }
+}

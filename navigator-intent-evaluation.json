@@ -1,0 +1,229 @@
+{
+  "date": "2026-10-23T09:24:23.875Z",
+  "synthetic": true,
+  "maxCalls": 3,
+  "results": [
+    {
+      "id": "negation",
+      "expected": "PG included; UG and All India excluded; Maharashtra included; income ceiling 450000 retained, never a private profile input.",
+      "intent": {
+        "objective": "Find scholarship schemes",
+        "searchQuery": "",
+        "constraints": [
+          {
+            "field": "educationLevel",
+            "operator": "include",
+            "value": "PG",
+            "source": {
+              "messageIndex": 0,
+              "quote": "I'm pursuing a master's, not a bachelor's."
+            }
+          },
+          {
+            "field": "state",
+            "operator": "include",
+            "value": "Maharashtra",
+            "source": {
+              "messageIndex": 0,
+              "quote": "Find Maharashtra schemes only"
+            }
+          },
+          {
+            "field": "state",
+            "operator": "exclude",
+            "value": "All India",
+            "source": {
+              "messageIndex": 0,
+              "quote": "exclude national schemes"
+            }
+          },
+          {
+            "field": "incomeCeiling",
+            "operator": "lt",
+            "value": 450000,
+            "source": {
+              "messageIndex": 0,
+              "quote": "My family earns less than four and a half lakh rupees a year."
+            }
+          }
+        ],
+        "questions": [],
+        "ambiguities": []
+      },
+      "compiled": {
+        "search": {
+          "query": "",
+          "incomeCeiling": 450000,
+          "levels": [
+            "PG"
+          ],
+          "states": [
+            "Maharashtra"
+          ],
+          "excludeStates": [
+            "All India"
+          ]
+        },
+        "report": {
+          "status": "interpreted",
+          "reason": null,
+          "constraints": [
+            "I'm pursuing a master's, not a bachelor's.",
+            "Find Maharashtra schemes only",
+            "exclude national schemes",
+            "My family earns less than four and a half lakh rupees a year."
+          ],
+          "questions": [],
+          "unresolved": [
+            "My family earns less than four and a half lakh rupees a year."
+          ],
+          "ambiguities": []
+        }
+      },
+      "schemaValid": true,
+      "latencyMs": 1556,
+      "transport": {
+        "httpStatus": 200,
+        "finishReason": "tool_calls",
+        "usage": {
+          "queue_time": 0.213323509,
+          "prompt_tokens": 878,
+          "prompt_time": 0.034102778,
+          "completion_tokens": 377,
+          "completion_time": 0.791554133,
+          "total_tokens": 1255,
+          "total_time": 0.825656911,
+          "completion_tokens_details": {
+            "reasoning_tokens": 114
+          }
+        },
+        "remainingTokens": "6758",
+        "remainingRequests": "999"
+      }
+    },
+    {
+      "id": "renewal",
+      "expected": "Pragati identified; renewal and fourth year preserved; question retained; no eligibility assertion.",
+      "error": "INVALID_RESEARCH_INTENT",
+      "latencyMs": 1754,
+      "transport": {
+        "httpStatus": 200,
+        "finishReason": "tool_calls",
+        "usage": {
+          "queue_time": 0.212690444,
+          "prompt_tokens": 881,
+          "prompt_time": 0.006909993,
+          "completion_tokens": 533,
+          "completion_time": 1.123484906,
+          "total_tokens": 1414,
+          "total_time": 1.1303948990000001,
+          "prompt_tokens_details": {
+            "cached_tokens": 768
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 220
+          }
+        },
+        "remainingTokens": "6759",
+        "remainingRequests": "998"
+      }
+    },
+    {
+      "id": "followup",
+      "expected": "Latest PG/Maharashtra restrictions replace UG/national; national excluded; hostel topic retained without asserting residence.",
+      "intent": {
+        "objective": "Find scholarships for hostel expenses",
+        "searchQuery": "",
+        "constraints": [
+          {
+            "field": "educationLevel",
+            "operator": "include",
+            "value": "PG",
+            "source": {
+              "messageIndex": 1,
+              "quote": "Only Maharashtra now, and postgraduate rather than undergraduate."
+            }
+          },
+          {
+            "field": "state",
+            "operator": "include",
+            "value": "Maharashtra",
+            "source": {
+              "messageIndex": 1,
+              "quote": "Only Maharashtra now"
+            }
+          },
+          {
+            "field": "state",
+            "operator": "exclude",
+            "value": "All India",
+            "source": {
+              "messageIndex": 1,
+              "quote": "exclude nationwide schemes"
+            }
+          },
+          {
+            "field": "other",
+            "operator": "include",
+            "value": "hostel expenses",
+            "source": {
+              "messageIndex": 0,
+              "quote": "Find national undergraduate scholarships for hostel expenses."
+            }
+          }
+        ],
+        "questions": [],
+        "ambiguities": []
+      },
+      "compiled": {
+        "search": {
+          "query": "",
+          "levels": [
+            "PG"
+          ],
+          "states": [
+            "Maharashtra"
+          ],
+          "excludeStates": [
+            "All India"
+          ]
+        },
+        "report": {
+          "status": "interpreted",
+          "reason": null,
+          "constraints": [
+            "Only Maharashtra now, and postgraduate rather than undergraduate.",
+            "Only Maharashtra now",
+            "exclude nationwide schemes",
+            "Find national undergraduate scholarships for hostel expenses."
+          ],
+          "questions": [],
+          "unresolved": [
+            "Find national undergraduate scholarships for hostel expenses."
+          ],
+          "ambiguities": []
+        }
+      },
+      "schemaValid": true,
+      "latencyMs": 1729,
+      "transport": {
+        "httpStatus": 200,
+        "finishReason": "tool_calls",
+        "usage": {
+          "queue_time": 0.309613653,
+          "prompt_tokens": 887,
+          "prompt_time": 0.043821735,
+          "completion_tokens": 472,
+          "completion_time": 0.996005049,
+          "total_tokens": 1359,
+          "total_time": 1.039826784,
+          "completion_tokens_details": {
+            "reasoning_tokens": 203
+          }
+        },
+        "remainingTokens": "6709",
+        "remainingRequests": "997"
+      }
+    }
+  ]
+}

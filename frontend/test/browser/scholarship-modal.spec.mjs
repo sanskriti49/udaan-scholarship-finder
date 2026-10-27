@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { readFile } from 'node:fs/promises';
 test.setTimeout(30000);
 
 const scholarship = {
@@ -152,7 +153,17 @@ test("calendar options stay inside the mobile dialog and Escape closes the menu 
 	await calendar.click();
 	const download = page.waitForEvent("download");
 	await menu.getByRole("menuitem", { name: /Apple/ }).click();
-	expect((await download).suggestedFilename()).toMatch(/\.ics$/);
+	const file = await download;
+	expect(file.suggestedFilename()).toMatch(/\.ics$/);
+	const content = await readFile(await file.path(), 'utf8');
+	expect(content).not.toMatch(/April 1|AISHE|NPCI|Tracked & verified/);
+	expect(content).toContain('Confirm the closing date and time with the provider.');
+});
+
+test('an unrecorded deadline is shown honestly without a calendar deadline action', async ({ page }) => {
+	const { dialog } = await fixture(page, { scholarship: { deadline: null, status: 'unknown' } });
+	await expect(dialog.getByText('Not announced', { exact: true })).toBeVisible();
+	await expect(dialog.getByRole('button', { name: 'Add to Calendar', exact: true })).toHaveCount(0);
 });
 
 test("long policy names leave the reading area and application action accessible on short screens", async ({ page }) => {

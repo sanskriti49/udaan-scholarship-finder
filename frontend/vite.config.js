@@ -5,6 +5,8 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    // Keep localhost development reachable from the in-app browser's IPv4 URL.
+    host: "127.0.0.1",
     headers: {
       "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
     },

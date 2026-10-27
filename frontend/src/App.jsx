@@ -28,6 +28,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const TrustShield = lazy(() => import("./pages/TrustShield"));
 const DocumentVault = lazy(() => import("./pages/DocumentVault"));
 const SavedScholarships = lazy(() => import("./pages/SavedScholarships"));
+const Navigator = lazy(() => import("./navigator/Navigator"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 const withSuspense = (Component) => (
@@ -73,6 +74,7 @@ const router = createBrowserRouter([
 			{ path: "support", element: withSuspense(Support) },
 			{ path: "eligibility", element: withSuspense(EligibilityPage) },
 			{ path: "scholarships", element: withSuspense(Scholarships) },
+			{ path: "navigator/*", element: withSuspense(Navigator) },
 			{ path: "scanner", element: withSuspense(Scanner) },
 			{ path: "scanner.html", element: <LegacyScannerRedirect /> },
 			{ path: "trust-shield", element: withSuspense(TrustShield) },

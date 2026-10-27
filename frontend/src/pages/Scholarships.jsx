@@ -198,6 +198,7 @@ export default function Scholarships() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [filtersOpen, setFiltersOpen] = useState(false);
 	const detailTriggerRef = useRef(null);
+	const catalogueRequestRef = useRef(null);
 	const filterRef = useDialogFocus(filtersOpen);
 
 	const updateMultiParam = (key, option, defaultOption) => {
@@ -298,6 +299,9 @@ export default function Scholarships() {
 	};
 
 	const fetchLiveScholarships = useCallback(async () => {
+		catalogueRequestRef.current?.abort();
+		const controller = new AbortController();
+		catalogueRequestRef.current = controller;
 		try {
 			setLoading(true);
 			setError(null);
@@ -313,7 +317,8 @@ export default function Scholarships() {
 				sort: searchParams.get("sort") || "deadline",
 				limit: 50,
 			};
-			const res = await getScholarships(params);
+			const res = await getScholarships(params, { signal: controller.signal });
+			if (controller.signal.aborted) return;
 			if (res.success) {
 				setScholarships(res.data || []);
 				if (typeof res.recentUpdatesCount === "number") {
@@ -323,10 +328,13 @@ export default function Scholarships() {
 				setError("We could not load scholarships just now.");
 			}
 		} catch (err) {
+			if (controller.signal.aborted || err.code === 'ERR_CANCELED') return;
 			console.error("API error:", err);
-			setError("The scholarship service did not respond.");
+			setError(err.response?.data?.error?.code === 'DATABASE_INITIALIZING'
+				? 'Udaan is still connecting. Please try again in a moment.'
+				: 'The scholarship service did not respond.');
 		} finally {
-			setLoading(false);
+			if (!controller.signal.aborted) setLoading(false);
 		}
 	}, [searchParams]);
 
@@ -334,7 +342,7 @@ export default function Scholarships() {
 		const timer = setTimeout(() => {
 			fetchLiveScholarships();
 		}, 80);
-		return () => clearTimeout(timer);
+		return () => { clearTimeout(timer); catalogueRequestRef.current?.abort(); };
 	}, [fetchLiveScholarships]);
 
 	const openDetails = (s) => {
@@ -363,13 +371,15 @@ export default function Scholarships() {
 			const timer = setTimeout(() => setSaved(new Set()), 0);
 			return () => clearTimeout(timer);
 		}
-		getBookmarks()
+		const controller = new AbortController();
+		getBookmarks({ signal: controller.signal })
 			.then((res) => {
-				if (res && res.success && Array.isArray(res.data)) {
+				if (!controller.signal.aborted && res && res.success && Array.isArray(res.data)) {
 					setSaved(new Set(res.data.map((s) => s._id || s.id)));
 				}
 			})
 			.catch(() => {});
+		return () => controller.abort();
 	}, [user]);
 
 	useEffect(() => {

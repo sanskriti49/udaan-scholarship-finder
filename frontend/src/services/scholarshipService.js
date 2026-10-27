@@ -7,8 +7,8 @@ export const translateScholarshipTitle = createTitleTranslator(async ({ scholars
 	return response.data.data;
 });
 
-export const getScholarships = async (params = {}) => {
-	const response = await api.get("/scholarships", { params });
+export const getScholarships = async (params = {}, options = {}) => {
+	const response = await api.get("/scholarships", { ...options, params });
 	return response.data;
 };
 
@@ -55,8 +55,8 @@ export const updateUserProfile = async (profileData) => {
 	return response.data;
 };
 
-export const getBookmarks = async () => {
-	const response = await api.get("/bookmarks");
+export const getBookmarks = async (options = {}) => {
+	const response = await api.get("/bookmarks", options);
 	return response.data;
 };
 

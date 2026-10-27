@@ -15,5 +15,5 @@ export function crawlerLockKey() { return `lock:crawler:${catalogueNamespace()}:
 // Eligibility results must belong to the same catalogue as list/detail caches
 // and be invalidated by the same successful-crawl cache clear.
 export function evaluationCacheKey(profileHash) {
-	return `udaan:cache:scholarships:${catalogueNamespace()}:evaluate:${profileHash}`;
+	return `udaan:cache:scholarships:${catalogueNamespace()}:evaluate:v2:${profileHash}`;
 }
