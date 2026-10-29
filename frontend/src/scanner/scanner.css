@@ -1050,3 +1050,46 @@
   .scanner-compared-names { gap: 6px; }
   .scanner-compared-names p { font-size: 20px; }
 }
+.scanner-reading-options {
+	display: grid;
+	gap: 10px;
+	margin: 20px 0;
+	padding: 18px;
+	background: #f3f6ed;
+	border: 1px solid #c7d4c5;
+	border-radius: 12px;
+}
+.scanner-reading-options > label:first-child { font-weight: 700; }
+.scanner-reading-options select {
+	width: 100%;
+	max-width: 360px;
+	padding: 12px;
+	color: inherit;
+	background: white;
+	border: 1px solid #9eafa0;
+	border-radius: 8px;
+	font: inherit;
+}
+.scanner-reading-options .scanner-check { margin: 0; }
+.scanner-reading-options small { line-height: 1.6; }
+.scanner-read-text {
+	margin: 20px 0;
+	padding: 16px;
+	border: 1px solid #c7d4c5;
+	border-radius: 12px;
+	min-width: 0;
+}
+.scanner-read-text summary { cursor: pointer; font-weight: 700; }
+.scanner-read-text p { line-height: 1.7; }
+.scanner-read-text h3 { font-size: 1rem; }
+.scanner-read-text pre {
+	max-height: 360px;
+	overflow: auto;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	font: inherit;
+	line-height: 1.8;
+	padding: 14px;
+	background: #f3f6ed;
+}
+.scanner-reading-warning { color: #805510; }

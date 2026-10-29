@@ -14,10 +14,11 @@ for (const name of await readdir(`${root}node_modules/tesseract.js-core`)) {
       `${dest}/${name}`,
     );
 }
-await cp(
-  `${root}node_modules/@tesseract.js-data/eng/4.0.0/eng.traineddata.gz`,
-  `${dest}/eng.traineddata.gz`,
-);
+for (const language of ["eng", "hin"])
+  await cp(
+    `${root}node_modules/@tesseract.js-data/${language}/4.0.0/${language}.traineddata.gz`,
+    `${dest}/${language}.traineddata.gz`,
+  );
 for (const name of ["cmaps", "standard_fonts", "wasm"])
   await cp(`${root}node_modules/pdfjs-dist/${name}`, `${dest}/${name}`, {
     recursive: true,

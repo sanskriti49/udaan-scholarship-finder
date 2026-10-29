@@ -15,6 +15,7 @@ import { evaluate } from "./rules";
 import { eligiblePrefill } from "./prefill";
 import { loadScholarships } from "./scholarships";
 import { useScanner } from "./useScanner";
+import { readingLanguages } from "./text.js";
 import { stageEligibilityDraft } from "../utils/eligibilityDraft";
 import PreSubmissionAudit, { PrivateDocumentSet } from "./PreSubmissionAudit.jsx";
 import { rememberName } from "./identitySession.js";
@@ -122,7 +123,7 @@ export default function Scanner() {
 				<p className="scanner-privacy">
 					<LockKeyhole size={19} />
 					<span>
-						Files are read on your device. No upload or account needed. English
+						Files are read on your device. No upload or account needed. Hindi and English
 						PDF, PNG and JPG; up to 10 MB and 5 PDF pages.
 					</span>
 				</p>
@@ -197,6 +198,8 @@ function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 	const [approved, setApproved] = useState({});
 	const [consent, setConsent] = useState(false);
 	const [savedId, setSavedId] = useState(null);
+	const [language, setLanguage] = useState("mixed");
+	const [forceOCR, setForceOCR] = useState(false);
 	const reviewHeading = useRef(null),
 		resultHeading = useRef(null);
 	const busy = scanner.stage === "processing";
@@ -349,6 +352,17 @@ function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 				{!reviewing && !report && !busy && (
 					<>
 						<h2 id="input-title">Add a file, or enter what you can read.</h2>
+						<div className="scanner-reading-options">
+							<label htmlFor="reading-language">Document language</label>
+							<select id="reading-language" value={language} onChange={event => setLanguage(event.target.value)}>
+								{Object.entries(readingLanguages).map(([key, reading]) => <option key={key} value={key}>{reading.label}</option>)}
+							</select>
+							<label className="scanner-check">
+								<input type="checkbox" checked={forceOCR} onChange={event => setForceOCR(event.target.checked)} />
+								<span>Read PDF page images instead of embedded text</span>
+							</label>
+							<small>Use this if a PDF has missing or garbled text. Image files are always read with OCR.</small>
+						</div>
 						<div
 							className={`scanner-drop ${dragging ? "is-dragging" : ""}`}
 							onDragOver={(event) => {
@@ -360,7 +374,7 @@ function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 								event.preventDefault();
 								setDragging(false);
 								if (event.dataTransfer.files.length === 1)
-									void scanner.scan(event.dataTransfer.files[0]);
+									void scanner.scan(event.dataTransfer.files[0], { language, forceOCR });
 							}}
 						>
 							{dragging && (
@@ -382,7 +396,7 @@ function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 								onChange={(event) => {
 									const file = event.target.files?.[0];
 									event.target.value = "";
-									if (file) void scanner.scan(file);
+									if (file) void scanner.scan(file, { language, forceOCR });
 								}}
 								aria-label="Choose certificate file"
 							/>
@@ -415,7 +429,7 @@ function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 						<p role="status">{scanner.status}</p>
 						<progress aria-label="Processing document locally" />
 						<p>
-							The first image scan loads English OCR assets. This can take
+							This scan loads {readingLanguages[language].label} OCR assets from Udaan. This can take
 							longer on a phone.
 						</p>
 						<button type="button" onClick={reset} className="scanner-secondary">
@@ -433,6 +447,16 @@ function Workflow({ type, scheme, privateSet, onKeep, onClearPrivate }) {
 							unknown details blank. Dates use YYYY-MM-DD; income means annual
 							family income.
 						</p>
+						{scanner.pages.some(page => page.needsReview) && <p role="status" className="scanner-reading-warning">Some text was difficult to read. Open the detected text and compare it with your document before using the details.</p>}
+						{scanner.pages.length > 0 && <details className="scanner-read-text">
+							<summary>View all detected text ({scanner.pages.length} {scanner.pages.length === 1 ? "page" : "pages"})</summary>
+							<p>Reading text and filling fields are separate steps. Copy any missed detail into the matching field below. This text stays in this tab until you reset or leave.</p>
+							{scanner.pages.map(page => <section key={page.page} aria-label={`Detected text on page ${page.page}`}>
+								<h3>Page {page.page} · {origins[page.method]}</h3>
+								{page.needsReview && <p className="scanner-reading-warning">Some text was difficult to read. Compare this page carefully with the original.</p>}
+								<pre dir="auto">{page.text.trim() || "No readable text on this page."}</pre>
+							</section>)}
+						</details>}
 						<form
 							autoComplete="off"
 							onSubmit={(event) => {

@@ -33,7 +33,7 @@ export const faqs = [
   {
     id: 'scanner', category: 'Checks & documents',
     question: 'What does the document scanner actually check?',
-    answer: 'It reads text from English PDF, PNG or JPG files on your device so you can review and edit extracted details and inspect date or format observations. Files can be up to 10 MB, with up to 5 pages for PDFs. You choose which supported fields to pass to the eligibility checker. Files are not uploaded or stored by the scanner. A scan cannot prove authenticity, and unreadable text does not mean a document is invalid.',
+    answer: 'It reads Hindi and English text from PDF, PNG or JPG files on your device so you can review the detected text, edit extracted details and inspect date or format observations. Choose the document language before scanning. For a PDF with missing or garbled embedded text, choose to read its page images instead. Files can be up to 10 MB, with up to 5 pages for PDFs. You choose which supported fields to pass to the eligibility checker. Files are not uploaded or stored by the scanner. A scan cannot prove authenticity, and unreadable text does not mean a document is invalid.',
     path: '/scanner', linkLabel: 'Try the document scanner',
   },
   {
