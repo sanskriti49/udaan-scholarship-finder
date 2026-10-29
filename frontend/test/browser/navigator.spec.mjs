@@ -49,11 +49,11 @@ for (const unavailable of [false, true]) test(`adaptive research presents ${unav
  await page.setViewportSize({width:390,height:1000});await page.goto(`/navigator/plan?run=${ID}`);
  if(unavailable){
    const gap=page.getByRole('region',{name:'What could not be established'});await expect(gap).toContainText('official source was attempted');
-   await expect(page.locator('.nv-result-card')).toHaveCount(0);await page.getByText('Why some questions are still open',{exact:true}).click();
+   await expect(page.locator('.rp-card')).toHaveCount(0);await page.getByText('Why some questions are still open',{exact:true}).click();
    await expect(page.getByRole('region',{name:'Evidence answer status'})).toContainText('does not mean you are ineligible');
    await expect(page.locator('body')).not.toContainText('No source interpretation could be validated');
  }else{
-   await expect(page.locator('.nv-result-card')).toHaveCount(1);await expect(page.locator('.nv-next-question')).toHaveCount(0);
+   await expect(page.locator('.rp-card')).toHaveCount(1);await expect(page.getByLabel('Annual family income (₹)', { exact: true })).toHaveCount(0);
    await expect(page.getByRole('region',{name:'Answers from source evidence'})).toContainText('undergraduate engineering');
    await page.getByRole('region',{name:'Answers from source evidence'}).getByRole('button',{name:/^Read source/}).first().click();
    await expect(page.getByRole('dialog').locator('blockquote')).toContainText(f.clause);await page.keyboard.press('Escape');
@@ -64,16 +64,19 @@ for (const unavailable of [false, true]) test(`adaptive research presents ${unav
 for (const width of [390, 1440]) test(`named-scheme replay answers the actual comparison without duplicate income questions at ${width}px`, async ({ page }) => {
  const plan=await namedReplayPlan(), {requests,errors}=await setup(page,{initial:{status:'completed',goal:admissionBrief,plan}});
  await page.setViewportSize({width,height:1000});await page.goto(`/navigator/plan?run=${ID}`);
- await expect(page.locator('.nv-result-card')).toHaveCount(1);
- const card=page.locator('.nv-result-card');await expect(card).toContainText('Central Sector Scholarship Of Top Class Education For SC Students');
- await expect(card.getByRole('region',{name:'Answers from source evidence'})).toContainText('notified institution');
+ await expect(page.locator('.rp-card')).toHaveCount(1);
+ const card=page.locator('.rp-card');await expect(card).toContainText('Central Sector Scholarship Of Top Class Education For SC Students');
+ await expect(card.locator('.rp-hidden-count')).toBeVisible();
+ await card.locator('.rp-more > summary').click();
+ const conditions=card.getByRole('region',{name:'All eligibility findings'});
+ await expect(conditions).toContainText('notified institution');
  await expect(card).toContainText('₹8,00,000');
- await expect(page.locator('.nv-next-question')).toHaveCount(0);
+ await expect(page.getByLabel('Annual family income (₹)', { exact: true })).toHaveCount(0);
  const targets=page.getByRole('region',{name:'The schemes you asked about'});
  await expect(targets).toContainText('Post-Matric SC scholarship');await expect(targets).toContainText('Maharashtra');await expect(targets).toContainText('₹2,50,000');
- await expect(page.locator('.nv-result-card')).not.toContainText('OBC Pre Matric');
+ await expect(page.locator('.rp-card')).not.toContainText('OBC Pre Matric');
  await expect(page.locator('body')).not.toContainText(/You are eligible|Research complete|Funding need: Top Class/);
- const proof=card.getByRole('region',{name:'Answers from source evidence'}).getByRole('button',{name:/^Read source(?: · p\.\d+)?$/}).first();
+ const proof=conditions.getByRole('listitem').filter({hasText:'notified institution'}).getByRole('button',{name:/^Read source/}).first();
  await expect(proof).toBeVisible();await proof.click();
  await expect(page.getByRole('dialog').locator('blockquote')).toContainText('notified institutions');
  await page.keyboard.press('Escape');await noOverflow(page);await page.screenshot({path:test.info().outputPath(`named-scheme-results-${width}.png`),fullPage:true});
@@ -180,11 +183,11 @@ test('saved investigation replay shows useful findings and source proof without 
  const {requests,errors}=await setup(page,{initial:{status:'completed',goal:fixture.question,plan}});
  await page.setViewportSize({width:390,height:900});await page.goto(`/navigator/plan?run=${ID}`);
  await expect(page.getByRole('region',{name:'Your research takeaway'})).toContainText('No suitable scholarship has been established yet');
- const up=page.locator('.nv-result-card').filter({hasText:'Post-matric Scholarship Scheme- Uttar Pradesh'});
+ const up=page.locator('.rp-card').filter({hasText:'Post-matric Scholarship Scheme- Uttar Pradesh'});
  await expect(up.getByRole('region',{name:'Answers from source evidence'})).toContainText('Other Backwards Classes');
  await expect(up).toContainText('school location alone does not establish');
  await expect(page.locator('body')).not.toContainText(/You are eligible|Your income exceeds|VJNT|Swami Vivekananda/);
- await expect(up.locator('.nv-option-details')).not.toHaveAttribute('open');
+ await expect(up.locator('.rp-more')).not.toHaveAttribute('open');
  await page.screenshot({path:test.info().outputPath('navigator-results-mobile.png'),fullPage:true});
  await up.getByRole('button',{name:'Read source',exact:true}).first().click();
  await expect(page.getByRole('dialog').locator('blockquote')).toContainText('Students from Other Backwards Classes');
@@ -207,13 +210,13 @@ for(const width of [390,1440])test(`findings filters separate supported, uncerta
  plan.entries=[unknown,excluded,supported];const{requests,errors}=await setup(page,{initial:{status:'completed',plan}});
  await page.setViewportSize({width,height:900});await page.goto(`/navigator/plan?run=${ID}`);
  await expect(page.getByRole('region',{name:'Your research takeaway'})).toContainText('does not confirm that every eligibility condition is met');
- await expect(page.locator('.nv-result-card').first()).toHaveAttribute('data-finding-group','promising');
- await expect(page.locator('.nv-option-details[open]')).toHaveCount(0);
+ await expect(page.locator('.rp-card').first()).toHaveAttribute('data-finding-group','promising');
+ await expect(page.locator('.rp-more[open]')).toHaveCount(0);
  await expect(page.getByRole('region',{name:'Answers from source evidence'})).toContainText('The guideline accepts Class 12');
  await page.getByRole('button',{name:/Restrictions/}).click();
- await expect(page.locator('.nv-result-card')).toHaveCount(1);await expect(page.locator('.nv-result-blocker')).toContainText('does not fit');
- await page.getByRole('button',{name:/Still to check/}).click();await expect(page.locator('.nv-result-card')).toContainText('unconfirmed related option');
- await page.getByRole('button',{name:/All options/}).click();await expect(page.locator('.nv-result-card')).toHaveCount(3);
+ await expect(page.locator('.rp-card')).toHaveCount(1);await expect(page.locator('.rp-blocker')).toContainText('does not fit');
+ await page.getByRole('button',{name:/Still to check/}).click();await expect(page.locator('.rp-card')).toContainText('unconfirmed related option');
+ await page.getByRole('button',{name:/^All \d/}).click();await expect(page.locator('.rp-card')).toHaveCount(3);
  await page.screenshot({path:test.info().outputPath(`navigator-results-${width}.png`),fullPage:true});await noOverflow(page);
  expect(requests.filter(r=>r.method==='POST')).toEqual([]);expect(errors).toEqual([]);
 });
@@ -221,12 +224,12 @@ for(const width of [390,1440])test(`findings filters separate supported, uncerta
 test('source answers preserve supported, contradictory and unknown conditions behind concise cards',async({page})=>{
  const plan=await answerPlanFixture();const{requests,errors}=await setup(page,{initial:{status:'completed',plan}});
  await page.setViewportSize({width:390,height:844});await page.goto(`/navigator/plan?run=${ID}`);
- await expect(page.locator('.nv-result-badge')).toContainText('Eligibility concern');
- await expect(page.locator('.nv-key-findings')).toContainText('The guideline accepts Class 12');
- await expect(page.locator('.nv-key-findings')).toContainText('restricts this scheme to SC or ST');
- await page.locator('.nv-option-details > summary').click();
+ await expect(page.locator('.rp-tab')).toContainText('Eligibility concern');
+ await expect(page.locator('.rp-findings')).toContainText('The guideline accepts Class 12');
+ await expect(page.locator('.rp-findings')).toContainText('restricts this scheme to SC or ST');
+ await page.locator('.rp-more > summary').click();
  const all=page.getByRole('region',{name:'All eligibility findings'});
- await expect(all).toContainText('fourth-year renewal is allowed');await expect(all).toContainText('Still to confirm');
+ await expect(all).toContainText('fourth-year renewal is allowed');await expect(all).toContainText('To check');
  await all.getByRole('button',{name:'Read source',exact:true}).first().click();
  await expect(page.getByRole('dialog').locator('blockquote')).toContainText('exclusively for students belonging to SC or ST');
  await noOverflow(page);expect(requests.filter(r=>r.method==='POST')).toEqual([]);expect(errors).toEqual([]);
@@ -236,17 +239,17 @@ test('provider failure keeps sources available without inventing a usable answer
  const plan=await answerPlanFixture();plan.answer={...plan.answer,acceptedAssessments:0,assessedConditions:0,status:'partial',reason:'PROVIDER_TIMEOUT',message:'The source explanation could not finish.'};
  for(const e of plan.entries)e.answer.conditions=e.answer.conditions.map(c=>({...c,status:'unknown',basis:'unresolved',evidence:[],explanation:'This is still open.'}));
  await setup(page,{initial:{status:'completed',plan}});await page.goto(`/navigator/plan?run=${ID}`);
- await expect(page.locator('.nv-result-unknown')).toContainText('need evidence to check this option');
- await page.locator('.nv-answer-context > summary').click();await expect(page.getByRole('region',{name:'Evidence answer status'})).toContainText('provider did not respond');
- await page.locator('.nv-option-details > summary').click();await page.getByRole('button',{name:'Read source 1'}).click();
+ await expect(page.locator('.rp-unknown')).toContainText('need evidence to check this option');
+ await openFindingNotes(page);await expect(page.getByRole('region',{name:'Evidence answer status'})).toContainText('provider did not respond');
+ await page.locator('.rp-more > summary').click();await page.getByRole('button',{name:/^Source 1/}).click();
  await expect(page.getByRole('dialog').locator('blockquote')).toContainText('Applicants who have completed Class 12');
 });
 
 test('a rejected assessment cannot erase valid findings or leak into notes',async({page})=>{
  const plan=await answerPlanFixture({invalidRenewal:true});const{requests,errors}=await setup(page,{initial:{status:'completed',plan}});
- await page.goto(`/navigator/plan?run=${ID}`);await expect(page.locator('.nv-key-findings')).toContainText('The guideline accepts Class 12');
+ await page.goto(`/navigator/plan?run=${ID}`);await expect(page.locator('.rp-findings')).toContainText('The guideline accepts Class 12');
  await expect(page.locator('body')).not.toContainText('PRIVATE_UNSUPPORTED');
- await page.locator('.nv-answer-context > summary').click();const notice=page.getByRole('region',{name:'Evidence answer status'});
+ await openFindingNotes(page);const notice=page.getByRole('region',{name:'Evidence answer status'});
  await expect(notice).toContainText('Valid findings were kept');await expect(notice).toContainText('QUOTE_NOT_FOUND');
  await expect(notice.getByRole('link',{name:'Review the saved findings and sources'})).toHaveAttribute('href','#nv-saved-findings');
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Save notes',exact:true}).click();
@@ -345,9 +348,9 @@ test('missing education metadata stays unknown even when an independent income c
  const tools=createResearchTools({repository:fixture.repository,profile:{familyIncome:0},retrieval,includeContext:true});
  const found=await tools.execute('findGuidelinePassages',{schemeId:SCHEME_ID,query:'income'});const plan=await tools.execute('finishInvestigation',{selections:[{schemeId:SCHEME_ID,evidenceIds:found.passages.map(p=>p.id)}]});plan.intent=report;
  await setup(page,{initial:{status:'completed',plan}});await page.setViewportSize({width:390,height:844});await page.goto(`/navigator/plan?run=${ID}`);
- await expect(page.locator('.nv-result-badge')).toContainText('More information needed');
- await page.locator('.nv-option-details > summary').click();await expect(page.locator('.nv-option-details')).toContainText('Education level: UG');
- await page.getByText('Dates & recorded checks',{exact:true}).click();await expect(page.locator('.nv-card-facts')).toContainText('1 passed');
+ await expect(page.locator('.rp-tab')).toContainText('More information needed');
+ await page.locator('.rp-more > summary').click();await expect(page.locator('.rp-more')).toContainText('Education level: UG');
+ await expect(page.locator('.rp-facts')).toContainText('1 passed');
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Save notes',exact:true}).click();expect(await readFile(await(await download).path(),'utf8')).toContain('Still to check: Confirm: Education level: UG');await noOverflow(page);
 });
 async function setup(page, { signedIn = true, initial = null, stages = ["ready", "awaiting_input"], delay = 0, available = true, provider = null, malformed = false } = {}) {
@@ -407,8 +410,8 @@ test("unresolved semantic conditions remain visible and exportable instead of be
 	plan.intent = { status: "interpreted", reason: null, constraints: ["fourth year", "renewal only"], questions: ["Can I renew in fourth year?"], unresolved: ["fourth year", "renewal only"], ambiguities: [] };
 	const { requests, errors } = await setup(page, { initial: { status: "completed", plan } });
 	await page.goto(`/navigator/plan?run=${ID}`);
-		await page.locator('.nv-research-details > summary').click();
-	await expect(page.locator(".nv-status-note[role=status]")).toContainText("conditions may still need checking"); await expect(page.getByRole("region", { name: "Request interpretation" })).toContainText("fourth year"); await expect(page.getByRole("region", { name: "Request interpretation" })).toContainText("renewal only");
+		await page.locator('.rp-research > summary').click();
+	await expect(page.getByRole("region", { name: "Request interpretation" })).toContainText("These conditions have not been resolved."); await expect(page.getByRole("region", { name: "Request interpretation" })).toContainText("fourth year"); await expect(page.getByRole("region", { name: "Request interpretation" })).toContainText("renewal only");
 	const downloaded = page.waitForEvent("download"); await page.getByRole("button", { name: "Save notes" }).click();
 	const file = await downloaded, content = await readFile(await file.path(), "utf8"); expect(content).toContain("Condition not resolved by catalogue filters: fourth year");
 	await noOverflow(page); expect(requests.filter(request => request.method === "POST")).toEqual([]); expect(errors).toEqual([]);
@@ -442,7 +445,7 @@ for (const width of [390, 1440]) {
 		await noOverflow(page); await page.screenshot({ path: test.info().outputPath(`navigator-empty-evidence-${width}.png`), fullPage: true });
 		await recovery.click(); await expect(page).toHaveURL(new RegExp(`/navigator/plan\\?run=${ID}`));
 		await expect(page.getByRole("heading", { name: "Here’s what we found." })).toBeVisible();
-		await expect(page.locator(".nv-status-note[role=status]")).toContainText("without AI assistance");
+		await expect(page.locator(".rp-notes[role=status]")).toContainText("without AI assistance");
 		expect(getRun().usage.modelCalls).toBe(0); expect(requests.filter(request => request.path.endsWith("/notes"))).toHaveLength(0);
 		expect(requests.filter(request => request.path.endsWith("/catalogue"))).toHaveLength(1);
 		await noOverflow(page); expect(errors).toEqual([]);
@@ -459,8 +462,8 @@ for (const [width, status, code] of [[390, "quota_exhausted", "PROVIDER_QUOTA"],
 		if (code === "PROVIDER_QUOTA") await expect(page.getByRole("button", { name: "Continue research" })).toBeDisabled();
 		await noOverflow(page); await page.screenshot({ path: test.info().outputPath(`navigator-recovery-${width}.png`), fullPage: true });
 		await action.click(); await expect(page).toHaveURL(new RegExp(`/navigator/plan\\?run=${ID}`));
-		await expect(page.locator(".nv-status-note[role=status]")).toContainText("Research paused");
-		await expect(page.locator(".nv-status-note[role=status]")).toContainText("without another AI call"); await expect(page.locator(".nv-plan-card")).toHaveCount(1);
+		await expect(page.locator(".rp-notes[role=status]")).toContainText("Research paused");
+		await expect(page.locator(".rp-notes[role=status]")).toContainText("without another AI call"); await expect(page.locator(".rp-card")).toHaveCount(1);
 		expect(requests.filter(request => request.path.endsWith("/advance"))).toHaveLength(0);
 		expect(requests.filter(request => request.method === "POST").map(request => request.path)).toEqual([`/runs/${ID}/notes`]);
 		const download = page.waitForEvent("download"); await page.getByRole("button", { name: "Save notes" }).click();
@@ -477,15 +480,15 @@ for (const width of [390, 1440]) {
 		entry.status = "unknown"; entry.stale = true; entry.statusReason = "An official source returned different content. Recorded conditions and dates need review.";
 		const { requests, errors } = await setup(page, { initial: { status: "completed", plan, events: [{ sequence: 1, type: "tool_completed", tool: "checkOfficialSource" }] } });
 		await page.goto(`/navigator/plan?run=${ID}`);
-		await page.locator('.nv-option-details > summary').click(); await page.getByText("Dates & recorded checks", { exact: true }).click();
-		await expect(page.locator(".nv-plan-card")).toContainText("Source content changed"); await expect(page.locator(".nv-plan-card")).toContainText("Recorded conditions and dates need review");
+		await page.locator('.rp-more > summary').click();
+		await expect(page.locator(".rp-card")).toContainText("Source content changed"); await expect(page.locator(".rp-card")).toContainText("Recorded conditions and dates need review");
 		await noOverflow(page); await page.screenshot({ path: test.info().outputPath(`navigator-source-check-${width}.png`), fullPage: true });
-		await page.getByRole("button", { name: "Read source 1" }).click();
+		await page.getByRole("button", { name: /^Source 1/ }).click();
 		await expect(page.getByRole("dialog")).toContainText("Source content changed"); await expect(page.getByRole("dialog")).toContainText("Attempt recorded"); await noOverflow(page);
 		await page.keyboard.press("Escape");
 		const downloaded = page.waitForEvent("download"); await page.getByRole("button", { name: "Save notes" }).click();
 		const file = await downloaded, text = await readFile(await file.path(), "utf8"); expect(text).toContain("Source content changed"); expect(text).toContain("2026-10-22T08:00:00.000Z");
-		await page.locator('.nv-research-details > summary').click(); await page.getByRole("link", { name: "Open activity history" }).click(); await page.locator(".nv-activity-disclosure > summary").click(); await expect(page.getByText("Check the official page", { exact: true })).toBeVisible();
+		await page.locator('.rp-research > summary').click(); await page.getByRole("link", { name: "Open activity history" }).click(); await page.locator(".nv-activity-disclosure > summary").click(); await expect(page.getByText("Check the official page", { exact: true })).toBeVisible();
 		expect(requests.filter(r => r.method === "POST")).toHaveLength(0); expect(errors).toEqual([]);
 	});
 
@@ -498,18 +501,18 @@ for (const width of [390, 1440]) {
 		await start(page); await expect(page.getByRole("button", { name: "Skip for now" })).toBeVisible();
 		await noOverflow(page); await page.getByRole("button", { name: "Use selected details" }).click(); await expect(page.getByRole("alert")).toContainText("Provide a requested detail");
 		await page.getByRole("button", { name: "Skip for now" }).click(); await page.getByRole("link", { name: "Open research plan" }).click();
-		await expect(page.locator(".nv-plan-card")).toHaveCount(1);
-		await page.locator('.nv-option-details > summary').click(); await page.getByText('Dates & recorded checks', { exact: true }).click();
-		await expect(page.locator(".nv-card-facts")).toContainText("Recorded rule checks");
-		await page.getByRole("button", { name: "Read source 1" }).click(); const drawer = page.getByRole("dialog");
+		await expect(page.locator(".rp-card")).toHaveCount(1);
+		await page.locator('.rp-more > summary').click();
+		await expect(page.locator(".rp-facts")).toContainText("Rule checks");
+		await page.getByRole("button", { name: /^Source 1/ }).click(); const drawer = page.getByRole("dialog");
 		await expect(drawer).toContainText("Page 1"); await expect(drawer.locator("blockquote")).toContainText("Annual family income");
 		await expect(drawer).toContainText("Not performed by this investigation");
 		const sourceUrl = new URL(await drawer.getByRole("link", { name: "Open original source" }).getAttribute("href"));
 		expect(sourceUrl.hash).toContain(':~:text='); sourceUrl.hash = ''; expect(sourceUrl.href).toBe("https://example.invalid/synthetic-guideline");
 		await expect(page.getByRole("button", { name: "Close source note" })).toBeFocused(); await page.keyboard.press("Shift+Tab"); await expect(drawer.getByRole("link")).toBeFocused();
-		await noOverflow(page); await page.keyboard.press("Escape"); await expect(page.getByRole("button", { name: "Read source 1" })).toBeFocused();
-		await page.locator('.nv-research-details > summary').click(); await page.getByText('Optional application checklist', { exact: true }).click();
-		await page.getByRole("checkbox", { name: "Read the current official guideline" }).check(); await expect(page.locator(".nv-checklist-count")).toHaveText("1 of 3 marked");
+		await noOverflow(page); await page.keyboard.press("Escape"); await expect(page.getByRole("button", { name: /^Source 1/ })).toBeFocused();
+		await page.locator('.rp-research > summary').click();
+		await page.getByRole("checkbox", { name: "Read the current official guideline" }).check(); await expect(page.getByRole("progressbar", { name: "Checklist progress" })).toHaveAttribute("aria-valuenow", "1");
 		await page.screenshot({ path: test.info().outputPath(`navigator-plan-${width}.png`), fullPage: true });
 		const downloaded = page.waitForEvent("download"); await page.getByRole("button", { name: "Save notes" }).click();
 		const file = await downloaded, text = await readFile(await file.path(), "utf8"); expect(text).toContain("SYNTHETIC TEST ONLY"); expect(text).toContain("https://example.invalid/synthetic-guideline");
@@ -616,9 +619,9 @@ test('failed eligibility is a clearly explained rejected result, never a recomme
   await setup(page, { initial: { status: 'completed', plan } });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`/navigator/plan?run=${ID}`);
-  const card = page.locator('.nv-plan-card').filter({ hasText: fixture.scheme.title });
+  const card = page.locator('.rp-card').filter({ hasText: fixture.scheme.title });
   await expect(card).toContainText('Does not fit');
-  await card.locator('.nv-option-details > summary').click(); await expect(card).toContainText('Why it does not fit'); await expect(card).toContainText('Annual family income');
+  await card.locator('.rp-more > summary').click(); await expect(card).toContainText('Why it does not fit'); await expect(card).toContainText('Annual family income');
   await expect(card).not.toContainText('LEAD'); await expect(card).not.toContainText('Promising candidate');
   await expect(page.getByText('Catalogue research ready', { exact: true })).toHaveCount(0);
   await noOverflow(page);
@@ -714,3 +717,8 @@ test('a failed retry cleanup keeps the question visible and never starts replace
  await expect(page).toHaveURL(new RegExp(`/navigator/investigation\\?run=${ID}$`));
  expect(cancellations).toBe(1); expect(requests.filter(r=>r.method==='POST')).toEqual([]);
 });
+
+async function openFindingNotes(page) {
+ const notes = page.locator(".rp-panel");
+ if (await notes.getAttribute("open") === null) await notes.locator(":scope > summary").click();
+}
