@@ -1,3 +1,4 @@
+import { STATE_ALIASES } from "./stateVocabulary.js";
 /**
  * Deterministic Rule Evaluator for Udaan
  * Evaluates recursive policy trees using Kleene three-state logic.
@@ -125,50 +126,6 @@ function evaluateCondition(actual, operator, target, field) {
 		return { result: true };
 	}
 
-	const STATE_ALIASES = {
-		ap: "andhra pradesh",
-		ar: "arunachal pradesh",
-		as: "assam",
-		br: "bihar",
-		cg: "chhattisgarh",
-		ch: "chandigarh",
-		ga: "goa",
-		gj: "gujarat",
-		hr: "haryana",
-		hp: "himachal pradesh",
-		jh: "jharkhand",
-		ka: "karnataka",
-		kl: "kerala",
-		mp: "madhya pradesh",
-		mh: "maharashtra",
-		mn: "manipur",
-		ml: "meghalaya",
-		mz: "mizoram",
-		nl: "nagaland",
-		od: "odisha",
-		or: "odisha",
-		orissa: "odisha",
-		pb: "punjab",
-		rj: "rajasthan",
-		sk: "sikkim",
-		tn: "tamil nadu",
-		ts: "telangana",
-		tg: "telangana",
-		tr: "tripura",
-		up: "uttar pradesh",
-		uk: "uttarakhand",
-		ut: "uttarakhand",
-		uttaranchal: "uttarakhand",
-		wb: "west bengal",
-		an: "andaman and nicobar islands",
-		dh: "dadra and nagar haveli and daman and diu",
-		dl: "delhi",
-		"delhi ncr": "delhi",
-		jk: "jammu and kashmir",
-		la: "ladakh",
-		ld: "lakshadweep",
-		py: "puducherry",
-	};
 	const normActual = field === "state" ? STATE_ALIASES[actualStr] || actualStr : actualStr;
 	const normTarget = field === "state" ? STATE_ALIASES[targetStr] || targetStr : targetStr;
 
@@ -470,17 +427,8 @@ function buildFallbackRules(scholarship) {
 		});
 	}
 
-	if (scholarship.state && scholarship.state !== "All India") {
-		rules.push({
-			id: "rule_state",
-			field: "state",
-			operator: "EQ",
-			targetValue: scholarship.state,
-			isMandatory: true,
-			description: `Domicile required: ${scholarship.state}`,
-			failMessage: `Candidate domicile does not match required state of ${scholarship.state}`,
-		});
-	}
+	// Catalogue jurisdiction is not a domicile eligibility condition. Residence
+	// restrictions must be recorded in explicit rules or a policy tree.
 
 	if (scholarship.level) {
 		rules.push({

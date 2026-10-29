@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { schemas } from "../../src/scanner/extract.js";
+import { readFile } from "node:fs/promises";
 
 async function chooseDocumentType(page, type) {
   await page.getByLabel("Document type", { exact: true }).selectOption(type);
@@ -77,6 +78,74 @@ function assemblePdf(objects) {
     )}trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${start}\n%%EOF`;
   return Buffer.from(out);
 }
+
+test("Hindi and mixed-language image OCR fills Hindi fields and exposes all text privately", async ({ page }, testInfo) => {
+  const requests = [], errors = [];
+  page.on("request", request => requests.push({ url: request.url(), method: request.method(), body: request.postData() }));
+  page.on("pageerror", error => errors.push(error.message));
+  await open(page);
+  await expect(page.getByLabel("Document language", { exact: true })).toHaveValue("mixed");
+  const buffer = await readFile(new URL("../fixtures/hindi-english-income.png", import.meta.url));
+  for (const language of ["mixed", "hin"]) {
+    await page.getByLabel("Document language", { exact: true }).selectOption(language);
+    await page.locator("#certificate").setInputFiles({ name: "synthetic-hindi.png", mimeType: "image/png", buffer });
+    await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("अनिल कुमार", { timeout: 90000 });
+    await expect(page.getByLabel("Issue date", { exact: true })).toHaveValue("2025-01-14");
+    await expect(page.getByLabel("Annual family income (INR)", { exact: true })).toHaveValue("250000");
+    await expect(page.getByLabel("Financial year / applicable period", { exact: true })).toHaveValue("2025-2026");
+    await page.getByText("View all detected text (1 page)", { exact: true }).click();
+    await expect(page.locator(".scanner-read-text pre")).toContainText("अनिल कुमार");
+    await expect(page.locator(".scanner-read-text pre")).toContainText("रमेश कुमार");
+    await page.getByLabel("Name on this document", { exact: true }).fill("अनिल कुमार शर्मा");
+    await expect(page.locator(".scanner-read-text pre")).not.toContainText("शर्मा");
+    for (const width of [320, 390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+    if (language === "mixed") await page.locator(".scanner-workspace").screenshot({ path: testInfo.outputPath("hindi-review.png") });
+    await expect.poll(() => page.evaluate(() => window.__activeWorkers)).toBe(0);
+    await page.getByRole("button", { name: "Reset check" }).click();
+    await expect(page.locator(".scanner-read-text")).toHaveCount(0);
+  }
+  expect(requests.every(request => request.method === "GET" && !request.body && new URL(request.url).hostname === "localhost")).toBe(true);
+  expect(requests.some(request => request.url.endsWith("hin.traineddata.gz"))).toBe(true);
+  expect(await page.evaluate(async () => ({ local: localStorage.length, session: sessionStorage.length, databases: (await indexedDB.databases()).length }))).toEqual({ local: 0, session: 0, databases: 0 });
+  expect(errors).toEqual([]);
+});
+
+test("PDF page-image reading recovers Hindi hidden by an incomplete English text layer", async ({ page }) => {
+  await open(page);
+  const buffer = await readFile(new URL("../fixtures/hindi-english-income.png", import.meta.url));
+  const jpeg = await page.evaluate(async base64 => {
+    const image = new Image();
+    image.src = `data:image/png;base64,${base64}`;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width; canvas.height = image.height;
+    canvas.getContext("2d").drawImage(image, 0, 0);
+    return canvas.toDataURL("image/jpeg", 0.98).split(",")[1];
+  }, buffer.toString("base64"));
+  const hex = Buffer.from(jpeg, "base64").toString("hex") + ">";
+  const commands = "q 560 0 0 367.5 26 300 cm /Im0 Do Q BT /F1 8 Tf 20 20 Td (This incomplete text layer contains only a long scanner watermark and no certificate details.) Tj ET";
+  const hybrid = assemblePdf([
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 5 0 R >> /Font << /F1 6 0 R >> >> /Contents 4 0 R >>",
+    `<< /Length ${commands.length} >>\nstream\n${commands}\nendstream`,
+    `<< /Type /XObject /Subtype /Image /Width 1600 /Height 1050 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter [/ASCIIHexDecode /DCTDecode] /Length ${hex.length} >>\nstream\n${hex}\nendstream`,
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ]);
+  await page.locator("#certificate").setInputFiles({ name: "synthetic-hybrid.pdf", mimeType: "application/pdf", buffer: hybrid });
+  await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("");
+  await page.getByText("View all detected text (1 page)", { exact: true }).click();
+  await expect(page.locator(".scanner-read-text pre")).toContainText("incomplete text layer");
+  await page.getByRole("button", { name: "Reset check" }).click();
+  await page.getByRole("checkbox", { name: "Read PDF page images instead of embedded text" }).check();
+  await page.locator("#certificate").setInputFiles({ name: "synthetic-hybrid.pdf", mimeType: "application/pdf", buffer: hybrid });
+  await expect(page.getByLabel("Name on this document", { exact: true })).toHaveValue("अनिल कुमार", { timeout: 90000 });
+  await expect(page.getByLabel("Annual family income (INR)", { exact: true }), await page.locator(".scanner-read-text pre").textContent()).toHaveValue("250000");
+  await expect.poll(() => page.evaluate(() => window.__activeWorkers)).toBe(0);
+});
 test("manual review, edit, evidence and reset at mobile width", async ({
   page,
 }) => {
@@ -202,7 +271,7 @@ test("real local English image OCR and asset isolation", async ({ page }) => {
   await expect(
     page.getByLabel("Annual family income (INR)", { exact: true }),
   ).toHaveValue("250000", { timeout: 100000 });
-  await expect(page.getByLabel("Issue date", { exact: true })).toHaveValue(
+  await expect(page.getByLabel("Issue date", { exact: true }), await page.locator(".scanner-read-text pre").textContent()).toHaveValue(
     "2025-01-14",
   );
   expect(

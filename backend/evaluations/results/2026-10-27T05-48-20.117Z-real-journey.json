@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "recordedAt": "2026-10-27T05:48:20.084Z",
+  "case": "pragati-degree-real-catalogue",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "question": "I am a girl admitted to the first year of B.Tech at an AICTE-approved college. My annual family income is 500000 rupees. Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+  "success": false,
+  "stages": {
+    "interpretation": true,
+    "candidateSelection": false,
+    "policyRetrieval": false,
+    "citedAnswer": false
+  },
+  "firstUnverifiedStage": "candidateSelection",
+  "intent": {
+    "objective": "Research AICTE Pragati (Technical Degree) and check eligibility for a first-year female B.Tech student with an annual family income of 500,000 rupees.",
+    "searchQuery": "AICTE Pragati",
+    "constraints": [
+      {
+        "field": "gender",
+        "role": "applicant_current",
+        "operator": "include",
+        "value": "Female",
+        "source": {
+          "messageIndex": 0,
+          "quote": "I am a girl"
+        }
+      },
+      {
+        "field": "studyYear",
+        "role": "applicant_current",
+        "operator": "include",
+        "value": 1,
+        "source": {
+          "messageIndex": 0,
+          "quote": "first year"
+        }
+      },
+      {
+        "field": "educationLevel",
+        "role": "funding",
+        "operator": "include",
+        "value": "UG",
+        "source": {
+          "messageIndex": 0,
+          "quote": "B.Tech"
+        }
+      },
+      {
+        "field": "incomeCeiling",
+        "role": "applicant_current",
+        "operator": "include",
+        "value": 500000,
+        "source": {
+          "messageIndex": 0,
+          "quote": "500000 rupees"
+        }
+      },
+      {
+        "field": "scheme",
+        "role": "scholarship",
+        "operator": "include",
+        "value": "AICTE Pragati (Technical Degree)",
+        "source": {
+          "messageIndex": 0,
+          "quote": "AICTE Pragati (Technical Degree)"
+        }
+      }
+    ],
+    "questions": [],
+    "ambiguities": []
+  },
+  "candidateOrder": [
+    {
+      "schemeId": "6aa58e923d52461bb6eb9e9a",
+      "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+      "qualification": "needs_verification"
+    }
+  ],
+  "studentFindings": [],
+  "steps": [
+    {
+      "advancement": 1,
+      "status": "ready",
+      "elapsedMs": 3461,
+      "modelCalls": 1,
+      "toolCalls": 0,
+      "latestEvent": {
+        "sequence": 2,
+        "type": "model_completed"
+      },
+      "error": null
+    },
+    {
+      "advancement": 2,
+      "status": "ready",
+      "elapsedMs": 953,
+      "modelCalls": 1,
+      "toolCalls": 1,
+      "latestEvent": {
+        "sequence": 4,
+        "type": "tool_completed",
+        "tool": "searchScholarships"
+      },
+      "error": null
+    },
+    {
+      "advancement": 3,
+      "status": "ready",
+      "elapsedMs": 520,
+      "modelCalls": 1,
+      "toolCalls": 1,
+      "latestEvent": {
+        "sequence": 4,
+        "type": "tool_completed",
+        "tool": "searchScholarships"
+      },
+      "error": null
+    },
+    {
+      "advancement": 4,
+      "status": "ready",
+      "elapsedMs": 1076,
+      "modelCalls": 1,
+      "toolCalls": 2,
+      "latestEvent": {
+        "sequence": 6,
+        "type": "tool_completed",
+        "tool": "findGuidelinePassages",
+        "resultCount": 4
+      },
+      "error": null
+    },
+    {
+      "advancement": 5,
+      "status": "ready",
+      "elapsedMs": 909,
+      "modelCalls": 1,
+      "toolCalls": 2,
+      "latestEvent": {
+        "sequence": 6,
+        "type": "tool_completed",
+        "tool": "findGuidelinePassages",
+        "resultCount": 4
+      },
+      "error": null
+    },
+    {
+      "advancement": 6,
+      "status": "ready",
+      "elapsedMs": 1642,
+      "modelCalls": 1,
+      "toolCalls": 3,
+      "latestEvent": {
+        "sequence": 8,
+        "type": "tool_completed",
+        "tool": "evaluateMatches"
+      },
+      "error": null
+    },
+    {
+      "advancement": 7,
+      "status": "ready",
+      "elapsedMs": 1581,
+      "modelCalls": 1,
+      "toolCalls": 4,
+      "latestEvent": {
+        "sequence": 10,
+        "type": "tool_completed",
+        "tool": "requestClarification"
+      },
+      "error": null
+    },
+    {
+      "advancement": 8,
+      "status": "awaiting_input",
+      "elapsedMs": 757,
+      "modelCalls": 1,
+      "toolCalls": 4,
+      "latestEvent": {
+        "sequence": 10,
+        "type": "tool_completed",
+        "tool": "requestClarification"
+      },
+      "error": null
+    }
+  ],
+  "elapsedMs": 11090,
+  "usage": {
+    "modelCalls": 1,
+    "toolCalls": 4,
+    "reportedModelCalls": 1,
+    "inputTokens": 862,
+    "outputTokens": 442,
+    "tokenUsageIncomplete": false
+  },
+  "limits": {
+    "maxModelCalls": 3,
+    "maxToolCalls": 8
+  },
+  "status": "awaiting_input",
+  "error": null,
+  "plan": null,
+  "cleanup": "temporary run removed; quota charges retained",
+  "transport": [
+    {
+      "request": 1,
+      "mode": "intent",
+      "httpStatus": 200,
+      "responseHeadersMs": 2213
+    }
+  ],
+  "actualRequests": 1
+}

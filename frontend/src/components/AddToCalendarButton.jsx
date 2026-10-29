@@ -35,6 +35,7 @@ export default function AddToCalendarButton({
 		e.stopPropagation();
 		setIsOpen(false);
 		const url = buildGoogleCalendarUrl(scholarship);
+		if (!url) { toast.info("A closing date hasn't been recorded. Check the provider's current application page."); return; }
 		window.open(url, "_blank", "noopener,noreferrer");
 		toast.success("Opening Google Calendar template with pre-set deadline reminders!");
 	};
@@ -42,7 +43,7 @@ export default function AddToCalendarButton({
 	const handleIcsDownload = (e) => {
 		e.stopPropagation();
 		setIsOpen(false);
-		downloadIcsFile(scholarship);
+		if (!downloadIcsFile(scholarship)) { toast.info("A closing date hasn't been recorded. Check the provider's current application page."); return; }
 		setDownloaded(true);
 		setTimeout(() => setDownloaded(false), 3000);
 		toast.success("Calendar file (.ics) downloaded with automatic 7-day & 48-hr alarms!");

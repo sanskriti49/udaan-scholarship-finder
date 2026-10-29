@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "synthetic": true,
+  "comparisonType": "fixed-evidence component comparison; not a full discovery benchmark",
+  "calls": 1,
+  "maxCalls": 1,
+  "stopped": "PROVIDER_UNAVAILABLE",
+  "summaries": [
+    {
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "reservedCalls": 1,
+      "responsesValidated": 0,
+      "expectedConditions": 0,
+      "correctConditions": 0,
+      "unsupportedClaims": 0,
+      "unsupportedProposals": 0,
+      "unknownConditions": 0,
+      "meanLatencyMs": 5419,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "usageIncomplete": true,
+      "estimatedCostUsd": null
+    }
+  ],
+  "coverage": [
+    {
+      "caseId": "category-exclusion",
+      "answerPacketAvailable": true,
+      "excludedByRecordedRules": false,
+      "omittedCandidates": 0
+    }
+  ],
+  "results": [
+    {
+      "caseId": "category-exclusion",
+      "provider": "gemini",
+      "model": "gemini-3.8-flash",
+      "stage": "research_intent",
+      "inputFingerprint": "cdf976aa89e4b1c0ac6ddcd76f3f3c61abbc50b8d7468fd82240ff7eca0d77be",
+      "inputCharacters": 4719,
+      "charged": true,
+      "pricing": "account billing not verified",
+      "estimatedCostUsd": null,
+      "error": "PROVIDER_UNAVAILABLE",
+      "providerDiagnostics": {
+        "reason": "service_unavailable",
+        "httpStatus": 503,
+        "providerCode": "other"
+      },
+      "latencyMs": 5419
+    }
+  ],
+  "execution": "live-api-comparison",
+  "dataset": "synthetic policies",
+  "approvedMaximumRequests": 1,
+  "configuredResponseWindowMs": 45000,
+  "modelMetadataCheck": {
+    "inference": false,
+    "httpStatus": 200,
+    "elapsedMs": 392
+  },
+  "liveGenerationEstablished": false,
+  "limitations": [
+    "One synthetic intent-only generation attempt was authorized and reserved.",
+    "The generation endpoint returned HTTP 503; no automatic retry, answer synthesis or provider fallback was performed.",
+    "The earlier saved timeout cannot retrospectively be attributed to this service-error response."
+  ]
+}

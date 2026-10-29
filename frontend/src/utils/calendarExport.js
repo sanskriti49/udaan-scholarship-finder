@@ -1,5 +1,8 @@
-import { formatGrant } from "./formatGrant";
-import { cleanOfficialUrl } from "./formatEvidence";
+import { formatGrant } from "./formatGrant.js";
+import { cleanOfficialUrl } from "./formatEvidence.js";
+import { documentItems } from "./evidencePresentation.js";
+
+const officialUrl = scholarship => cleanOfficialUrl(scholarship.applicationLink) || cleanOfficialUrl(scholarship.sourceUrl);
 
 /**
  * Formats a Date object to RFC 5545 UTC timestamp format (YYYYMMDDTHHMMSSZ).
@@ -12,25 +15,21 @@ function toIcsTimestamp(date) {
 
 /**
  * Computes start and end dates for a scholarship deadline event.
- * If deadline is missing or invalid, schedules the event for 14 days from today.
+ * Unknown deadlines stay unknown; never manufacture an application date.
  */
 export function getScholarshipEventDates(deadline) {
-	const now = new Date();
-	let eventDate;
-
-	if (deadline) {
-		const parsed = new Date(deadline);
-		if (!isNaN(parsed.getTime())) {
-			eventDate = parsed;
-		}
+	if (!(deadline instanceof Date) && (typeof deadline !== 'string' || !deadline.trim())) return null;
+	// Date parsing rolls impossible ISO dates into the next month. Such a value
+	// is not a recorded deadline and must not become a convincing calendar event.
+	const iso = typeof deadline === 'string' && deadline.trim().match(/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/u);
+	if (iso) {
+		const [, year, month, day] = iso.map(Number);
+		if (month < 1 || month > 12 || day < 1 || day > new Date(Date.UTC(year, month, 0)).getUTCDate()) return null;
 	}
+	const eventDate = new Date(deadline);
+	if (Number.isNaN(eventDate.getTime())) return null;
 
-	if (!eventDate) {
-		// Default to 14 days from now if no deadline is specified
-		eventDate = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
-	}
-
-	// Deadline day: Event starts at 09:00 AM IST (03:30 AM UTC) and ends at 11:59 PM IST (06:29 PM UTC)
+	// A local-day reminder, not a claim about the provider's precise closing time.
 	const start = new Date(eventDate);
 	start.setHours(9, 0, 0, 0);
 
@@ -45,24 +44,23 @@ export function getScholarshipEventDates(deadline) {
  */
 export function buildEventDescription(scholarship) {
 	const grant = formatGrant(scholarship.amount);
-	const link = cleanOfficialUrl(scholarship.applicationLink || scholarship.sourceUrl || "https://scholarships.gov.in");
-	const org = scholarship.organization || "Official Scholarship Portal";
-	const state = scholarship.state || "All India";
+	const link = officialUrl(scholarship);
+	const org = scholarship.organization || "Not recorded";
+	const state = scholarship.state || "Not recorded";
+	const docs = documentItems(scholarship).filter(doc => doc.sourceCited && doc.mandatory);
 
 	return [
 		`🎓 Application Deadline: ${scholarship.title}`,
 		`🏛️ Organization: ${org}`,
 		`💰 Award Amount: ${grant.main} ${grant.period ? `(${grant.period})` : ""}`,
 		`📍 State / Scope: ${state}`,
-		`🔗 Official Portal: ${link}`,
+		`🔗 Official Portal: ${link || 'Not recorded'}`,
 		"",
-		"📋 PRE-FLIGHT DOCUMENT READINESS CHECKLIST:",
-		"• Family Income Certificate (Issued in current FY on/after April 1)",
-		"• College Bonafide Certificate with Institute 6-digit AISHE Code",
-		"• Marksheet / Academic Records (Name must match Aadhaar card)",
-		"• Bank Passbook (Aadhaar-seeded & NPCI DBT mapped active savings account)",
+		"📋 Recorded document requirements — confirm current provider instructions:",
+		...(docs.length ? docs.map(doc => `• ${doc.name || doc.code} — ${cleanOfficialUrl(doc.evidence.url)}`)
+			: ['Document requirements are not recorded with supporting citations.']),
 		"",
-		"🛡️ Tracked & verified via Udaan Scholarship Finder (Zero-PII Scanner)",
+		"Saved from Udaan's catalogue. Confirm the closing date and time with the provider.",
 	].join("\n");
 }
 
@@ -71,11 +69,13 @@ export function buildEventDescription(scholarship) {
  * Opens pre-filled calendar creation in browser / Google Calendar app.
  */
 export function buildGoogleCalendarUrl(scholarship) {
-	const { start, end } = getScholarshipEventDates(scholarship.deadline);
+	const dates = getScholarshipEventDates(scholarship.deadline);
+	if (!dates) return null;
+	const { start, end } = dates;
 	const title = `[Deadline] Apply to ${scholarship.title}`;
 	const description = buildEventDescription(scholarship);
-	const link = cleanOfficialUrl(scholarship.applicationLink || scholarship.sourceUrl || "https://scholarships.gov.in");
-	const location = `${scholarship.state || "All India"} · ${link}`;
+	const link = officialUrl(scholarship);
+	const location = [scholarship.state, link].filter(Boolean).join(' · ');
 
 	const params = new URLSearchParams({
 		action: "TEMPLATE",
@@ -94,7 +94,9 @@ export function buildGoogleCalendarUrl(scholarship) {
  * Embeds dual alarms: 7 days and 2 days prior to deadline.
  */
 export function buildIcsContent(scholarship) {
-	const { start, end } = getScholarshipEventDates(scholarship.deadline);
+	const dates = getScholarshipEventDates(scholarship.deadline);
+	if (!dates) return null;
+	const { start, end } = dates;
 	const now = new Date();
 	const uid = `udaan-${scholarship._id || scholarship.id || Date.now()}-${start.getTime()}@udaan.in`;
 	const title = `[Deadline] Apply to ${scholarship.title}`.replace(/[,;]/g, " ");
@@ -103,9 +105,9 @@ export function buildIcsContent(scholarship) {
 		.replace(/;/g, "\\;")
 		.replace(/,/g, "\\,")
 		.replace(/\n/g, "\\n");
-	const location = `${scholarship.state || "All India"} · Official Online Portal`
+	const location = (scholarship.state || "Location not recorded")
 		.replace(/[,;]/g, " ");
-	const url = cleanOfficialUrl(scholarship.applicationLink || scholarship.sourceUrl || "https://scholarships.gov.in");
+	const url = officialUrl(scholarship);
 
 	return [
 		"BEGIN:VCALENDAR",
@@ -120,7 +122,7 @@ export function buildIcsContent(scholarship) {
 		`DTEND:${toIcsTimestamp(end)}`,
 		`SUMMARY:${title}`,
 		`DESCRIPTION:${description}`,
-		`URL:${url}`,
+		...(url ? [`URL:${url}`] : []),
 		`LOCATION:${location}`,
 		"STATUS:CONFIRMED",
 		// Alarm 1: 7 days before
@@ -145,6 +147,7 @@ export function buildIcsContent(scholarship) {
  */
 export function downloadIcsFile(scholarship) {
 	const icsContent = buildIcsContent(scholarship);
+	if (!icsContent) return false;
 	const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement("a");
@@ -161,4 +164,5 @@ export function downloadIcsFile(scholarship) {
 	link.click();
 	document.body.removeChild(link);
 	URL.revokeObjectURL(url);
+	return true;
 }

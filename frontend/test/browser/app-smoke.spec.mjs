@@ -11,6 +11,64 @@ const scholarship = {
   requiredDocuments: [{ code: "INCOME_CERT", name: "Income certificate", mandatory: true }],
 };
 
+for (const path of ['/scholarships', '/bookmarks']) test(`initial ${path} load recovers from database startup without refreshing`, async ({ page }) => {
+  const attempted = new Map(), succeeded = new Set(), writes = [];
+  let readyAt;
+  await page.addInitScript(() => {
+    localStorage.setItem('token', 'synthetic-startup-token');
+    localStorage.setItem('user', JSON.stringify({ _id: 'startup-user', name: 'Test student' }));
+  });
+  await page.route('**/api/**', async route => {
+    const request = route.request(), url = new URL(request.url());
+    if (request.method() !== 'GET') { writes.push(request.method()); return route.fulfill({ json: { success: true } }); }
+    readyAt ??= Date.now() + 1200;
+    attempted.set(url.pathname, (attempted.get(url.pathname) || 0) + 1);
+    if (Date.now() < readyAt) return route.fulfill({ status: 503, headers: { 'Retry-After': '1' },
+      json: { success: false, error: { code: 'DATABASE_INITIALIZING', message: 'Udaan is connecting.' } } });
+    succeeded.add(url.pathname);
+    if (url.pathname.endsWith('/unread-count')) return route.fulfill({ json: { success: true, unreadCount: 0 } });
+    return route.fulfill({ json: { success: true, data: [scholarship], count: 1, total: 1, recentUpdatesCount: 0 } });
+  });
+  await page.goto(path);
+  await expect(page.getByText('The scholarship service did not respond.', { exact: true })).toHaveCount(0);
+  await expect(page.getByText(scholarship.title, { exact: true }).first()).toBeVisible();
+  await expect.poll(() => succeeded.has('/api/bookmarks')).toBe(true);
+  await expect.poll(() => succeeded.has('/api/notifications/unread-count')).toBe(true);
+  expect(attempted.get(`/api${path}`)).toBeGreaterThan(1);
+  expect(writes).toEqual([]);
+});
+
+test('a long database startup stops automatic reads and offers a working explicit retry', async ({ page }) => {
+  let calls = 0, ready = false;
+  await page.route('**/api/**', async route => {
+    const url = new URL(route.request().url());
+    if (!url.pathname.endsWith('/scholarships')) return route.fulfill({ json: { success: true, data: [] } });
+    calls++;
+    if (!ready) return route.fulfill({ status: 503, headers: { 'Retry-After': '1' },
+      json: { success: false, error: { code: 'DATABASE_INITIALIZING' } } });
+    return route.fulfill({ json: { success: true, data: [scholarship], count: 1, total: 1 } });
+  });
+  await page.goto('/scholarships');
+  await expect(page.getByText('Udaan is still connecting. Please try again in a moment.', { exact: true })).toBeVisible({ timeout: 24000 });
+  expect(calls).toBe(6);
+  ready = true;
+  await page.getByRole('button', { name: 'Try again', exact: true }).click();
+  await expect(page.getByText(scholarship.title, { exact: true }).first()).toBeVisible();
+  expect(calls).toBe(7);
+});
+
+test('a permanent database failure surfaces immediately without automatic read retries', async ({ page }) => {
+  let calls = 0;
+  await page.route('**/api/**', async route => {
+    if (!new URL(route.request().url()).pathname.endsWith('/scholarships')) return route.fulfill({ json: { success: true, data: [] } });
+    calls++;
+    return route.fulfill({ status: 503, json: { success: false, error: { code: 'DATABASE_UNAVAILABLE' } } });
+  });
+  await page.goto('/scholarships');
+  await expect(page.getByText('The scholarship service did not respond.', { exact: true })).toBeVisible();
+  expect(calls).toBe(1);
+});
+
 async function mockApi(page, evidence = [{ quote: excerpt, url: scholarship.sourceUrl, field: "familyIncome", verified: true }]) {
   const evaluations = [];
   await page.route("**/api/**", async route => {

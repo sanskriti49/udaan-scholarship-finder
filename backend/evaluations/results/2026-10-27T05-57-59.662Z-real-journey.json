@@ -1,0 +1,1100 @@
+{
+  "version": 1,
+  "recordedAt": "2026-10-27T05:57:59.623Z",
+  "case": "pragati-degree-real-catalogue",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "question": "I am a girl admitted to the first year of B.Tech at an AICTE-approved college. My annual family income is 500000 rupees. Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+  "success": true,
+  "stages": {
+    "interpretation": true,
+    "candidateSelection": true,
+    "policyRetrieval": true,
+    "citedAnswer": true
+  },
+  "firstUnverifiedStage": null,
+  "intent": {
+    "status": "interpreted",
+    "reason": null,
+    "constraints": [
+      "I am a girl",
+      "B.Tech",
+      "first year",
+      "500000",
+      "AICTE Pragati (Technical Degree)"
+    ],
+    "questions": [
+      "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?"
+    ],
+    "unresolved": [
+      "I am a girl",
+      "B.Tech",
+      "first year",
+      "500000"
+    ],
+    "ambiguities": [],
+    "requirements": [
+      {
+        "field": "gender",
+        "role": "applicant_current",
+        "operator": "include",
+        "value": "Female",
+        "source": {
+          "messageIndex": 0,
+          "quote": "I am a girl"
+        },
+        "id": "c0",
+        "label": "Current enrollment / context — Gender: Female",
+        "stage": "rules"
+      },
+      {
+        "field": "educationLevel",
+        "role": "applicant_current",
+        "operator": "include",
+        "value": "UG",
+        "source": {
+          "messageIndex": 0,
+          "quote": "B.Tech"
+        },
+        "id": "c1",
+        "label": "Current enrollment / context — Education level: UG",
+        "stage": "evidence"
+      },
+      {
+        "field": "studyYear",
+        "role": "applicant_current",
+        "operator": "include",
+        "value": 1,
+        "source": {
+          "messageIndex": 0,
+          "quote": "first year"
+        },
+        "id": "c2",
+        "label": "Current enrollment / context — Study year: 1",
+        "stage": "evidence"
+      },
+      {
+        "field": "incomeCeiling",
+        "role": "applicant_current",
+        "operator": "include",
+        "value": 500000,
+        "source": {
+          "messageIndex": 0,
+          "quote": "500000"
+        },
+        "id": "c3",
+        "label": "Current enrollment / context — Annual family income: 500000",
+        "stage": "rules"
+      },
+      {
+        "text": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+        "source": {
+          "messageIndex": 0,
+          "quote": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?"
+        },
+        "id": "q0",
+        "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+        "field": "question",
+        "stage": "evidence"
+      }
+    ],
+    "targets": [
+      {
+        "id": "s0",
+        "name": "AICTE Pragati (Technical Degree)",
+        "operator": "include",
+        "source": {
+          "messageIndex": 0,
+          "quote": "AICTE Pragati (Technical Degree)"
+        }
+      }
+    ]
+  },
+  "clarification": null,
+  "candidateOrder": [],
+  "studentFindings": [
+    {
+      "label": "Gender: Female",
+      "status": "supported",
+      "explanation": "The scheme explicitly requires that the candidate be a girl student.",
+      "evidence": [
+        {
+          "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "relation": "supports",
+          "span": {
+            "charStart": 660,
+            "charEnd": 1136
+          }
+        }
+      ]
+    },
+    {
+      "label": "Course level: UG",
+      "status": "supported",
+      "explanation": "The applicant is admitted to a degree level course.",
+      "evidence": [
+        {
+          "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "relation": "supports",
+          "span": {
+            "charStart": 660,
+            "charEnd": 1136
+          }
+        }
+      ]
+    },
+    {
+      "label": "Year of study: 1",
+      "status": "supported",
+      "explanation": "The applicant is admitted to the first year of the degree course.",
+      "evidence": [
+        {
+          "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "relation": "supports",
+          "span": {
+            "charStart": 660,
+            "charEnd": 1136
+          }
+        }
+      ]
+    },
+    {
+      "label": "Family income: ₹5,00,000",
+      "status": "supported",
+      "explanation": "Family income must not be more than Rs. 8 lakh per annum, and the applicant's income is 500000 rupees.",
+      "evidence": [
+        {
+          "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "relation": "supports",
+          "span": {
+            "charStart": 660,
+            "charEnd": 1136
+          }
+        }
+      ]
+    },
+    {
+      "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+      "status": "supported",
+      "explanation": "The scheme covers girl candidates admitted to the first year of a degree-level course in an AICTE-approved institution with a family income not exceeding Rs. 8 lakh per annum.",
+      "evidence": [
+        {
+          "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "relation": "supports",
+          "span": {
+            "charStart": 660,
+            "charEnd": 1136
+          }
+        }
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "advancement": 1,
+      "status": "ready",
+      "elapsedMs": 9973,
+      "modelCalls": 1,
+      "toolCalls": 0,
+      "latestEvent": {
+        "sequence": 2,
+        "type": "model_completed"
+      },
+      "error": null
+    },
+    {
+      "advancement": 2,
+      "status": "ready",
+      "elapsedMs": 11696,
+      "modelCalls": 1,
+      "toolCalls": 1,
+      "latestEvent": {
+        "sequence": 4,
+        "type": "tool_completed",
+        "tool": "searchScholarships"
+      },
+      "error": null
+    },
+    {
+      "advancement": 3,
+      "status": "ready",
+      "elapsedMs": 13903,
+      "modelCalls": 1,
+      "toolCalls": 1,
+      "latestEvent": {
+        "sequence": 4,
+        "type": "tool_completed",
+        "tool": "searchScholarships"
+      },
+      "error": null
+    },
+    {
+      "advancement": 4,
+      "status": "ready",
+      "elapsedMs": 28259,
+      "modelCalls": 1,
+      "toolCalls": 2,
+      "latestEvent": {
+        "sequence": 6,
+        "type": "tool_completed",
+        "tool": "findGuidelinePassages",
+        "resultCount": 4
+      },
+      "error": null
+    },
+    {
+      "advancement": 5,
+      "status": "ready",
+      "elapsedMs": 24714,
+      "modelCalls": 1,
+      "toolCalls": 2,
+      "latestEvent": {
+        "sequence": 6,
+        "type": "tool_completed",
+        "tool": "findGuidelinePassages",
+        "resultCount": 4
+      },
+      "error": null
+    },
+    {
+      "advancement": 6,
+      "status": "ready",
+      "elapsedMs": 53873,
+      "modelCalls": 1,
+      "toolCalls": 3,
+      "latestEvent": {
+        "sequence": 8,
+        "type": "tool_completed",
+        "tool": "findGuidelinePassages",
+        "resultCount": 4
+      },
+      "error": null
+    },
+    {
+      "advancement": 7,
+      "status": "ready",
+      "elapsedMs": 43911,
+      "modelCalls": 1,
+      "toolCalls": 3,
+      "latestEvent": {
+        "sequence": 8,
+        "type": "tool_completed",
+        "tool": "findGuidelinePassages",
+        "resultCount": 4
+      },
+      "error": null
+    },
+    {
+      "advancement": 8,
+      "status": "ready",
+      "elapsedMs": 64981,
+      "modelCalls": 1,
+      "toolCalls": 4,
+      "latestEvent": {
+        "sequence": 10,
+        "type": "tool_completed",
+        "tool": "evaluateMatches"
+      },
+      "error": null
+    },
+    {
+      "advancement": 9,
+      "status": "ready",
+      "elapsedMs": 2674,
+      "modelCalls": 1,
+      "toolCalls": 5,
+      "latestEvent": {
+        "sequence": 12,
+        "type": "tool_completed",
+        "tool": "finishInvestigation"
+      },
+      "error": null
+    },
+    {
+      "advancement": 10,
+      "status": "completed",
+      "elapsedMs": 37706,
+      "modelCalls": 2,
+      "toolCalls": 5,
+      "latestEvent": {
+        "sequence": 14,
+        "type": "model_completed",
+        "action": "answer_evidence",
+        "validation": {
+          "accepted": 5,
+          "rejected": 0,
+          "codes": []
+        }
+      },
+      "error": null
+    }
+  ],
+  "elapsedMs": 292705,
+  "usage": {
+    "modelCalls": 2,
+    "toolCalls": 5,
+    "reportedModelCalls": 2,
+    "inputTokens": 3082,
+    "outputTokens": 1911,
+    "tokenUsageIncomplete": false
+  },
+  "limits": {
+    "maxModelCalls": 2,
+    "maxToolCalls": 8
+  },
+  "status": "completed",
+  "error": null,
+  "plan": {
+    "kind": "plan",
+    "generatedAt": "2026-10-27T05:57:28.032Z",
+    "entries": [
+      {
+        "schemeId": "6aa58e923d52461bb6eb9e9a",
+        "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+        "organization": "All India Council For Technical Education",
+        "region": "All India",
+        "academicYear": "2026-27",
+        "applicationType": "general",
+        "deadline": "2026-10-31T18:29:59.999Z",
+        "applicationLink": "https://scholarships.gov.in/ApplicationForm/",
+        "status": "closing_soon",
+        "statusReason": "Applications for AY 2026-27 close on 31-10-2026.",
+        "stale": false,
+        "lastVerifiedAt": "2026-10-26T15:09:03.216Z",
+        "targetIds": [
+          "s0"
+        ],
+        "matching": {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "status": "unknown",
+          "missingFields": [
+            "familyIncome",
+            "gender",
+            "educationLevel"
+          ],
+          "policyVersion": 3,
+          "passedCount": 0,
+          "failedCount": 0,
+          "unknownCount": 3,
+          "requiresManualReview": false,
+          "reasons": {
+            "supported": [],
+            "excluded": [],
+            "unresolved": [
+              "Annual family income ≤ ₹8,00,000",
+              "Restricted to Female candidates only",
+              "UG degree required"
+            ]
+          }
+        },
+        "citations": [
+          {
+            "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 660,
+              "charEnd": 1136,
+              "page": 2,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "eligibility",
+              "residence",
+              "education",
+              "income",
+              "gender",
+              "documents"
+            ],
+            "policyRole": "eligibility",
+            "policyPriority": 7,
+            "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 4237,
+              "charEnd": 4491,
+              "page": 3,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "renewal",
+              "documents"
+            ],
+            "policyRole": "renewal",
+            "policyPriority": 6,
+            "sectionTitle": "RENEWALS",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 4491,
+              "charEnd": 4582,
+              "page": 4,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "renewal",
+              "education"
+            ],
+            "policyRole": "renewal",
+            "policyPriority": 6,
+            "sectionTitle": "RENEWALS",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "scheme_context",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 4582,
+              "charEnd": 5919,
+              "page": 4,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "eligibility",
+              "category",
+              "education",
+              "income",
+              "benefits"
+            ],
+            "policyRole": "conditions",
+            "policyPriority": 5,
+            "sectionTitle": "TERMS AND CONDITIONS",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          },
+          {
+            "id": "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "evidence": {
+              "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+              "snapshotId": "6aab6c3e7bb4a9b75421023d",
+              "field": "navigator.excerpt",
+              "sourceId": "nsp_central_sector",
+              "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+              "fetchedAt": "2026-09-17T04:27:42.035Z",
+              "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+              "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+              "charStart": 3154,
+              "charEnd": 3629,
+              "page": 3,
+              "locator": null,
+              "authorityTier": 1,
+              "documentDate": "July 2020"
+            },
+            "scope": "linked_guideline",
+            "sourceFields": [],
+            "policyTopics": [
+              "residence",
+              "education"
+            ],
+            "policyRole": "context",
+            "policyPriority": 0,
+            "sectionTitle": "CRITERIA OF SELECTION",
+            "portalHelp": false,
+            "contextOnly": false,
+            "relevance": "query_match",
+            "interpretationVerified": false,
+            "extractionNeedsReview": false,
+            "documentDate": "July 2020",
+            "sourceEdges": {
+              "startComplete": true,
+              "endComplete": true
+            }
+          }
+        ],
+        "sourceChecks": [],
+        "retrieval": {
+          "status": "unknown",
+          "conditions": [
+            {
+              "id": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Restricted to Female candidates only"
+              ],
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+            },
+            {
+              "id": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": []
+            },
+            {
+              "id": "c2",
+              "label": "Current enrollment / context — Study year: 1",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd"
+              ]
+            },
+            {
+              "id": "c3",
+              "label": "Current enrollment / context — Annual family income: 500000",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Annual family income ≤ ₹8,00,000"
+              ],
+              "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹8,00,000"
+            },
+            {
+              "id": "q0",
+              "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd"
+              ]
+            }
+          ]
+        },
+        "qualification": {
+          "status": "needs_verification",
+          "supported": [
+            "Current enrollment / context — Gender: Female",
+            "Current enrollment / context — Annual family income: 500000"
+          ],
+          "unresolved": [
+            "Confirm: Current enrollment / context — Education level: UG",
+            "Confirm: Current enrollment / context — Study year: 1",
+            "Confirm: Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+            "Annual family income ≤ ₹8,00,000",
+            "Restricted to Female candidates only",
+            "UG degree required"
+          ],
+          "reasons": []
+        },
+        "nextSteps": [
+          "Review the cited official instructions and any unresolved conditions.",
+          "Prepare documents explicitly required by the current provider instructions.",
+          "Confirm the current application window on the official portal before applying."
+        ],
+        "sourceRevision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+        "answer": {
+          "conditions": [
+            {
+              "requirementId": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "The scheme explicitly requires that the candidate be a girl student.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "status": "supported",
+              "basis": "source_interpretation",
+              "explanation": "The applicant is admitted to a degree level course.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c2",
+              "label": "Current enrollment / context — Study year: 1",
+              "status": "supported",
+              "basis": "source_interpretation",
+              "explanation": "The applicant is admitted to the first year of the degree course.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c3",
+              "label": "Current enrollment / context — Annual family income: 500000",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "Family income must not be more than Rs. 8 lakh per annum, and the applicant's income is 500000 rupees.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "q0",
+              "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "status": "supported",
+              "basis": "source_interpretation",
+              "explanation": "The scheme covers girl candidates admitted to the first year of a degree-level course in an AICTE-approved institution with a family income not exceeding Rs. 8 lakh per annum.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": [
+                "c0",
+                "c1",
+                "c2",
+                "c3"
+              ]
+            }
+          ],
+          "concern": false,
+          "limitation": "Source interpretations are AI-assisted and may be mistaken. Only the quoted text and recorded checks are established here; full current eligibility is not certified."
+        }
+      }
+    ],
+    "outcome": "review_required",
+    "caveat": "This is a research shortlist, not an eligibility certificate, application submission or award guarantee. No profile, bookmark or notification was changed.",
+    "preparation": "catalogue",
+    "aiAssistance": "search_planning",
+    "intent": {
+      "status": "interpreted",
+      "reason": null,
+      "constraints": [
+        "I am a girl",
+        "B.Tech",
+        "first year",
+        "500000",
+        "AICTE Pragati (Technical Degree)"
+      ],
+      "questions": [
+        "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?"
+      ],
+      "unresolved": [
+        "I am a girl",
+        "B.Tech",
+        "first year",
+        "500000"
+      ],
+      "ambiguities": [],
+      "requirements": [
+        {
+          "field": "gender",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": "Female",
+          "source": {
+            "messageIndex": 0,
+            "quote": "I am a girl"
+          },
+          "id": "c0",
+          "label": "Current enrollment / context — Gender: Female",
+          "stage": "rules"
+        },
+        {
+          "field": "educationLevel",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": "UG",
+          "source": {
+            "messageIndex": 0,
+            "quote": "B.Tech"
+          },
+          "id": "c1",
+          "label": "Current enrollment / context — Education level: UG",
+          "stage": "evidence"
+        },
+        {
+          "field": "studyYear",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": 1,
+          "source": {
+            "messageIndex": 0,
+            "quote": "first year"
+          },
+          "id": "c2",
+          "label": "Current enrollment / context — Study year: 1",
+          "stage": "evidence"
+        },
+        {
+          "field": "incomeCeiling",
+          "role": "applicant_current",
+          "operator": "include",
+          "value": 500000,
+          "source": {
+            "messageIndex": 0,
+            "quote": "500000"
+          },
+          "id": "c3",
+          "label": "Current enrollment / context — Annual family income: 500000",
+          "stage": "rules"
+        },
+        {
+          "text": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+          "source": {
+            "messageIndex": 0,
+            "quote": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?"
+          },
+          "id": "q0",
+          "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+          "field": "question",
+          "stage": "evidence"
+        }
+      ],
+      "targets": [
+        {
+          "id": "s0",
+          "name": "AICTE Pragati (Technical Degree)",
+          "operator": "include",
+          "source": {
+            "messageIndex": 0,
+            "quote": "AICTE Pragati (Technical Degree)"
+          }
+        }
+      ]
+    },
+    "research": {
+      "version": 1,
+      "stopReason": "available_actions_exhausted",
+      "decisions": 0,
+      "actions": [
+        {
+          "tool": "searchScholarships",
+          "status": "completed",
+          "resultCount": null
+        },
+        {
+          "tool": "findGuidelinePassages",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "status": "completed",
+          "resultCount": 4
+        },
+        {
+          "tool": "findGuidelinePassages",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "status": "completed",
+          "resultCount": 4
+        },
+        {
+          "tool": "evaluateMatches",
+          "status": "completed",
+          "resultCount": null
+        }
+      ],
+      "gaps": [
+        {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+          "requirementIds": [],
+          "kind": "interpretation_needed",
+          "missingFields": [],
+          "attemptedOfficialSource": false,
+          "message": "Some conditions still need interpretation or additional information."
+        }
+      ]
+    },
+    "targets": [
+      {
+        "id": "s0",
+        "name": "AICTE Pragati (Technical Degree)",
+        "status": "reviewed",
+        "candidateIds": [
+          "6aa58e923d52461bb6eb9e9a"
+        ],
+        "excludedIds": []
+      }
+    ],
+    "coverage": {
+      "reviewed": [
+        {
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+          "status": "unknown",
+          "conditions": [
+            {
+              "id": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Restricted to Female candidates only"
+              ],
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+            },
+            {
+              "id": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": []
+            },
+            {
+              "id": "c2",
+              "label": "Current enrollment / context — Study year: 1",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+                "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266",
+                "ev_89add0151f8081f7b17c8cc800617487c6373bb3"
+              ]
+            },
+            {
+              "id": "c3",
+              "label": "Current enrollment / context — Annual family income: 500000",
+              "stage": "rules",
+              "status": "match",
+              "reason": "recorded_rules",
+              "evidenceIds": [],
+              "ruleRequirements": [
+                "Annual family income ≤ ₹8,00,000"
+              ],
+              "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹8,00,000"
+            },
+            {
+              "id": "q0",
+              "label": "Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "stage": "evidence",
+              "status": "unknown",
+              "reason": "requires_evidence_review",
+              "evidenceIds": [
+                "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+                "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+                "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266"
+              ]
+            }
+          ],
+          "qualification": {
+            "status": "needs_verification",
+            "supported": [
+              "Current enrollment / context — Gender: Female",
+              "Current enrollment / context — Annual family income: 500000"
+            ],
+            "unresolved": [
+              "Confirm: Current enrollment / context — Education level: UG",
+              "Confirm: Current enrollment / context — Study year: 1",
+              "Confirm: Does AICTE Pragati (Technical Degree) cover my situation, and what other conditions must I meet?",
+              "Annual family income ≤ ₹8,00,000",
+              "Restricted to Female candidates only",
+              "UG degree required"
+            ],
+            "reasons": []
+          },
+          "examined": true
+        }
+      ],
+      "deferred": [],
+      "excluded": [],
+      "discovery": {
+        "candidates": 1,
+        "snapshots": 2,
+        "characters": 33528,
+        "sourceLimitReached": false
+      }
+    },
+    "answer": {
+      "version": 2,
+      "status": "answered",
+      "reason": null,
+      "fingerprint": "c73c6f716aafd99a6eb2dabd67981a4f5ef7681ef64a75b1bf370c1fa26d9f98",
+      "assessedConditions": 5,
+      "acceptedAssessments": 5,
+      "rejectedAssessments": 0,
+      "diagnostics": [],
+      "recoverable": false,
+      "inputCharacters": 9509,
+      "message": "The requested conditions have source-based findings below. These findings do not certify full eligibility."
+    },
+    "providedFields": [
+      "gender",
+      "educationLevel",
+      "familyIncome"
+    ]
+  },
+  "cleanup": "temporary run removed; quota charges retained",
+  "transport": [
+    {
+      "request": 1,
+      "mode": "intent",
+      "httpStatus": 200,
+      "responseHeadersMs": 2261
+    },
+    {
+      "request": 2,
+      "mode": "answer",
+      "httpStatus": 200,
+      "responseHeadersMs": 4176
+    }
+  ],
+  "actualRequests": 2,
+  "checkerCorrection": {
+    "reason": "Completed runs intentionally erase checkpoints. Read the validated intent report retained in the public plan.",
+    "original": {
+      "success": false,
+      "stages": {
+        "interpretation": false,
+        "candidateSelection": true,
+        "policyRetrieval": true,
+        "citedAnswer": false
+      }
+    },
+    "additionalInferenceRequests": 0
+  },
+  "qualityReview": {
+    "verified": "Correct degree candidate; income, gender and entry-year findings cite the original eligibility section; no rejected assessments.",
+    "limitations": [
+      "The additional-conditions explanation is terse; the full citation includes the two-girl limit and income-certificate condition.",
+      "The linked guideline is dated July 2020; full current eligibility is not certified.",
+      "Overall latency was 292.7 seconds. The control-read payload optimization was tested subsequently, without another live timing measurement."
+    ],
+    "verification": {
+      "backend": 494,
+      "mongodb": 72,
+      "frontend": 152,
+      "focusedBrowser": 4,
+      "lint": "passed",
+      "build": "passed"
+    }
+  }
+}

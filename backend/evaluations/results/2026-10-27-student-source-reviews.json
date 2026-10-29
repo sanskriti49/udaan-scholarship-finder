@@ -1,0 +1,173 @@
+[
+  {
+    "caseId": "context-and-unknown-income",
+    "responseFingerprint": "0b5fcc43ad77ca2285c14bdd7c27263107e85d222d59218e1ba3d0567c799a98",
+    "oracleFingerprint": "95f3a66014774b8393142525ee44fa2d393c732d621d78e071d69faf471061f6",
+    "reviewer": "Codex primary-source review, 27 October 2026",
+    "allExplanationsReviewed": true,
+    "facts": [
+      {
+        "id": "entry",
+        "explained": false,
+        "supported": false,
+        "excerpt": "",
+        "note": "No complete explanation of this material fact survived in the delivered answer."
+      },
+      {
+        "id": "income",
+        "explained": false,
+        "supported": false,
+        "excerpt": "",
+        "note": "No complete explanation of this material fact survived in the delivered answer."
+      },
+      {
+        "id": "certificate",
+        "explained": false,
+        "supported": false,
+        "excerpt": "",
+        "note": "No complete explanation of this material fact survived in the delivered answer."
+      },
+      {
+        "id": "siblings",
+        "explained": false,
+        "supported": false,
+        "excerpt": "",
+        "note": "No complete explanation of this material fact survived in the delivered answer."
+      }
+    ],
+    "unknowns": [
+      {
+        "id": "family-income",
+        "communicated": false,
+        "excerpt": ""
+      }
+    ],
+    "unmetConditions": [
+      {
+        "id": "admission",
+        "communicated": false,
+        "excerpt": ""
+      }
+    ],
+    "claimsChecked": 2,
+    "incorrectClaims": [],
+    "nextStep": {
+      "useful": false,
+      "excerpt": ""
+    },
+    "notes": [
+      "Gender and funded course level have correct recorded support. The source-backed entry/income explanation was withheld, leaving the actual conditions question unanswered.",
+      "All six failed proposal quotations differed from source line wrapping only; this diagnostic does not accept them or certify entailment."
+    ]
+  },
+  {
+    "caseId": "category-exclusion",
+    "responseFingerprint": "445f96bc7bfbc486f7b3a27bd5c9808fce75879b459bde79dbfb99f3a1613828",
+    "oracleFingerprint": "3afc6ad9932bad5d0ace4690063b537d7be4ca029c8ef470debfc38c7c89fed7",
+    "reviewer": "Codex primary-source review, 27 October 2026",
+    "allExplanationsReviewed": true,
+    "facts": [
+      {
+        "id": "category",
+        "explained": true,
+        "supported": true,
+        "excerpt": "Current enrollment / context — Category: OBC. Recorded requirements: Quota categories: SC",
+        "note": "Independently checked against the SC-only eligibility clause, including the official source URL in the oracle. No generated eligibility judgment overrides the recorded restriction."
+      }
+    ],
+    "unknowns": [],
+    "unmetConditions": [],
+    "claimsChecked": 1,
+    "incorrectClaims": [],
+    "nextStep": {
+      "useful": false,
+      "excerpt": ""
+    },
+    "notes": [
+      "The exclusion itself answers the question; another action is not needed to make this a useful negative answer."
+    ]
+  },
+  {
+    "caseId": "renewal-fourth-year",
+    "responseFingerprint": "a36cd914006970e47dc2f17c4a89af3c3a6b32c268042069d9fbbbbbe84182b0",
+    "oracleFingerprint": "ff5c60bab930d81db6e5df81881df5b5d3f6fea9fe78c48f7b1b9193199ce9f2",
+    "reviewer": "Codex primary-source review, 27 October 2026",
+    "allExplanationsReviewed": true,
+    "facts": [
+      {
+        "id": "duration",
+        "explained": false,
+        "supported": false,
+        "excerpt": "",
+        "note": "No complete explanation of this material fact survived in the delivered answer."
+      },
+      {
+        "id": "renewal",
+        "explained": false,
+        "supported": false,
+        "excerpt": "",
+        "note": "No complete explanation of this material fact survived in the delivered answer."
+      },
+      {
+        "id": "progress",
+        "explained": true,
+        "supported": true,
+        "excerpt": "The student has been promoted to their fourth year, and scholarship continuation requires promotion to the next class or level.",
+        "note": "The student explicitly said she was promoted; the cited forfeiture clause supports this narrow progress finding."
+      }
+    ],
+    "unknowns": [],
+    "unmetConditions": [],
+    "claimsChecked": 2,
+    "incorrectClaims": [
+      {
+        "kind": "unsupported",
+        "excerpt": "Year of study: 4 — supported",
+        "reason": "The cited forfeiture-on-failed-promotion clause establishes progress, not permission for fourth-year funding. The duration clause was not retrieved or cited. The actual guideline may permit fourth year, but this supported status is not substantiated by its cited evidence."
+      }
+    ],
+    "nextStep": {
+      "useful": false,
+      "excerpt": ""
+    },
+    "notes": [
+      "The duration clause was not retrieved, so the fourth-year question lacks a required evidence component.",
+      "Two generated renewal quotations changed along to atong. Their rejection is valid and is not classified as a whitespace defect."
+    ]
+  },
+  {
+    "caseId": "missing-mode-guidance",
+    "responseFingerprint": "a5414b1663c144d561c0462e4dd6b9fd9a1d34c45304bec4cc91c3080b06e7ef",
+    "oracleFingerprint": "558c0f056797fdd6683767be75274d25a49d4d9fbf020c6d37e5785ec1cd3188",
+    "reviewer": "Codex primary-source review, 27 October 2026",
+    "allExplanationsReviewed": true,
+    "facts": [
+      {
+        "id": "entry",
+        "explained": false,
+        "supported": false,
+        "excerpt": "",
+        "note": "No complete explanation of this material fact survived in the delivered answer."
+      }
+    ],
+    "unknowns": [
+      {
+        "id": "part-time-mode",
+        "communicated": true,
+        "excerpt": "Funding need: part-time study — still to confirm"
+      }
+    ],
+    "unmetConditions": [],
+    "claimsChecked": 2,
+    "incorrectClaims": [],
+    "nextStep": {
+      "useful": false,
+      "excerpt": ""
+    },
+    "notes": [
+      "The displayed condition label plus unknown state identifies part-time mode, but the explanation only asks the student to check with the provider.",
+      "The degree-level explanation omits the material entry-year and institution-approval scope, so it receives no full entry-fact credit.",
+      "The model proposed a specific missing-mode explanation without a citation; the final renderer replaced it with a generic fallback. The proposal also incorrectly described an absence of an explicit girl-candidate clause; the recorded rule overrode that proposal."
+    ]
+  }
+]

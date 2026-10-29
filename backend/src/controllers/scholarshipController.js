@@ -582,7 +582,8 @@ export const evaluateScholarships = async (req, res) => {
 			} catch (_) {}
 		}
 
-		// DB Pre-filtering: Only evaluate active scholarships and coarse demographic filters
+		// Metadata can describe jurisdiction or a subset of the audience. Let the
+		// complete recorded policy decide compatibility instead of pruning by it.
 		const now = new Date();
 		const query = {
 			...PUBLIC_FILTER,
@@ -592,13 +593,6 @@ export const evaluateScholarships = async (req, res) => {
 		if (profile.state === "All India") {
 			// The UI's national-only option does not claim any state domicile.
 			query.state = "All India";
-		} else if (profile.state) {
-			query.$and = [{ $or: [{ ruleTree: { $ne: null } }, { state: { $in: [profile.state, "All India"] } }] }];
-		}
-		if (profile.gender === "Male") {
-			(query.$and ||= []).push({ $or: [{ ruleTree: { $ne: null } }, { "eligibility.gender": { $ne: "Female" } }] });
-		} else if (profile.gender === "Female") {
-			(query.$and ||= []).push({ $or: [{ ruleTree: { $ne: null } }, { "eligibility.gender": { $ne: "Male" } }] });
 		}
 
 		const candidateScholarships = (await Scholarship.find(query).select(HIDDEN_FIELDS).lean())

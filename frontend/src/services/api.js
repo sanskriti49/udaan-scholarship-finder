@@ -1,4 +1,5 @@
 import axios from "axios";
+import { installDatabaseReadRecovery } from './databaseReadiness.js';
 
 function resolveApiBaseUrl() {
   const envUrl = import.meta.env.VITE_API_URL;
@@ -23,6 +24,8 @@ api.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+
+installDatabaseReadRecovery(api, { getSession: () => localStorage.getItem('token') });
 
 api.interceptors.response.use(
   (response) => response,

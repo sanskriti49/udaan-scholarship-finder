@@ -1,5 +1,5 @@
 import { getCategoryTheme } from "../utils/categoryThemes.js";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -428,6 +428,7 @@ export default function SavedScholarships() {
 
 	const [savedItems, setSavedItems] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const bookmarksRequestRef = useRef(null);
 	const [error, setError] = useState(null);
 
 	const [searchQuery, setSearchQuery] = useState("");
@@ -445,6 +446,9 @@ export default function SavedScholarships() {
 	useBodyScrollLock(isDrawerOpen || isEvidenceModalOpen);
 
 	const fetchBookmarks = useCallback(async () => {
+		bookmarksRequestRef.current?.abort();
+		const controller = new AbortController();
+		bookmarksRequestRef.current = controller;
 		const token = localStorage.getItem("token");
 		if (!user || !token) {
 			setSavedItems([]);
@@ -455,27 +459,31 @@ export default function SavedScholarships() {
 		try {
 			setLoading(true);
 			setError(null);
-			const res = await getBookmarks();
+			const res = await getBookmarks({ signal: controller.signal });
+			if (controller.signal.aborted) return;
 			if (res && res.success && Array.isArray(res.data)) {
 				setSavedItems(res.data);
 			} else {
 				setSavedItems([]);
 			}
 		} catch (err) {
+			if (controller.signal.aborted || err.code === 'ERR_CANCELED') return;
 			console.error("[SavedScholarships] Error fetching:", err);
 			if (err.response?.status === 401) {
 				setSavedItems([]);
 			} else {
-				setError("Could not load saved scholarships. Please try again.");
+				setError(err.response?.data?.error?.code === 'DATABASE_INITIALIZING'
+					? 'Udaan is still connecting. Please try again in a moment.'
+					: 'Could not load saved scholarships. Please try again.');
 			}
 		} finally {
-			setLoading(false);
+			if (!controller.signal.aborted) setLoading(false);
 		}
 	}, [user]);
 
 	useEffect(() => {
 		const timer = setTimeout(fetchBookmarks, 0);
-		return () => clearTimeout(timer);
+		return () => { clearTimeout(timer); bookmarksRequestRef.current?.abort(); };
 	}, [fetchBookmarks]);
 
 	// Global bookmark sync listener

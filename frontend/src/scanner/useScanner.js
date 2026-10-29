@@ -6,6 +6,7 @@ export function useScanner(type) {
   const [stage, setStage] = useState("choose");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [pages, setPages] = useState([]);
   const active = useRef(null);
   const version = useRef(0);
   function reset() {
@@ -13,6 +14,7 @@ export function useScanner(type) {
     active.current?.abort();
     active.current = null;
     setFields(emptyFields(type));
+    setPages([]);
     setStage("choose");
     setStatus("");
     setError("");
@@ -23,6 +25,7 @@ export function useScanner(type) {
       active.current?.abort();
       active.current = null;
       setFields(emptyFields(type));
+      setPages([]);
       setStage("choose");
       setError("");
       setStatus("");
@@ -33,7 +36,7 @@ export function useScanner(type) {
       leave();
     };
   }, [type]);
-  async function scan(file) {
+  async function scan(file, options = {}) {
     if (active.current) return;
     const controller = new AbortController();
     active.current = controller;
@@ -41,16 +44,20 @@ export function useScanner(type) {
     const timeout = setTimeout(() => controller.abort(), 120000);
     setError("");
     setFields(emptyFields(type));
+    setPages([]);
     setStage("processing");
-    setStatus("Checking fileÃ¢â‚¬Â¦");
+    setStatus("Checking file…");
     try {
       const pages = await processDocument(file, {
         signal: controller.signal,
+        language: options.language,
+        forceOCR: options.forceOCR,
         progress: (message) => {
           if (current === version.current) setStatus(message);
         },
       });
       if (current !== version.current) return;
+      setPages(pages);
       setFields(extract(type, pages));
       setStage("review");
       if (!pages.some((p) => p.text.trim()))
@@ -83,6 +90,7 @@ export function useScanner(type) {
     stage,
     status,
     error,
+    pages,
     scan,
     reset,
     manual,

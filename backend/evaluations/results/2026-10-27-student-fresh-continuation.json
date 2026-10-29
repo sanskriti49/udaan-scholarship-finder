@@ -1,0 +1,1403 @@
+{
+  "version": 1,
+  "recordedAt": "2026-10-27T06:58:46.173Z",
+  "execution": "live configured model; frozen-source research graph; memory checkpoints; real persistent inference quotas",
+  "latencyScope": "Research core plus provider/quota persistence, excludes browser/HTTP and production checkpoint storage. Not comparable to the earlier 293-second full journey.",
+  "notice": "Frozen historical official-source corpus; not current-year verification. Candidate-pool research, not a benchmark of the production Mongo search query.",
+  "selectedCases": [
+    "context-and-unknown-income"
+  ],
+  "maxCalls": 1,
+  "actualRequests": 1,
+  "transport": [
+    {
+      "request": 1,
+      "httpStatus": 200,
+      "responseHeadersMs": 4421
+    }
+  ],
+  "observations": [
+    {
+      "caseId": "context-and-unknown-income",
+      "question": "Correction: I belong to SC, not OBC. I have not been admitted to college yet and do not know my annual family income. Keep the scheme and engineering goal. What conditions would I need to meet?",
+      "conversation": [
+        {
+          "role": "user",
+          "content": "I am an OBC girl. I completed Class 12 in Uttar Pradesh and want funding for a B.Tech degree. Research AICTE Pragati (Technical Degree)."
+        }
+      ],
+      "provider": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "completed",
+      "error": null,
+      "elapsedMs": 5767,
+      "usage": {
+        "modelCalls": 1,
+        "toolCalls": 5,
+        "inputTokens": 2288,
+        "outputTokens": 1289,
+        "reportedModelCalls": 1,
+        "tokenUsageIncomplete": false
+      },
+      "events": [
+        {
+          "type": "tool_started",
+          "tool": "searchScholarships"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "searchScholarships"
+        },
+        {
+          "type": "tool_started",
+          "tool": "findGuidelinePassages",
+          "actionId": "732a8ea7b147b148da3ff11b"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "findGuidelinePassages",
+          "resultCount": 4
+        },
+        {
+          "type": "tool_started",
+          "tool": "findGuidelinePassages",
+          "actionId": "7a4234a383c9ca14b6f95722"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "findGuidelinePassages",
+          "resultCount": 4
+        },
+        {
+          "type": "tool_started",
+          "tool": "evaluateMatches",
+          "actionId": "7a4234a383c9ca14b6f95722"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "evaluateMatches"
+        },
+        {
+          "type": "tool_started",
+          "tool": "finishInvestigation",
+          "actionId": "7a4234a383c9ca14b6f95722"
+        },
+        {
+          "type": "tool_completed",
+          "tool": "finishInvestigation"
+        },
+        {
+          "type": "model_started",
+          "action": "answer_evidence"
+        },
+        {
+          "type": "model_completed",
+          "action": "answer_evidence",
+          "validation": {
+            "accepted": 1,
+            "rejected": 6,
+            "codes": [
+              "QUOTE_NOT_FOUND"
+            ]
+          }
+        }
+      ],
+      "intent": {
+        "objective": "Research AICTE Pragati (Technical Degree) and eligibility conditions for an SC female student who completed Class 12 in Uttar Pradesh and wants to pursue a B.Tech degree.",
+        "searchQuery": "AICTE Pragati Technical Degree",
+        "constraints": [
+          {
+            "field": "category",
+            "role": "applicant_current",
+            "operator": "include",
+            "value": "SC",
+            "source": {
+              "messageIndex": 1,
+              "quote": "I belong to SC, not OBC."
+            }
+          },
+          {
+            "field": "gender",
+            "role": "applicant_current",
+            "operator": "include",
+            "value": "Female",
+            "source": {
+              "messageIndex": 0,
+              "quote": "I am an OBC girl."
+            }
+          },
+          {
+            "field": "educationLevel",
+            "role": "applicant_qualification",
+            "operator": "include",
+            "value": "Class 12",
+            "source": {
+              "messageIndex": 0,
+              "quote": "I completed Class 12"
+            }
+          },
+          {
+            "field": "state",
+            "role": "applicant_schooling",
+            "operator": "include",
+            "value": "Uttar Pradesh",
+            "source": {
+              "messageIndex": 0,
+              "quote": "in Uttar Pradesh"
+            }
+          },
+          {
+            "field": "educationLevel",
+            "role": "funding",
+            "operator": "include",
+            "value": "UG",
+            "source": {
+              "messageIndex": 0,
+              "quote": "B.Tech degree"
+            }
+          },
+          {
+            "field": "stream",
+            "role": "funding",
+            "operator": "include",
+            "value": "engineering",
+            "source": {
+              "messageIndex": 0,
+              "quote": "B.Tech degree"
+            }
+          },
+          {
+            "field": "scheme",
+            "role": "scholarship",
+            "operator": "include",
+            "value": "AICTE Pragati (Technical Degree)",
+            "source": {
+              "messageIndex": 0,
+              "quote": "AICTE Pragati (Technical Degree)"
+            }
+          }
+        ],
+        "questions": [
+          {
+            "text": "What conditions would I need to meet?",
+            "source": {
+              "messageIndex": 1,
+              "quote": "What conditions would I need to meet?"
+            }
+          }
+        ],
+        "ambiguities": []
+      },
+      "plan": {
+        "kind": "plan",
+        "generatedAt": "2026-10-27T05:57:59.623Z",
+        "entries": [
+          {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+            "organization": "All India Council For Technical Education",
+            "region": "All India",
+            "academicYear": "2026-27",
+            "applicationType": "general",
+            "deadline": "2026-10-31T18:29:59.999Z",
+            "applicationLink": "https://scholarships.gov.in/ApplicationForm/",
+            "status": "closing_soon",
+            "statusReason": "Applications for AY 2026-27 close on 31-10-2026.",
+            "stale": false,
+            "lastVerifiedAt": "2026-10-26T15:09:03.216Z",
+            "targetIds": [
+              "s0"
+            ],
+            "matching": {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "unknown",
+              "missingFields": [
+                "familyIncome",
+                "gender",
+                "educationLevel"
+              ],
+              "policyVersion": 3,
+              "passedCount": 0,
+              "failedCount": 0,
+              "unknownCount": 3,
+              "requiresManualReview": false,
+              "reasons": {
+                "supported": [],
+                "excluded": [],
+                "unresolved": [
+                  "Annual family income ≤ ₹8,00,000",
+                  "Restricted to Female candidates only",
+                  "UG degree required"
+                ]
+              }
+            },
+            "citations": [
+              {
+                "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 660,
+                  "charEnd": 1136,
+                  "page": 2,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility",
+                  "residence",
+                  "education",
+                  "income",
+                  "gender",
+                  "documents"
+                ],
+                "policyRole": "eligibility",
+                "policyPriority": 7,
+                "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4582,
+                  "charEnd": 5919,
+                  "page": 4,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility",
+                  "category",
+                  "education",
+                  "income",
+                  "benefits"
+                ],
+                "policyRole": "conditions",
+                "policyPriority": 5,
+                "sectionTitle": "TERMS AND CONDITIONS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4491,
+                  "charEnd": 4582,
+                  "page": 4,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "renewal",
+                  "education"
+                ],
+                "policyRole": "renewal",
+                "policyPriority": 6,
+                "sectionTitle": "RENEWALS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 4237,
+                  "charEnd": 4491,
+                  "page": 3,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "renewal",
+                  "documents"
+                ],
+                "policyRole": "renewal",
+                "policyPriority": 6,
+                "sectionTitle": "RENEWALS",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "scheme_context",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              },
+              {
+                "id": "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266",
+                "schemeId": "6aa58e923d52461bb6eb9e9a",
+                "evidence": {
+                  "quote": "6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n",
+                  "snapshotId": "6aab6c3e7bb4a9b75421023d",
+                  "field": "navigator.excerpt",
+                  "sourceId": "nsp_central_sector",
+                  "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+                  "fetchedAt": "2026-09-17T04:27:42.035Z",
+                  "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+                  "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+                  "charStart": 2694,
+                  "charEnd": 3154,
+                  "page": 3,
+                  "locator": null,
+                  "authorityTier": 1,
+                  "documentDate": "July 2020"
+                },
+                "scope": "linked_guideline",
+                "sourceFields": [],
+                "policyTopics": [
+                  "eligibility",
+                  "residence",
+                  "education",
+                  "application"
+                ],
+                "policyRole": "context",
+                "policyPriority": 0,
+                "sectionTitle": "PROCEDURE FOR APPLYING",
+                "portalHelp": false,
+                "contextOnly": false,
+                "relevance": "query_match",
+                "interpretationVerified": false,
+                "extractionNeedsReview": false,
+                "documentDate": "July 2020",
+                "sourceEdges": {
+                  "startComplete": true,
+                  "endComplete": true
+                }
+              }
+            ],
+            "sourceChecks": [],
+            "retrieval": {
+              "status": "unknown",
+              "conditions": [
+                {
+                  "id": "c0",
+                  "label": "Current enrollment / context — Category: SC",
+                  "stage": "rules",
+                  "status": "unknown",
+                  "reason": "recorded_rules",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c1",
+                  "label": "Current enrollment / context — Gender: Female",
+                  "stage": "rules",
+                  "status": "match",
+                  "reason": "recorded_rules",
+                  "evidenceIds": [],
+                  "ruleRequirements": [
+                    "Restricted to Female candidates only"
+                  ],
+                  "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+                },
+                {
+                  "id": "c2",
+                  "label": "Previous qualification — Education level: Class 12",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_4aaa58b34aa5556257b349185314749664667218"
+                  ]
+                },
+                {
+                  "id": "c3",
+                  "label": "School location: Uttar Pradesh",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c4",
+                  "label": "Education level: UG",
+                  "stage": "metadata",
+                  "status": "match",
+                  "reason": "recorded_metadata",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c5",
+                  "label": "Course subject: engineering",
+                  "stage": "rules",
+                  "status": "unknown",
+                  "reason": "recorded_rules",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "q0",
+                  "label": "What conditions would I need to meet?",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                    "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                    "ev_4aaa58b34aa5556257b349185314749664667218",
+                    "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266"
+                  ]
+                }
+              ]
+            },
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [
+                "Current enrollment / context — Gender: Female",
+                "Education level: UG"
+              ],
+              "unresolved": [
+                "Confirm: Current enrollment / context — Category: SC",
+                "Confirm: Previous qualification — Education level: Class 12",
+                "Confirm: School location: Uttar Pradesh",
+                "Confirm: Course subject: engineering",
+                "Confirm: What conditions would I need to meet?",
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required",
+                "Some requested conditions could not be established from the available evidence."
+              ],
+              "reasons": []
+            },
+            "nextSteps": [
+              "Review the cited official instructions and any unresolved conditions.",
+              "Prepare documents explicitly required by the current provider instructions.",
+              "Confirm the current application window on the official portal before applying."
+            ],
+            "sourceRevision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+            "answer": {
+              "conditions": [
+                {
+                  "requirementId": "c0",
+                  "label": "Current enrollment / context — Category: SC",
+                  "status": "unknown",
+                  "basis": "unresolved",
+                  "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                },
+                {
+                  "requirementId": "c1",
+                  "label": "Current enrollment / context — Gender: Female",
+                  "status": "supported",
+                  "basis": "recorded_check",
+                  "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only The AI's additional explanation was withheld.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                },
+                {
+                  "requirementId": "c2",
+                  "label": "Previous qualification — Education level: Class 12",
+                  "status": "unknown",
+                  "basis": "unresolved",
+                  "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                },
+                {
+                  "requirementId": "c3",
+                  "label": "School location: Uttar Pradesh",
+                  "status": "unknown",
+                  "basis": "source_interpretation",
+                  "explanation": "The available evidence does not establish this condition. Check it with the scholarship provider.",
+                  "evidence": [],
+                  "dependsOn": []
+                },
+                {
+                  "requirementId": "c4",
+                  "label": "Education level: UG",
+                  "status": "supported",
+                  "basis": "recorded_check",
+                  "explanation": "This condition matches the recorded check; confirm the full current guideline. The AI's additional explanation was withheld.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                },
+                {
+                  "requirementId": "c5",
+                  "label": "Course subject: engineering",
+                  "status": "unknown",
+                  "basis": "unresolved",
+                  "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                },
+                {
+                  "requirementId": "q0",
+                  "label": "What conditions would I need to meet?",
+                  "status": "unknown",
+                  "basis": "unresolved",
+                  "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+                  "evidence": [],
+                  "dependsOn": [],
+                  "validationCode": "QUOTE_NOT_FOUND"
+                }
+              ],
+              "concern": false,
+              "fundingRelevance": "unknown",
+              "limitation": "Source interpretations are AI-assisted and may be mistaken. Only the quoted text and recorded checks are established here; full current eligibility is not certified."
+            }
+          }
+        ],
+        "outcome": "review_required",
+        "caveat": "This is a research shortlist, not an eligibility certificate, application submission or award guarantee. No profile, bookmark or notification was changed.",
+        "preparation": "catalogue",
+        "aiAssistance": "search_planning",
+        "intent": {
+          "status": "interpreted",
+          "reason": null,
+          "constraints": [
+            "I belong to SC, not OBC.",
+            "I am an OBC girl.",
+            "I completed Class 12",
+            "in Uttar Pradesh",
+            "B.Tech degree",
+            "AICTE Pragati (Technical Degree)"
+          ],
+          "questions": [
+            "What conditions would I need to meet?"
+          ],
+          "unresolved": [
+            "I belong to SC, not OBC.",
+            "I am an OBC girl.",
+            "I completed Class 12",
+            "in Uttar Pradesh",
+            "B.Tech degree"
+          ],
+          "ambiguities": [],
+          "requirements": [
+            {
+              "field": "category",
+              "role": "applicant_current",
+              "operator": "include",
+              "value": "SC",
+              "source": {
+                "messageIndex": 1,
+                "quote": "I belong to SC, not OBC."
+              },
+              "id": "c0",
+              "label": "Current enrollment / context — Category: SC",
+              "stage": "rules"
+            },
+            {
+              "field": "gender",
+              "role": "applicant_current",
+              "operator": "include",
+              "value": "Female",
+              "source": {
+                "messageIndex": 0,
+                "quote": "I am an OBC girl."
+              },
+              "id": "c1",
+              "label": "Current enrollment / context — Gender: Female",
+              "stage": "rules"
+            },
+            {
+              "field": "educationLevel",
+              "role": "applicant_qualification",
+              "operator": "include",
+              "value": "Class 12",
+              "source": {
+                "messageIndex": 0,
+                "quote": "I completed Class 12"
+              },
+              "id": "c2",
+              "label": "Previous qualification — Education level: Class 12",
+              "stage": "evidence"
+            },
+            {
+              "field": "state",
+              "role": "applicant_schooling",
+              "operator": "include",
+              "value": "Uttar Pradesh",
+              "source": {
+                "messageIndex": 0,
+                "quote": "in Uttar Pradesh"
+              },
+              "id": "c3",
+              "label": "School location: Uttar Pradesh",
+              "stage": "evidence"
+            },
+            {
+              "field": "educationLevel",
+              "role": "funding",
+              "operator": "include",
+              "value": "UG",
+              "source": {
+                "messageIndex": 0,
+                "quote": "B.Tech degree"
+              },
+              "id": "c4",
+              "label": "Education level: UG",
+              "stage": "metadata"
+            },
+            {
+              "field": "stream",
+              "role": "funding",
+              "operator": "include",
+              "value": "engineering",
+              "source": {
+                "messageIndex": 0,
+                "quote": "B.Tech degree"
+              },
+              "id": "c5",
+              "label": "Course subject: engineering",
+              "stage": "rules"
+            },
+            {
+              "text": "What conditions would I need to meet?",
+              "source": {
+                "messageIndex": 1,
+                "quote": "What conditions would I need to meet?"
+              },
+              "id": "q0",
+              "label": "What conditions would I need to meet?",
+              "field": "question",
+              "stage": "evidence"
+            }
+          ],
+          "targets": [
+            {
+              "id": "s0",
+              "name": "AICTE Pragati (Technical Degree)",
+              "operator": "include",
+              "source": {
+                "messageIndex": 0,
+                "quote": "AICTE Pragati (Technical Degree)"
+              }
+            }
+          ]
+        },
+        "research": {
+          "version": 1,
+          "stopReason": "available_actions_exhausted",
+          "decisions": 0,
+          "actions": [
+            {
+              "tool": "searchScholarships",
+              "status": "completed",
+              "resultCount": null
+            },
+            {
+              "tool": "findGuidelinePassages",
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "completed",
+              "resultCount": 4
+            },
+            {
+              "tool": "findGuidelinePassages",
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "status": "completed",
+              "resultCount": 4
+            },
+            {
+              "tool": "evaluateMatches",
+              "status": "completed",
+              "resultCount": null
+            }
+          ],
+          "gaps": [
+            {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+              "requirementIds": [],
+              "kind": "missing_student",
+              "missingFields": [
+                "familyIncome",
+                "educationLevel"
+              ],
+              "attemptedOfficialSource": false,
+              "message": "Some conditions still need interpretation or additional information."
+            }
+          ]
+        },
+        "targets": [
+          {
+            "id": "s0",
+            "name": "AICTE Pragati (Technical Degree)",
+            "status": "reviewed",
+            "candidateIds": [
+              "6aa58e923d52461bb6eb9e9a"
+            ],
+            "excludedIds": []
+          }
+        ],
+        "coverage": {
+          "reviewed": [
+            {
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+              "status": "unknown",
+              "conditions": [
+                {
+                  "id": "c0",
+                  "label": "Current enrollment / context — Category: SC",
+                  "stage": "rules",
+                  "status": "unknown",
+                  "reason": "recorded_rules",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c1",
+                  "label": "Current enrollment / context — Gender: Female",
+                  "stage": "rules",
+                  "status": "match",
+                  "reason": "recorded_rules",
+                  "evidenceIds": [],
+                  "ruleRequirements": [
+                    "Restricted to Female candidates only"
+                  ],
+                  "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+                },
+                {
+                  "id": "c2",
+                  "label": "Previous qualification — Education level: Class 12",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_76641255dfac467b703a4ed47a58cfe50b442caf"
+                  ]
+                },
+                {
+                  "id": "c3",
+                  "label": "School location: Uttar Pradesh",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c4",
+                  "label": "Education level: UG",
+                  "stage": "metadata",
+                  "status": "match",
+                  "reason": "recorded_metadata",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "c5",
+                  "label": "Course subject: engineering",
+                  "stage": "rules",
+                  "status": "unknown",
+                  "reason": "recorded_rules",
+                  "evidenceIds": []
+                },
+                {
+                  "id": "q0",
+                  "label": "What conditions would I need to meet?",
+                  "stage": "evidence",
+                  "status": "unknown",
+                  "reason": "requires_evidence_review",
+                  "evidenceIds": [
+                    "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266"
+                  ]
+                }
+              ],
+              "qualification": {
+                "status": "needs_verification",
+                "supported": [
+                  "Current enrollment / context — Gender: Female",
+                  "Education level: UG"
+                ],
+                "unresolved": [
+                  "Confirm: Current enrollment / context — Category: SC",
+                  "Confirm: Previous qualification — Education level: Class 12",
+                  "Confirm: School location: Uttar Pradesh",
+                  "Confirm: Course subject: engineering",
+                  "Confirm: What conditions would I need to meet?",
+                  "Annual family income ≤ ₹8,00,000",
+                  "Restricted to Female candidates only",
+                  "UG degree required"
+                ],
+                "reasons": []
+              },
+              "examined": true
+            }
+          ],
+          "deferred": [],
+          "excluded": [],
+          "discovery": {
+            "candidates": 1,
+            "snapshots": 2,
+            "characters": 33528,
+            "sourceLimitReached": false
+          }
+        },
+        "answer": {
+          "version": 2,
+          "status": "partial",
+          "reason": "PARTIAL_VALIDATION",
+          "fingerprint": "493bc0f4af6125e0e98ae98232fb16d1a153d686aa3318844aed5110bb70462c",
+          "assessedConditions": 1,
+          "acceptedAssessments": 1,
+          "rejectedAssessments": 6,
+          "diagnostics": [
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 0,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "c0"
+            },
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 1,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "c1"
+            },
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 2,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "c2"
+            },
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 4,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "c4"
+            },
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 5,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "c5"
+            },
+            {
+              "code": "QUOTE_NOT_FOUND",
+              "index": 6,
+              "schemeId": "6aa58e923d52461bb6eb9e9a",
+              "requirementId": "q0"
+            }
+          ],
+          "recoverable": true,
+          "inputCharacters": 10075,
+          "message": "Some source interpretations were retained below. Other parts remain open and have not been used to recommend eligibility."
+        }
+      },
+      "clarification": null,
+      "modelResponses": [
+        {
+          "mode": "evidence_answer",
+          "message": {
+            "content": "{\n  \"assessments\": [\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c0\",\n      \"status\": \"unknown\",\n      \"explanation\": \"The provided guidelines mention reserved categories regarding general merit lists, but do not state a specific SC category requirement or restriction for eligibility.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_61abe31fa2657fd512e1653b6f745d2149695454\",\n          \"quote\": \"3) If a student is in reserved category and also qualified in General Category merit list of scholarship, then she will be counted under the General Category.\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c1\",\n      \"status\": \"supported\",\n      \"explanation\": \"The scheme explicitly requires the applicant to be a girl candidate.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce\",\n          \"quote\": \"1) The girl candidate should be admitted to First year of Degree level course OR Second year of Degree level course through lateral entry in any of the AICTE approved Institution of respective year.\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c2\",\n      \"status\": \"unknown\",\n      \"explanation\": \"The text references a gap period from passing the qualifying examination, but does not explicitly detail Class 12 completion as the specific qualifying level in the provided snippets.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_61abe31fa2657fd512e1653b6f745d2149695454\",\n          \"quote\": \"1) The gap period between the year of passing the qualifying examination and the session of admission in degree course should not be more than two years.\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c3\",\n      \"status\": \"unknown\",\n      \"explanation\": \"There is no mention of Uttar Pradesh schooling in the provided evidence.\",\n      \"evidence\": [],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c4\",\n      \"status\": \"supported\",\n      \"explanation\": \"The scheme requires admission to a degree level course.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce\",\n          \"quote\": \"1) The girl candidate should be admitted to First year of Degree level course OR Second year of Degree level course through lateral entry in any of the AICTE approved Institution of respective year.\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"c5\",\n      \"status\": \"unknown\",\n      \"explanation\": \"The evidence specifies admission to an AICTE approved institution for a degree level course, but engineering is not explicitly detailed in the text excerpts.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce\",\n          \"quote\": \"1) The girl candidate should be admitted to First year of Degree level course OR Second year of Degree level course through lateral entry in any of the AICTE approved Institution of respective year.\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    },\n    {\n      \"schemeId\": \"6aa58e923d52461bb6eb9e9a\",\n      \"requirementId\": \"q0\",\n      \"status\": \"unknown\",\n      \"explanation\": \"The student must meet admission criteria, family income limits of up to Rs. 8 lakh per annum, and other general terms, but specific personal details remain unknown.\",\n      \"evidence\": [\n        {\n          \"evidenceId\": \"ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce\",\n          \"quote\": \"3) Family income from all sources should not be more than Rs. 8 lakh per annum during the current financial year. A valid income certificate issued by State/ UT Government need to be enclosed.\",\n          \"relation\": \"supports\"\n        }\n      ],\n      \"dependsOn\": []\n    }\n  ]\n}"
+          },
+          "intentFormat": "json_schema",
+          "usage": {
+            "inputTokens": 2288,
+            "outputTokens": 1289
+          }
+        }
+      ],
+      "reusedIntentFrom": "7adef8980c8da8ca7a3ad5fcd986757212eff07ed9507427c233436b2b508653",
+      "retrievedPassages": [
+        {
+          "id": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 660,
+            "charEnd": 1136,
+            "page": 2,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "residence",
+            "education",
+            "income",
+            "gender",
+            "documents"
+          ],
+          "policyRole": "eligibility",
+          "policyPriority": 7,
+          "sectionTitle": "ELIGIBILITY FOR SCHOLARSHIP",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4582,
+            "charEnd": 5919,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "category",
+            "education",
+            "income",
+            "benefits"
+          ],
+          "policyRole": "conditions",
+          "policyPriority": 5,
+          "sectionTitle": "TERMS AND CONDITIONS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_4aaa58b34aa5556257b349185314749664667218",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4491,
+            "charEnd": 4582,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "renewal",
+            "education"
+          ],
+          "policyRole": "renewal",
+          "policyPriority": 6,
+          "sectionTitle": "RENEWALS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_3694bc163a1e8db19295ae45fba3fb2bdf1ae011",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 4237,
+            "charEnd": 4491,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "renewal",
+            "documents"
+          ],
+          "policyRole": "renewal",
+          "policyPriority": 6,
+          "sectionTitle": "RENEWALS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "scheme_context",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 2694,
+            "charEnd": 3154,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility",
+            "residence",
+            "education",
+            "application"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "PROCEDURE FOR APPLYING",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "n favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 5719,
+            "charEnd": 6894,
+            "page": 4,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "eligibility"
+          ],
+          "policyRole": "conditions",
+          "policyPriority": 5,
+          "sectionTitle": "TERMS AND CONDITIONS",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 3154,
+            "charEnd": 3629,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "residence",
+            "education"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "CRITERIA OF SELECTION",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        },
+        {
+          "id": "ev_89add0151f8081f7b17c8cc800617487c6373bb3",
+          "schemeId": "6aa58e923d52461bb6eb9e9a",
+          "revision": "fbc97e4d0ffcfc9e13fca970485e71ec241f71d1be63ddef2cbf62102a988904",
+          "evidence": {
+            "quote": "8.0 METHODS OF RESOLVING TIES:\nThe procedure to be adopted for breaking ties (similar percentiles) shall be as under: -\n1) Percentage of Marks in 10th Examination: In case qualifying examination percentile\ndoes not break ties, then higher percentage of marks in 10th examination will be ranked\nhigher.\n2) Age: In case 10th examination percentile does not break ties, then the candidate of elder\nage will be ranked higher.\n",
+            "snapshotId": "6aab6c3e7bb4a9b75421023d",
+            "field": "navigator.excerpt",
+            "sourceId": "nsp_central_sector",
+            "url": "https://scholarships.gov.in/public/schemeGuidelines/AICTE/AICTE_2010_G.pdf",
+            "fetchedAt": "2026-09-17T04:27:42.035Z",
+            "contentSha256": "1e493333bc25f9adf9192624a0f92104845f5c5e3b3a00e1ec52af5302a4b10f",
+            "textHash": "07d069913f897a24091fd3c8a066fa63dfad5831766066356fd9314d21b7e002",
+            "charStart": 3629,
+            "charEnd": 4051,
+            "page": 3,
+            "locator": null,
+            "authorityTier": 1,
+            "documentDate": "July 2020"
+          },
+          "scope": "linked_guideline",
+          "sourceFields": [],
+          "policyTopics": [
+            "education"
+          ],
+          "policyRole": "context",
+          "policyPriority": 0,
+          "sectionTitle": "METHODS OF RESOLVING TIES",
+          "portalHelp": false,
+          "contextOnly": false,
+          "relevance": "query_match",
+          "interpretationVerified": false,
+          "extractionNeedsReview": false,
+          "documentDate": "July 2020"
+        }
+      ],
+      "corpusFingerprint": "ec376b8265ef5b9503e464cc4b393c984b9e8713ac1a3df3067967e4c04e1e83"
+    }
+  ],
+  "scores": [
+    {
+      "caseId": "context-and-unknown-income",
+      "tags": [
+        "unknown-income",
+        "schooling-versus-domicile",
+        "intended-course",
+        "follow-ups"
+      ],
+      "status": "completed",
+      "reviewStatus": "awaiting_source_review",
+      "relevance": {
+        "targetFound": true,
+        "precision": 1,
+        "presentedCandidates": 1,
+        "relevant": 1,
+        "supportedRecommendations": 0
+      },
+      "intent": {
+        "expected": 5,
+        "matched": 5,
+        "missing": [],
+        "forbidden": []
+      },
+      "evidence": {
+        "expectedFacts": 4,
+        "retrievedFacts": [
+          "entry",
+          "income",
+          "certificate",
+          "siblings"
+        ],
+        "citedFacts": [],
+        "retrievalCoverage": 1,
+        "citationCoverage": 0
+      },
+      "answer": {
+        "explainedFacts": null,
+        "unansweredFacts": null,
+        "unknownsExplained": null,
+        "missingUnknowns": null,
+        "incorrectClaims": null,
+        "claimsChecked": null,
+        "nextStepUseful": null,
+        "rejectedAssessments": 6
+      },
+      "usefulCompletion": null,
+      "interactiveSuccess": null,
+      "latencyMs": 5767,
+      "inference": {
+        "modelCalls": 1,
+        "toolCalls": 5,
+        "inputTokens": 2288,
+        "outputTokens": 1289,
+        "reportedModelCalls": 1,
+        "tokenUsageIncomplete": false
+      },
+      "error": null,
+      "verdict": "awaiting_review"
+    }
+  ],
+  "reviewTemplate": [
+    {
+      "caseId": "context-and-unknown-income",
+      "responseFingerprint": "1ae4e2e691acfe39de9e344a76acc05c84841ab833bc1dc914c95f59ea11fed8",
+      "oracleFingerprint": "c946b21cc18ecf1c040cd711b7cb6f4642f8482227aa4beea0f553b08c5a48e3",
+      "reviewer": "",
+      "allExplanationsReviewed": false,
+      "facts": [
+        {
+          "id": "entry",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        },
+        {
+          "id": "income",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        },
+        {
+          "id": "certificate",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        },
+        {
+          "id": "siblings",
+          "explained": false,
+          "supported": false,
+          "excerpt": ""
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "admission",
+          "communicated": false,
+          "excerpt": ""
+        },
+        {
+          "id": "family-income",
+          "communicated": false,
+          "excerpt": ""
+        }
+      ],
+      "claimsChecked": 0,
+      "incorrectClaims": [],
+      "nextStep": {
+        "useful": false,
+        "excerpt": ""
+      }
+    }
+  ],
+  "summary": {
+    "totalCases": 1,
+    "attempted": 1,
+    "notRun": 0,
+    "reviewed": 0,
+    "usefulCompletions": 0,
+    "usefulRateAcrossAttemptedLowerBound": 0,
+    "interactiveSuccesses": 0,
+    "incorrectClaims": 0,
+    "unreviewedAnswers": 1,
+    "medianLatencyMs": 5767,
+    "p95LatencyMs": 5767,
+    "latencySampleCount": 1,
+    "modelCalls": 1,
+    "inputTokens": 2288,
+    "outputTokens": 1289,
+    "usageIncomplete": false,
+    "estimatedCostUsd": null,
+    "measurementNote": "Small sample, not a production latency distribution. No monetary estimate without verified billing/prices. Unreviewed answers are not credited as useful or error-free."
+  },
+  "stopped": null,
+  "notRun": []
+}

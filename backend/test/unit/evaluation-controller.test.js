@@ -59,7 +59,23 @@ test("public matching categorizes OR outcomes by root status, including failed a
 	assert.equal(output.data.matched[0]._id, "passes"); assert.equal(output.data.matched[0].evaluation.failedRules.length, 0);
 	assert.equal(output.data.missingProfileData[0]._id, "pending"); assert.equal(output.data.ineligible[0]._id, "fails");
 	assert.equal(output.data.matched[0].evaluation.evaluationTree.status, "passed");
-	assert.ok(query.$and.every(condition => condition.$or.some(clause => clause.ruleTree?.$ne === null)));
+	assert.equal(query.$and, undefined, 'demographic metadata cannot preempt complete policy evaluation');
+});
+
+test('matching retains incomplete regional records and explicit policy overrides demographic hints', async t => {
+	const records = [
+		{ _id: 'unknown', title: 'Regional scheme', state: 'Goa' },
+		{ _id: 'policy', title: 'Women named scheme', state: 'Goa', eligibility: { gender: 'Female' },
+			rules: [{ id: 'income', field: 'familyIncome', operator: 'LTE', targetValue: 370000 }] },
+		{ _id: 'excluded', state: 'All India', rules: [{ id: 'domicile', field: 'state', operator: 'EQ', targetValue: 'Goa' }] },
+	];
+	const { query, output } = await evaluate(t, { state: 'Punjab', gender: 'Male', familyIncome: 360000 }, records);
+	assert.equal(query.state, undefined);
+	assert.equal(query.$and, undefined);
+	assert.deepEqual(output.data.matched.map(s => s._id), ['policy']);
+	assert.deepEqual(output.data.missingProfileData.map(s => s._id), ['unknown']);
+	assert.deepEqual(output.data.ineligible.map(s => s._id), ['excluded']);
+	assert.equal(output.data.ineligible[0].evaluation.failedRules[0].field, 'state');
 });
 
 test("admin policy preview validates both tree and profile and returns the recursive explanation", () => {

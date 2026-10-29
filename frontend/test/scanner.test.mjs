@@ -11,6 +11,7 @@ import {
 } from "../src/scanner/extract.js";
 import { evaluate, validRule } from "../src/scanner/rules.js";
 import { validateFile } from "../src/scanner/process.js";
+import { readableText } from "../src/scanner/text.js";
 const page = (text) => [{ text, page: 2, method: "ocr" }];
 test("Indian dates are strict and never use JS date guessing", () => {
   for (const date of [
@@ -45,6 +46,59 @@ test("Indian currency and year ranges", () => {
       .annualIncome.value,
     "",
   );
+});
+
+test("Hindi and mixed-language certificates retain source evidence and parse Devanagari numerals", () => {
+  const f = extract("income", page("आय प्रमाण पत्र\nआवेदक का नाम: अनिल कुमार\nपिता का नाम: रमेश कुमार\nजन्म तिथि: ०१/०१/२००४\nजारी दिनांक: १४/०१/२०२५\nपरिवार की वार्षिक आय: रु. २,५०,०००/-\nवित्तीय वर्ष: २०२५-२६\nसमाप्ति तिथि: ३१/०३/२०२६\nतहसीलदार"));
+  assert.equal(f.studentName.value, "अनिल कुमार");
+  assert.equal(f.issueDate.value, "2025-01-14");
+  assert.equal(f.expiryDate.value, "2026-03-31");
+  assert.equal(f.annualIncome.value, "250000");
+  assert.equal(f.period.value, "2025-2026");
+  assert.equal(f.authority.value, "tehsildar");
+  assert.equal(f.issueDate.evidence[0].text, "जारी दिनांक: १४/०१/२०२५");
+  assert.equal(parseMoney("२.५ लाख रुपये मात्र"), 250000);
+  assert.equal(parseDate("३१/०२/२०२५"), null);
+  const mixed = extract("income", page("Applicant name / आवेदक का नाम: अनिल कुमार\nAnnual family income: २,५०,०००/-\nDate of Issue: १४/०१/२०२५"));
+  assert.equal(mixed.studentName.value, "अनिल कुमार");
+  assert.equal(mixed.annualIncome.value, "250000");
+  assert.equal(mixed.annualIncome.evidence[0].text, "Annual family income: २,५०,०००/-");
+  const punctuation = extract("income", page("परिवार की वार्षिक आय; रु. २,५०,०००/-"));
+  assert.equal(punctuation.annualIncome.value, "250000");
+  assert.equal(punctuation.annualIncome.evidence[0].text, "परिवार की वार्षिक आय; रु. २,५०,०००/-");
+});
+
+test("split labels are recovered without treating parents or a birth date as student/issue details", () => {
+  const f = extract("income", page("आवेदक का नाम\nअनिल कुमार\nजारी दिनांक:\n१४/०१/२०२५\nAnnual family income\nRs. 250000"));
+  assert.equal(f.studentName.value, "अनिल कुमार");
+  assert.equal(f.studentName.evidence[0].text, "आवेदक का नाम\nअनिल कुमार");
+  assert.equal(f.issueDate.value, "2025-01-14");
+  assert.equal(f.annualIncome.value, "250000");
+  const unknown = extract("income", page("Name\nFather name: Ramesh Kumar\nजन्म तिथि: ०१/०१/२००४\nमासिक पारिवारिक आय: २००००\nवार्षिक आय: २०००००"));
+  assert.equal(unknown.studentName.value, "");
+  assert.equal(unknown.issueDate.value, "");
+  assert.equal(unknown.annualIncome.value, "");
+  const conflicting = extract("income", page("आवेदक का नाम: अनिल कुमार\nआवेदक का नाम: सुनील कुमार"));
+  assert.equal(conflicting.studentName.ambiguous, true);
+});
+
+test("Hindi categories, study labels and explicit validity FY remain separate", () => {
+  const caste = extract("caste", page("जाति प्रमाण पत्र\nअन्य पिछड़ा वर्ग\nजाति: यादव\nगैर-क्रीमी लेयर\nवित्तीय वर्ष: २०२४-२५\nवैधता वित्तीय वर्ष: २०२५-२६"));
+  assert.equal(caste.casteCategory.value, "OBC");
+  assert.equal(caste.subCaste.value, "यादव");
+  assert.equal(caste.period.value, "2024-2025");
+  assert.equal(caste.validForYear.value, "2025-2026");
+  assert.equal(caste.expiryDate.value, "");
+  const study = extract("bonafide", page("अध्ययनरत प्रमाण पत्र\nसंस्थान का नाम: उदाहरण महाविद्यालय\nशैक्षणिक सत्र: २०२५-२६\nपाठ्यक्रम: B.Tech\nसेमेस्टर: ३"));
+  assert.equal(study.institution.value, "उदाहरण महाविद्यालय");
+  assert.equal(study.period.value, "2025-2026");
+  assert.equal(study.course.value, "B.Tech");
+});
+
+test("native Hindi PDF text is usable; broken font mappings fall back to OCR", () => {
+  assert.equal(readableText("आय प्रमाण पत्र आवेदक का नाम परिवार की वार्षिक आय वित्तीय वर्ष तहसीलदार"), true);
+  assert.equal(readableText("Scanner watermark"), false);
+  assert.equal(readableText("आय प्रमाण पत्र आवेदक का नाम परिवार की वार्षिक आय" + "\uFFFD".repeat(15)), false);
 });
 test("income extraction distinguishes issue, birth and expiry dates", () => {
   const f = extract(
@@ -187,6 +241,7 @@ test("scanner contains no persistence, API upload, or console logging sinks", as
     "identitySession.js",
     "PreSubmissionAudit.jsx",
     "auditPresentation.js",
+    "text.js",
   ]) {
     const code = await readFile(
       new URL(`../src/scanner/${name}`, import.meta.url),

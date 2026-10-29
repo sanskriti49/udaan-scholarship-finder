@@ -11,10 +11,22 @@ the eligibility form. It does not certify authenticity, legal validity or approv
 ## Processing and privacy
 
 PDF.js extracts searchable text first. Sparse/scanned pages and PNG/JPG files
-use English Tesseract OCR locally. Workers, WASM, fonts and OCR language assets
+use Hindi + English Tesseract OCR locally by default, with explicit English-only
+and Hindi-only choices. Workers, WASM, fonts and OCR language assets
 come from this app. Limits: 10 MB, 5 PDF pages, 20 MP source images, 4 MP rendering,
-100,000 characters per page and two minutes per scan. Handwriting, other languages,
-complex layouts and mixed text/image PDFs may need manual entry.
+100,000 characters per page and two minutes per scan. Small images are enlarged
+within the pixel budget, transparent images receive a white background, and
+scanned PDFs render at up to 3x scale. Automatic layout and deskew are enabled;
+weak readings receive one sparse-layout retry. A low OCR reading raises a review
+prompt, never a document-validity finding or a confidence badge.
+
+Native PDF text detection counts Unicode letters, including Devanagari, and
+rejects damaged replacement/private-use mappings. The explicit page-image option
+handles PDFs with incomplete or misleading text layers. Review exposes the full
+transient detected text per page, alongside field evidence. Hindi certificate
+labels, Devanagari numerals and standalone label/value lines are supported;
+parent names, DOB, monthly income and unlabeled annual income remain excluded.
+Handwriting, other languages and complex layouts may still need manual entry.
 
 The server only supplies public scholarship metadata, fetched without credentials.
 Files, names, OCR text and editable fields are never API arguments. No document
@@ -115,6 +127,12 @@ regressions exercise actual searchable PDFs and English OCR, successive scans,
 India-time FY rollover, live edits, non-blocking warnings, in-tab name retention,
 reload/navigation cleanup, and absence of document/name data in requests or
 browser storage. These checks use synthetic documents, not personal records.
+Hindi regressions use a fixed synthetic bilingual certificate image for actual
+Hindi-only and mixed-language OCR, Devanagari date/currency extraction, parent-name
+exclusion, mobile text review and reset cleanup. A hybrid PDF with an incomplete
+English text layer verifies the explicit page-image fallback recovers Hindi
+fields. Parser checks also cover Hindi category/study labels, split label/value
+lines, conflicting values and punctuation misread by OCR.
 Presentation regressions also cover Unicode-preserving highlights, chronology,
 ambiguous dates, explicit local name reuse and keyboard disclosure controls.
 

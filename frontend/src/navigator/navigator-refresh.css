@@ -1,0 +1,1161 @@
+/* Navigator results: a case file on the desk.
+   The answer is a pinned note; each scholarship is an index card with a status tab.
+   Colour is reserved for status: moss = fits, gold = to check, clay = conflicts.
+
+   Order: tokens > shared disclosure pattern > page sections (top to bottom) >
+   focus, hover, motion > responsive. One block of each, nothing repeated.
+
+   Specificity: generic resets use :is()/:where() so component rules only need
+   `.nv-root .rp-x`. No !important. Keep the shared resets ABOVE the components. */
+
+/* ---------- Tokens ---------- */
+.nv-root {
+	/* ink and paper */
+	--rp-ink: #193f34;
+	--rp-cream: #fff9dc; /* text on ink */
+	--rp-highlight: #fff1b8; /* primary action on ink */
+	--rp-paper: #fffdf5;
+	--rp-wash: #f4f7ec; /* quiet fill for tiles sitting on paper */
+	--rp-hover: #eaf1de;
+	--rp-line: #d2dcc8;
+	--rp-rule: rgba(25, 63, 52, 0.12);
+	--rp-rule-strong: rgba(25, 63, 52, 0.22);
+	--rp-muted: #566a4d;
+
+	/* status */
+	--rp-moss: #51754b;
+	--rp-moss-tint: #e8f1dc;
+	--rp-moss-edge: #a9c79a;
+	--rp-moss-text: #2c5839;
+	--rp-moss-strong: #bcd9a6;
+	--rp-gold: #d8b448;
+	--rp-gold-tint: #fcf2cc;
+	--rp-gold-edge: #dcc77e;
+	--rp-gold-text: #685624;
+	--rp-gold-strong: #f0d77a;
+	--rp-clay: #bc7862;
+	--rp-clay-tint: #f7e3da;
+	--rp-clay-edge: #dfb2a2;
+	--rp-clay-text: #8b4836;
+
+	/* shape: small controls, tiles and panels, cards */
+	--rp-r-sm: 8px;
+	--rp-r-md: 12px;
+	--rp-r-lg: 16px;
+	--rp-lift: 0 2px 0 rgba(25, 63, 52, 0.07);
+}
+
+/* ---------- Shared: disclosures (panel, card details, research details) ---------- */
+.nv-root :is(.rp-panel, .rp-more, .rp-research) > summary {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	list-style: none;
+	font-weight: 650;
+}
+.nv-root
+	:is(.rp-panel, .rp-more, .rp-research)
+	> summary::-webkit-details-marker {
+	display: none;
+}
+.nv-root :is(.rp-panel, .rp-more, .rp-research) > summary::after {
+	content: "";
+	flex-shrink: 0;
+	width: 7px;
+	height: 7px;
+	margin-left: auto;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: translateY(-2px) rotate(45deg);
+}
+.nv-root :is(.rp-panel, .rp-more, .rp-research)[open] > summary::after {
+	transform: translateY(2px) rotate(-135deg);
+}
+/* Resets for text inside disclosures (zero-weight inner selector) */
+.nv-root :is(.rp-panel, .rp-more, .rp-research) :where(h3) {
+	margin: 0 0 8px;
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 650;
+	line-height: 1.4;
+}
+.nv-root :is(.rp-panel, .rp-more, .rp-research) :where(p) {
+	margin: 8px 0 0;
+	font-size: 14px;
+	line-height: 1.65;
+}
+.nv-root :is(.rp-panel, .rp-more, .rp-research) :where(ul) {
+	margin: 0;
+	padding-left: 18px;
+}
+
+/* ---------- Header ---------- */
+.nv-root .rp-head {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 12px 32px;
+	align-items: center;
+	padding: 24px 0 16px;
+}
+.nv-root .rp-head h1 {
+	margin: 0 0 14px;
+	font-size: clamp(32px, 4.4vw, 54px);
+	line-height: 1.12;
+}
+.nv-root .rp-question {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px 14px;
+	max-width: 68ch;
+	margin: 0;
+	font-size: 15px;
+	line-height: 1.65;
+	color: var(--rp-muted);
+	overflow-wrap: anywhere;
+}
+.nv-root .rp-question a {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--rp-ink);
+	text-underline-offset: 3px;
+}
+.nv-root .rp-head-side {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+.nv-root .rp-head-art {
+	display: grid;
+	place-items: center;
+}
+.nv-root .rp-save-note {
+	margin: 0 0 14px;
+	font-size: 13px;
+	color: var(--rp-muted);
+	text-align: right;
+}
+.nv-root .rp-save-note:empty {
+	display: none;
+}
+
+/* ---------- Status notes ---------- */
+.nv-root .rp-notes {
+	margin-bottom: 16px;
+	padding: 10px 14px;
+	border: 1px solid var(--rp-line);
+	border-radius: var(--rp-r-md);
+	background: var(--rp-wash);
+}
+.nv-root .rp-notes p {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--rp-muted);
+}
+.nv-root .rp-notes p + p {
+	margin-top: 6px;
+}
+
+/* ---------- Verdict: the one expressive element ---------- */
+.nv-root .rp-verdict {
+	display: flex;
+	gap: 18px;
+	padding: 22px 24px;
+	border: 1px solid var(--rp-gold-edge);
+	border-radius: var(--rp-r-lg);
+	background: var(--rp-gold-tint);
+}
+.nv-root .rp-verdict.is-good {
+	border-color: var(--rp-moss-edge);
+	background: var(--rp-moss-tint);
+}
+.nv-root .rp-verdict-mark {
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	width: 48px;
+	height: 48px;
+	border-radius: var(--rp-r-md);
+	background: var(--rp-gold-strong);
+	color: var(--rp-ink);
+	transform: rotate(-5deg);
+}
+.nv-root .rp-verdict.is-good .rp-verdict-mark {
+	background: var(--rp-moss-strong);
+}
+.nv-root .rp-verdict h2 {
+	margin: 2px 0 8px;
+	font-size: clamp(21px, 2.6vw, 28px);
+	line-height: 1.25;
+}
+.nv-root .rp-verdict :where(p) {
+	max-width: 66ch;
+	margin: 0 0 10px;
+	font-size: 16px;
+	line-height: 1.65;
+}
+.nv-root .rp-verdict-next {
+	margin-top: 14px;
+	padding-top: 12px;
+	border-top: 1px solid var(--rp-rule);
+	font-size: 14px;
+}
+.nv-root .rp-verdict-next a {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin-left: 6px;
+	font-weight: 650;
+	color: var(--rp-ink);
+	text-underline-offset: 3px;
+}
+.nv-root .rp-spread {
+	display: flex;
+	gap: 3px;
+	max-width: 360px;
+	height: 8px;
+	margin-top: 16px;
+}
+.nv-root .rp-spread i {
+	display: block;
+	min-width: 10px;
+	border-radius: 4px;
+}
+.nv-root .rp-spread i[data-group="promising"] {
+	background: var(--rp-moss);
+}
+.nv-root .rp-spread i[data-group="unconfirmed"] {
+	background: var(--rp-gold);
+}
+.nv-root .rp-spread i[data-group="excluded"] {
+	background: var(--rp-clay);
+}
+
+/* ---------- Cards shared by Open questions and Research details ---------- */
+.nv-root :is(.rp-panel, .rp-research) {
+	border: 1px solid var(--rp-line);
+	border-radius: var(--rp-r-md);
+	background: var(--rp-paper);
+}
+.nv-root :is(.rp-panel, .rp-research) > summary {
+	padding: 14px 18px;
+	font-size: 15px;
+}
+.nv-root :is(.rp-panel-body, .rp-research-body) {
+	padding: 4px 18px 20px;
+}
+
+/* ---------- Open questions panel ---------- */
+.nv-root .rp-panel {
+	margin-top: 16px;
+}
+.nv-root .rp-count {
+	display: grid;
+	place-content: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 6px;
+	border: 1px solid var(--rp-gold-edge);
+	border-radius: 11px;
+	background: var(--rp-gold-tint);
+	color: var(--rp-gold-text);
+	font-size: 12px;
+	font-weight: 700;
+}
+.nv-root .rp-panel-body {
+	display: grid;
+	gap: 22px;
+}
+.nv-root .rp-panel-body > section > ul {
+	display: grid;
+	gap: 12px;
+	padding: 0;
+	list-style: none;
+}
+.nv-root .rp-panel-body > section > ul > li > p {
+	margin: 4px 0 0;
+}
+
+/* ---------- Filters ---------- */
+.nv-root .rp-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 32px 0 0;
+}
+.nv-root .rp-filters button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	padding: 7px 14px;
+	border: 1px solid var(--rp-line);
+	border-radius: 999px;
+	background: var(--rp-paper);
+	color: var(--rp-ink);
+	font-size: 14px;
+	cursor: pointer;
+}
+.nv-root .rp-filters button:not([data-group="all"])::before {
+	content: "";
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: var(--rp-dot);
+}
+.nv-root .rp-filters button[data-group="promising"] {
+	--rp-dot: var(--rp-moss);
+}
+.nv-root .rp-filters button[data-group="unconfirmed"] {
+	--rp-dot: var(--rp-gold);
+}
+.nv-root .rp-filters button[data-group="excluded"] {
+	--rp-dot: var(--rp-clay);
+}
+.nv-root .rp-filters button span {
+	font-size: 12px;
+	font-weight: 700;
+	opacity: 0.7;
+}
+.nv-root .rp-filters button[aria-pressed="true"] {
+	border-color: var(--rp-ink);
+	background: var(--rp-ink);
+	color: var(--rp-cream);
+}
+.nv-root .rp-filters button[aria-pressed="true"]::before {
+	box-shadow: 0 0 0 2px rgba(255, 249, 220, 0.4);
+}
+
+/* ---------- Index cards ---------- */
+.nv-root .rp-list {
+	display: grid;
+	gap: 48px;
+	padding-top: 40px; /* room for the first card's tab */
+}
+.nv-root .rp-empty-filter {
+	margin: 0;
+	padding: 22px;
+	border: 1px dashed var(--rp-line);
+	border-radius: var(--rp-r-md);
+	font-size: 15px;
+}
+.nv-root .rp-card {
+	position: relative;
+	padding: 22px 24px 8px;
+	border: 1.5px solid var(--rp-edge, var(--rp-line));
+	border-radius: 0 var(--rp-r-lg) var(--rp-r-lg) var(--rp-r-lg);
+	background: var(--rp-paper);
+	box-shadow: var(--rp-lift);
+	overflow-wrap: anywhere;
+}
+.nv-root .rp-card.is-promising {
+	--rp-edge: var(--rp-moss-edge);
+	--rp-tab-bg: var(--rp-moss-tint);
+	--rp-tab-fg: var(--rp-moss-text);
+}
+.nv-root .rp-card.is-unconfirmed {
+	--rp-edge: var(--rp-gold-edge);
+	--rp-tab-bg: var(--rp-gold-tint);
+	--rp-tab-fg: var(--rp-gold-text);
+}
+.nv-root .rp-card.is-excluded,
+.nv-root .rp-card.is-concern {
+	--rp-edge: var(--rp-clay-edge);
+	--rp-tab-bg: var(--rp-clay-tint);
+	--rp-tab-fg: var(--rp-clay-text);
+}
+.nv-root .rp-tab {
+	position: absolute;
+	left: -1.5px;
+	bottom: 100%;
+	padding: 6px 16px 5px;
+	border: 1.5px solid var(--rp-edge);
+	border-bottom: 0;
+	border-radius: 10px 10px 0 0;
+	background: var(--rp-tab-bg);
+	color: var(--rp-tab-fg);
+	font-size: 13px;
+	font-weight: 650;
+	line-height: 1.3;
+	white-space: nowrap;
+}
+.nv-root .rp-card-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+}
+.nv-root .rp-card-head h2 {
+	max-width: 52ch;
+	margin: 0;
+	font-size: clamp(20px, 2.4vw, 26px);
+	line-height: 1.3;
+}
+.nv-root .rp-issuer {
+	margin: 4px 0 0;
+	font-size: 14px;
+	color: var(--rp-muted);
+}
+.nv-root .rp-compare {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+	min-height: 36px;
+	padding: 6px 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--rp-ink);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+.nv-root .rp-compare[aria-pressed="true"] {
+	border-color: var(--rp-ink);
+	background: var(--rp-ink);
+	color: var(--rp-cream);
+}
+.nv-root .rp-compare:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+/* Card alerts: stale guidance is "to check", so it uses gold, not a fourth colour */
+.nv-root .rp-freshness {
+	margin: 14px 0 0;
+	padding: 9px 12px;
+	border: 1px solid var(--rp-gold-edge);
+	border-radius: var(--rp-r-sm);
+	background: var(--rp-gold-tint);
+	color: var(--rp-gold-text);
+	font-size: 13px;
+}
+.nv-root .rp-blocker {
+	display: flex;
+	gap: 10px;
+	margin: 16px 0 0;
+	padding: 12px 14px;
+	border-radius: var(--rp-r-md);
+	background: var(--rp-clay-tint);
+	color: var(--rp-clay-text);
+	font-size: 15px;
+	line-height: 1.6;
+}
+.nv-root .rp-blocker > svg {
+	flex-shrink: 0;
+	margin-top: 3px;
+}
+.nv-root .rp-unknown {
+	margin: 16px 0 0;
+	font-size: 14px;
+	line-height: 1.65;
+	color: var(--rp-muted);
+}
+
+/* Findings: tinted rows, an icon chip, and a state word instead of a long label.
+   --rp-state / --rp-state-bg are set once per status and reused below. */
+.nv-root .rp-findings {
+	display: grid;
+	gap: 10px;
+	margin-top: 16px;
+}
+.nv-root .rp-finding {
+	--rp-state: var(--rp-moss-text);
+	--rp-state-bg: var(--rp-moss-tint);
+	display: grid;
+	grid-template-columns: 28px 1fr;
+	gap: 12px;
+	padding: 12px 14px;
+	border-radius: var(--rp-r-md);
+	background: var(--rp-state-bg);
+}
+.nv-root .rp-finding.is-unknown {
+	--rp-state: var(--rp-gold-text);
+	--rp-state-bg: var(--rp-gold-tint);
+}
+.nv-root .rp-finding.is-contradicted {
+	--rp-state: var(--rp-clay-text);
+	--rp-state-bg: var(--rp-clay-tint);
+}
+.nv-root .rp-finding-icon {
+	display: grid;
+	place-items: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.75);
+	color: var(--rp-state);
+}
+.nv-root .rp-finding-title {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 2px 10px;
+	margin: 0;
+}
+.nv-root .rp-finding-title strong {
+	font-size: 15px;
+	line-height: 1.4;
+}
+.nv-root .rp-finding-title span {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--rp-state, var(--rp-moss-text));
+}
+/* Same state word inside "All conditions & sources", where there is no tinted parent */
+.nv-root .rp-finding-title span.is-unknown {
+	--rp-state: var(--rp-gold-text);
+}
+.nv-root .rp-finding-title span.is-contradicted {
+	--rp-state: var(--rp-clay-text);
+}
+.nv-root .rp-finding-text {
+	max-width: 70ch;
+	margin: 4px 0 0;
+	font-size: 15px;
+	line-height: 1.65;
+}
+.nv-root .rp-hidden-count {
+	margin: 0;
+	font-size: 13px;
+	color: var(--rp-muted);
+}
+.nv-root .rp-open {
+	display: flex;
+	gap: 8px;
+	margin: 14px 0 0;
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--rp-muted);
+}
+.nv-root .rp-open > svg {
+	flex-shrink: 0;
+	margin-top: 3px;
+}
+.nv-root .rp-proofs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 8px;
+}
+.nv-root .rp-proof {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	min-height: 30px;
+	padding: 3px 10px;
+	border: 1px solid var(--rp-rule-strong);
+	border-radius: var(--rp-r-sm);
+	background: rgba(255, 253, 245, 0.85);
+	color: var(--rp-ink);
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+}
+.nv-root .rp-provider {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	margin-top: 18px;
+	padding: 8px 14px;
+	border: 1.5px solid var(--rp-ink);
+	border-radius: var(--rp-r-md);
+	color: var(--rp-ink);
+	font-size: 14px;
+	font-weight: 650;
+	text-decoration: none;
+}
+
+/* Card details: "All conditions & sources" */
+.nv-root .rp-more {
+	margin-top: 18px;
+	border-top: 1px solid var(--rp-line);
+}
+.nv-root .rp-more > summary {
+	padding: 14px 0;
+	font-size: 14px;
+}
+.nv-root .rp-more > summary > span {
+	margin-left: auto; /* count sits right, chevron follows */
+	font-size: 12px;
+	font-weight: 400;
+	color: var(--rp-muted);
+}
+.nv-root .rp-more > summary::after {
+	margin-left: 0;
+}
+.nv-root .rp-more-body {
+	display: grid;
+	gap: 22px;
+	padding: 4px 0 18px;
+}
+.nv-root .rp-conditions {
+	display: grid;
+	padding: 0;
+	list-style: none;
+}
+.nv-root .rp-conditions > li {
+	padding: 12px 0;
+	border-bottom: 1px dashed var(--rp-line);
+}
+.nv-root .rp-conditions > li:last-child {
+	border-bottom: 0;
+}
+.nv-root .rp-conditions > li > p:not(.rp-finding-title) {
+	margin: 4px 0 0;
+}
+.nv-root .rp-plain {
+	display: grid;
+	gap: 6px;
+}
+.nv-root .rp-sources {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+}
+.nv-root .rp-source {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-width: 0;
+	padding: 10px 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: var(--rp-r-md);
+	background: var(--rp-wash);
+	color: var(--rp-ink);
+	text-align: left;
+	font-size: 14px;
+	cursor: pointer;
+}
+.nv-root .rp-source > span {
+	flex: 1;
+	min-width: 0;
+}
+.nv-root .rp-source small {
+	display: block;
+	margin-top: 2px;
+	font-size: 12px;
+	color: var(--rp-muted);
+	overflow-wrap: anywhere;
+}
+.nv-root .rp-facts {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 12px;
+	margin: 0 0 8px;
+}
+.nv-root .rp-facts dt {
+	font-size: 12px;
+	color: var(--rp-muted);
+}
+.nv-root .rp-facts dd {
+	margin: 2px 0 0;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+/* ---------- Compare tray ---------- */
+.nv-root .rp-tray {
+	position: sticky;
+	bottom: 12px;
+	z-index: 20;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px 14px;
+	margin-top: 32px;
+	padding: 12px 16px;
+	border-radius: var(--rp-r-lg);
+	background: var(--rp-ink);
+	color: var(--rp-cream);
+	box-shadow: 0 10px 28px rgba(25, 63, 52, 0.3);
+}
+.nv-root .rp-tray > strong {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+}
+.nv-root .rp-tray-items {
+	display: flex;
+	flex: 1;
+	flex-wrap: wrap;
+	gap: 6px;
+	min-width: 0;
+}
+.nv-root .rp-tray-items button {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 220px;
+	min-height: 32px;
+	padding: 4px 10px;
+	border: 0;
+	border-radius: 999px;
+	background: rgba(255, 249, 220, 0.16);
+	color: inherit;
+	font-size: 13px;
+	cursor: pointer;
+}
+.nv-root .rp-tray-items button span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.nv-root .rp-tray > small {
+	font-size: 12px;
+	opacity: 0.75;
+}
+.nv-root .rp-tray-go {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	padding: 8px 16px;
+	border: 0;
+	border-radius: var(--rp-r-md);
+	background: var(--rp-highlight);
+	color: var(--rp-ink);
+	font-size: 14px;
+	font-weight: 700;
+	cursor: pointer;
+}
+.nv-root .rp-tray-go:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* ---------- Refine ---------- */
+.nv-root .rp-refine {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: 40px;
+	padding-top: 20px;
+	border-top: 1px solid var(--rp-line);
+}
+.nv-root .rp-refine p {
+	margin: 0;
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+/* ---------- Research details ---------- */
+.nv-root .rp-research {
+	margin-top: 20px;
+}
+.nv-root .rp-research > summary {
+	gap: 12px;
+	color: var(--rp-ink);
+}
+.nv-root .rp-research-icon {
+	display: grid;
+	place-items: center;
+	flex-shrink: 0;
+	width: 32px;
+	height: 32px;
+	border-radius: var(--rp-r-sm);
+	background: var(--rp-moss-tint);
+	color: var(--rp-moss-text);
+}
+.nv-root .rp-research-title {
+	display: grid;
+	gap: 1px;
+	min-width: 0;
+}
+.nv-root .rp-research-title small {
+	font-size: 13px;
+	font-weight: 400;
+	color: var(--rp-muted);
+}
+.nv-root .rp-research-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+	gap: 22px 28px;
+	align-items: start;
+}
+.nv-root .rp-research-col {
+	display: grid;
+	gap: 22px;
+	min-width: 0;
+}
+.nv-root .rp-research-note {
+	grid-column: 1 / -1;
+	display: flex;
+	gap: 10px;
+	margin: 0;
+	padding: 10px 14px;
+	border-radius: var(--rp-r-md);
+	background: var(--rp-moss-tint);
+	color: var(--rp-moss-text);
+	line-height: 1.6;
+}
+.nv-root .rp-research-note > svg {
+	flex-shrink: 0;
+	margin-top: 3px;
+}
+
+/* What you asked for: label / value tiles */
+.nv-root .rp-asked-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 8px;
+	padding: 0;
+	list-style: none;
+}
+.nv-root .rp-asked-list li {
+	display: grid;
+	gap: 1px;
+	min-width: 0;
+	padding: 9px 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: var(--rp-r-md);
+	background: var(--rp-wash);
+	overflow-wrap: anywhere;
+}
+.nv-root .rp-asked-list span {
+	font-size: 12px;
+	color: var(--rp-muted);
+}
+.nv-root .rp-asked-list strong {
+	font-size: 15px;
+	line-height: 1.4;
+}
+.nv-root .rp-unresolved {
+	display: flex;
+	gap: 8px;
+	margin: 12px 0 0;
+	font-size: 13px;
+	color: var(--rp-gold-text);
+}
+.nv-root .rp-unresolved > svg {
+	flex-shrink: 0;
+	margin-top: 3px;
+}
+
+/* What was checked. dt comes first in the DOM, so column-reverse puts the number on top */
+.nv-root .rp-stats {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+	margin: 0;
+}
+.nv-root .rp-stats > div {
+	display: flex;
+	flex-direction: column-reverse;
+	justify-content: flex-end;
+	gap: 2px;
+	padding: 10px 12px;
+	border-radius: var(--rp-r-md);
+	background: var(--rp-wash);
+}
+.nv-root .rp-stats dd {
+	margin: 0;
+	font-size: 22px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+.nv-root .rp-stats dt {
+	font-size: 12px;
+	line-height: 1.4;
+	color: var(--rp-muted);
+}
+
+/* Checklist */
+.nv-root .rp-checklist {
+	padding: 14px 16px 12px;
+	border: 1px solid var(--rp-line);
+	border-radius: var(--rp-r-md);
+	background: var(--rp-wash);
+}
+.nv-root .rp-checklist-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 10px;
+}
+.nv-root .rp-checklist-head h3 {
+	margin: 0;
+}
+.nv-root .rp-checklist-head span {
+	flex-shrink: 0;
+	font-size: 12px;
+	color: var(--rp-muted);
+}
+.nv-root .rp-progress {
+	height: 6px;
+	margin-bottom: 6px;
+	border-radius: 3px;
+	background: var(--rp-line);
+	overflow: hidden;
+}
+.nv-root .rp-progress i {
+	display: block;
+	height: 100%;
+	background: var(--rp-moss);
+	transform-origin: left;
+}
+.nv-root .rp-tasks {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.nv-root .rp-tasks li + li {
+	border-top: 1px solid var(--rp-rule);
+}
+.nv-root .rp-task {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-height: 44px;
+	padding: 6px 0;
+	font-size: 14px;
+	line-height: 1.5;
+	cursor: pointer;
+}
+.nv-root .rp-task input {
+	appearance: none;
+	-webkit-appearance: none;
+	display: grid;
+	place-content: center;
+	flex-shrink: 0;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	border: 1.5px solid var(--rp-ink);
+	border-radius: 6px;
+	background: var(--rp-paper);
+	cursor: pointer;
+}
+.nv-root .rp-task input::before {
+	content: "";
+	width: 10px;
+	height: 6px;
+	border-left: 2px solid var(--rp-cream);
+	border-bottom: 2px solid var(--rp-cream);
+	transform: rotate(-45deg) translate(1px, -1px) scale(0);
+}
+.nv-root .rp-task input:checked {
+	background: var(--rp-ink);
+}
+.nv-root .rp-task input:checked::before {
+	transform: rotate(-45deg) translate(1px, -1px) scale(1);
+}
+.nv-root .rp-task input:checked + span {
+	color: var(--rp-muted);
+	text-decoration: line-through;
+	text-decoration-color: rgba(86, 106, 77, 0.5);
+}
+.nv-root .rp-checklist-note {
+	margin: 8px 0 0;
+	font-size: 12px;
+	line-height: 1.6;
+	color: var(--rp-muted);
+}
+.nv-root .rp-research-foot {
+	grid-column: 1 / -1;
+	padding-top: 12px;
+	border-top: 1px solid var(--rp-line);
+}
+.nv-root .rp-history {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 40px;
+	font-size: 14px;
+	font-weight: 650;
+	color: var(--rp-ink);
+	text-underline-offset: 4px;
+}
+
+/* ---------- Focus (no border-radius here: it would square off the pills) ---------- */
+.nv-root
+	:is(
+		.rp-filters button,
+		.rp-compare,
+		.rp-proof,
+		.rp-source,
+		.rp-provider,
+		.rp-history,
+		.rp-task input,
+		.rp-panel > summary,
+		.rp-more > summary,
+		.rp-research > summary
+	):focus-visible {
+	outline: 2px solid var(--rp-ink);
+	outline-offset: 2px;
+}
+.nv-root .rp-tray :is(button):focus-visible {
+	outline: 2px solid var(--rp-highlight);
+	outline-offset: 2px;
+}
+
+/* ---------- Hover ---------- */
+@media (hover: hover) {
+	.nv-root .rp-filters button[aria-pressed="false"]:hover,
+	.nv-root .rp-compare[aria-pressed="false"]:not(:disabled):hover,
+	.nv-root .rp-source:hover,
+	.nv-root .rp-proof:hover {
+		background: var(--rp-hover);
+	}
+	.nv-root .rp-provider:hover {
+		background: var(--rp-ink);
+		color: var(--rp-cream);
+	}
+	.nv-root .rp-tray-items button:hover {
+		background: rgba(255, 249, 220, 0.28);
+	}
+	.nv-root .rp-tray-go:not(:disabled):hover {
+		background: #fff8d6;
+	}
+	.nv-root .rp-history:hover {
+		text-decoration: underline;
+	}
+}
+
+/* ---------- Motion: only things that answer a click ---------- */
+@media (prefers-reduced-motion: no-preference) {
+	.nv-root
+		:is(
+			.rp-filters button,
+			.rp-compare,
+			.rp-proof,
+			.rp-source,
+			.rp-provider,
+			.rp-tray-go,
+			.rp-tray-items button
+		) {
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease,
+			border-color 0.15s ease;
+	}
+	.nv-root :is(.rp-panel, .rp-more, .rp-research) > summary::after,
+	.nv-root .rp-task input,
+	.nv-root .rp-task input::before {
+		transition:
+			transform 0.15s ease,
+			background-color 0.15s ease;
+	}
+	.nv-root .rp-progress i {
+		transition: transform 0.25s ease;
+	}
+	.nv-root .rp-tray {
+		animation: rp-rise 0.22s ease-out;
+	}
+	@keyframes rp-rise {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 780px) {
+	.nv-root .rp-head {
+		grid-template-columns: 1fr;
+	}
+	.nv-root .rp-head-side {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.nv-root .rp-save-note {
+		text-align: left;
+	}
+	.nv-root .rp-refine {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.nv-root .rp-research-body {
+		grid-template-columns: 1fr;
+	}
+}
+@media (max-width: 600px) {
+	.nv-root .rp-head-art {
+		display: none;
+	}
+	.nv-root .rp-verdict {
+		gap: 12px;
+		padding: 18px 16px;
+	}
+	.nv-root .rp-verdict-mark {
+		width: 36px;
+		height: 36px;
+		border-radius: var(--rp-r-sm);
+	}
+	.nv-root .rp-verdict :where(p) {
+		font-size: 15px;
+	}
+	.nv-root :is(.rp-panel-body, .rp-research-body) {
+		padding-inline: 14px;
+	}
+	.nv-root .rp-research-title small {
+		display: none;
+	}
+	.nv-root .rp-filters {
+		flex-wrap: nowrap;
+		margin-inline: -4px;
+		padding: 2px 4px 6px;
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+	.nv-root .rp-filters button {
+		flex-shrink: 0;
+		font-size: 13px;
+	}
+	.nv-root .rp-card {
+		padding: 18px 16px 6px;
+	}
+	.nv-root .rp-card-head {
+		flex-direction: column;
+		gap: 10px;
+	}
+	.nv-root .rp-finding {
+		grid-template-columns: 24px 1fr;
+		gap: 10px;
+		padding: 11px 12px;
+	}
+	.nv-root .rp-finding-icon {
+		width: 24px;
+		height: 24px;
+	}
+	.nv-root .rp-proof {
+		min-height: 40px;
+	}
+	.nv-root .rp-sources {
+		grid-template-columns: 1fr;
+	}
+	.nv-root .rp-more > summary > span {
+		display: none;
+	}
+	.nv-root .rp-more > summary::after {
+		margin-left: auto; /* count is hidden, so the chevron takes the right edge */
+	}
+	.nv-root .rp-tray {
+		bottom: 8px;
+	}
+	.nv-root .rp-tray-items {
+		flex-basis: 100%;
+	}
+}
+@media (max-width: 460px) {
+	.nv-root .rp-stats {
+		grid-template-columns: 1fr;
+	}
+}

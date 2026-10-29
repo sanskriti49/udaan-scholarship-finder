@@ -70,6 +70,9 @@ jobs:
         env:
           NODE_ENV: test
         run: npm test
+      - name: Navigator durability against isolated MongoDB
+        working-directory: backend
+        run: npm run test:navigator:durable
       - name: Install frontend
         working-directory: frontend
         run: npm ci

@@ -4,6 +4,7 @@ import { buildSchemeKey } from "../core/dedupe.js";
 import { validateOfficialUrl } from "../core/urls.js";
 import { normalizeAcademicYear, parseOfficialDate } from "../core/time.js";
 import { htmlToText } from "../core/documents.js";
+import { mySchemePolicyEvidence } from './mySchemeEvidence.js';
 
 const tidy = (s) => String(s || "").replace(/\s+/g, " ").trim().replace(/^[\u200B-\u200D\uFEFF]+|[\u200B-\u200D\uFEFF]+$/g, "").trim();
 const missing = () => ({ records: [], issues: [{ code: "page_structure_changed", severity: "blocking", message: "Expected official scholarship content is missing. Stored records are preserved." }] });
@@ -18,6 +19,11 @@ function candidate(title, description, doc, snapshot, source, { key, organizatio
 	const org = organization || source.publisher;
 	const orgEvidence = makeEvidence(snapshot, org, { field: "organization" });
 	if (orgEvidence) evidence.push(orgEvidence);
+	// Keep a scheme's extracted scope when it can actually be located in the
+	// immutable source. A flattened or stitched description is never fabricated
+	// into an exact quotation, and shared portal text remains scheme-bound.
+	const descriptionEvidence = description && description !== title && makeEvidence(snapshot, description, { field: 'description', locator: 'official scheme description' });
+	if (descriptionEvidence) evidence.push(descriptionEvidence);
 	return {
 		sourceId: source.id, schemeKey: buildSchemeKey(source.id, org, key || title.replace(/\s+20\d{2}(?:-\d{2})?(?:\s+scheme)?$/i, "")),
 		fields: { title, officialTitle: title, organization: org, description: description || title }, evidence, cycles,
@@ -208,6 +214,7 @@ export const mySchemeAdapter = {
 		const description=[c.briefDescription,plain(c.detailedDescription),`Eligibility: ${eligibility}`,`Benefits: ${plain(c.benefits)}`,application ? `How to apply: ${application}` : null].filter(Boolean).join("\n\n");
 		const item=candidate(title,description,doc,snapshot,source,{organization:b.nodalDepartmentName?.label});
 		if(!item)return missing();
+		item.evidence.push(...mySchemePolicyEvidence(snapshot, title));
 		item.links.listingUrl=listing;
 		const references=c.references||[];
 		const validReferences = references.map((r) => ({ title: r.title || "", url: link(r.url, doc, source) })).filter((r) => r.url);

@@ -1,3 +1,5 @@
+import { readableText, readingLanguages } from "./text.js";
+
 export const limits = {
   bytes: 10 * 1024 * 1024,
   pages: 5,
@@ -11,7 +13,7 @@ const abortError = () => new DOMException("Cancelled", "AbortError");
 // WASM/language initialization. Capture that handle during this synchronous call
 // so cancel/error can terminate even a stalled initialization. No await occurs
 // while the constructor is wrapped; the global is restored before returning.
-function startOCR(createWorker, options, onSpawn) {
+function startOCR(createWorker, languages, options, onSpawn) {
   const NativeWorker = window.Worker;
   window.Worker = class extends NativeWorker {
     constructor(url, workerOptions) {
@@ -20,7 +22,7 @@ function startOCR(createWorker, options, onSpawn) {
     }
   };
   try {
-    return createWorker("eng", 1, options);
+    return createWorker(languages, 1, options);
   } finally {
     window.Worker = NativeWorker;
   }
@@ -79,7 +81,8 @@ async function checkImageDimensions(file, kind) {
     throw new Error("Image is too large. Resize it below 20 megapixels.");
 }
 
-export async function processDocument(file, { signal, progress = () => {} }) {
+export async function processDocument(file, { signal, progress = () => {}, language = "mixed", forceOCR = false }) {
+  const reading = readingLanguages[language] || readingLanguages.mixed;
   let worker, nativeWorker, loadingTask, renderTask, canvas, bitmap;
   let workerPromise;
   const abortable = (promise) =>
@@ -112,7 +115,7 @@ export async function processDocument(file, { signal, progress = () => {} }) {
   async function ocr(image) {
     check();
     if (!worker) {
-      progress("Loading on-device English OCR…");
+      progress(`Loading on-device ${reading.label} OCR…`);
       const { createWorker } = await import("tesseract.js");
       check();
       let rejectInitialization;
@@ -121,6 +124,7 @@ export async function processDocument(file, { signal, progress = () => {} }) {
       });
       workerPromise = startOCR(
         createWorker,
+        reading.codes,
         {
           workerPath: `${assets}worker.min.js`,
           corePath: assets,
@@ -143,12 +147,22 @@ export async function processDocument(file, { signal, progress = () => {} }) {
         Promise.race([workerPromise, initializationError]),
       );
       check();
+      // Automatic layout handles certificate headings, labels and scattered blocks.
+      await abortable(worker.setParameters({ tessedit_pageseg_mode: "3", preserve_interword_spaces: "1" }));
     }
-    const { data } = await abortable(worker.recognize(image));
+    let { data } = await abortable(worker.recognize(image, { rotateAuto: true }));
+    // A second layout pass can recover short forms without merging contradictory
+    // readings into apparently certain field values.
+    if (!data.text.trim() || data.confidence < 55) {
+      progress("Trying a second reading for faint or scattered text…");
+      const retry = await abortable(worker.recognize(image, { rotateAuto: true, tessedit_pageseg_mode: "11" }));
+      if ((retry.data.text.trim() && !data.text.trim()) || retry.data.confidence > data.confidence)
+        data = retry.data;
+    }
     check();
     if (data.text.length > limits.text)
       throw new Error("Document text limit exceeded");
-    return data.text;
+    return { text: data.text, needsReview: !data.text.trim() || data.confidence < 65 };
   }
   try {
     check();
@@ -163,15 +177,16 @@ export async function processDocument(file, { signal, progress = () => {} }) {
         throw new Error("Image is too large. Resize it below 20 megapixels.");
       canvas = document.createElement("canvas");
       const scale = Math.min(
-        1,
+        2,
         Math.sqrt(limits.pixels / (bitmap.width * bitmap.height)),
       );
       canvas.width = Math.max(1, Math.floor(bitmap.width * scale));
       canvas.height = Math.max(1, Math.floor(bitmap.height * scale));
-      canvas
-        .getContext("2d")
-        .drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-      return [{ page: 1, method: "ocr", text: await ocr(canvas) }];
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      return [{ page: 1, method: "ocr", ...await ocr(canvas) }];
     }
     const pdfjs = await import("pdfjs-dist");
     const { default: workerUrl } = await import(
@@ -201,7 +216,15 @@ export async function processDocument(file, { signal, progress = () => {} }) {
       check();
       progress(`Reading page ${i} of ${pdf.numPages}…`);
       const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
+      let content = { items: [] };
+      if (!forceOCR) {
+        try {
+          content = await abortable(page.getTextContent());
+        } catch {
+          check();
+          progress(`Text layer unavailable on page ${i}. Reading its image…`);
+        }
+      }
       check();
       let lastY;
       const text = content.items
@@ -215,12 +238,12 @@ export async function processDocument(file, { signal, progress = () => {} }) {
       if (text.length > limits.text)
         throw new Error("Document text limit exceeded");
       // Sparse text may be only a scanner watermark; OCR that page instead.
-      if ((text.match(/[a-zA-Z]/g) || []).length >= 40)
+      if (!forceOCR && readableText(text))
         pages.push({ page: i, method: "pdf", text });
       else {
         const unit = page.getViewport({ scale: 1 });
         const scale = Math.min(
-          2,
+          3,
           Math.sqrt(limits.pixels / (unit.width * unit.height)),
         );
         const viewport = page.getViewport({ scale });
@@ -237,7 +260,7 @@ export async function processDocument(file, { signal, progress = () => {} }) {
         await renderTask.promise;
         renderTask = null;
         check();
-        pages.push({ page: i, method: "ocr", text: await ocr(canvas) });
+        pages.push({ page: i, method: "ocr", ...await ocr(canvas) });
         canvas.width = canvas.height = 0;
         canvas = null;
       }
