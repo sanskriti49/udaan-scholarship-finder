@@ -271,7 +271,7 @@ test("real local English image OCR and asset isolation", async ({ page }) => {
   await expect(
     page.getByLabel("Annual family income (INR)", { exact: true }),
   ).toHaveValue("250000", { timeout: 100000 });
-  await expect(page.getByLabel("Issue date", { exact: true })).toHaveValue(
+  await expect(page.getByLabel("Issue date", { exact: true }), await page.locator(".scanner-read-text pre").textContent()).toHaveValue(
     "2025-01-14",
   );
   expect(

@@ -14,7 +14,7 @@ export function readableText(text) {
 }
 
 export const readingLanguages = {
-  mixed: { label: "Hindi + English", codes: ["hin", "eng"] },
+  mixed: { label: "Hindi + English", codes: ["eng", "hin"] },
   eng: { label: "English", codes: ["eng"] },
   hin: { label: "Hindi", codes: ["hin"] },
 };
