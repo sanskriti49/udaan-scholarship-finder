@@ -149,6 +149,13 @@ immediate-upload regression deliberately omits that wait to protect the actual
 UI behavior. The scanned-PDF/JPEG test still performs real local OCR, checks
 worker cleanup between documents, and explicitly tests failed initialization.
 
+The Hindi hybrid-PDF recovery fixture embeds the fixed PNG pixels losslessly.
+Browser-generated JPEG compression previously changed a Devanagari income
+reading on Ubuntu/Chromium while passing locally on Windows/Edge. Exact income
+assertions remain in place, and the separate scanned-PDF/JPEG scenario still
+exercises lossy inputs. A local browser pass does not establish Linux CI success;
+check the workflow run for the pushed revision.
+
 On CI, failed browser tests retain traces and screenshots in `browser-failures`
 for seven days. Open a downloaded trace with `npx playwright show-trace` followed
 by its `trace.zip` path. These artifacts contain synthetic test fixtures; they

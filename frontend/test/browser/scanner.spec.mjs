@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { schemas } from "../../src/scanner/extract.js";
 import { readFile } from "node:fs/promises";
+import { deflateSync } from "node:zlib";
 
 async function chooseDocumentType(page, type) {
   await page.getByLabel("Document type", { exact: true }).selectOption(type);
@@ -116,23 +117,36 @@ test("Hindi and mixed-language image OCR fills Hindi fields and exposes all text
 test("PDF page-image reading recovers Hindi hidden by an incomplete English text layer", async ({ page }) => {
   await open(page);
   const buffer = await readFile(new URL("../fixtures/hindi-english-income.png", import.meta.url));
-  const jpeg = await page.evaluate(async base64 => {
+  const pixels = await page.evaluate(async base64 => {
     const image = new Image();
     image.src = `data:image/png;base64,${base64}`;
     await image.decode();
     const canvas = document.createElement("canvas");
     canvas.width = image.width; canvas.height = image.height;
-    canvas.getContext("2d").drawImage(image, 0, 0);
-    return canvas.toDataURL("image/jpeg", 0.98).split(",")[1];
+    const context = canvas.getContext("2d");
+    context.drawImage(image, 0, 0);
+    const rgba = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    const rgb = new Uint8Array(canvas.width * canvas.height * 3);
+    for (let source = 0, target = 0; source < rgba.length; source += 4) {
+      rgb[target++] = rgba[source];
+      rgb[target++] = rgba[source + 1];
+      rgb[target++] = rgba[source + 2];
+    }
+    let binary = "";
+    for (let offset = 0; offset < rgb.length; offset += 0x8000)
+      binary += String.fromCharCode(...rgb.subarray(offset, offset + 0x8000));
+    return { width: canvas.width, height: canvas.height, data: btoa(binary) };
   }, buffer.toString("base64"));
-  const hex = Buffer.from(jpeg, "base64").toString("hex") + ">";
+  // Keep this PDF-recovery fixture lossless. Browser JPEG encoders can alter
+  // narrow Devanagari digit strokes differently on Windows and Linux.
+  const hex = deflateSync(Buffer.from(pixels.data, "base64")).toString("hex") + ">";
   const commands = "q 560 0 0 367.5 26 300 cm /Im0 Do Q BT /F1 8 Tf 20 20 Td (This incomplete text layer contains only a long scanner watermark and no certificate details.) Tj ET";
   const hybrid = assemblePdf([
     "<< /Type /Catalog /Pages 2 0 R >>",
     "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
     "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /XObject << /Im0 5 0 R >> /Font << /F1 6 0 R >> >> /Contents 4 0 R >>",
     `<< /Length ${commands.length} >>\nstream\n${commands}\nendstream`,
-    `<< /Type /XObject /Subtype /Image /Width 1600 /Height 1050 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter [/ASCIIHexDecode /DCTDecode] /Length ${hex.length} >>\nstream\n${hex}\nendstream`,
+    `<< /Type /XObject /Subtype /Image /Width ${pixels.width} /Height ${pixels.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Interpolate false /Filter [/ASCIIHexDecode /FlateDecode] /Length ${hex.length} >>\nstream\n${hex}\nendstream`,
     "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
   ]);
   await page.locator("#certificate").setInputFiles({ name: "synthetic-hybrid.pdf", mimeType: "application/pdf", buffer: hybrid });
