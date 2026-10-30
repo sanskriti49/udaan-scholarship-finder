@@ -32,7 +32,7 @@ test("unknown values, search case/whitespace, array types and object values cann
 test("cache keys use a new namespace and strip tracking parameters without mutating requests", () => {
 	const query = { level: "ug", utm_source: "test", _: "123" };
 	assert.equal(key(query), key({ level: "UG" }));
-	assert.match(key(query), /^test:v2:/);
+	assert.match(key(query), /^test:v3:/);
 	assert.equal(query.level, "ug"); assert.equal(query.utm_source, "test");
 });
 

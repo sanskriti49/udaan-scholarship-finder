@@ -49,7 +49,13 @@ function scoreText(words, terms) {
 }
 
 /** Chunk exact UTF-16 slices, retaining line breaks, overlap, page boundaries and surrogate pairs. */
-function windows(snapshot, start, end) {
+function windows(snapshot, start, end, joinDuration = false) {
+	// A short duration section may be split by a PDF page break mid-sentence.
+	// Cite one contiguous ORIGINAL slice, including its original page separator.
+	// Ordinary passages still keep page windows; this cannot exceed the existing cap.
+	if (joinDuration && snapshot.kind === 'pdf' && end - start <= MAX_PASSAGE
+		&& policyTopics(snapshot.text.slice(start, end)).includes('duration')
+		&& (snapshot.pages || []).some(p => p.start > start && p.start < end)) return [[start, end]];
 	const boundaries = [...new Set([start, ...(snapshot.pages || []).map(p => p.start).filter(p => Number.isInteger(p) && p > start && p < end), end])].sort((a, b) => a - b);
 	const ranges = [];
 	for (let i = 0; i < boundaries.length - 1; i++) {
@@ -87,7 +93,7 @@ export function passageTargets(passage, targets) {
   const topics = passage.policyTopics ?? policyTopics(passage.evidence.quote);
   const words = new Set(normalizeRetrievalText(passage.evidence.quote).match(/[\p{L}\p{N}]+/gu) ?? []);
   return targets.filter(target => target.topics.some(topic => topics.includes(topic))
-    || target.terms.some(term => words.has(term))).map(target => target.id);
+    || (!target.topicOnly && target.terms.some(term => words.has(term)))).map(target => target.id);
 }
 
 /** Shared listing snapshots expose ONLY the exact excerpts bound to this scheme. */
@@ -119,13 +125,16 @@ export function findPassages(scheme, snapshots, query, { includeContext = false,
 			&& Boolean(safeSourceUrl(scheme.officialLinks?.listingUrl)) && safeSourceUrl(scheme.officialLinks.detailUrl) !== safeSourceUrl(scheme.officialLinks.listingUrl);
 		const wholeDocument = (linkedGuideline || linkedDetail) && snapshot.text.length <= MAX_SNAPSHOT_TEXT;
 		const sections = wholeDocument ? policySections(snapshot.text) : scoped.flatMap(ref => policySections(snapshot.text, ref.charStart, Math.min(ref.charEnd, ref.charStart + MAX_SNAPSHOT_TEXT)));
-		for (const section of sections) for (const [start, end] of windows(snapshot, section.start, section.end)) {
+		for (const section of sections) for (const [start, end] of windows(snapshot, section.start, section.end, targets?.some(target => target.topics.includes('duration')))) {
 			const text = snapshot.text.slice(start, end);
 			const words = new Set(normalizeRetrievalText(text).match(/[\p{L}\p{N}]+/gu) || []);
 			const scores = termGroups.map(terms => scoreText(words, terms));
 			const score = scores.reduce((sum, value) => sum + value, 0);
 			if (!score && !includeContext) continue;
-			const evidence = makeEvidence(snapshot, text, { field: "navigator.excerpt", fromIndex: start });
+			const lastPage = snapshot.pages.findLast(page => page.start < end)?.page;
+			const firstPage = snapshot.pages.findLast(page => page.start <= start)?.page;
+			const evidence = makeEvidence(snapshot, text, { field: "navigator.excerpt", fromIndex: start,
+				...(firstPage && lastPage > firstPage ? { locator: `Pages ${firstPage}–${lastPage}` } : {}) });
 			if (!evidence || !verifyEvidence(evidence, snapshot).ok) continue;
 			const id = `ev_${createHash("sha256").update(JSON.stringify([schemeId, snapshot.id, snapshot.textHash, start, end])).digest("hex").slice(0, 40)}`;
 			const sourceFields = [...new Set(scoped.filter(ref => ref.charStart <= start && ref.charEnd >= end).map(ref => ref.field).filter(field => typeof field === 'string'))];

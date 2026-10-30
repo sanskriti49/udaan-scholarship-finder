@@ -9,9 +9,9 @@ export const studentCorpusFingerprint = corpus => createHash('sha256').update(JS
 /** Actual research graph and tools on a frozen real-source candidate pool.
  * No reference intent, expected answer or reviewer label enters the graph.
  * Checkpoint storage is in-memory: deployment/HTTP/Mongo latency is separate. */
-export async function runStudentCase({ item, corpus, provider, config, signal, cachedIntent = null, reusedIntentFrom = null }) {
+export async function runStudentCase({ item, corpus, provider, config, signal, cachedIntent = null, reusedIntentFrom = null, profile = {} }) {
   const started = performance.now(), events = [];
-  const run = { privateProfile: {}, limits: { maxModelCalls: Math.min(config.maxModelCalls, 2 + config.maxResearchDecisions), maxToolCalls: config.maxToolCalls },
+  const run = { privateProfile: structuredClone(profile), limits: { maxModelCalls: Math.min(config.maxModelCalls, 2 + config.maxResearchDecisions), maxToolCalls: config.maxToolCalls },
     usage: { modelCalls: 0, toolCalls: 0, inputTokens: 0, outputTokens: 0, reportedModelCalls: 0, tokenUsageIncomplete: false }, events };
   const store = { async readLease() { return structuredClone(run); },
     async reserveModel(lease, { keepRemaining = 0 } = {}) {

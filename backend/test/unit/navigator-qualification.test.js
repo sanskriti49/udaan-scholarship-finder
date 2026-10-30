@@ -108,11 +108,13 @@ test('bounded candidate qualification promotes relevant candidates beyond an ini
 });
 
 
-test('unfamiliar course and category wording is not a confirmed mismatch from text inequality', () => {
+test('unfamiliar wording stays unknown while established category spelling aliases match', () => {
   const stream = compile([condition('stream', 'marine science')]).retrieval;
   assert.equal(assessRetrieval({ rules: [{ id: 'course', field: 'stream', operator: 'EQ', targetValue: 'oceanography' }] }, stream).status, 'unknown');
-  const category = compile([condition('category', 'Other Backward Classes')]).retrieval;
+  const category = compile([condition('category', 'Unreviewed community wording')]).retrieval;
   assert.equal(assessRetrieval({ rules: [categoryRule(['OBC'])] }, category).status, 'unknown');
+  const alias = compile([condition('category', 'Other Backward Classes')]).retrieval;
+  assert.equal(assessRetrieval({ rules: [categoryRule(['OBC'])] }, alias).status, 'match');
   const known = compile([condition('category', 'OBC')]).retrieval;
   const partial = { rules: [categoryRule(['OBC']), { id: 'income', field: 'familyIncome', operator: 'LTE', targetValue: 300000 }] };
   assert.equal(assessRetrieval(partial, known).status, 'match');

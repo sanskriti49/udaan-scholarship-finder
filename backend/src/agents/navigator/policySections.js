@@ -8,6 +8,7 @@ const TOPICS = {
   income: /\b(?:income|financial|earnings?|means)\b/iu,
   gender: /\b(?:gender|female|male|girls?|boys?|women|men)\b/iu,
   renewal: /\b(?:renew\w*|continuation|continuing)\b/iu,
+  duration: /\b(?:duration\s+(?:of\s+)?(?:the\s+)?(?:scholarship|funding|support)|maximum\s+(?:\d+|one|two|three|four|five|six)\s+years?|years?\s+of\s+(?:funding|support)|how\s+(?:long|many\s+years))\b|^\s*duration\s*$/iu,
   academicYear: /\b(?:academic\s+(?:year|session)|session\s+20\d{2})\b/iu,
   deadline: /\b(?:deadline|closing|closes|last\s+date|extension|application\s+window)\b/iu,
   documents: /\b(?:documents?|certificates?|proof|attachments?)\b/iu,
@@ -91,7 +92,7 @@ export function topicsForPassage(section, quote) {
     && !/^(?:\s*[-*•]?\s*)?(?:select|enter|click|upload|submit|choose|fill|follow|verify|check|view)\b/iu.test(quote);
   // A heading such as Eligibility establishes the policy scope; the body adds
   // indexing topics. Unlabelled text must contain a substantive policy clause.
-  if (section.topics.length || substantiveBenefit || /\b(?:must|shall|eligible|eligibility|required|only|subject\s+to|not\s+exceed)\b/iu.test(quote))
+  if (section.topics.length || substantiveBenefit || (section.role === 'benefits' && topics.includes('duration')) || /\b(?:must|shall|eligible|eligibility|required|only|subject\s+to|not\s+exceed)\b/iu.test(quote))
     return [...new Set([...section.topics, ...topics])];
   return [];
 }

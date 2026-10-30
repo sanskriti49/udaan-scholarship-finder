@@ -19,6 +19,9 @@ import { withinTargetScope, targetIds, balanceTargets, targetResults, preferredT
 const idOf = scheme => String(scheme._id ?? scheme.id);
 const published = scheme => scheme?.publication?.state === "published" && scheme.legacy !== true;
 const isoDate = value => value && Number.isFinite(new Date(value).getTime()) ? new Date(value).toISOString() : null;
+// Invalidate summaries from before discovery's shared evaluator refinements.
+// Exact quotations and source checks remain reusable across this upgrade.
+const MATCH_POLICY_VERSION = 4;
 const revisionOf = scheme => createHash("sha256").update(JSON.stringify({ dataHash: scheme.dataHash, level: scheme.level, state: scheme.state, title: scheme.title, officialTitle: scheme.officialTitle, organization: scheme.organization, applicationLink: scheme.applicationLink, ruleTree: scheme.ruleTree, rules: scheme.rules, eligibility: scheme.eligibility,
 	currentCycle: scheme.currentCycle, requiredDocuments: scheme.requiredDocuments, fieldEvidence: scheme.fieldEvidence, dataQuality: scheme.dataQuality, officialLinks: scheme.officialLinks })).digest("hex");
 
@@ -54,7 +57,7 @@ export function createResearchTools({ repository, profile = {}, checkpoint = nul
 			if (id !== entry.summary.schemeId) throw new NavigatorError("CHECKPOINT_INVALID", "Matching context has an inconsistent scheme identity.");
 			// Recompute legacy summaries under the current applicability policy;
 			// retain all exact source proofs and never mutate saved private inputs.
-			if (entry.summary.policyVersion === 3) evaluations.set(id, entry);
+			if (entry.summary.policyVersion === MATCH_POLICY_VERSION) evaluations.set(id, entry);
 		}
 		for (const [id, entry] of structuredClone(parsed.data.passages)) {
 			if (id !== entry.id) throw new NavigatorError("CHECKPOINT_INVALID", "Evidence context has an inconsistent citation identity.");
@@ -178,7 +181,7 @@ export function createResearchTools({ repository, profile = {}, checkpoint = nul
 			const matches = schemes.map(scheme => {
 				const result = evaluateResearchEligibility(privateProfile, scheme);
 				const missingFields = [...new Set(result.unknownRules.map(rule => rule.field).filter(field => CLARIFICATION_FIELDS.includes(field) && (privateProfile[field] == null || privateProfile[field] === "")))];
-				const summary = { schemeId: idOf(scheme), policyVersion: 3, status: result.status, passedCount: result.passedRules.length, failedCount: result.failedRules.length, unknownCount: result.unknownRules.length, missingFields,
+				const summary = { schemeId: idOf(scheme), policyVersion: MATCH_POLICY_VERSION, status: result.status, passedCount: result.passedRules.length, failedCount: result.failedRules.length, unknownCount: result.unknownRules.length, missingFields,
 					requiresManualReview: result.unknownRules.some(rule => !missingFields.includes(rule.field)), reasons: ruleReasons(result) };
 				evaluations.set(idOf(scheme), { revision: revisionOf(scheme), summary });
 				return summary;

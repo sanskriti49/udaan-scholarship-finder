@@ -6,6 +6,7 @@ export const lakh = (n) => `₹${(n / 1e5).toFixed(n % 1e5 ? 1 : 0)}L`;
 /* Days-left, urgency tone and how "full" the countdown meter is (60-day window). */
 export function deadlineInfo(deadline, status) {
 	if (status === "closed") return { tone: "closed", text: "Closed", days: null, pct: 100 };
+	if (status === "unknown") return { tone: "quiet", text: "Application dates need verification", days: null, pct: 0 };
 	if (!deadline)
 		return {
 			tone: "quiet",
@@ -59,9 +60,6 @@ export function whyItFits(s, max = 3) {
 	}
 	if (s.level && !hasRule("educationLevel") && !hasRule("level")) {
 		add(`For ${s.level} students`);
-	}
-	if (s.state && s.state !== "All India" && !hasRule("state") && !hasRule("domicile")) {
-		add(`Residents of ${s.state}`);
 	}
 	return out;
 }

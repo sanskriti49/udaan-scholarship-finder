@@ -17,13 +17,13 @@ import { computeStatus } from "../pipeline/core/status.js";
 import { verifyEvidence } from "../pipeline/core/evidence.js";
 import { evaluationCacheKey } from "../pipeline/lock.js";
 import { canonicalizeCatalogueQuery } from "../engine/catalogueQuery.js";
+import { rankDiscovery } from "../engine/discoveryRanking.js";
 import { evaluationProfileSchema, treeEvaluationSchema, validationIssues } from "../engine/ruleSchema.js";
 import { publicPolicyVersion } from "../pipeline/core/changes.js";
 import { getPublicUpdateIndex, withPublicUpdateState } from "../services/policyUpdates.js";
 
 const PUBLIC_FILTER = { "publication.state": "published" };
 const HIDDEN_FIELDS = { legacySnapshot: 0, fieldEvidence: 0, dataHash: 0 };
-const STATUSES = new Set(["upcoming", "open", "closing_soon", "closed", "unknown"]);
 
 /** Status is re-derived at read time so it is correct even between refresh jobs. */
 function withLiveStatus(doc, now = new Date()) {
@@ -146,7 +146,7 @@ export const getScholarships = async (req, res) => {
 			maxAmount,
 			hasChanges,
 			status,
-			sort = "deadline",
+			sort = "relevance",
 			page = 1,
 			limit = 12,
 		} = canonicalizeCatalogueQuery(req.query);
@@ -233,37 +233,6 @@ export const getScholarships = async (req, res) => {
 		if (hasChanges === "true" || hasChanges === true) conditions.push({ hasChanges: true, _id: { $in: updateIndex.ids } });
 		
 		const now = new Date();
-		if (status === "all") {
-			// Include all scholarships regardless of status
-		} else if (status === "closed") {
-			conditions.push({
-				$or: [{ status: "closed" }, { sortDeadline: { $lt: now } }],
-			});
-		} else if (status && status !== "active") {
-			const wanted = String(status).split(",").filter((x) => STATUSES.has(x));
-			if (wanted.length) {
-				conditions.push({ status: { $in: wanted } });
-				if (!wanted.includes("closed")) {
-					conditions.push({
-						$or: [
-							{ sortDeadline: { $gte: now } },
-							{ sortDeadline: null },
-							{ sortDeadline: { $exists: false } },
-						],
-					});
-				}
-			}
-		} else {
-			// Default: "active" (open, closing_soon, upcoming, unknown with active/unannounced deadline)
-			conditions.push({
-				status: { $ne: "closed" },
-				$or: [
-					{ sortDeadline: { $gte: now } },
-					{ sortDeadline: null },
-					{ sortDeadline: { $exists: false } },
-				],
-			});
-		}
 
 		if (minAmount || maxAmount) {
 			const amountCond = {};
@@ -274,57 +243,19 @@ export const getScholarships = async (req, res) => {
 
 		const pageNum = Math.max(1, parseInt(page, 10) || 1);
 		const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 12));
-		const skip = (pageNum - 1) * limitNum;
+		// Fetch one extra record to detect overload. Never rank a truncated set.
+		const configuredMax = Number(process.env.DISCOVERY_MAX_CANDIDATES);
+		const maxCandidates = Number.isInteger(configuredMax) && configuredMax >= 1 && configuredMax <= 50000 ? configuredMax : 5000;
+		const runQuery = async (conds) => Scholarship.aggregate([
+			{ $match: { $and: conds } },
+			...(isTextSearch ? [{ $addFields: { score: { $meta: "textScore" } } }] : []),
+			{ $limit: maxCandidates + 1 },
+			{ $project: HIDDEN_FIELDS },
+		]);
 
-		// Unknown deadlines sort last; no placeholder date is ever stored.
-		const sortStage = (() => {
-			if (sort === "amount_high") return { "amount.value": -1, _noDeadline: 1, sortDeadline: 1 };
-			if (sort === "amount_low") return { _noAmount: 1, "amount.value": 1 };
-			if (sort === "newest") return { "freshness.firstSeenAt": -1 };
-			if (sort === "relevance" && isTextSearch) return { score: { $meta: "textScore" } };
-			return isTextSearch
-				? { score: { $meta: "textScore" }, _isClosed: 1, _noDeadline: 1, sortDeadline: 1 }
-				: { _isClosed: 1, _noDeadline: 1, sortDeadline: 1, title: 1 };
-		})();
-
-		const runQuery = async (conds) => {
-			const match = { $and: conds };
-			const pipeline = [
-				{ $match: match },
-				{
-					$addFields: {
-						_isClosed: {
-							$cond: [
-								{
-									$or: [
-										{ $eq: ["$status", "closed"] },
-										{
-											$and: [
-												{ $ne: [{ $ifNull: ["$sortDeadline", null] }, null] },
-												{ $lt: ["$sortDeadline", now] },
-											],
-										},
-									],
-								},
-								1,
-								0,
-							],
-						},
-						_noDeadline: { $cond: [{ $ifNull: ["$sortDeadline", false] }, 0, 1] },
-						_noAmount: { $cond: [{ $ifNull: ["$amount.value", false] }, 0, 1] },
-					},
-				},
-				{ $sort: sortStage },
-				{ $skip: skip },
-				{ $limit: limitNum },
-				{ $project: { ...HIDDEN_FIELDS, _noDeadline: 0, _noAmount: 0 } },
-			];
-			return Promise.all([Scholarship.aggregate(pipeline), Scholarship.countDocuments(match)]);
-		};
-
-		let scholarships, total;
+		let scholarships;
 		try {
-			[scholarships, total] = await runQuery(conditions);
+			scholarships = await runQuery(conditions);
 		} catch (mongoErr) {
 			// Resilient fallback to regex if text index is rebuilding
 			if (!isTextSearch) throw mongoErr;
@@ -340,29 +271,28 @@ export const getScholarships = async (req, res) => {
 						{ tags: tokenRegex },
 						{ category: tokenRegex },
 						{ state: tokenRegex },
+						{ description: tokenRegex },
 					],
 				});
 			}
 			isTextSearch = false;
-			for (const k of Object.keys(sortStage)) if (sortStage[k]?.$meta) delete sortStage[k];
-			if (Object.keys(sortStage).length === 0) Object.assign(sortStage, { _noDeadline: 1, sortDeadline: 1 });
-			[scholarships, total] = await runQuery(fallbackConditions);
+			scholarships = await runQuery(fallbackConditions);
 		}
-		scholarships = scholarships.map((d) => withLiveStatus(withPublicUpdateState(d, updateIndex), now));
-		if (!status || status === "active") {
-			scholarships = scholarships.filter((d) => d.status !== "closed");
+		if (scholarships.length > maxCandidates) {
+			return res.status(503).json({ success: false, message: "Too many matching scholarships to rank safely. Please narrow your search or filters.", code: "DISCOVERY_CANDIDATE_LIMIT" });
 		}
+		const ranked = rankDiscovery(scholarships.map(d => withPublicUpdateState(d, updateIndex)), {
+			profile: req.discoveryProfile || {}, search, sort, status,
+			page: pageNum, limit: limitNum, now,
+		});
 
 		const recentUpdatesCount = updateIndex.count;
 
 		return res.status(200).json({
 			success: true,
-			count: scholarships.length,
-			total,
-			totalPages: Math.ceil(total / limitNum),
-			currentPage: pageNum,
+			...ranked,
+			count: ranked.data.length,
 			recentUpdatesCount,
-			data: scholarships,
 		});
 	} catch (error) {
 		console.error("Error fetching scholarships:", error);
@@ -371,6 +301,28 @@ export const getScholarships = async (req, res) => {
 			message: "Server error fetching scholarships",
 			error: error.message,
 		});
+	}
+};
+
+/** POST /api/scholarships/discover?{existing catalogue filters}
+ * Shares the catalogue query/ranker. Explicit profiles are transient and never
+ * saved; otherwise an authenticated student's saved profile is read.
+ */
+export const discoverScholarships = async (req, res) => {
+	res.setHeader("Cache-Control", "private, no-store");
+	res.setHeader("X-Cache", "BYPASS");
+	const body = req.body ?? {};
+	if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).some(key => key !== "profile")) {
+		return res.status(400).json({ success: false, message: "Expected an optional profile object" });
+	}
+	const parsed = evaluationProfileSchema.safeParse(Object.hasOwn(body, "profile") ? body.profile : {});
+	if (!parsed.success) return res.status(400).json({ success: false, message: "Invalid discovery profile", errors: validationIssues(parsed.error) });
+	try {
+		req.discoveryProfile = Object.hasOwn(body, "profile") ? parsed.data : req.user
+			? await UserProfile.findOne({ user: req.user._id }).lean() || {} : {};
+		return getScholarships(req, res);
+	} catch (error) {
+		return res.status(500).json({ success: false, message: "Could not load the discovery profile" });
 	}
 };
 
@@ -562,7 +514,7 @@ export const evaluateScholarships = async (req, res) => {
 			...normalizedProfile,
 			documentsHeld: normalizedProfile.documentsHeld.slice().sort(),
 			nationalOnly: profile.state === "All India",
-			evaluatorVersion: 3,
+			evaluatorVersion: 4,
 		};
 		const profileHash = crypto
 			.createHash("sha256")

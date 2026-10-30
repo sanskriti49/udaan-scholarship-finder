@@ -30,7 +30,7 @@ import {
 } from "../components/AnimatedIllustrations";
 
 // How many findings a card shows before the rest move into "All conditions & sources".
-const PREVIEW_LIMIT = 2;
+const PREVIEW_LIMIT = 3;
 
 const groups = {
 	all: "All",

@@ -14,6 +14,20 @@ const normalize = (field, value) => field === 'state' ? normalizeState(value) : 
 const fieldLabels = { educationLevel: 'Education level', state: 'Scheme region', incomeCeiling: 'Annual family income', studyYear: 'Study year', academicYear: 'Academic year', applicationType: 'Application type', category: 'Category', gender: 'Gender', stream: 'Course subject', other: 'Funding need' };
 const ruleFields = { category: 'casteCategory', gender: 'gender', stream: 'stream', state: 'state', incomeCeiling: 'familyIncome', educationLevel: 'educationLevel' };
 
+/** Information-only questions do not require personal eligibility inputs.
+ * This bounds interruptions, never supplies profile values or decides eligibility. */
+export function needsEligibilityClarification(plan) {
+  const questions = (plan?.requirements ?? []).filter(item => item.field === 'question');
+  if (!questions.length) return true; // Preserve legacy/general matching flows.
+  const personal = /\b(?:(?:am|would|will|could) i (?:be )?eligible|(?:do|would|will|could) i qualify|can i (?:apply|qualify|(?:get|receive) (?:this |the )?(?:scholarship|award|funding))|(?:do|would) i meet|my eligibility|whether i (?:am eligible|qualify))\b/iu;
+  return !questions.every(item => {
+    const text = `${item.text} ${item.source?.quote ?? ''}`;
+    if (personal.test(text)) return false;
+    return policyTopics(item.text).some(topic => ['deadline', 'documents', 'renewal', 'income', 'eligibility', 'application'].includes(topic))
+      || /\b(?:sources?|guidelines?|policy|policies|requirements?|conditions?|how long|how many years)\b/iu.test(item.text);
+  });
+}
+
 /** Already stated, singular applicant facts need not be asked again. This only
  * controls clarification; it never writes inferred values into a profile. */
 export function providedApplicantFields(plan) {
@@ -49,7 +63,10 @@ export function retrievalPlan(intent) {
   const requirements = intent.constraints.map((item, index) => ({ ...item, id: `c${index}`, label: requirementLabel(item),
     stage: (item.field === 'state' && item.role === 'applicant_domicile')
       || (item.field === 'incomeCeiling' && item.role === 'applicant_current' && item.operator === 'include') ? 'rules'
-      : ['category', 'gender', 'stream'].includes(item.field) && (!item.role || ['funding', 'applicant_current'].includes(item.role)) && (item.operator === 'include' || item.field !== 'stream') ? 'rules'
+      : ((item.field === 'educationLevel' && item.role === 'applicant_current' && item.operator === 'include'
+          && !intent.constraints.some(other => other.field === 'educationLevel' && other.role === 'funding' && other.operator === 'include'
+            && !values(other.value).some(value => values(item.value).includes(value))))
+        || ['category', 'gender', 'stream'].includes(item.field) && (!item.role || ['funding', 'applicant_current'].includes(item.role)) && (item.operator === 'include' || item.field !== 'stream')) ? 'rules'
         : item.role && item.role !== 'funding' ? 'evidence' : metadata[item.field] && ['include', 'exclude'].includes(item.operator) ? 'metadata' : item.field === 'incomeCeiling' ? 'ranking' : 'evidence' })).filter(item => item.field !== 'scheme');
   requirements.push(...intent.questions.map((item, index) => ({ ...item, id: `q${index}`, label: item.text, field: 'question', stage: 'evidence' })));
   if (intent.searchQuery && !targets.some(target => target.operator === 'include')) requirements.push({ id: 't0', label: `Looking for: ${intent.searchQuery}`, field: 'other', operator: 'include', value: intent.searchQuery, stage: 'evidence' });
@@ -77,7 +94,7 @@ export function classifyRequirement(scheme, item) {
     const fieldRules = explicitDomicile ? researchEligibilityRules(scheme).filter(rule => rule.field === field) : [];
     // Research audience compatibility is hypothetical, never an authorized personal profile.
     // Evaluate the WHOLE policy for each alternative so OR/NOT/conditional branches retain their meaning.
-    const domain = item.field === 'category' ? canonicalCategories : item.field === 'gender' ? canonicalGenders : item.field === 'state' ? knownStates : [];
+    const domain = item.field === 'category' ? canonicalCategories : item.field === 'gender' ? canonicalGenders : item.field === 'state' ? knownStates : item.field === 'educationLevel' ? knownLevels : [];
     const audience = item.operator === 'exclude' ? domain : values(item.value);
     const results = audience.map(value => evaluateResearchEligibility({ [field]: value }, scheme));
     // Text inequality is not semantic incompatibility. Only a closed, recognized
@@ -139,13 +156,13 @@ export function evidenceTargets(scheme, plan, conditions = assessRetrieval(schem
   const vocabulary = { educationLevel: 'eligibility qualification admission enrolled course', state: 'domicile resident state', incomeCeiling: 'annual family income limit', gender: 'eligible gender applicants',
     studyYear: 'year semester admission duration', applicationType: 'fresh renewal renew continuation', academicYear: 'academic year session validity', category: 'eligible category caste', stream: 'eligible course discipline' };
   const stateVocabulary = { applicant_schooling: 'school qualifying examination board state admission', applicant_residence: 'residence permanent domicile eligibility', funding_location: 'institution college study location eligibility', applicant_current: 'location residence domicile eligibility' };
-  const topics = { educationLevel: ['education'], studyYear: ['education'], stream: ['education'], state: ['residence'],
+  const topics = { educationLevel: ['education'], studyYear: ['duration'], stream: ['education'], state: ['residence'],
     incomeCeiling: ['income'], category: ['category'], gender: ['gender'], academicYear: ['academicYear'] };
   return plan.requirements.filter(item => (conditions.find(c => c.id === item.id)?.status ?? 'unknown') === 'unknown').map(item => {
     const query = item.field === 'question' ? item.text : `${item.field === 'state' ? stateVocabulary[item.role] ?? vocabulary.state : vocabulary[item.field] ?? ''} ${values(item.value).join(' ')}`.trim();
     const specificTopics = item.field === 'applicationType' ? item.value === 'renewal' ? ['renewal'] : item.value === 'fresh' ? ['application'] : ['renewal', 'application']
       : topics[item.field] ?? policyTopics(query).filter(topic => topic !== 'eligibility');
-    return { id: item.id, query, terms: queryTerms(item.field === 'question' ? item.text : values(item.value).join(' ')), topics: specificTopics };
+    return { id: item.id, query, terms: queryTerms(item.field === 'question' ? item.text : values(item.value).join(' ')), topics: specificTopics, ...(item.field === 'studyYear' ? { topicOnly: true } : {}) };
   });
 }
 

@@ -25,6 +25,8 @@ export function studentFindings(entry, requirements = []) {
   const unanswered = conditions.filter(c => c.status === 'unknown' && !c.evidence.length);
   // Keep a source-backed explanation of an open condition visible even when
   // several easier recorded checks already passed.
-  return { established, explained, unanswered, visible: [...established.slice(0, explained.length ? 2 : 3), ...explained.slice(0, 1)].sort(questionFirst),
+  const importantUnknown = [...unanswered].sort(questionFirst).slice(0, 1);
+  const open = [...explained.slice(0, 1), ...importantUnknown];
+  return { established, explained, unanswered, visible: [...established.slice(0, Math.max(1, 3 - open.length)), ...open].sort(questionFirst),
     hasFindings: established.length > 0 || explained.length > 0 };
 }

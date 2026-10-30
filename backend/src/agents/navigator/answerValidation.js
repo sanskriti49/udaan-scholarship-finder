@@ -57,10 +57,14 @@ export function validateEvidenceAnswer(plan, packet, response) {
       if (passage.quote !== citation.evidence.quote) return fail('EVIDENCE_MISMATCH');
       const located = quotationSpan(passage.quote, proof.quote, citation.evidence.charStart, citation.sourceEdges);
       if (!located.ok) return fail(located.code);
-      evidence.push({ ...proof, span: located.span });
+      evidence.push({ ...proof, quote: located.quote ?? proof.quote, span: located.span });
     }
     if (row.status !== 'unknown' && !evidence.some(p => p.relation === (row.status === 'supported' ? 'supports' : 'contradicts'))) return fail('UNSUPPORTED_CONCLUSION');
     const requirement = packet.context.requirements.find(c => c.id === row.requirementId);
+    // Promotion alone does not establish the years for which funding is allowed.
+    // This is a necessary scope check, not proof that a duration permits this year.
+    if (requirement?.field === 'studyYear' && row.status === 'supported'
+      && !evidence.some(proof => /\b(?:years?|duration)\b/iu.test(proof.quote))) return fail('YEAR_SCOPE_MISSING');
     const recorded = candidate.requirements.find(c => c.id === row.requirementId);
     // Necessary evidence-coverage check, NOT semantic proof: a named category
     // cannot be positively generalized from text naming only other categories.

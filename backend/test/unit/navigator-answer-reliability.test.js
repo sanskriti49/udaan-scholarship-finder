@@ -26,6 +26,39 @@ const row = (p, requirementId, quote, patch = {}) => ({ schemeId: SCHEME_ID, req
  evidence: [{ evidenceId: p.evidenceId, quote, relation: 'supports' }], ...patch });
 const response = assessments => ({ message: { content: JSON.stringify({ assessments }) } });
 
+test('formatted model quotation is replaced with its exact original source slice', async () => {
+ const source = 'Annual family income\r\n  must not exceed Rs 300000; exceptions remain applicable.';
+ const p = await prepared(source);
+ const result = applyEvidenceAnswer(p.plan, p.packet, response([row(p, 'q0', source.replace(/\s+/gu, ' '))]));
+ assert.equal(result.answer.acceptedAssessments, 1);
+ const proof = result.entries[0].answer.conditions[0].evidence[0];
+ assert.equal(proof.quote, source);
+ const citation = result.entries[0].citations.find(c => c.id === proof.evidenceId);
+ assert.equal(citation.evidence.quote.slice(proof.span.charStart - citation.evidence.charStart, proof.span.charEnd - citation.evidence.charStart), source);
+});
+
+test('promotion-only evidence cannot establish a permitted funding year', async () => {
+ const quote = 'Student failing to get promoted to the next class/level would forfeit the scholarship.';
+ const p = await prepared(quote);
+ p.packet.context.requirements.find(r => r.id === 'q2').field = 'studyYear';
+ const result = applyEvidenceAnswer(p.plan, p.packet, response([row(p, 'q2', quote)]));
+ assert.equal(result.entries[0].answer.conditions[2].status, 'unknown');
+ assert.equal(result.answer.diagnostics[0].code, 'YEAR_SCOPE_MISSING');
+ const duration = await prepared('Funding duration is a maximum of four years for first-year entrants.');
+ duration.packet.context.requirements.find(r => r.id === 'q2').field = 'studyYear';
+ const supported = applyEvidenceAnswer(duration.plan, duration.packet, response([row(duration, 'q2', 'Funding duration is a maximum of four years for first-year entrants.')]));
+ assert.equal(supported.answer.acceptedAssessments, 1);
+});
+
+test('uncited unknowns name the actual question without preserving unsupported model prose', async () => {
+ const p = await prepared('Annual family income must not exceed Rs 300000.');
+ const result = applyEvidenceAnswer(p.plan, p.packet, response([row(p, 'q2', '', { status: 'unknown', explanation: 'PRIVATE_UNSUPPORTED_CLAIM', evidence: [] })]));
+ const explanation = result.entries[0].answer.conditions[2].explanation;
+ assert.match(explanation, /checked excerpts.*renewal/i);
+ assert.ok(!explanation.includes('PRIVATE_UNSUPPORTED'));
+ assert.equal(result.entries[0].answer.conditions[2].status, 'unknown');
+});
+
 test('regression: an exact complete policy line between unpunctuated source lines is accepted', async () => {
  const quote = 'Only SC/ST applicants may apply';
  const p = await prepared(`Annual income ceiling: Rs 300000\n${quote}\nRenewal requires annual review`);

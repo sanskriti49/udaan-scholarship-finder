@@ -76,6 +76,7 @@ const SOURCES = [
 ];
 
 const SORTS = [
+	{ label: "Best match", value: "relevance" },
 	{ label: "Closing soonest", value: "deadline" },
 	{ label: "Highest grant", value: "amount_high" },
 	{ label: "Most trusted source", value: "trust" },
@@ -175,7 +176,8 @@ export default function Scholarships() {
 	const selectedStates = parseList("state");
 	const selectedSources = parseList("sourceType");
 
-	const sort = searchParams.get("sort") || "deadline";
+	const sort = searchParams.get("sort") || "relevance";
+	const page = Math.max(1, parseInt(searchParams.get("page"), 10) || 1);
 	const hasChangesOnly = searchParams.get("hasChanges") === "true";
 	const status = searchParams.get("status") || "active";
 
@@ -185,6 +187,8 @@ export default function Scholarships() {
 	const setSearch = (value) => setSearchDraft({ origin: searchParams.toString(), value });
 
 	const [scholarships, setScholarships] = useState([]);
+	const [resultInfo, setResultInfo] = useState({ total: 0, totalPages: 0, personalized: false });
+	const [useProfile, setUseProfile] = useState(true);
 	const [recentUpdatesCount, setRecentUpdatesCount] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -210,6 +214,7 @@ export default function Scholarships() {
 					.filter(Boolean)
 			: [];
 		const next = new URLSearchParams(searchParams);
+		next.delete("page");
 
 		if (option === defaultOption) {
 			next.delete(key);
@@ -227,6 +232,7 @@ export default function Scholarships() {
 
 	const updateParam = (key, value, defaultValue) => {
 		const next = new URLSearchParams(searchParams);
+		if (key !== "page") next.delete("page");
 		if (!value || value === defaultValue) next.delete(key);
 		else next.set(key, value);
 		setSearchParams(next, { replace: true });
@@ -237,7 +243,7 @@ export default function Scholarships() {
 	const toggleLevel = (val) => updateMultiParam("level", val, "All");
 	const toggleState = (val) => updateMultiParam("state", val, "All India");
 	const toggleSource = (val) => updateMultiParam("sourceType", val, "All");
-	const setSort = (val) => updateParam("sort", val, "deadline");
+	const setSort = (val) => updateParam("sort", val, "relevance");
 	const setHasChangesOnly = (val) =>
 		updateParam("hasChanges", val ? "true" : "", "");
 	const setStatus = (val) => updateParam("status", val, "active");
@@ -248,6 +254,7 @@ export default function Scholarships() {
 			const trimmed = search.trim();
 			if (trimmed !== currentSearchInUrl) {
 				const next = new URLSearchParams(searchParams);
+				next.delete("page");
 				if (trimmed) next.set("search", trimmed);
 				else next.delete("search");
 				setSearchParams(next, { replace: true });
@@ -314,13 +321,15 @@ export default function Scholarships() {
 					searchParams.get("sourceType") || undefined,
 				hasChanges: searchParams.get("hasChanges") === "true" ? "true" : undefined,
 				status: searchParams.get("status") || "active",
-				sort: searchParams.get("sort") || "deadline",
-				limit: 50,
+				sort: searchParams.get("sort") || "relevance",
+				page: Math.max(1, parseInt(searchParams.get("page"), 10) || 1),
+				limit: 12,
 			};
-			const res = await getScholarships(params, { signal: controller.signal });
+			const res = await getScholarships(params, { signal: controller.signal, personalized: Boolean(user && useProfile) });
 			if (controller.signal.aborted) return;
 			if (res.success) {
 				setScholarships(res.data || []);
+				setResultInfo({ total: res.total ?? res.data?.length ?? 0, totalPages: res.totalPages ?? 1, personalized: res.personalized === true });
 				if (typeof res.recentUpdatesCount === "number") {
 					setRecentUpdatesCount(res.recentUpdatesCount);
 				}
@@ -330,13 +339,15 @@ export default function Scholarships() {
 		} catch (err) {
 			if (controller.signal.aborted || err.code === 'ERR_CANCELED') return;
 			console.error("API error:", err);
-			setError(err.response?.data?.error?.code === 'DATABASE_INITIALIZING'
+			setError(err.response?.data?.code === 'DISCOVERY_CANDIDATE_LIMIT'
+				? 'Too many schemes to rank safely. Narrow your search or filters.'
+				: err.response?.data?.error?.code === 'DATABASE_INITIALIZING'
 				? 'Udaan is still connecting. Please try again in a moment.'
 				: 'The scholarship service did not respond.');
 		} finally {
 			if (!controller.signal.aborted) setLoading(false);
 		}
-	}, [searchParams]);
+	}, [searchParams, user, useProfile]);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -471,6 +482,7 @@ export default function Scholarships() {
 			"hasChanges",
 			"sort",
 			"status",
+			"page",
 		].forEach((k) => next.delete(k));
 		setSearch("");
 		setIsSuggestionsOpen(false);
@@ -845,9 +857,9 @@ export default function Scholarships() {
 								) : (
 									<>
 										<span className="ud-display text-2xl font-extrabold">
-											<CountUp value={scholarships.length} duration={500} />
+											<CountUp value={resultInfo.total} duration={500} />
 										</span>{" "}
-										{scholarships.length === 1 ? "scheme" : "schemes"}
+										{resultInfo.total === 1 ? "scheme" : "schemes"}
 									</>
 								)}
 								<span className="ml-2 font-medium text-emerald-950/55">
@@ -878,6 +890,14 @@ export default function Scholarships() {
 									/>
 								</span>
 							</label>
+						</div>
+
+						<div className="mt-3 space-y-2 text-sm text-emerald-950/70">
+							{user && <label className="flex items-center gap-2 font-semibold">
+								<input type="checkbox" checked={useProfile} onChange={event => { setUseProfile(event.target.checked); updateParam("page", "", ""); }} />
+								Use my saved eligibility profile
+							</label>}
+							<p>{resultInfo.personalized ? "Recorded eligibility compatibility comes first; the selected sort applies within each compatibility group. This is not official confirmation of eligibility." : "Browse the catalogue. Add your details in the eligibility checker to compare recorded requirements."} {sort === "deadline" && "Closing soonest uses verified, current deadlines; other dates appear later."} <Link to="/eligibility" className="font-bold underline">Check your profile</Link></p>
 						</div>
 
 						{hasAnyFilter && (
@@ -973,7 +993,6 @@ export default function Scholarships() {
 											{error || "Loose connection to scholarship notice stream"}
 										</h3>
 										<p className="max-w-[48ch] text-[15px] text-emerald-950/70 font-medium leading-relaxed">
-											The scholarship service couldn't be reached right now.
 											Your selected filters and search query are safely
 											preserved!
 										</p>
@@ -1030,6 +1049,11 @@ export default function Scholarships() {
 								</div>
 							)}
 						</div>
+						{!loading && !error && resultInfo.totalPages > 1 && <nav aria-label="Scholarship pages" className="mt-7 flex items-center justify-center gap-4 text-sm font-bold">
+							<button type="button" disabled={page <= 1} onClick={() => updateParam("page", String(page - 1), "1")} className={`rounded-full border px-4 py-2 disabled:opacity-40 ${focusRing}`}>Previous page</button>
+							<span>Page {page} of {resultInfo.totalPages}</span>
+							<button type="button" disabled={page >= resultInfo.totalPages} onClick={() => updateParam("page", String(page + 1), "1")} className={`rounded-full border px-4 py-2 disabled:opacity-40 ${focusRing}`}>Next page</button>
+						</nav>}
 					</main>
 				</div>
 			</div>

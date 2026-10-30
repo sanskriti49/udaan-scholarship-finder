@@ -61,7 +61,7 @@ export function EvidenceAnswer({ entry }) {
     return <blockquote key={`${proof.evidenceId}-${index}`}>
       {proof.quote.length > 240 ? <details><summary>Read the cited clause</summary><p>{proof.quote}</p></details> : <p>{proof.quote}</p>}
       {proof.quote !== citation.evidence.quote && <details><summary>Read the surrounding passage</summary><p className="nv-source-context">{citation.evidence.quote}</p></details>}
-      <a href={safeSourceUrl(citationLink(citation.evidence, { title: entry.title }).href)} target="_blank" rel="noopener noreferrer">Read the supporting source{citation.evidence.page ? ` · page ${citation.evidence.page}` : ''}</a>
+      <a href={safeSourceUrl(citationLink(citation.evidence, { title: entry.title }).href)} target="_blank" rel="noopener noreferrer">Read the supporting source{citation.evidence.locator ? ` · ${citation.evidence.locator}` : citation.evidence.page ? ` · page ${citation.evidence.page}` : ''}</a>
       {citation.documentDate && <span> · {citation.documentDate}</span>}
     </blockquote>;
   });
@@ -78,7 +78,7 @@ export function EvidenceAnswer({ entry }) {
     </article>)}
     {unknown.length > 0 && <section className="nv-answer-open" aria-label="Conditions still to confirm"><h4>Still needs confirmation</h4>
       {documentedUnknown.length > 0 && <ul>{documentedUnknown.map(item => <li key={item.requirementId}><strong>{item.label}</strong><p>{item.explanation}</p>{evidence(item)}</li>)}</ul>}
-      {unanswered.length > 0 && <><p>{unanswered.slice(0, 3).map(item => item.label).join(' · ')}{unanswered.length > 3 ? ` · ${unanswered.length - 3} more conditions` : ''}</p><details><summary>What information is still missing ({unanswered.length})</summary><ul>{unanswered.map(item => <li key={item.requirementId}><strong>{item.label}</strong><p>{item.explanation}</p>{item.validationCode && <p>{failureText[item.validationCode] ?? 'This proposed finding could not be validated and remains unconfirmed.'}</p>}</li>)}</ul></details></>}
+      {unanswered.length > 0 && <><p><strong>{unanswered[0].label}</strong></p><p>{unanswered[0].explanation}</p><details><summary>What information is still missing ({unanswered.length})</summary><ul>{unanswered.map(item => <li key={item.requirementId}><strong>{item.label}</strong><p>{item.explanation}</p>{item.validationCode && <p>{failureText[item.validationCode] ?? 'This proposed finding could not be validated and remains unconfirmed.'}</p>}</li>)}</ul></details></>}
     </section>}
     <p>{entry.answer.limitation}</p>
   </section>;

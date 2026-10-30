@@ -8,7 +8,10 @@ export const translateScholarshipTitle = createTitleTranslator(async ({ scholars
 });
 
 export const getScholarships = async (params = {}, options = {}) => {
-	const response = await api.get("/scholarships", { ...options, params });
+	const { personalized = false, ...requestOptions } = options;
+	const response = personalized
+		? await api.post("/scholarships/discover", {}, { ...requestOptions, params })
+		: await api.get("/scholarships", { ...requestOptions, params });
 	return response.data;
 };
 

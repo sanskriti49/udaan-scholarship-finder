@@ -44,5 +44,29 @@ export function quotationSpan(text, quote, sourceStart = 0, edges = {}) {
     const [a, b] = contentRange(text, at, at + quote.length);
     if (starts.has(a) && ends.has(b)) return { ok: true, span: { charStart: sourceStart + at, charEnd: sourceStart + at + quote.length } };
   }
+  // Align whitespace runs only, retaining a reversible UTF-16 source map.
+  // No case folding, punctuation repair, dehyphenation or word substitution.
+  if (!found) {
+    const mapped = [], offsets = [], endsAt = [];
+    for (const match of text.matchAll(/\p{White_Space}+|[^\p{White_Space}]/gu)) {
+      const value = whitespace.test(match[0][0]) ? ' ' : match[0];
+      for (let i = 0; i < value.length; i++) {
+        mapped.push(value[i]); offsets.push(match.index + (value === ' ' ? 0 : i));
+        endsAt.push(value === ' ' ? match.index + match[0].length : match.index + i + 1);
+      }
+    }
+    const normalized = mapped.join(''), needle = quote.replace(/\p{White_Space}+/gu, ' ').trim();
+    const matches = [];
+    for (let at = normalized.indexOf(needle); needle && at >= 0; at = normalized.indexOf(needle, at + 1)) {
+      found = true;
+      const a = offsets[at], b = endsAt[at + needle.length - 1];
+      if (starts.has(a) && ends.has(b)) matches.push({ a, b });
+    }
+    if (matches.length > 1) return { ok: false, code: 'QUOTE_AMBIGUOUS' };
+    if (matches.length === 1) {
+      const { a, b } = matches[0];
+      return { ok: true, span: { charStart: sourceStart + a, charEnd: sourceStart + b }, quote: text.slice(a, b) };
+    }
+  }
   return { ok: false, code: found ? 'QUOTE_BOUNDARY' : 'QUOTE_NOT_FOUND' };
 }

@@ -12,7 +12,7 @@ const enumValues = {
 		"Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Delhi NCR", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 	],
 	status: ["all", "active", "upcoming", "open", "closing_soon", "closed", "unknown"],
-	sort: ["deadline", "amount_high", "amount_low", "newest", "relevance"],
+	sort: ["deadline", "amount_high", "amount_low", "newest", "relevance", "trust"],
 	hasChanges: ["true", "false"],
 };
 const enums = new Map(Object.entries(enumValues).map(([key, values]) =>

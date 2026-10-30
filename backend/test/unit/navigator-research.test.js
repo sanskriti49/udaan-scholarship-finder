@@ -9,6 +9,24 @@ import { NavigatorError } from "../../src/agents/navigator/contracts.js";
 import { researchFixture, SCHEME_ID, OTHER_ID, SNAPSHOT_ID, FIXTURE_NOW } from "../navigatorHelpers.js";
 
 const toolsFor = (fixture, profile = {}) => createResearchTools({ repository: fixture.repository, profile, now: () => FIXTURE_NOW });
+
+test("resumed pre-discovery matching summaries are recomputed while exact source evidence survives", async () => {
+	for (const [profile, expected] of [[{ stream: "Engineering" }, "failed"], [{ stream: "Medical" }, "passed"], [{}, "unknown"]]) {
+		const fixture = researchFixture();
+		fixture.scheme.rules = [];
+		fixture.scheme.eligibility = { eligibleStreams: ["Medical"] };
+		const tools = toolsFor(fixture, profile);
+		const found = await tools.execute("findGuidelinePassages", { schemeId: SCHEME_ID, query: "income" });
+		await tools.execute("evaluateMatches", { schemeIds: [SCHEME_ID] });
+		const checkpoint = tools.exportState();
+		Object.assign(checkpoint.evaluations[0][1].summary, { policyVersion: 3, status: "passed", failedCount: 0, unknownCount: 0, missingFields: [] });
+		const resumed = createResearchTools({ repository: fixture.repository, profile, checkpoint, now: () => FIXTURE_NOW });
+		const plan = await resumed.execute("finishInvestigation", { selections: [{ schemeId: SCHEME_ID, evidenceIds: found.passages.map(p => p.id) }] });
+		assert.equal(plan.entries[0].matching.status, expected);
+		assert.equal(plan.entries[0].matching.policyVersion, 4);
+		assert.equal(plan.entries[0].citations[0].evidence.quote, fixture.income);
+	}
+});
 const code = expected => error => error instanceof NavigatorError && error.code === expected;
 async function citeAndMatch(tools, schemeId = SCHEME_ID, query = "income") {
 	const found = await tools.execute("findGuidelinePassages", { schemeId, query });

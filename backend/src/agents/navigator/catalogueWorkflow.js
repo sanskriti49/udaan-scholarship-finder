@@ -5,7 +5,7 @@ import { createResearchTools } from "./researchTools.js";
 import { INTENT_PROMPT, intentMessages, parseResearchIntent, validateResearchIntent, compileResearchIntent, uninterpretedRequest, intentFailureMessage } from "./researchIntent.js";
 import { answerContext, applyEvidenceAnswer, cachedAnswerResponse } from './evidenceAnswer.js';
 import { answerablePassage } from './passages.js';
-import { providedApplicantFields } from './retrievalCoverage.js';
+import { providedApplicantFields, needsEligibilityClarification } from './retrievalCoverage.js';
 import { balanceTargets } from './researchTargets.js';
 import { initialResearch, observeResearch, researchActions, researchSelections, decisionMessages, parseDecision, researchReport, canPrepareFindings } from './adaptiveResearch.js';
 
@@ -94,7 +94,7 @@ export function createCatalogueGraph({ store, lease, provider, repository, sourc
 			if (name === 'requestClarification') return { session: { ...next, status: 'awaiting_input', clarification: output } };
 			if (name === 'evaluateMatches') {
 				const known = new Set(providedApplicantFields(next.retrieval)), fields = [...new Set(output.matches.flatMap(match => match.missingFields))].filter(field => !known.has(field)).slice(0, 1);
-				return { session: { ...next, pending: !next.research.clarified && fields.length && !canPrepareFindings(next) && (await active()).limits.maxToolCalls - (await active()).usage.toolCalls >= 2 ? call('requestClarification', { fields }) : call('finishInvestigation', { selections: next.selections }) } };
+				return { session: { ...next, pending: needsEligibilityClarification(next.retrieval) && !next.research.clarified && fields.length && !canPrepareFindings(next) && (await active()).limits.maxToolCalls - (await active()).usage.toolCalls >= 2 ? call('requestClarification', { fields }) : call('finishInvestigation', { selections: next.selections }) } };
 			}
 			return { session: { ...next, pending: null } };
 		}
@@ -102,7 +102,7 @@ export function createCatalogueGraph({ store, lease, provider, repository, sourc
 			const provided = new Set(providedApplicantFields(session.retrieval));
 			const fields = [...new Set(output.matches.flatMap(match => match.missingFields))].filter(field => !provided.has(field)).slice(0, 3);
 			const current = await active();
-			return { session: { ...next, pending: fields.length && (noAI || current.limits.maxToolCalls - current.usage.toolCalls >= 2) ? call("requestClarification", { fields }) : call("finishInvestigation", { selections: session.selections }) } };
+			return { session: { ...next, pending: needsEligibilityClarification(session.retrieval) && fields.length && (noAI || current.limits.maxToolCalls - current.usage.toolCalls >= 2) ? call("requestClarification", { fields }) : call("finishInvestigation", { selections: session.selections }) } };
 		}
 		if (name === "requestClarification") return { session: { ...next, status: "awaiting_input", clarification: output } };
 		if (name === "searchScholarships") {

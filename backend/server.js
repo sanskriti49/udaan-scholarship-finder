@@ -14,6 +14,7 @@ import verifyRoutes from "./src/routes/verifyRoutes.js";
 import profileRoutes from "./src/routes/profileRoutes.js";
 import bookmarkRoutes from "./src/routes/bookmarkRoutes.js";
 import { apiLimiter } from "./src/middlewares/rateLimiterMiddleware.js";
+import { protectScholarshipAlias } from "./src/middlewares/scholarshipAliasProtection.js";
 import { crawlerScheduler } from "./src/pipeline/scheduler.js";
 import { notificationScheduler } from "./src/jobs/notificationScheduler.js";
 import {
@@ -107,6 +108,8 @@ app.use((req, res, next) => req.path.startsWith("/api/navigator") ? next() : jso
 // Readiness probes bypass Redis-backed throttling and never start/retry work.
 registerHealthRoutes(app, getHealthStatus);
 app.use("/api", apiLimiter);
+// Legacy scholarship aliases must share the same per-client API budget.
+protectScholarshipAlias(app);
 
 const navigatorReadiness = createNavigatorReadiness();
 const startupController = new AbortController();

@@ -5,16 +5,10 @@ import { CornerPeeker } from "./AnimatedIllustrations";
 import { GrantAmount } from "./ScholarshipKit";
 import { deadlineInfo } from "../utils/scholarshipMeta";
 
-// A live preview of the current results, ordered by the nearest known deadline.
+// Preserve the server's ordering, including eligibility compatibility.
 export default function ScholarshipDiscoveryDesk({ items, loading, error, onOpen }) {
 	const [selectedId, setSelectedId] = useState(null);
-	const previews = [...items].sort((a, b) => {
-		const rank = (s) => {
-			const d = deadlineInfo(s.deadline, s.status);
-			return d.tone === "closed" || d.days == null ? Infinity : d.days;
-		};
-		return rank(a) - rank(b);
-	}).slice(0, 3);
+	const previews = items.slice(0, 3);
 	const selected = previews.find((s) => (s._id || s.id) === selectedId) || previews[0];
 	const deadline = selected && deadlineInfo(selected.deadline, selected.status);
 

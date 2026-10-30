@@ -1,4 +1,4 @@
-import { STATE_ALIASES } from "./stateVocabulary.js";
+import { normalizeCriterionValue } from "./criterionVocabulary.js";
 /**
  * Deterministic Rule Evaluator for Udaan
  * Evaluates recursive policy trees using Kleene three-state logic.
@@ -126,8 +126,8 @@ function evaluateCondition(actual, operator, target, field) {
 		return { result: true };
 	}
 
-	const normActual = field === "state" ? STATE_ALIASES[actualStr] || actualStr : actualStr;
-	const normTarget = field === "state" ? STATE_ALIASES[targetStr] || targetStr : targetStr;
+	const normActual = normalizeCriterionValue(field, actualStr);
+	const normTarget = normalizeCriterionValue(field, targetStr);
 
 	switch (operator) {
 		case "LT": {
@@ -160,7 +160,7 @@ function evaluateCondition(actual, operator, target, field) {
 			return {
 				result: targetArr.some((t) => {
 					const s = String(t).trim().toLowerCase();
-					const normT = field === "state" ? STATE_ALIASES[s] || s : s;
+					const normT = normalizeCriterionValue(field, s);
 					return normT === normActual;
 				}),
 			};
@@ -281,7 +281,10 @@ export function evaluateEligibility(rawProfile, scholarship) {
 				trace: { type: "UNRECORDED", status: "unknown", check } };
 		}
 	}
-	if (scholarship.dataQuality?.unknownFields?.includes("eligibility")) {
+	const fallback = scholarship.ruleTree == null && !scholarship.rules?.length;
+	const eligibility = scholarship.eligibility || {};
+	const unsupportedFallback = fallback && (eligibility.age?.min != null || eligibility.age?.max != null || eligibility.minDisabilityPercent != null);
+	if (scholarship.dataQuality?.unknownFields?.includes("eligibility") || unsupportedFallback) {
 		const check = unknownCheck("official_manual_review", "Review additional official course, merit and application conditions", "manual_review");
 		result.status = combineAnd([result.status, "unknown"]);
 		result.checks.push(check); result.allChecks.push(check);
@@ -430,7 +433,21 @@ function buildFallbackRules(scholarship) {
 	// Catalogue jurisdiction is not a domicile eligibility condition. Residence
 	// restrictions must be recorded in explicit rules or a policy tree.
 
-	if (scholarship.level) {
+	if (elig.eligibleStreams?.length) {
+		rules.push({ id: "rule_stream", field: "stream", operator: "IN", targetValue: elig.eligibleStreams, isMandatory: true });
+	}
+	if (elig.disabilityRequired === true) {
+		rules.push({ id: "rule_disability", field: "hasDisability", operator: "BOOLEAN_MATCH", targetValue: true, isMandatory: true });
+	}
+	if (elig.familyIncome?.min != null) {
+		rules.push({ id: "rule_income_min", field: "familyIncome", operator: "GTE", targetValue: elig.familyIncome.min, isMandatory: true });
+	}
+	if (elig.maxCGPA != null) {
+		rules.push({ id: "rule_cgpa_max", field: "cgpa", operator: "LTE", targetValue: elig.maxCGPA, isMandatory: true });
+	}
+	if (elig.eligibleLevels?.length) {
+		rules.push({ id: "rule_levels", field: "educationLevel", operator: "IN", targetValue: elig.eligibleLevels, isMandatory: true });
+	} else if (scholarship.level) {
 		rules.push({
 			id: "rule_level",
 			field: "educationLevel",

@@ -29,8 +29,11 @@ test('visible findings require retained evidence or recorded rules; missing info
     { requirementId: 'c3', status: 'supported', basis: 'source_interpretation', evidence: [] },
   ] } };
   const findings = studentFindings(entry);
-  assert.deepEqual(findings.visible.map(item => item.requirementId), ['c0', 'c1']);
+  assert.deepEqual(findings.visible.map(item => item.requirementId), ['c0', 'c1', 'c2']);
   assert.equal(findings.unanswered.length, 1); assert.equal(findings.established.length, 1);
+  const onlyUnknown = studentFindings({ answer: { conditions: [entry.answer.conditions[2]] } });
+  assert.equal(onlyUnknown.visible[0].status, 'unknown');
+  assert.equal(onlyUnknown.hasFindings, false);
   const recorded = { requirementId: 'c4', status: 'supported', basis: 'recorded_check', evidence: [] };
   assert.equal(studentFindings({ answer: { conditions: [recorded] } }).visible[0], recorded);
 });

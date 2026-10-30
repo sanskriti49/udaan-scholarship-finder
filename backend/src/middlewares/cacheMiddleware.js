@@ -108,7 +108,7 @@ export function buildDeterministicCacheKey(prefix, req) {
 		.join("&");
 
 	// A new key format isolates entries written before query normalization changed.
-	return queryString ? `${prefix}:v2:${path}?${queryString}` : `${prefix}:v2:${path}`;
+	return queryString ? `${prefix}:v3:${path}?${queryString}` : `${prefix}:v3:${path}`;
 }
 
 /**

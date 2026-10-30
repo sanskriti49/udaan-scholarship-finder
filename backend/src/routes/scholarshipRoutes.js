@@ -1,6 +1,7 @@
 import express from "express";
 import {
 	getScholarships,
+	discoverScholarships,
 	getFeaturedScholarships,
 	getScholarshipById,
 	getScholarshipHistory,
@@ -28,6 +29,7 @@ const router = express.Router();
 router.get("/", cacheMiddleware({ ttl: 300 }), getScholarships);
 router.get("/featured", cacheMiddleware({ ttl: 300 }), getFeaturedScholarships);
 router.get("/suggestions", cacheMiddleware({ ttl: 300 }), getScholarshipSuggestions);
+router.post("/discover", optionalAuth, discoverScholarships);
 
 // Admin-Only Cache Control Endpoints
 router.post("/cache/clear", protect, authorizeRoles("admin"), flushScholarshipCache);

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { answerablePassage, passageTargets, safeSourceUrl } from './passages.js';
-import { evidenceTargets, providedApplicantFields } from './retrievalCoverage.js';
+import { evidenceTargets, providedApplicantFields, needsEligibilityClarification } from './retrievalCoverage.js';
 import { selectEvidence } from './evidenceSelection.js';
 import { structuralSchema } from './researchIntent.js';
 import { NavigatorError } from './contracts.js';
@@ -113,7 +113,7 @@ export function researchActions(session, run, { maxCandidates = 5 } = {}) {
   // A question is offered only for actual missing matching inputs, never to
   // compensate for a missing document or repeat facts already in the brief.
   const missing = [...new Set(session.context.evaluations.flatMap(([, e]) => e.summary.missingFields))].filter(f => !known.has(f)).slice(0, 1);
-  if (missing.length && !state.clarified && !canPrepareFindings(session)) add('requestClarification', { fields: missing }, 'missing_student_information');
+  if (needsEligibilityClarification(session.retrieval) && missing.length && !state.clarified && !canPrepareFindings(session)) add('requestClarification', { fields: missing }, 'missing_student_information');
   return actions.slice(0, 20);
 }
 

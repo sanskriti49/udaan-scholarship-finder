@@ -154,7 +154,7 @@ export function ScholarshipCard({
 	className = "",
 }) {
 	const summary = s.summary || s.description;
-	const why = whyItFits(s);
+	const why = s.discovery ? [] : whyItFits(s);
 	const change = s.latestChangeSummary
 		? formatChangeNotice(s.latestChangeSummary)
 		: null;
@@ -226,6 +226,13 @@ export function ScholarshipCard({
 					status={s.status}
 					className="mt-4"
 				/>
+				{s.discovery && (
+					<div className={`mt-4 break-words rounded-xl border p-3 text-sm leading-relaxed ${s.discovery.status === "known_mismatch" ? "border-rose-200 bg-rose-50 text-rose-950" : s.discovery.status === "needs_verification" ? "border-amber-200 bg-amber-50 text-amber-950" : "border-emerald-200 bg-emerald-50 text-emerald-950"}`}>
+						<p className="font-bold">{s.discovery.label}</p>
+						<ul className="mt-1 space-y-1">{s.discovery.reasons.map(reason => <li key={reason}>{reason}</li>)}</ul>
+						<p className="mt-2 text-xs opacity-75">{s.discovery.caveat}</p>
+					</div>
+				)}
 
 				{(summary || why.length > 0) && (
 					<div className="sk-reveal mt-4">

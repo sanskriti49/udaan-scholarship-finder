@@ -1,0 +1,1498 @@
+{
+  "notice": "Eight offline scripted/replayed scenarios, not fresh live model quality. Historical real-source snapshots are not current catalogue verification; synthetic cases are labelled. No network or paid calls.",
+  "observations": [
+    {
+      "caseId": "context-and-unknown-income",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "findGuidelinePassages",
+        "findGuidelinePassages",
+        "evaluateMatches",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [
+        {
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "topics": [
+            "eligibility",
+            "residence",
+            "education",
+            "income",
+            "gender",
+            "documents"
+          ]
+        },
+        {
+          "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+          "topics": [
+            "eligibility",
+            "category",
+            "education",
+            "income",
+            "benefits"
+          ]
+        },
+        {
+          "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+          "topics": [
+            "renewal",
+            "education"
+          ]
+        },
+        {
+          "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+          "topics": [
+            "renewal",
+            "documents"
+          ]
+        },
+        {
+          "quote": "6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n",
+          "topics": [
+            "eligibility",
+            "residence",
+            "education",
+            "application"
+          ]
+        },
+        {
+          "quote": "n favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\n",
+          "topics": [
+            "eligibility"
+          ]
+        },
+        {
+          "quote": "4.0 AMOUNT OF SCHOLARSHIP:\n1) Rs. 50,000/- per annum for every year of study i.e. maximum 4 years for first year\nadmitted students and maximum 3 years for second year admitted students through\n\n",
+          "topics": [
+            "duration",
+            "benefits"
+          ]
+        },
+        {
+          "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+          "topics": [
+            "residence",
+            "education"
+          ]
+        }
+      ],
+      "summary": "The checked information has not established which scholarship fits your request. Your sources are saved below; a related title alone is not enough.",
+      "entries": [
+        {
+          "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+          "matching": {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "status": "unknown",
+            "missingFields": [
+              "familyIncome",
+              "gender",
+              "educationLevel"
+            ],
+            "policyVersion": 4,
+            "passedCount": 0,
+            "failedCount": 0,
+            "unknownCount": 3,
+            "requiresManualReview": false,
+            "reasons": {
+              "supported": [],
+              "excluded": [],
+              "unresolved": [
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required"
+              ]
+            }
+          },
+          "status": "closing_soon",
+          "deadline": "2026-10-31T18:29:59.999Z",
+          "findings": [
+            {
+              "requirementId": "c1",
+              "label": "Current enrollment / context — Gender: Female",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only The AI's additional explanation was withheld.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            },
+            {
+              "requirementId": "c4",
+              "label": "Education level: UG",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition matches the recorded check; confirm the full current guideline. The AI's additional explanation was withheld.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            }
+          ],
+          "conditions": [
+            {
+              "requirementId": "c0",
+              "label": "Current enrollment / context — Category: SC",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            },
+            {
+              "requirementId": "c1",
+              "label": "Current enrollment / context — Gender: Female",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only The AI's additional explanation was withheld.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            },
+            {
+              "requirementId": "c2",
+              "label": "Previous qualification — Education level: Class 12",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            },
+            {
+              "requirementId": "c3",
+              "label": "School location: Uttar Pradesh",
+              "status": "unknown",
+              "basis": "source_interpretation",
+              "explanation": "The checked excerpts do not resolve “School location: Uttar Pradesh”. Ask the scholarship provider to confirm this point before relying on it.",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c4",
+              "label": "Education level: UG",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition matches the recorded check; confirm the full current guideline. The AI's additional explanation was withheld.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            },
+            {
+              "requirementId": "c5",
+              "label": "Course subject: engineering",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            },
+            {
+              "requirementId": "q0",
+              "label": "What conditions would I need to meet?",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            }
+          ],
+          "nextSteps": [
+            "Review the cited official instructions and any unresolved conditions.",
+            "Prepare documents explicitly required by the current provider instructions.",
+            "Confirm the current application window on the official portal before applying."
+          ]
+        }
+      ],
+      "coverage": {
+        "reviewed": [
+          {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+            "status": "unknown",
+            "conditions": [
+              {
+                "id": "c0",
+                "label": "Current enrollment / context — Category: SC",
+                "stage": "rules",
+                "status": "unknown",
+                "reason": "recorded_rules",
+                "evidenceIds": []
+              },
+              {
+                "id": "c1",
+                "label": "Current enrollment / context — Gender: Female",
+                "stage": "rules",
+                "status": "match",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "Restricted to Female candidates only"
+                ],
+                "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+              },
+              {
+                "id": "c2",
+                "label": "Previous qualification — Education level: Class 12",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": [
+                  "ev_76641255dfac467b703a4ed47a58cfe50b442caf"
+                ]
+              },
+              {
+                "id": "c3",
+                "label": "School location: Uttar Pradesh",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              },
+              {
+                "id": "c4",
+                "label": "Education level: UG",
+                "stage": "metadata",
+                "status": "match",
+                "reason": "recorded_metadata",
+                "evidenceIds": []
+              },
+              {
+                "id": "c5",
+                "label": "Course subject: engineering",
+                "stage": "rules",
+                "status": "unknown",
+                "reason": "recorded_rules",
+                "evidenceIds": []
+              },
+              {
+                "id": "q0",
+                "label": "What conditions would I need to meet?",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": [
+                  "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266"
+                ]
+              }
+            ],
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [
+                "Current enrollment / context — Gender: Female",
+                "Education level: UG"
+              ],
+              "unresolved": [
+                "Confirm: Current enrollment / context — Category: SC",
+                "Confirm: Previous qualification — Education level: Class 12",
+                "Confirm: School location: Uttar Pradesh",
+                "Confirm: Course subject: engineering",
+                "Confirm: What conditions would I need to meet?",
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required"
+              ],
+              "reasons": []
+            },
+            "examined": true
+          }
+        ],
+        "deferred": [],
+        "excluded": [],
+        "discovery": {
+          "candidates": 1,
+          "snapshots": 2,
+          "characters": 33528,
+          "sourceLimitReached": false
+        }
+      }
+    },
+    {
+      "caseId": "category-exclusion",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [],
+      "summary": "The checked information has not established which scholarship fits your request. Your sources are saved below; a related title alone is not enough.",
+      "entries": [],
+      "coverage": {
+        "reviewed": [],
+        "deferred": [],
+        "excluded": [
+          {
+            "schemeId": "6aa58e923d52461bb6eb9f0c",
+            "title": "Central Sector Scholarship Of Top Class Education For SC Students",
+            "region": "All India",
+            "status": "mismatch",
+            "conditions": [
+              {
+                "id": "c0",
+                "label": "Current enrollment / context — Category: OBC",
+                "stage": "rules",
+                "status": "mismatch",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "Quota categories: SC"
+                ],
+                "explanation": "Current enrollment / context — Category: OBC. Recorded requirements: Quota categories: SC"
+              },
+              {
+                "id": "c1",
+                "label": "Current enrollment / context — Education level: UG",
+                "stage": "rules",
+                "status": "unknown",
+                "reason": "recorded_rules",
+                "evidenceIds": []
+              },
+              {
+                "id": "c2",
+                "label": "Current enrollment / context — Study year: 1",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              },
+              {
+                "id": "c3",
+                "label": "Current enrollment / context — Annual family income: 500000",
+                "stage": "rules",
+                "status": "match",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "Annual family income ≤ ₹8,00,000"
+                ],
+                "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹8,00,000"
+              },
+              {
+                "id": "q0",
+                "label": "Can I apply for the Top Class Education for SC Students scholarship?",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              }
+            ],
+            "qualification": {
+              "status": "excluded",
+              "supported": [
+                "Current enrollment / context — Annual family income: 500000"
+              ],
+              "unresolved": [
+                "Confirm: Current enrollment / context — Education level: UG",
+                "Confirm: Current enrollment / context — Study year: 1",
+                "Confirm: Can I apply for the Top Class Education for SC Students scholarship?",
+                "Annual family income ≤ ₹8,00,000",
+                "Quota categories: SC",
+                "Check the official guideline for supporting conditions."
+              ],
+              "reasons": [
+                "Current enrollment / context — Category: OBC. Recorded requirements: Quota categories: SC"
+              ]
+            },
+            "examined": false
+          }
+        ],
+        "discovery": {
+          "candidates": 0,
+          "snapshots": 0,
+          "characters": 0,
+          "sourceLimitReached": false
+        }
+      }
+    },
+    {
+      "caseId": "renewal-fourth-year",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "findGuidelinePassages",
+        "findGuidelinePassages",
+        "evaluateMatches",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [
+        {
+          "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+          "topics": [
+            "renewal",
+            "documents"
+          ]
+        },
+        {
+          "quote": "4.0 AMOUNT OF SCHOLARSHIP:\n1) Rs. 50,000/- per annum for every year of study i.e. maximum 4 years for first year\nadmitted students and maximum 3 years for second year admitted students through\n\n",
+          "topics": [
+            "duration",
+            "benefits"
+          ]
+        },
+        {
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "topics": [
+            "eligibility",
+            "residence",
+            "education",
+            "income",
+            "gender",
+            "documents"
+          ]
+        },
+        {
+          "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+          "topics": [
+            "renewal",
+            "education"
+          ]
+        },
+        {
+          "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+          "topics": [
+            "eligibility",
+            "category",
+            "education",
+            "income",
+            "benefits"
+          ]
+        },
+        {
+          "quote": "n favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\n",
+          "topics": [
+            "eligibility"
+          ]
+        },
+        {
+          "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+          "topics": [
+            "residence",
+            "education"
+          ]
+        },
+        {
+          "quote": "6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n",
+          "topics": [
+            "eligibility",
+            "residence",
+            "education",
+            "application"
+          ]
+        }
+      ],
+      "summary": "The checked information has not established which scholarship fits your request. Your sources are saved below; a related title alone is not enough.",
+      "entries": [
+        {
+          "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+          "matching": {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "status": "unknown",
+            "missingFields": [
+              "familyIncome",
+              "gender",
+              "educationLevel"
+            ],
+            "policyVersion": 4,
+            "passedCount": 0,
+            "failedCount": 0,
+            "unknownCount": 3,
+            "requiresManualReview": false,
+            "reasons": {
+              "supported": [],
+              "excluded": [],
+              "unresolved": [
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required"
+              ]
+            }
+          },
+          "status": "closing_soon",
+          "deadline": "2026-10-31T18:29:59.999Z",
+          "findings": [],
+          "conditions": [
+            {
+              "requirementId": "c1",
+              "label": "Current enrollment / context — Study year: 4",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "YEAR_SCOPE_MISSING"
+            },
+            {
+              "requirementId": "c2",
+              "label": "Current enrollment / context — Application type: renewal",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            },
+            {
+              "requirementId": "q0",
+              "label": "Can it continue this year, and what must I submit for renewal?",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The proposed answer could not be supported by a complete, valid source quotation. This condition remains unconfirmed.",
+              "evidence": [],
+              "dependsOn": [],
+              "validationCode": "QUOTE_NOT_FOUND"
+            }
+          ],
+          "nextSteps": [
+            "Review the cited official instructions and any unresolved conditions.",
+            "Prepare documents explicitly required by the current provider instructions.",
+            "Confirm the current application window on the official portal before applying."
+          ]
+        }
+      ],
+      "coverage": {
+        "reviewed": [
+          {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+            "status": "unknown",
+            "conditions": [
+              {
+                "id": "c1",
+                "label": "Current enrollment / context — Study year: 4",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": [
+                  "ev_61abe31fa2657fd512e1653b6f745d2149695454"
+                ]
+              },
+              {
+                "id": "c2",
+                "label": "Current enrollment / context — Application type: renewal",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              },
+              {
+                "id": "q0",
+                "label": "Can it continue this year, and what must I submit for renewal?",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": [
+                  "ev_61abe31fa2657fd512e1653b6f745d2149695454",
+                  "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd"
+                ]
+              }
+            ],
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [],
+              "unresolved": [
+                "Confirm: Current enrollment / context — Study year: 4",
+                "Confirm: Current enrollment / context — Application type: renewal",
+                "Confirm: Can it continue this year, and what must I submit for renewal?",
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required"
+              ],
+              "reasons": []
+            },
+            "examined": true
+          }
+        ],
+        "deferred": [],
+        "excluded": [],
+        "discovery": {
+          "candidates": 1,
+          "snapshots": 2,
+          "characters": 33528,
+          "sourceLimitReached": false
+        }
+      }
+    },
+    {
+      "caseId": "missing-mode-guidance",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "findGuidelinePassages",
+        "findGuidelinePassages",
+        "evaluateMatches",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [
+        {
+          "quote": "10.0 RENEWALS:\n1) The scholarship will be renewed for the next year of study on receipt of renewal\nthrough National Scholarship Portal by submitting passing certificate/ marksheet\nalong with letter from the Head of the Institution on the online portal.\n\n",
+          "topics": [
+            "renewal",
+            "documents"
+          ]
+        },
+        {
+          "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+          "topics": [
+            "eligibility",
+            "residence",
+            "education",
+            "income",
+            "gender",
+            "documents"
+          ]
+        },
+        {
+          "quote": "2) Student failing to get promoted to the next class/ level would forfeit the scholarship.\n",
+          "topics": [
+            "renewal",
+            "education"
+          ]
+        },
+        {
+          "quote": "11.0 TERMS AND CONDITIONS:\n1) The gap period between the year of passing the qualifying examination and the\nsession of admission in degree course should not be more than two years.\n2) Applications will be invited once in a year through National e-Scholarship Portal of\nthe Government of India.\n3) If a student is in reserved category and also qualified in General Category merit list of\nscholarship, then she will be counted under the General Category.\n4) Incomplete applications will be summarily rejected. Only verified online applications\nwill be considered for the award of scholarship.\n5) If a candidate failed/ drop out in subsequent year, she will not be eligible for further\nscholarship.\n6) The grant of scholarship is subject to the condition that the student does not receive\nany financial assistance in shape of scholarship/any emoluments, salary, stipend etc.\nfrom any other source during her course of study in the Institute. In case of receipt of\nany financial assistance from any other sources, the scholarship shall be discontinued\nand the entire amount of scholarship will have to be refunded to AICTE by D/Draft\ndrawn in favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying",
+          "topics": [
+            "eligibility",
+            "category",
+            "education",
+            "income",
+            "benefits"
+          ]
+        },
+        {
+          "quote": "4.0 AMOUNT OF SCHOLARSHIP:\n1) Rs. 50,000/- per annum for every year of study i.e. maximum 4 years for first year\nadmitted students and maximum 3 years for second year admitted students through\n\n",
+          "topics": [
+            "duration",
+            "benefits"
+          ]
+        },
+        {
+          "quote": "n favour of “Member Secretary, AICTE” payable at New Delhi.\n7) Scheme will be implemented and monitored by the AICTE.\n8) For converting Cumulative Grade Point Average (CGPA) to percentage, multiplying\nfactor will be 9.5 i.e. to convert the CGPA into percentage; CGPA X 9.5 will give the\npercentage.\n9) In case both CGPA & total marks are given in the mark sheet, total marks will be\nconsidered for determining percentage.\n10) If grades are given like A1, A2, B1, B2 etc. in the mark sheet, first the grades will be\nconverted into CGPA and then average CGPA will be calculated. This CGPA will be\nconverted into percentage as given in point No. 8.\n11) Provisional list of shortlisted candidates will be uploaded on the AICTE web portal.\nIn case, candidate has any query about merit list of scholarship, they may raise their\ngrievances within a month. No query regarding merit list will be entertained after one-\nmonth duration from the date of publishing of merit list on AICTE website.\n12) Query regarding non-payment of the scholarship due to invalid/ wrong account\nnumber will be entertained only upto six months from the date of publishing of merit\nlist on AICTE website.\n\n",
+          "topics": [
+            "eligibility"
+          ]
+        },
+        {
+          "quote": "7.0 CRITERIA OF SELECTION:\n1) The selection of candidate will be carried out solely on the basis of merit of qualifying\nexamination to peruse the Technical Degree course from any of the AICTE approved\ninstitutions i.e. in First year or Second year (through lateral entry only) on the basis of\npercentage of marks obtained in the 10+2/ equivalent examination.\n2) State/ UT wise merit list will be prepared as per number of scholarships allotted in the\npoint number 3.0 above.\n",
+          "topics": [
+            "residence",
+            "education"
+          ]
+        },
+        {
+          "quote": "6.0 PROCEDURE FOR APPLYING:\n1) The candidate fulfilling the eligibility conditions is required to apply online on\nNational Scholarship Portal (NSP) after initiation of application process and notice to\nbe published on AICTE website.\n2) The host institution where the candidate is studying, required to verify the online\napplication.\n3) Department of Technical Education (DTE) of respective State/ UT will verify these\napplications as second level of scrutiny.\n",
+          "topics": [
+            "eligibility",
+            "residence",
+            "education",
+            "application"
+          ]
+        }
+      ],
+      "summary": "1 option has supporting findings. This does not confirm that every eligibility condition is met.",
+      "entries": [
+        {
+          "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+          "matching": {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "status": "unknown",
+            "missingFields": [
+              "familyIncome",
+              "gender",
+              "educationLevel"
+            ],
+            "policyVersion": 4,
+            "passedCount": 0,
+            "failedCount": 0,
+            "unknownCount": 3,
+            "requiresManualReview": false,
+            "reasons": {
+              "supported": [],
+              "excluded": [],
+              "unresolved": [
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required"
+              ]
+            }
+          },
+          "status": "closing_soon",
+          "deadline": "2026-10-31T18:29:59.999Z",
+          "findings": [
+            {
+              "requirementId": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c1",
+              "label": "Education level: UG",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "The guidelines state that candidates must be admitted to a degree level course, supporting the undergraduate education level requirement.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            }
+          ],
+          "conditions": [
+            {
+              "requirementId": "c0",
+              "label": "Current enrollment / context — Gender: Female",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c1",
+              "label": "Education level: UG",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "The guidelines state that candidates must be admitted to a degree level course, supporting the undergraduate education level requirement.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_f8aa1039accb4c39b8b15702274a23ecf1b9a4ce",
+                  "quote": "2.0 ELIGIBILITY FOR SCHOLARSHIP:\n1) The girl candidate should be admitted to First year of Degree level course\nOR\nSecond year of Degree level course through lateral entry in any of the AICTE\napproved Institution of respective year.\n2) Maximum two girl child per family are eligible.\n3) Family income from all sources should not be more than Rs. 8 lakh per annum during\nthe current financial year. A valid income certificate issued by State/ UT Government\nneed to be enclosed.\n",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 660,
+                    "charEnd": 1136
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c3",
+              "label": "Funding need: part-time study",
+              "status": "unknown",
+              "basis": "source_interpretation",
+              "explanation": "The checked excerpts do not resolve “Funding need: part-time study”. Ask the scholarship provider to confirm this point before relying on it.",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "q0",
+              "label": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+              "status": "unknown",
+              "basis": "source_interpretation",
+              "explanation": "The checked excerpts do not resolve “Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?”. Ask the scholarship provider to confirm this point before relying on it.",
+              "evidence": [],
+              "dependsOn": []
+            }
+          ],
+          "nextSteps": [
+            "Review the cited official instructions and any unresolved conditions.",
+            "Prepare documents explicitly required by the current provider instructions.",
+            "Confirm the current application window on the official portal before applying."
+          ]
+        }
+      ],
+      "coverage": {
+        "reviewed": [
+          {
+            "schemeId": "6aa58e923d52461bb6eb9e9a",
+            "title": "AICTE - Pragati Scholarship Scheme For Girl Students (Technical Degree)",
+            "status": "unknown",
+            "conditions": [
+              {
+                "id": "c0",
+                "label": "Current enrollment / context — Gender: Female",
+                "stage": "rules",
+                "status": "match",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "Restricted to Female candidates only"
+                ],
+                "explanation": "This condition meets the recorded requirement: Restricted to Female candidates only"
+              },
+              {
+                "id": "c1",
+                "label": "Education level: UG",
+                "stage": "metadata",
+                "status": "match",
+                "reason": "recorded_metadata",
+                "evidenceIds": []
+              },
+              {
+                "id": "c3",
+                "label": "Funding need: part-time study",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": [
+                  "ev_d12daac89201a922480642a9d3ac0af960c553f0"
+                ]
+              },
+              {
+                "id": "q0",
+                "label": "Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": [
+                  "ev_d12daac89201a922480642a9d3ac0af960c553f0",
+                  "ev_76641255dfac467b703a4ed47a58cfe50b442caf",
+                  "ev_1cb88c88f69af4c4c182c8fe7e92c88479b482cd",
+                  "ev_7724f37043e8e0a2431e315d7a7cffbbd3932266"
+                ]
+              }
+            ],
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [
+                "Current enrollment / context — Gender: Female",
+                "Education level: UG"
+              ],
+              "unresolved": [
+                "Confirm: Funding need: part-time study",
+                "Confirm: Does the AICTE Pragati (Technical Degree) guideline explicitly allow part-time study, or is that still unclear?",
+                "Annual family income ≤ ₹8,00,000",
+                "Restricted to Female candidates only",
+                "UG degree required"
+              ],
+              "reasons": []
+            },
+            "examined": true
+          }
+        ],
+        "deferred": [],
+        "excluded": [],
+        "discovery": {
+          "candidates": 1,
+          "snapshots": 2,
+          "characters": 33528,
+          "sourceLimitReached": false
+        }
+      }
+    },
+    {
+      "caseId": "synthetic-state-course-category",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "findGuidelinePassages",
+        "findGuidelinePassages",
+        "searchScholarships",
+        "evaluateMatches",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [
+        {
+          "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+          "topics": [
+            "income",
+            "eligibility"
+          ]
+        }
+      ],
+      "summary": "1 option has supporting findings. This does not confirm that every eligibility condition is met.",
+      "entries": [
+        {
+          "title": "Synthetic research fixture — not a real scholarship",
+          "matching": {
+            "schemeId": "111111111111111111111111",
+            "status": "passed",
+            "missingFields": [],
+            "policyVersion": 4,
+            "passedCount": 3,
+            "failedCount": 0,
+            "unknownCount": 0,
+            "requiresManualReview": false,
+            "reasons": {
+              "supported": [
+                "UP permanent domicile required",
+                "UG degree required",
+                "Quota categories: OBC"
+              ],
+              "excluded": [],
+              "unresolved": []
+            }
+          },
+          "status": "open",
+          "deadline": "2026-11-01T18:29:59.000Z",
+          "findings": [
+            {
+              "requirementId": "c0",
+              "label": "Domicile: Uttar Pradesh",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: UP permanent domicile required",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: UG degree required",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c2",
+              "label": "Current enrollment / context — Category: OBC",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Quota categories: OBC",
+              "evidence": [],
+              "dependsOn": []
+            }
+          ],
+          "conditions": [
+            {
+              "requirementId": "c0",
+              "label": "Domicile: Uttar Pradesh",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: UP permanent domicile required",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c1",
+              "label": "Current enrollment / context — Education level: UG",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: UG degree required",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c2",
+              "label": "Current enrollment / context — Category: OBC",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Quota categories: OBC",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "q0",
+              "label": "Find a scholarship for an OBC student enrolled in UG with domicile in Uttar Pradesh.",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The checked excerpts do not resolve “Find a scholarship for an OBC student enrolled in UG with domicile in Uttar Pradesh.”. Ask the scholarship provider to confirm this point before relying on it.",
+              "evidence": [],
+              "dependsOn": []
+            }
+          ],
+          "nextSteps": [
+            "Review the cited official instructions and any unresolved conditions.",
+            "Prepare documents explicitly required by the current provider instructions.",
+            "Confirm the current application window on the official portal before applying."
+          ]
+        }
+      ],
+      "coverage": {
+        "reviewed": [
+          {
+            "schemeId": "111111111111111111111111",
+            "title": "Synthetic research fixture — not a real scholarship",
+            "status": "unknown",
+            "conditions": [
+              {
+                "id": "c0",
+                "label": "Domicile: Uttar Pradesh",
+                "stage": "rules",
+                "status": "match",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "UP permanent domicile required"
+                ],
+                "explanation": "This condition meets the recorded requirement: UP permanent domicile required"
+              },
+              {
+                "id": "c1",
+                "label": "Current enrollment / context — Education level: UG",
+                "stage": "rules",
+                "status": "match",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "UG degree required"
+                ],
+                "explanation": "This condition meets the recorded requirement: UG degree required"
+              },
+              {
+                "id": "c2",
+                "label": "Current enrollment / context — Category: OBC",
+                "stage": "rules",
+                "status": "match",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "Quota categories: OBC"
+                ],
+                "explanation": "This condition meets the recorded requirement: Quota categories: OBC"
+              },
+              {
+                "id": "q0",
+                "label": "Find a scholarship for an OBC student enrolled in UG with domicile in Uttar Pradesh.",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              }
+            ],
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [
+                "Domicile: Uttar Pradesh",
+                "Current enrollment / context — Education level: UG",
+                "Current enrollment / context — Category: OBC",
+                "UP permanent domicile required",
+                "UG degree required",
+                "Quota categories: OBC"
+              ],
+              "unresolved": [
+                "Confirm: Find a scholarship for an OBC student enrolled in UG with domicile in Uttar Pradesh.",
+                "Check the official guideline for supporting conditions."
+              ],
+              "reasons": []
+            },
+            "examined": true
+          }
+        ],
+        "deferred": [],
+        "excluded": [],
+        "discovery": {
+          "candidates": 1,
+          "snapshots": 1,
+          "characters": 173,
+          "sourceLimitReached": false
+        }
+      }
+    },
+    {
+      "caseId": "synthetic-complete-profile",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "findGuidelinePassages",
+        "findGuidelinePassages",
+        "evaluateMatches",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [
+        {
+          "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+          "topics": [
+            "income"
+          ]
+        }
+      ],
+      "summary": "1 option has supporting findings. This does not confirm that every eligibility condition is met.",
+      "entries": [
+        {
+          "title": "Synthetic research fixture — not a real scholarship",
+          "matching": {
+            "schemeId": "111111111111111111111111",
+            "status": "passed",
+            "missingFields": [],
+            "policyVersion": 4,
+            "passedCount": 1,
+            "failedCount": 0,
+            "unknownCount": 0,
+            "requiresManualReview": false,
+            "reasons": {
+              "supported": [
+                "Annual family income ≤ ₹3,00,000"
+              ],
+              "excluded": [],
+              "unresolved": []
+            }
+          },
+          "status": "open",
+          "deadline": "2026-11-01T18:29:59.000Z",
+          "findings": [
+            {
+              "requirementId": "q0",
+              "label": "Can I meet the recorded income requirement with annual family income of 200000 rupees?",
+              "status": "unknown",
+              "basis": "source_interpretation",
+              "explanation": "The recorded income ceiling is Rs 300000 per year. Compare your income with that ceiling; the remaining official conditions still need review.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_c696d5b11ada2c544a8545017640b1808e55860d",
+                  "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 0,
+                    "charEnd": 68
+                  }
+                }
+              ],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "c0",
+              "label": "Current enrollment / context — Annual family income: 200000",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹3,00,000",
+              "evidence": [],
+              "dependsOn": []
+            }
+          ],
+          "conditions": [
+            {
+              "requirementId": "c0",
+              "label": "Current enrollment / context — Annual family income: 200000",
+              "status": "supported",
+              "basis": "recorded_check",
+              "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹3,00,000",
+              "evidence": [],
+              "dependsOn": []
+            },
+            {
+              "requirementId": "q0",
+              "label": "Can I meet the recorded income requirement with annual family income of 200000 rupees?",
+              "status": "unknown",
+              "basis": "source_interpretation",
+              "explanation": "The recorded income ceiling is Rs 300000 per year. Compare your income with that ceiling; the remaining official conditions still need review.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_c696d5b11ada2c544a8545017640b1808e55860d",
+                  "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 0,
+                    "charEnd": 68
+                  }
+                }
+              ],
+              "dependsOn": []
+            }
+          ],
+          "nextSteps": [
+            "Review the cited official instructions and any unresolved conditions.",
+            "Prepare documents explicitly required by the current provider instructions.",
+            "Confirm the current application window on the official portal before applying."
+          ]
+        }
+      ],
+      "coverage": {
+        "reviewed": [
+          {
+            "schemeId": "111111111111111111111111",
+            "title": "Synthetic research fixture — not a real scholarship",
+            "status": "unknown",
+            "conditions": [
+              {
+                "id": "c0",
+                "label": "Current enrollment / context — Annual family income: 200000",
+                "stage": "rules",
+                "status": "match",
+                "reason": "recorded_rules",
+                "evidenceIds": [],
+                "ruleRequirements": [
+                  "Annual family income ≤ ₹3,00,000"
+                ],
+                "explanation": "This condition meets the recorded requirement: Annual family income ≤ ₹3,00,000"
+              },
+              {
+                "id": "q0",
+                "label": "Can I meet the recorded income requirement with annual family income of 200000 rupees?",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              }
+            ],
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [
+                "Current enrollment / context — Annual family income: 200000",
+                "Annual family income ≤ ₹3,00,000"
+              ],
+              "unresolved": [
+                "Confirm: Can I meet the recorded income requirement with annual family income of 200000 rupees?",
+                "Check the official guideline for supporting conditions."
+              ],
+              "reasons": []
+            },
+            "examined": true
+          }
+        ],
+        "deferred": [],
+        "excluded": [],
+        "discovery": {
+          "candidates": 1,
+          "snapshots": 1,
+          "characters": 173,
+          "sourceLimitReached": false
+        }
+      }
+    },
+    {
+      "caseId": "synthetic-missing-income",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "findGuidelinePassages",
+        "findGuidelinePassages",
+        "evaluateMatches",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [
+        {
+          "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+          "topics": [
+            "income"
+          ]
+        }
+      ],
+      "summary": "The findings below explain what fits, what still needs checking, and what does not fit. No suitable scholarship has been established yet.",
+      "entries": [
+        {
+          "title": "Synthetic research fixture — not a real scholarship",
+          "matching": {
+            "schemeId": "111111111111111111111111",
+            "status": "unknown",
+            "missingFields": [
+              "familyIncome"
+            ],
+            "policyVersion": 4,
+            "passedCount": 0,
+            "failedCount": 0,
+            "unknownCount": 1,
+            "requiresManualReview": false,
+            "reasons": {
+              "supported": [],
+              "excluded": [],
+              "unresolved": [
+                "Annual family income ≤ ₹3,00,000"
+              ]
+            }
+          },
+          "status": "open",
+          "deadline": "2026-11-01T18:29:59.000Z",
+          "findings": [
+            {
+              "requirementId": "q0",
+              "label": "What is the income requirement? I do not know my annual family income.",
+              "status": "unknown",
+              "basis": "source_interpretation",
+              "explanation": "The recorded income ceiling is Rs 300000 per year. Compare your income with that ceiling; the remaining official conditions still need review.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_c696d5b11ada2c544a8545017640b1808e55860d",
+                  "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 0,
+                    "charEnd": 68
+                  }
+                }
+              ],
+              "dependsOn": []
+            }
+          ],
+          "conditions": [
+            {
+              "requirementId": "q0",
+              "label": "What is the income requirement? I do not know my annual family income.",
+              "status": "unknown",
+              "basis": "source_interpretation",
+              "explanation": "The recorded income ceiling is Rs 300000 per year. Compare your income with that ceiling; the remaining official conditions still need review.",
+              "evidence": [
+                {
+                  "evidenceId": "ev_c696d5b11ada2c544a8545017640b1808e55860d",
+                  "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+                  "relation": "supports",
+                  "span": {
+                    "charStart": 0,
+                    "charEnd": 68
+                  }
+                }
+              ],
+              "dependsOn": []
+            }
+          ],
+          "nextSteps": [
+            "Review the cited official instructions and any unresolved conditions.",
+            "Prepare documents explicitly required by the current provider instructions.",
+            "Confirm the current application window on the official portal before applying."
+          ]
+        }
+      ],
+      "coverage": {
+        "reviewed": [
+          {
+            "schemeId": "111111111111111111111111",
+            "title": "Synthetic research fixture — not a real scholarship",
+            "status": "unknown",
+            "conditions": [
+              {
+                "id": "q0",
+                "label": "What is the income requirement? I do not know my annual family income.",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              }
+            ],
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [],
+              "unresolved": [
+                "Confirm: What is the income requirement? I do not know my annual family income.",
+                "Annual family income ≤ ₹3,00,000",
+                "Check the official guideline for supporting conditions."
+              ],
+              "reasons": []
+            },
+            "examined": true
+          }
+        ],
+        "deferred": [],
+        "excluded": [],
+        "discovery": {
+          "candidates": 1,
+          "snapshots": 1,
+          "characters": 173,
+          "sourceLimitReached": false
+        }
+      }
+    },
+    {
+      "caseId": "synthetic-deadline",
+      "status": "completed",
+      "error": null,
+      "tools": [
+        "searchScholarships",
+        "findGuidelinePassages",
+        "findGuidelinePassages",
+        "searchScholarships",
+        "evaluateMatches",
+        "finishInvestigation"
+      ],
+      "clarification": null,
+      "retrieved": [
+        {
+          "quote": "SYNTHETIC TEST ONLY: Annual family income must not exceed Rs 300000.",
+          "topics": [
+            "income",
+            "eligibility"
+          ]
+        }
+      ],
+      "summary": "The checked information has not established which scholarship fits your request. Your sources are saved below; a related title alone is not enough.",
+      "entries": [
+        {
+          "title": "Synthetic research fixture — not a real scholarship",
+          "matching": {
+            "schemeId": "111111111111111111111111",
+            "status": "unknown",
+            "missingFields": [
+              "familyIncome"
+            ],
+            "policyVersion": 4,
+            "passedCount": 0,
+            "failedCount": 0,
+            "unknownCount": 1,
+            "requiresManualReview": false,
+            "reasons": {
+              "supported": [],
+              "excluded": [],
+              "unresolved": [
+                "Annual family income ≤ ₹3,00,000"
+              ]
+            }
+          },
+          "status": "open",
+          "deadline": "2026-11-01T18:29:59.000Z",
+          "findings": [],
+          "conditions": [
+            {
+              "requirementId": "q0",
+              "label": "What application deadline is recorded for this scholarship?",
+              "status": "unknown",
+              "basis": "unresolved",
+              "explanation": "The checked excerpts do not resolve “What application deadline is recorded for this scholarship?”. Ask the scholarship provider to confirm this point before relying on it.",
+              "evidence": [],
+              "dependsOn": []
+            }
+          ],
+          "nextSteps": [
+            "Review the cited official instructions and any unresolved conditions.",
+            "Prepare documents explicitly required by the current provider instructions.",
+            "Confirm the current application window on the official portal before applying."
+          ]
+        }
+      ],
+      "coverage": {
+        "reviewed": [
+          {
+            "schemeId": "111111111111111111111111",
+            "title": "Synthetic research fixture — not a real scholarship",
+            "status": "unknown",
+            "conditions": [
+              {
+                "id": "q0",
+                "label": "What application deadline is recorded for this scholarship?",
+                "stage": "evidence",
+                "status": "unknown",
+                "reason": "requires_evidence_review",
+                "evidenceIds": []
+              }
+            ],
+            "qualification": {
+              "status": "needs_verification",
+              "supported": [],
+              "unresolved": [
+                "Confirm: What application deadline is recorded for this scholarship?",
+                "Annual family income ≤ ₹3,00,000",
+                "Check the official guideline for supporting conditions."
+              ],
+              "reasons": []
+            },
+            "examined": true
+          }
+        ],
+        "deferred": [],
+        "excluded": [],
+        "discovery": {
+          "candidates": 1,
+          "snapshots": 1,
+          "characters": 173,
+          "sourceLimitReached": false
+        }
+      }
+    }
+  ]
+}

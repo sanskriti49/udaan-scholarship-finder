@@ -227,6 +227,7 @@ test('source answers preserve supported, contradictory and unknown conditions be
  await expect(page.locator('.rp-tab')).toContainText('Eligibility concern');
  await expect(page.locator('.rp-findings')).toContainText('The guideline accepts Class 12');
  await expect(page.locator('.rp-findings')).toContainText('restricts this scheme to SC or ST');
+ await expect(page.locator('.rp-findings .is-unknown')).toContainText('fourth-year renewal is allowed');
  await page.locator('.rp-more > summary').click();
  const all=page.getByRole('region',{name:'All eligibility findings'});
  await expect(all).toContainText('fourth-year renewal is allowed');await expect(all).toContainText('To check');

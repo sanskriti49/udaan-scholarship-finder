@@ -1,0 +1,60 @@
+{
+  "approvedMaximum": 3,
+  "attempts": [
+    {
+      "number": 1,
+      "mode": "research_intent",
+      "startedAt": "2026-10-30T15:05:33.047Z",
+      "httpStatus": 200,
+      "usageMetadata": {
+        "promptTokenCount": 875,
+        "candidatesTokenCount": 418,
+        "totalTokenCount": 1293,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 875
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "elapsedMs": 6395
+    },
+    {
+      "number": 2,
+      "mode": "evidence_answer",
+      "startedAt": "2026-10-30T15:05:39.971Z",
+      "httpStatus": 200,
+      "usageMetadata": {
+        "promptTokenCount": 1855,
+        "candidatesTokenCount": 1196,
+        "totalTokenCount": 3051,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1855
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "elapsedMs": 9377
+    }
+  ],
+  "startedAt": "2026-10-30T15:05:32.783Z",
+  "provider": "gemini",
+  "noRetries": true,
+  "scope": "Fictional student, frozen public source captures, actual graph, memory checkpoints, isolated local persistent quotas; no portal or production DB access.",
+  "model": "gemini-3.5-flash-lite",
+  "question": "I received AICTE Pragati (Technical Degree) from my first year and have been promoted to my fourth year. Can it continue this year, and what must I submit for renewal?",
+  "status": "completed",
+  "error": null,
+  "actualAttemptCount": 2,
+  "cost": "No monetary billing information returned by the API; token counts are not a cost estimate.",
+  "quotaUsage": [
+    {
+      "_id": "gemini",
+      "used": 2
+    }
+  ],
+  "finishedAt": "2026-10-30T15:05:49.422Z"
+}
